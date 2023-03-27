@@ -6,7 +6,7 @@ const CanvasToJson = () => {
   const handleCanvasToJson = async () => {
     const canvasData = JSON.stringify(canvas.toDatalessJSON()); //toDataLessJSON minifies the data
     const resultSave = await canvasStore(canvasData);
-    //hadle the result
+    //handle the result or error
     if (resultSave.success) {
       alert("Success saved!");
     } else {
