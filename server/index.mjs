@@ -3,6 +3,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import fs from "fs";
 import path from "path";
+import { fabric } from "fabric"; // v5
 
 const port = 8000;
 
@@ -20,22 +21,52 @@ app.post("/canvas/store", (req, res) => {
   if (req.body) {
     try {
       //for now we'll save the canvas to .json file
-      const filePath = "canvas-json";
-      const filename = "canvas.json";
       const content = JSON.stringify(req.body);
       const id = Date.now();
-      console.log(id);
-      //handle errors properly
+
+      //TODO  handle the errors properly
+
+      //#1 save canvas state as json
       fs.promises
-        .mkdir(path.dirname(`canvas-json/${id}-${filename}`), {
+        .mkdir(path.dirname(`canvas-json/${id}-canvas.json`), {
           recursive: true,
         })
         .then((x) =>
-          fs.promises.writeFile(`canvas-json/${id}-${filename}`, content)
+          fs.promises.writeFile(`canvas-json/${id}-canvas.json`, content)
         )
         .catch((error) => {
           console.log(error);
         });
+
+      //#2 create .png and save it on disk
+      const canvas = new fabric.Canvas(null, { width: 600, height: 600 }); //sync width & height with FE
+      canvas.loadFromJSON(
+        JSON.stringify({ objects: req.body.objects }),
+        function () {
+          canvas.renderAll();
+          fs.promises
+            .mkdir(path.dirname(`public/canvas-images/${id}-canvas.png`), {
+              recursive: true,
+            })
+            .then((x) => {
+              const out = fs.createWriteStream(
+                `public/canvas-images/${id}-canvas.png`
+              );
+              const stream = canvas.createPNGStream();
+              stream.pipe(out);
+              out.on("finish", () => console.log("The PNG file was created."));
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+          // const out = fs.createWriteStream(
+          //   `public/canvas-images/${id}-canvas.png`
+          // );
+          // const stream = canvas.createPNGStream();
+          // stream.pipe(out);
+          // out.on("finish", () => console.log("The PNG file was created."));
+        }
+      );
       res.send(
         JSON.stringify({
           success: true,
@@ -75,6 +106,21 @@ app.get("/canvas/load", (req, res) => {
       })
     );
   }
+});
+
+app.get("/images/list", (req, res) => {
+  res.set("Content-Type", "application/json");
+  const folder = "./public/canvas-images";
+  const list = [];
+  fs.readdirSync(folder).forEach((filename) => {
+    list.push(filename);
+  });
+  res.send(
+    JSON.stringify({
+      success: true,
+      list: list,
+    })
+  );
 });
 
 app.listen(port, () => {

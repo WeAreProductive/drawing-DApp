@@ -21,7 +21,19 @@ export const canvasLoad = async (canvasId) => {
   try {
     const options = {}; //later include canvas data(Id) to load
     const response = await fetch(`${BASE_URL}/canvas/load`);
-    return response.json(); // pars
+    return response.json();
+  } catch (error) {
+    //@TODO handle the error properly
+    console.log(error);
+    return { error: "Something went wrong ..." };
+  }
+};
+
+export const getCanvasImages = async () => {
+  try {
+    const response = await fetch(`${BASE_URL}/images/list`);
+    const data = await response.json();
+    return data.list;
   } catch (error) {
     //@TODO handle the error properly
     console.log(error);
