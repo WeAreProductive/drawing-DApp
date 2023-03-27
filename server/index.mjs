@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import fs from "fs";
+import path from "path";
 
 const port = 8000;
 
@@ -12,27 +13,36 @@ const corsOptions = {
 
 const app = express();
 app.use(cors(corsOptions));
-app.use(bodyParser.json({ limit: "1mb" }));//@TODO - set here proper limit to allow canvas to be saved properly
+app.use(bodyParser.json({ limit: "1mb" })); //@TODO - set here proper limit to allow canvas to be saved properly
 
 app.post("/canvas/store", (req, res) => {
   res.set("Content-Type", "application/json");
   if (req.body) {
     try {
       //for now we'll save the canvas to .json file
-      const filePath = "./canvas.json";
-      let writer = fs.createWriteStream(filePath, { flags: "w" });
-      writer.write(JSON.stringify(req.body));
+      const filePath = "canvas-json";
+      const filename = "canvas.json";
+      const content = JSON.stringify(req.body);
+      const id = Date.now();
+      console.log(id);
+      //handle errors properly
+      fs.promises
+        .mkdir(path.dirname(`canvas-json/${id}-${filename}`), {
+          recursive: true,
+        })
+        .then((x) =>
+          fs.promises.writeFile(`canvas-json/${id}-${filename}`, content)
+        )
+        .catch((error) => {
+          console.log(error);
+        });
       res.send(
         JSON.stringify({
           success: true,
         })
       );
     } catch (error) {
-      res.send(
-        JSON.stringify({
-          error: error.stack,
-        })
-      );
+      //@TODO handle error, return error response
       console.log(error);
     }
   } else {
@@ -47,7 +57,7 @@ app.get("/canvas/load", (req, res) => {
   res.set("Content-Type", "application/json");
   //here we'll get canvas Id(?) to load from the request
   //now we'll read from a file
-  const filePath = "./canvas.json";
+  const filePath = "canvas.json";
   try {
     var data = fs.readFileSync(filePath, "utf8");
     res.send(
