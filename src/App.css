@@ -7,16 +7,23 @@ body {
   align-items: center;
   flex-direction: row;
   justify-content: center;
-  align-items:center;
+  align-items:center; 
 } 
 .images-list { 
   flex: 1;
-  height: 100vh;
-  overflow: scroll;
   display:flex;
-  flex-direction:column;
+  flex-direction:column; 
+  overflow: auto; 
   align-items: center;
-  justify-content: center
+  justify-content: center;  
+  max-height:800px;
+  margin-top:100px
+}
+
+.images-list-box {
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
 }
 .canvas-image {
   width: 200px;

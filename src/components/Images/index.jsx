@@ -10,13 +10,17 @@ const ImagesList = () => {
 
   return (
     <div className="images-list">
-      {canvasImages.length > 0 ? (
-        canvasImages.map((filename) => <CanvasSnapshot src={filename} />)
-      ) : (
-        <div className="canvas-image">
-          Canvas shanpshots will appear here...
-        </div>
-      )}
+      <div className="images-list-box">
+        {canvasImages.length > 0 ? (
+          canvasImages.map((filename) => (
+            <CanvasSnapshot key={filename} src={filename} />
+          ))
+        ) : (
+          <div className="canvas-image">
+            Canvas shanpshots will appear here...
+          </div>
+        )}
+      </div>
     </div>
   );
 };
