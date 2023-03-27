@@ -12,7 +12,10 @@ const CanvasFromJson = () => {
   };
 
   return (
-    <button onClick={handleCanvasFromJson} title="from JSON">
+    <button
+      onClick={handleCanvasFromJson}
+      title="from JSON"
+      className="button canvas-load">
       Load Canvas
     </button>
   );

@@ -9,8 +9,10 @@ const ColorControl = () => {
     setOptions({ ...canvasOptions, color: e.target.value });
   };
   return (
-    <div id="drawing-mode-options">
-      <label htmlFor="drawing-color">Line color:</label>
+    <div className="drawing-options color-controls">
+      <label htmlFor="drawing-color" className="control-label">
+        Line color:
+      </label>
       <input
         type="color"
         value={color}

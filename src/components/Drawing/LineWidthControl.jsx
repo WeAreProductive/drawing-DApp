@@ -12,18 +12,22 @@ const LineWidthControl = () => {
     });
   };
   return (
-    <>
-      <label htmlFor="drawing-line-width">Line width:</label>
-      <span className="info">{lineWidth}</span>
-      <input
-        type="range"
-        value={lineWidth}
-        min="0"
-        max="150"
-        id="drawing-line-width"
-        onChange={handleLineWidthChange}
-      />
-    </>
+    <div className="drawing-options linewidth-controls">
+      <label htmlFor="drawing-line-width" className="control-label">
+        Line width:
+      </label>
+      <div>
+        <span className="info">{lineWidth}</span>
+        <input
+          type="range"
+          value={lineWidth}
+          min="0"
+          max="99"
+          id="drawing-line-width"
+          onChange={handleLineWidthChange}
+        />
+      </div>
+    </div>
   );
 };
 

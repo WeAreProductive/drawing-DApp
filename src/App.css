@@ -1,31 +1,101 @@
+body {
+  background: #ccc;
+  font-family: 'Open Sans', Helvetica, sans-serif;
+}
 .App {
   display: flex;
   align-items: center;
-  flex-direction: column
+  flex-direction: row;
+  justify-content: center;
+  align-items:flex-start;
 } 
 .canvas-container{
-  border: 2px solid #000
+  background-color: #fff;
+  box-shadow: 1px 1px 5px 5px #8f8d8d;
 }
-#drawing-mode {
-  margin-bottom: 10px;
-  vertical-align: top;
+.controls-container {
+  display: flex;
+  flex-direction: column; 
+  background-color: #2c2b2b;
+  margin-left: 20px;
+  box-shadow: 1px 1px 5px 5px #8f8d8d; 
+  padding:30px
 }
-#drawing-mode-options {
-  display: inline-block;
-  vertical-align: top;
-  margin-bottom: 10px;
-  margin-top: 10px;
-  background: #f5f2f0;
-  padding: 10px;
+.drawing-ui { 
+  width: 300px;
+  display: flex;
+  flex-direction:column;
+  align-items: center
 }
-label {
-  display: inline-block; width: 130px;
+.drawing-options { 
+  display: flex;
+  align-items: center;
+  width: 100%
+} 
+.control-label { 
+  margin-top: 9px;
+  color: white;
+  font-size: 12px;
 }
-.info {
+.drawing-options.linewidth-controls {
+  flex-direction: column;
+  justify-content: center;
+  align-items: start; 
+  margin-top:20px
+}
+.drawing-options.linewidth-controls div {
+  display:flex;
+  align-items: center;
+  width:100%;
+  margin-top:10px
+}
+.drawing-options.linewidth-controls input {
+  flex-basis: 98%
+} 
+.drawing-options.color-controls .control-label{
+  margin-right: 30px
+}
+.info {  
   display: inline-block;
   width: 25px;
-  background: #ffc;
+  color: #fff;
+  text-align:center;
 }
-#bd-wrapper {
-  min-width: 1500px;
+.button {  
+  width: 115px;
+  height: 40px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 12px;
+  color: white;
+  cursor: pointer; 
+  border:0;
+  margin-top: 10px;
+  margin-left: 10px
+} 
+.actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top:20px
+}
+
+.eraser {
+  background: #989191;
+}
+.clear-button {
+  background: #d00d0d;
+}
+.canvas-store {
+  background: #22bd42;
+}
+.canvas-store:active{
+  background: #07280d;
+}
+
+.canvas-load {
+  background: #2e83f0
+}
+.canvas-load:active {
+  background: #040a12;
 }

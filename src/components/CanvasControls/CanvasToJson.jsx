@@ -15,7 +15,10 @@ const CanvasToJson = () => {
     //shold we reset the canvas after save?
   };
   return (
-    <button onClick={handleCanvasToJson} title="As json">
+    <button
+      onClick={handleCanvasToJson}
+      title="As json"
+      className="button canvas-store">
       Save Canvas
     </button>
   );
