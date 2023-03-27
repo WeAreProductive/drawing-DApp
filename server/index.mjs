@@ -12,7 +12,7 @@ const corsOptions = {
 
 const app = express();
 app.use(cors(corsOptions));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "1mb" }));//@TODO - set here proper limit to allow canvas to be saved properly
 
 app.post("/canvas/store", (req, res) => {
   res.set("Content-Type", "application/json");
