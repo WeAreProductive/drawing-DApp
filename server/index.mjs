@@ -86,9 +86,9 @@ app.post("/canvas/store", (req, res) => {
 });
 app.get("/canvas/load", (req, res) => {
   res.set("Content-Type", "application/json");
-  //here we'll get canvas Id(?) to load from the request
+  const src = req.query.source;
   //now we'll read from a file
-  const filePath = "canvas.json";
+  const filePath = `canvas-json/${src}`;
   try {
     var data = fs.readFileSync(filePath, "utf8");
     res.send(

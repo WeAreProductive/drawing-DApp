@@ -1,4 +1,4 @@
-import CanvasClear from "./CanvasClear";
+import CanvasReset from "./CanvasReset";
 import CanvasFromJson from "./CanvasFromJson";
 import CanvasToJson from "./CanvasToJson";
 import Eraser from "./Eraser";
@@ -7,7 +7,7 @@ const CanvasControls = () => {
     <div className="actions">
       <div>
         <Eraser />
-        <CanvasClear />
+        <CanvasReset />
       </div>
       <div>
         <CanvasToJson />

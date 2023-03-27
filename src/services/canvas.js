@@ -17,10 +17,12 @@ export const canvasStore = async (canvasData) => {
   }
 };
 
-export const canvasLoad = async (canvasId) => {
+export const canvasLoad = async (canvasSource) => {
   try {
-    const options = {}; //later include canvas data(Id) to load
-    const response = await fetch(`${BASE_URL}/canvas/load`);
+    const queryParams = new URLSearchParams({
+      source: canvasSource,
+    });
+    const response = await fetch(`${BASE_URL}/canvas/load?${queryParams}`);
     return response.json();
   } catch (error) {
     //@TODO handle the error properly
