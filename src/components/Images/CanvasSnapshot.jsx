@@ -1,5 +1,9 @@
 const CanvasSnapshot = ({ src }) => {
-  return <img src={`./canvas-images/${src}`} />;
+  return (
+    <div className="canvas-image">
+      <img src={`./canvas-images/${src}`} />
+    </div>
+  );
 };
 
 export default CanvasSnapshot;

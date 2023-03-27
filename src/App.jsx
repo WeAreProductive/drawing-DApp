@@ -10,10 +10,12 @@ const App = () => {
     <CanvasContextProvider>
       <div className="App">
         <ImagesList />
-        <FabricJSCanvas />
-        <div className="controls-container">
-          <DrawingControls />
-          <CanvasControls />
+        <div className="canvas-wrapper">
+          <FabricJSCanvas />
+          <div className="controls-container">
+            <DrawingControls />
+            <CanvasControls />
+          </div>
         </div>
       </div>
     </CanvasContextProvider>

@@ -10,9 +10,13 @@ const ImagesList = () => {
 
   return (
     <div className="images-list">
-      {canvasImages.length > 0
-        ? canvasImages.map((filename) => <CanvasSnapshot src={filename} />)
-        : null}
+      {canvasImages.length > 0 ? (
+        canvasImages.map((filename) => <CanvasSnapshot src={filename} />)
+      ) : (
+        <div className="canvas-image">
+          Canvas shanpshots will appear here...
+        </div>
+      )}
     </div>
   );
 };
