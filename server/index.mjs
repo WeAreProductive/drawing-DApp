@@ -4,11 +4,12 @@ import bodyParser from "body-parser";
 import fs from "fs";
 import path from "path";
 import { fabric } from "fabric"; // v5
+import { API_ENDPOINTS, ORIGIN_BASE } from "./config.mjs";
 
 const port = 8000;
 
 const corsOptions = {
-  origin: "http://localhost:5173",
+  origin: ORIGIN_BASE,
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 };
 
@@ -16,7 +17,7 @@ const app = express();
 app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "1mb" })); //@TODO - set here proper limit to allow canvas to be saved properly
 
-app.post("/canvas/store", (req, res) => {
+app.post(API_ENDPOINTS.canvasStore, (req, res) => {
   res.set("Content-Type", "application/json");
   if (req.body) {
     try {
@@ -78,7 +79,7 @@ app.post("/canvas/store", (req, res) => {
     );
   }
 });
-app.get("/canvas/load", (req, res) => {
+app.get(API_ENDPOINTS.canvasLoad, (req, res) => {
   res.set("Content-Type", "application/json");
   const src = req.query.source;
   //now we'll read from a file
@@ -102,7 +103,7 @@ app.get("/canvas/load", (req, res) => {
   }
 });
 
-app.get("/images/list", (req, res) => {
+app.get(API_ENDPOINTS.imagesList, (req, res) => {
   res.set("Content-Type", "application/json");
   const folder = "./public/canvas-images";
   const list = [];
