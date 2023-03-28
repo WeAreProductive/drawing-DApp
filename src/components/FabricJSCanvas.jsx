@@ -1,8 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { fabric } from "fabric"; // v5
 import { useCanvasContext } from "../context/CanvasContext";
-//@TODO add clear button and erase button
-//@TODO style the controls as in fluid ...
+import { INITIAL_DRAWING_OPTIONS } from "../config/constants";
 const FabricJSCanvas = () => {
   const canvasEl = useRef(null);
   const { canvas, setCanvas, canvasOptions } = useCanvasContext();
@@ -10,7 +9,7 @@ const FabricJSCanvas = () => {
   useEffect(() => {
     const options = {
       isDrawingMode: true,
-      backgroundColor: "rgb(255,255,255)",
+      backgroundColor: INITIAL_DRAWING_OPTIONS.backgroundColor,
       selectionColor: canvasOptions.color,
       selectionLineWidth: canvasOptions.lineWidth,
     };
@@ -26,7 +25,9 @@ const FabricJSCanvas = () => {
     if (canvas) {
       const brush = canvas.freeDrawingBrush;
       brush.color = canvasOptions.color;
-      brush.width = parseInt(canvasOptions.lineWidth, 10) || 1;
+      brush.width =
+        parseInt(canvasOptions.lineWidth, 10) ||
+        INITIAL_DRAWING_OPTIONS.minBrushWidth;
     }
   }, [canvas, canvasOptions.color, canvasOptions.lineWidth]);
   return (

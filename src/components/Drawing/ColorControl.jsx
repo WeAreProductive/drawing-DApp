@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
+import { INITIAL_DRAWING_OPTIONS } from "../../config/constants";
 const ColorControl = () => {
   const { canvasOptions, setOptions } = useCanvasContext();
-  const [color, setColor] = useState("#000000");
+  const [color, setColor] = useState(INITIAL_DRAWING_OPTIONS.color);
 
   const handleColorChange = (e) => {
     setColor(e.target.value);

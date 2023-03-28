@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { getCanvasImages } from "../services/canvas";
+import { INITIAL_DRAWING_OPTIONS } from "../config/constants";
 
 const CanvasContext = createContext();
 
@@ -17,10 +18,10 @@ export const CanvasContextProvider = ({ children }) => {
   const [canvas, setCanvas] = useState(null);
   const [canvasesList, setCanvasesList] = useState([]); //canvases saved as images
   const [canvasOptions, setOptions] = useState({
-    color: "#000000",
-    lineWidth: 1,
-    canvasWidth: 600,
-    canvasHeight: 600,
+    color: INITIAL_DRAWING_OPTIONS.color,
+    lineWidth: INITIAL_DRAWING_OPTIONS.brushWidth,
+    canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
+    canvasHeight: INITIAL_DRAWING_OPTIONS.canvasHeight,
   });
   // On 1st load and
   // each time a canvas is saved

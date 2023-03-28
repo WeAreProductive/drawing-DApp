@@ -1,8 +1,11 @@
 import { useState } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
+import { INITIAL_DRAWING_OPTIONS } from "../../config/constants";
 const LineWidthControl = () => {
   const { canvasOptions, setOptions } = useCanvasContext();
-  const [lineWidth, setLineWidth] = useState(1);
+  const [lineWidth, setLineWidth] = useState(
+    INITIAL_DRAWING_OPTIONS.brushWidth
+  );
 
   const handleLineWidthChange = (e) => {
     setLineWidth(e.target.value);

@@ -59,12 +59,6 @@ app.post("/canvas/store", (req, res) => {
             .catch((error) => {
               console.log(error);
             });
-          // const out = fs.createWriteStream(
-          //   `public/canvas-images/${id}-canvas.png`
-          // );
-          // const stream = canvas.createPNGStream();
-          // stream.pipe(out);
-          // out.on("finish", () => console.log("The PNG file was created."));
         }
       );
       res.send(
@@ -126,5 +120,3 @@ app.get("/images/list", (req, res) => {
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
 });
-
-// https://dev.to/xjamundx/adding-a-rest-api-to-your-vite-server-in-5-seconds-270g
