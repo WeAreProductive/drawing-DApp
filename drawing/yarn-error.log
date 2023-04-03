@@ -1,0 +1,53 @@
+Arguments: 
+  /Users/milena/.nvm/versions/node/v18.14.0/bin/node /Users/milena/.nvm/versions/node/v18.14.0/bin/yarn add webpack 4.x.x
+
+PATH: 
+  /Users/milena/.rbenv/shims:/Users/milena/.nvm/versions/node/v18.14.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/go/bin:/Library/Apple/usr/bin:/Applications/Postgres.app/Contents/Versions/latest/bin:/Users/milena/.rbenv/shims:/Users/milena/.nvm/versions/node/v18.14.0/bin:/opt/homebrew/bin:/opt/homebrew/sbin
+
+Yarn version: 
+  1.22.19
+
+Node version: 
+  18.14.0
+
+Platform: 
+  darwin arm64
+
+Trace: 
+  Error: https://registry.yarnpkg.com/4.x.x: Not found
+      at params.callback [as _callback] (/Users/milena/.nvm/versions/node/v18.14.0/lib/node_modules/yarn/lib/cli.js:66145:18)
+      at self.callback (/Users/milena/.nvm/versions/node/v18.14.0/lib/node_modules/yarn/lib/cli.js:140890:22)
+      at Request.emit (node:events:513:28)
+      at Request.<anonymous> (/Users/milena/.nvm/versions/node/v18.14.0/lib/node_modules/yarn/lib/cli.js:141862:10)
+      at Request.emit (node:events:513:28)
+      at IncomingMessage.<anonymous> (/Users/milena/.nvm/versions/node/v18.14.0/lib/node_modules/yarn/lib/cli.js:141784:12)
+      at Object.onceWrapper (node:events:627:28)
+      at IncomingMessage.emit (node:events:525:35)
+      at endReadableNT (node:internal/streams/readable:1359:12)
+      at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+
+npm manifest: 
+  {
+    "name": "drawing-dapp",
+    "version": "1.0",
+    "description": "Drawing DApp",
+    "dependencies": {
+      "ethers": "^5.5.4"
+    },
+    "devDependencies": {
+      "webpack-cli": "^4.7.2"
+    },
+    "scripts": {
+      "build": "webpack --entry ./drawing.js --mode production",
+      "start": "webpack --entry ./drawing.js --mode development && docker run -e ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\" --init --network host -v `pwd`:/dapp -w /dapp cartesi/txiki:latest tjs dist/main.js"
+    },
+    "keywords": [
+      "cartesi"
+    ]
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
