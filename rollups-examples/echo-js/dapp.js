@@ -22,7 +22,7 @@ async function handle_advance(data) {
     try {
         const payloadStr = ethers.utils.toUtf8String(payload);
         console.log(`Adding notice "${payloadStr}"`);
-        readWrite(payloadStr)
+        readWrite(JSON.parse(payloadStr));
     } catch (e) {
         console.log(`Adding notice with binary value "${payload}"`);
     }

@@ -1,3 +1,4 @@
+import { useCanvasContext } from "../../context/CanvasContext";
 import React, { useState } from "react";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ethers } from "ethers";
@@ -9,16 +10,14 @@ const HARDHAT_DEFAULT_MNEMONIC =
 const HARDHAT_LOCALHOST_RPC_URL = "http://localhost:8545";
 const LOCALHOST_DAPP_ADDRESS = "0xF8C694fd58360De278d5fF2276B7130Bfdc0192A";
 
-// This Component presents an Input field and adds its contents as an Input for the Echo DApp
-function RoarForm() {
-    const [value, setValue] = useState("");
+const CanvasToSvg = () => {
+    const { canvas } = useCanvasContext();
     const [accountIndex] = useState(0);
     const toast = useToast();
     const [loading, setLoading] = useState(false);
-
-    function handleSubmit(event) {
-        event.preventDefault();
-        //@TODO - mind !!!
+    const handleCanvasToSvg = async () => {
+        const canvasData = JSON.stringify(canvas.toSVG()); //data to be saved in rollups
+        console.log(canvasData);
         const sendInput = async () => {
             setLoading(true);
             // Start a connection
@@ -35,9 +34,9 @@ function RoarForm() {
             );
 
             // Encode the input
-            const inputBytes = ethers.utils.isBytesLike(value)
-                ? value
-                : ethers.utils.toUtf8Bytes(value);
+            const inputBytes = ethers.utils.isBytesLike(canvasData)
+                ? canvasData
+                : ethers.utils.toUtf8Bytes(canvasData);
 
             // Send the transaction
             const tx = await inputContract.addInput(inputBytes);
@@ -72,44 +71,30 @@ function RoarForm() {
             );
         };
         sendInput();
-    }
-
-    function handleChange(event) {
-        setValue(event.target.value);
-    }
-
+    };
     let buttonProps = {};
     if (loading) {
         buttonProps.isLoading = true;
     }
     return (
-        <div>
-            <img className="monster" src="/monster.jpg" alt="monster" />
-            <a
-                className="link"
-                href="https://www.freepik.com/free-vector/monster-cartoon-yellow-background-with-image-creepy-one-eyed-horned-creature-with-terrible-grin-vector-illustration_31643399.htm#query=monster%20cartoon&position=2&from_view=keyword#position=2&query=monster%20cartoon"
+        <>
+            <button
+                onClick={handleCanvasToSvg}
+                title="As json"
+                className="button canvas-store"
             >
-                Image by macrovector on Freepik{" "}
-            </a>
-            {/* sends my svg jsonstringyfied string */}
-            {/* Don't forget to remove the docttype! if it breaks smth*/}
-            <form onSubmit={handleSubmit}>
-                <label>
-                    <p>Roar something!</p>
-                </label>
-                <Input
-                    type="text"
-                    focusBorderColor="yellow"
-                    size="md"
-                    value={value}
-                    onChange={handleChange}
-                ></Input>
-                <Button {...buttonProps} type="submit" colorScheme="yellow">
-                    Roar
-                </Button>
-            </form>
-        </div>
+                Save Canvas
+            </button>
+            <Button
+                {...buttonProps}
+                type="submit"
+                colorScheme="yellow"
+                onClick={handleCanvasToSvg}
+            >
+                Roar, Save Canvas
+            </Button>
+        </>
     );
-}
+};
 
-export default RoarForm;
+export default CanvasToSvg;

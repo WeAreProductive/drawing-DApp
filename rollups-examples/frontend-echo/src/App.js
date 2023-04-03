@@ -1,24 +1,38 @@
 import "./App.css";
-import RoarForm from "./RoarForm";
-import Echoes from "./Echoes";
-import React, { useState } from "react";
-import { Flex, Spacer } from "@chakra-ui/react";
+import { useState } from "react";
+import { CanvasContextProvider } from "./context/CanvasContext";
+// import ImagesList from "./components/Images";
+import DrawingControls from "./components/Drawing/DrawingControls";
+import FabricJSCanvas from "./components/FabricJSCanvas";
+import CanvasControls from "./components/CanvasControls";
 
 // Simple App to present the Input field and produced Notices
 function App() {
     const [accountIndex] = useState(0);
 
     return (
-        <div className="App">
-            <header className="App-header">
-                <h1>Echo DApp</h1>
-                <Flex>
-                    <RoarForm accountIndex={accountIndex} />
-                    <Spacer />
-                    {/* <Echoes /> */}
-                </Flex>
-            </header>
-        </div>
+        // <div className="App">
+        //     <header className="App-header">
+        //         <h1>Echo DApp</h1>
+        //         <Flex>
+        //             <RoarForm accountIndex={accountIndex} />
+        //             <Spacer />
+        //             {/* <Echoes /> */}
+        //         </Flex>
+        //     </header>
+        // </div>
+        <CanvasContextProvider>
+            <div className="App">
+                {/* <ImagesList /> */}
+                <div className="canvas-wrapper">
+                    <FabricJSCanvas />
+                    <div className="controls-container">
+                        <DrawingControls />
+                        <CanvasControls />
+                    </div>
+                </div>
+            </div>
+        </CanvasContextProvider>
     );
 }
 
