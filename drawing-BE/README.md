@@ -182,10 +182,9 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 
  docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose-host.yml down 
 
-# make the be using vite instead of webpack - problem loading ethers
+- make the be using vite instead of webpack - problem with ethers.js
 - add FE logic to communicate with the rollups - see in rollups examples frontend-echo
 - write and retrieve images to/from external source - can it be the address of the FE app? see twiki https://github.com/saghul/txiki.js
-- test the module to reload BE server on changes
 - remove obsolete files
 
 - deploy - use production mode with docker ? localhost ? testnet ?

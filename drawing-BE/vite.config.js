@@ -10,12 +10,22 @@ export default defineConfig({
   plugins: [
     ...VitePluginNode({
       // tell the plugin where is your project entry
-      appPath: "./index.js",
+      appPath: "./drawing.js",
       swcOptions: {},
-
       adapter({ app, server, req, res, next }) {
         app(res, res);
       },
     }),
   ],
+  build: {
+    commonjsOptions: {
+      include: [/node_modules/],
+    },
+    ssr: true,
+  },
+  modulePreload: {
+    resolveDependencies: (filename, deps, { hostId, hostType }) => {
+      return deps.filter(condition);
+    },
+  },
 });

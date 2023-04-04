@@ -3,3 +3,4 @@ node_modules/
 canvas.json
 *.json
 public/canvas-images/  
+drawing/dist/main.js
