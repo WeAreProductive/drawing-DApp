@@ -10,18 +10,20 @@
     "server": "nodemon server/index.mjs"
   },
   "dependencies": {
-    "fabric": "^5.3.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
     "@apollo/client": "^3.7.1",
     "@chakra-ui/react": "^2.4.1",
     "@chakra-ui/core": "^0.8.0",
-    "graphql": "^16.6.0",
+    "@cartesi/rollups": "^0.7.0",
     "emotion-theming": "^11.0.0",
     "@emotion/core": "^11.0.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "framer-motion": "^7.6.12"
+    "ethers": "^5.7.2",
+    "framer-motion": "^7.6.12",
+    "fabric": "^5.3.0",
+    "graphql": "^16.6.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.28",

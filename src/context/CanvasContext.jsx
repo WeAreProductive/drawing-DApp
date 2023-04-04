@@ -30,9 +30,9 @@ export const CanvasContextProvider = ({ children }) => {
     const list = await getCanvasImages();
     setCanvasesList(list);
   };
-  useEffect(() => {
-    manageCanvasesList();
-  }, []);
+  // useEffect(() => {
+  //   manageCanvasesList();
+  // }, []);
   const value = {
     canvas,
     setCanvas,
