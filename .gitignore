@@ -4,3 +4,6 @@ canvas.json
 *.json
 public/canvas-images/  
 drawing/dist/main.js
+drawing/.env
+drawing/config.js
+drawing/config.js

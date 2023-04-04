@@ -11,7 +11,8 @@
 // specific language governing permissions and limitations under the License.
 
 const { ethers } = require("ethers");
-import { readWrite } from "./utils/tjs";
+import { readWrite } from "./utils/fileHandler";
+import { get, storeSvg } from "./utils/fetch";
 const rollup_server = tjs.getenv("ROLLUP_HTTP_SERVER_URL");
 console.log("HTTP rollup_server url is " + rollup_server);
 
@@ -21,7 +22,10 @@ async function handle_advance(data) {
   try {
     const payloadStr = ethers.utils.toUtf8String(payload);
     console.log(`Adding notice "${payloadStr}"`);
-    readWrite(JSON.parse(payloadStr));
+    // readWrite(JSON.parse(payloadStr));
+    // const id = Date.now();
+    // svgName = `${id}-canvas`; //@TODO revise the name eventually
+    storeSvg("name-1", JSON.parse(payloadStr));
   } catch (e) {
     console.log(`Adding notice with binary value "${payload}"`);
   }
@@ -33,12 +37,13 @@ async function handle_advance(data) {
     body: JSON.stringify({ payload }),
   });
   const json = await advance_req.json();
-  console.log(
-    "Received notice status " +
-      advance_req.status +
-      " body " +
-      JSON.stringify(json)
-  );
+  // console.log(
+  //   "Received notice status " +
+  //     advance_req.status +
+  //     " body " +
+  //     JSON.stringify(json)
+  // );
+
   return "accept";
 }
 
