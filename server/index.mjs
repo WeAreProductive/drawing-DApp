@@ -5,6 +5,8 @@ import fs from "fs";
 import path from "path";
 import { fabric } from "fabric"; // v5
 import { API_ENDPOINTS, ORIGIN_BASE } from "./config.mjs";
+// @TODO express will be used to fetch the available .svg images 
+// remove the obsolete dependencies and endpoints
 
 const port = 8000;
 
