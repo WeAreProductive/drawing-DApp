@@ -33,10 +33,11 @@ docker compose down -v
 
 ## Interacting with the application
 
+```shell
 cd ..
 yarn 
 yarn dev
- 
+``` 
 
 ## Deploying to a testnet
 
@@ -134,7 +135,7 @@ In order to start the back-end, run the following commands in a dedicated termin
 ```shell
 cd drawing
 yarn start
-
+```
 After that, you can interact with the application normally [as explained above](#interacting-with-the-application).
 The final command will effectively run the back-end and send corresponding outputs to port `5004`.
 It can optionally be configured in an IDE to allow interactive debugging using features like breakpoints.
@@ -154,17 +155,19 @@ Sending finish
 
 After that, you can interact with the application normally [as explained above](#interacting-with-the-application).
 
-
-```next steps
-- run the DApp BE in host mode 
+## commands
+# runs the DApp BE in host mode 
 
 docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose-host.yml up
 
-- stop and reset the epoch and index
+# stops and resets the epoch and index
 
  docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose-host.yml down 
 
-#  use vite instead of webpack as a building tool - problem loading ethers 
+## next steps
+
+
+-  use vite instead of webpack as a building tool - problem loading ethers 
 
 - write and retrieve images to/from external source - can it be the address of the FE app? see twiki https://github.com/saghul/txiki.js
 - list of available image - load fabric canvas from svg? string
