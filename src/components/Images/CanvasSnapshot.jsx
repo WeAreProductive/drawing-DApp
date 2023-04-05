@@ -4,7 +4,6 @@ import { canvasLoad } from "../../services/canvas";
 
 const CanvasSnapshot = ({ src }) => {
   const { canvas } = useCanvasContext();
-
   const loadCanvasFromImage = async () => {
     //src and canvas .json share the same name
     const canvasSource = srcToJson(src);
@@ -15,9 +14,11 @@ const CanvasSnapshot = ({ src }) => {
     }
   };
   return (
-    <div className="canvas-image" onClick={loadCanvasFromImage}>
-      <img src={`./canvas-images/${src}`} />
-    </div>
+    <div
+      className="canvas-image"
+      onClick={loadCanvasFromImage}
+      dangerouslySetInnerHTML={{ __html: src }}
+    />
   );
 };
 

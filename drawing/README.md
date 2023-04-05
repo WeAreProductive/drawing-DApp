@@ -173,7 +173,7 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 - list of available image - load fabric canvas from svg? string
 - refactor - remove obsolete dependencies, add .envs, configs etc.
 
-- add loaders while waiting for txs to be sent and notice keys to be received
+- add loaders while waiting for txs to be sent and notice keys to be received, and for the new image to be set in the list
 
 - test the module to reload BE server on changes
 - remove obsolete files
