@@ -171,6 +171,10 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 
 - write and retrieve images to/from external source - can it be the address of the FE app? see twiki https://github.com/saghul/txiki.js
 - list of available image - load fabric canvas from svg? string
+- refactor - remove obsolete dependencies, add .envs, configs etc.
+
+- add loaders while waiting for txs to be sent and notice keys to be received
+
 - test the module to reload BE server on changes
 - remove obsolete files
 
