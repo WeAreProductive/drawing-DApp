@@ -1,4 +1,4 @@
-import { API_KEY, URL } from "../config";
+import { API_KEY, URL, API_ENDPOINTS } from "../config";
 export const get = async () => {
   const r = await fetch("https://httpbin.org/get");
   console.log(r);
@@ -15,7 +15,7 @@ export const storeSvg = async (svgName, svgContent) => {
         content: svgContent,
       },
     });
-    const r = await fetch(`${URL}/action/insertOne`, {
+    const r = await fetch(`${URL}${API_ENDPOINTS.insertOne}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -25,6 +25,7 @@ export const storeSvg = async (svgName, svgContent) => {
       body: data,
     });
     const json = await r.json();
+    //@TODO return smth meaningful ...
     console.log(json);
   } catch (e) {
     console.log(e);
