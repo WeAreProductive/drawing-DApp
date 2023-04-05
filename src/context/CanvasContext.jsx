@@ -28,11 +28,12 @@ export const CanvasContextProvider = ({ children }) => {
   // we will update the canvases list
   const manageCanvasesList = async () => {
     const list = await getCanvasImages();
+    console.log(list);
     setCanvasesList(list);
   };
-  // useEffect(() => {
-  //   manageCanvasesList();
-  // }, []);
+  useEffect(() => {
+    manageCanvasesList();
+  }, []);
   const value = {
     canvas,
     setCanvas,

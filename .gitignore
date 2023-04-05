@@ -1,9 +1,7 @@
 
-node_modules/
-canvas.json
-*.json
-public/canvas-images/  
-drawing/dist/main.js
-drawing/.env
+node_modules/ 
+*.json 
+drawing/dist/main.js 
 drawing/config.js 
 drawing/dist/*
+.env
