@@ -22,10 +22,11 @@ async function handle_advance(data) {
   try {
     const payloadStr = ethers.utils.toUtf8String(payload);
     console.log(`Adding notice "${payloadStr}"`);
-    // readWrite(JSON.parse(payloadStr));
-    // const id = Date.now();
-    // svgName = `${id}-canvas`; //@TODO revise the name eventually
-    storeSvg("name-1", JSON.parse(payloadStr));
+
+    const id = Date.now();
+    const svgName = `${id}-canvas`; //@TODO revise the name eventually
+
+    storeSvg(svgName, JSON.parse(payloadStr));
   } catch (e) {
     console.log(`Adding notice with binary value "${payload}"`);
   }
