@@ -4,3 +4,14 @@ export const URL =
 export const API_ENDPOINTS = {
   insertOne: "/action/insertOne",
 };
+export const API_CONFIG = {
+  dataSource: "DrawingDApp",
+  database: "drawing",
+  collection: "images",
+};
+
+export const API_HEADERS = {
+  "Content-Type": "application/json",
+  "api-key": API_KEY,
+  "Access-Control-Request-Headers": "*",
+};
