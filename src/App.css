@@ -9,16 +9,24 @@ body {
   justify-content: center;
   align-items:center; 
 } 
-.images-list { 
+.list-wrapper { 
+  margin-top:100px; 
+  display: flex;
+  flex-direction: column;
   flex: 1;
+  justify-content: center
+}
+.list-header {
+  text-align: center;
+  margin-bottom: 10px
+}
+.images-list { 
   display:flex;
   flex-direction:column; 
   overflow: auto; 
   align-items: center;
   justify-content: center;  
   max-height:800px;
-  margin-top:100px;
-  margin-right: 30px
 }
 
 .images-list-box {

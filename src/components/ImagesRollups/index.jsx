@@ -54,7 +54,8 @@ const ImagesListRollups = () => {
   useEffect(() => {
     if (loading) {
       toast({
-        title: "Loading Query Server results",
+        title: "Loading Rollups Query Server results",
+        description: "last notice payload is in the end of the row",
         status: "info",
         duration: 5000,
         isClosable: true,
@@ -92,26 +93,30 @@ const ImagesListRollups = () => {
     setNoticeEchoes(ret);
   }
   return (
-    <div className="images-list">
-      <h5>Svgs saved in Rollups</h5>
-      <i>Updates on canvas save</i>
-      <div className="images-list-box">
-        {noticeEchoes.length > 0 ? (
-          noticeEchoes.map((node) => {
-            // Render echo from notice
-            const echo = ethers.utils.toUtf8String(node.payload);
-            try {
-              const echoParsed = JSON.parse(echo);
-              return <CanvasSnapshot key={`${node.id}`} src={echoParsed} />;
-            } catch (e) {
-              console.log(e);
-            }
-          })
-        ) : (
-          <div className="canvas-image">
-            Canvas shanpshots will appear here...
-          </div>
-        )}
+    <div className="list-wrapper">
+      <div className="list-header">
+        <h5>Svgs saved in Rollups</h5>
+        <i>Updates on canvas save</i>
+      </div>
+      <div className="images-list">
+        <div className="images-list-box">
+          {noticeEchoes.length > 0 ? (
+            noticeEchoes.map((node) => {
+              // Render echo from notice
+              const echo = ethers.utils.toUtf8String(node.payload);
+              try {
+                const echoParsed = JSON.parse(echo);
+                return <CanvasSnapshot key={`${node.id}`} src={echoParsed} />;
+              } catch (e) {
+                console.log(e);
+              }
+            })
+          ) : (
+            <div className="canvas-image">
+              Canvas shanpshots will appear here...
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

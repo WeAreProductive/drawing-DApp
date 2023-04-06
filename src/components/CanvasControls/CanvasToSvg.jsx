@@ -16,6 +16,13 @@ const CanvasToSvg = () => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const handleCanvasToSvg = async () => {
+    toast({
+      title: "Sending input to rollups...",
+      status: "warning",
+      duration: 3000,
+      isClosable: true,
+      position: "top",
+    });
     const canvasData = JSON.stringify(canvas.toSVG()); //data to be saved in rollups
     const sendInput = async () => {
       setLoading(true);
@@ -64,6 +71,15 @@ const CanvasToSvg = () => {
         duration: 9000,
         isClosable: true,
         position: "top-left",
+      });
+      toast({
+        title: "The saved canvas",
+        description:
+          "will appear in the right column once its notice is in the rollups",
+        status: "warning",
+        duration: 15000,
+        isClosable: true,
+        position: "top",
       });
       console.log(
         `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `
