@@ -5,13 +5,11 @@ import { canvasLoad } from "../../services/canvas";
 const CanvasSnapshot = ({ src }) => {
   const { canvas } = useCanvasContext();
   const loadCanvasFromImage = async () => {
-    //src and canvas .json share the same name
-    const canvasSource = srcToJson(src);
-    const canvasData = await canvasLoad(canvasSource);
-    if (canvasData.success) {
-      const canvasParsedData = parseCanvasData(canvasData.data);
-      canvas.loadFromJSON(canvasParsedData);
-    }
+    canvas.clear();
+    fabric.loadSVGFromString(src, function (objects, options) {
+      var obj = fabric.util.groupSVGElements(objects, options);
+      canvas.add(obj).renderAll();
+    });
   };
   return (
     <div

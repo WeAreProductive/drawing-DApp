@@ -12,8 +12,8 @@ const ImagesList = () => {
     <div className="images-list">
       <div className="images-list-box">
         {canvasImages.length > 0 ? (
-          canvasImages.map(({ id, content }) => {
-            return <CanvasSnapshot key={id} src={content} />;
+          canvasImages.map(({ _id, content }) => {
+            return <CanvasSnapshot key={_id} src={content} />;
           })
         ) : (
           <div className="canvas-image">
