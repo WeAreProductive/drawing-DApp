@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { ethers } from "ethers";
 import { InputFacet__factory } from "@cartesi/rollups";
-import { useToast } from "@chakra-ui/react";
+import { useToast, Button } from "@chakra-ui/react";
 
 const HARDHAT_DEFAULT_MNEMONIC =
   "test test test test test test test test test test test junk";
@@ -76,12 +76,12 @@ const CanvasToSvg = () => {
     buttonProps.isLoading = true;
   }
   return (
-    <button
+    <Button
+      {...buttonProps}
       onClick={handleCanvasToSvg}
-      title="As json"
       className="button canvas-store">
       Save Canvas
-    </button>
+    </Button>
   );
 };
 

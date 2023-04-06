@@ -102,15 +102,16 @@ body {
 }
 .button {  
   width: 115px;
-  height: 40px;
-  line-height: 30px;
+  height: 40px!important;
+  line-height: 30px!important;
   text-align: center;
-  font-size: 12px;
+  font-size: 12px!important;
   color: white;
   cursor: pointer; 
-  border:0;
+  border:0!important;
   margin-top: 10px;
-  margin-left: 10px
+  margin-left: 10px;
+  border-radius: 0!important;
 } 
 .actions {
   display: flex;
@@ -129,7 +130,8 @@ body {
   background: #120101
 }
 .canvas-store {
-  background: #22bd42;
+  background: #22bd42!important;
+  vertical-align: top!important
 }
 .canvas-store:active{
   background: #07280d;
