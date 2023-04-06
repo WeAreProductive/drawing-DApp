@@ -1,6 +1,4 @@
 import { useCanvasContext } from "../../context/CanvasContext";
-import { srcToJson, parseCanvasData } from "../../utils";
-import { canvasLoad } from "../../services/canvas";
 
 const CanvasSnapshot = ({ src }) => {
   const { canvas } = useCanvasContext();

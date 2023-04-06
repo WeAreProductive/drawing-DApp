@@ -93,10 +93,9 @@ const ImagesListRollups = () => {
   }
   return (
     <div className="images-list">
+      <h5>Svgs saved in Rollups</h5>
+      <i>Updates on canvas save</i>
       <div className="images-list-box">
-        <h5>Svgs saved in Rollups</h5>
-        <i>Updates on canvas save</i>
-
         {noticeEchoes.length > 0 ? (
           noticeEchoes.map((node) => {
             // Render echo from notice

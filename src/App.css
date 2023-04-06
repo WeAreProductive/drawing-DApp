@@ -24,7 +24,7 @@ body {
 .images-list-box {
   display: flex;
   flex-direction: column;
-  min-height: 400px;
+  min-height: 500px;
 }
 .canvas-image {
   width: 200px;
@@ -45,6 +45,7 @@ body {
 .canvas-wrapper {
   flex: 2;
   display: flex; 
+  margin-top: 50px;
 }
 .canvas-container{
   background-color: #fff;

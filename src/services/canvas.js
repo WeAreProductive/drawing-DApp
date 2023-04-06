@@ -1,6 +1,6 @@
 import { BASE_API_URL, API_ENDPOINTS } from "../config/constants";
 
-e;
+
 /**
  * Get all the canvases as svgs data objects
  * {id: '', name: '', content: ''}

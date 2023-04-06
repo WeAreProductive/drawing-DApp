@@ -10,9 +10,9 @@ const ImagesList = () => {
 
   return (
     <div className="images-list">
+      <h5>Svgs saved in DB</h5>
+      <i>Updates on page reload</i>
       <div className="images-list-box">
-        <h5>Svgs saved in DB</h5>
-        <i>Updates on page reload</i>
         {canvasImages.length > 0 ? (
           canvasImages.map(({ _id, content }) => {
             return <CanvasSnapshot key={_id} src={content} />;
