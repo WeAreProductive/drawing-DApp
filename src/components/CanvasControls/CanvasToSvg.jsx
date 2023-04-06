@@ -17,7 +17,6 @@ const CanvasToSvg = () => {
   const [loading, setLoading] = useState(false);
   const handleCanvasToSvg = async () => {
     const canvasData = JSON.stringify(canvas.toSVG()); //data to be saved in rollups
-    console.log(canvasData);
     const sendInput = async () => {
       setLoading(true);
       // Start a connection

@@ -29,7 +29,6 @@ export async function readWrite(data) {
 export const fileHandler = async (data) => {
   const dirIter = await tjs.readdir("./tmp");
   for await (const item of dirIter) {
-    console.log(item.name);
     const f = await tjs.mkstemp("./tmp/test_filerwXXXXXX");
     console.log(f.path);
     tjs.copyfile(f.path, `${f.path}.svg`);

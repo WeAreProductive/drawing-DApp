@@ -20,7 +20,6 @@ export const storeSvg = async (svgName, svgContent) => {
     });
     const json = await r.json();
     //@TODO return smth meaningful ...
-    console.log(json);
   } catch (e) {
     console.log(e);
   }
