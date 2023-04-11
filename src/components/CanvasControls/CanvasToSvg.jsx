@@ -8,7 +8,7 @@ import { useToast, Button } from "@chakra-ui/react";
 const HARDHAT_DEFAULT_MNEMONIC =
   "test test test test test test test test test test test junk";
 const HARDHAT_LOCALHOST_RPC_URL = "http://localhost:8545";
-const LOCALHOST_DAPP_ADDRESS = "0xF119CC4Ed90379e5E0CC2e5Dd1c8F8750BAfC812";
+const LOCALHOST_DAPP_ADDRESS = "0xF8C694fd58360De278d5fF2276B7130Bfdc0192A";
 
 const CanvasToSvg = () => {
   const { canvas } = useCanvasContext();
