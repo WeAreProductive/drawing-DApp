@@ -1,4 +1,3 @@
-import { RollupsContextProvider } from "./context/RollupsContext";
 import { CanvasContextProvider } from "./context/CanvasContext";
 import ImagesList from "./components/Images";
 import ImagesListRollups from "./components/ImagesRollups";
@@ -9,21 +8,19 @@ import "./App.css";
 
 const App = () => {
   return (
-    <RollupsContextProvider>
-      <CanvasContextProvider>
-        <div className="App">
-          <ImagesList />
-          <div className="canvas-wrapper">
-            <FabricJSCanvas />
-            <div className="controls-container">
-              <DrawingControls />
-              <CanvasControls />
-            </div>
+    <CanvasContextProvider>
+      <div className="App">
+        <ImagesList />
+        <div className="canvas-wrapper">
+          <FabricJSCanvas />
+          <div className="controls-container">
+            <DrawingControls />
+            <CanvasControls />
           </div>
-          <ImagesListRollups />
         </div>
-      </CanvasContextProvider>
-    </RollupsContextProvider>
+        {/* <ImagesListRollups /> */}
+      </div>
+    </CanvasContextProvider>
   );
 };
 

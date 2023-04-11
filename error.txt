@@ -1,0 +1,44 @@
+TypeError: fetch failed
+drawing-server_manager-1          |     at Object.fetch (node:internal/deps/undici/undici:11457:11)
+drawing-server_manager-1          |     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+drawing-server_manager-1          |     at async /opt/cartesi/dapp/dist/main.js:1:8186 {
+drawing-server_manager-1          |   cause: Error: getaddrinfo EAI_AGAIN eu-central-1.aws.data.mongodb-api.com
+drawing-server_manager-1          |       at GetAddrInfoReqWrap.onlookup [as oncomplete] (node:dns:107:26) {
+drawing-server_manager-1          |     errno: -3001,
+drawing-server_manager-1          |     code: 'EAI_AGAIN',
+drawing-server_manager-1          |     syscall: 'getaddrinfo',
+drawing-server_manager-1          |     hostname: 'eu-central-1.aws.data.mongodb-api.com'
+drawing-server_manager-1          |   }
+drawing-server_manager-1          | }
+drawing-query_server-1            |  INFO actix_web::middleware::logger: 192.168.144.1 "POST /graphql HTTP/1.1" 200 152 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/112.0" 0.002676    
+drawing-hardhat-1                 | Mined empty block range #80 to #91
+drawing-query_server-1            |  INFO actix_web::middleware::logger: 192.168.144.1 "POST /graphql HTTP/1.1" 200 152 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/112.0" 0.002399    
+drawing-query_server-1            |  INFO actix_web::middleware::logger: 192.168.144.1 "POST /graphql HTTP/1.1" 200 152 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/112.0" 0.002643    
+drawing-query_server-1            |  INFO actix_web::middleware::logger: 192.168.144.1 "POST /graphql HTTP/1.1" 200 152 "http://localhost:3000/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/112.0" 0.002268    
+drawing-query_server-1            |  INFO actix_web::middleware::logger: 192.168.144.1 "POST /graphql HTTP/1.1" 200 152 "http://localhost:5173/" "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:109.0) Gecko/20100101 Firefox/112.0" 0.002671    
+drawing-server_manager-1          | node:internal/deps/undici/undici:11457
+drawing-server_manager-1          |     Error.captureStackTrace(err, this);
+drawing-server_manager-1          |           ^
+drawing-server_manager-1          | 
+drawing-server_manager-1          | TypeError: fetch failed
+drawing-server_manager-1          |     at Object.fetch (node:internal/deps/undici/undici:11457:11)
+drawing-server_manager-1          |     at async advance_state (/opt/cartesi/dapp/dist/main.js:1:8480)
+drawing-server_manager-1          |     at async /opt/cartesi/dapp/dist/main.js:1:9563 {
+drawing-server_manager-1          |   cause: SocketError: other side closed
+drawing-server_manager-1          |       at Socket.onSocketEnd (node:internal/deps/undici/undici:9689:26)
+drawing-server_manager-1          |       at Socket.emit (node:events:524:35)
+drawing-server_manager-1          |       at endReadableNT (node:internal/streams/readable:1359:12)
+drawing-server_manager-1          |       at process.processTicksAndRejections (node:internal/process/task_queues:82:21) {
+drawing-server_manager-1          |     code: 'UND_ERR_SOCKET',
+drawing-server_manager-1          |     socket: {
+drawing-server_manager-1          |       localAddress: '127.0.0.1',
+drawing-server_manager-1          |       localPort: 50068,
+drawing-server_manager-1          |       remoteAddress: undefined,
+drawing-server_manager-1          |       remotePort: undefined,
+drawing-server_manager-1          |       remoteFamily: undefined,
+drawing-server_manager-1          |       timeout: undefined,
+drawing-server_manager-1          |       bytesWritten: 2591,
+drawing-server_manager-1          |       bytesRead: 309
+drawing-server_manager-1          |     }
+drawing-server_manager-1          |   }
+drawing-server_manager-1          | }

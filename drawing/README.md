@@ -1,7 +1,6 @@
 # drawing DApp
 
-drawing is a customized DApp written in Python, which originally resembles the one provided by the sample [Echo Python DApp](https://github.com/cartesi/rollups-examples/tree/main/echo-python).
-Contrary to that example, this DApp does not use shared resources from the `rollups-examples` main directory, and as such the commands for building, running and deploying it are slightly different.
+This DApp's back-end is written in JavaScript.
 
 The documentation below reflects the original application code, and should also be used as a basis for documenting any DApp created with this mechanism.
 
@@ -17,7 +16,7 @@ To build the application, run the following command:
 docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load
 ```
 
-## Running ( in production mode? )
+## Running ( in production mode )
 
 To start the application, execute the following command:
 
@@ -164,21 +163,21 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 
  docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose-host.yml down 
 
+# docker volumes keeps DApp data
+
 ## next steps
 
 
--  use vite instead of webpack as a building tool - problem loading ethers 
-
-- write and retrieve images to/from external source - can it be the address of the FE app? see twiki https://github.com/saghul/txiki.js
-- list of available image - load fabric canvas from svg? string
-- refactor - remove obsolete dependencies, add .envs, configs etc.
-
-- add loaders while waiting for txs to be sent and notice keys to be received, and for the new image to be set in the list
-
-- test the module to reload BE server on changes
-- remove obsolete files
+-  use vite instead of webpack as a building tool - problem loading ethers   
+- test the module to reload BE server on changes 
 
 - deploy - use production mode with docker ? localhost ? testnet ?
 
-- update the README file
+- update the README file 
+- remove repeats
+
+## fabrics next steps
+- undo func
+- delete func
+- color palete - as in the fluid.js
 

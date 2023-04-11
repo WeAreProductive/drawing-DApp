@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # Copyright 2022 Cartesi Pte. Ltd.
 #
 # SPDX-License-Identifier: Apache-2.0
@@ -12,4 +12,18 @@
 # specific language governing permissions and limitations under the License.
 
 set -e
-rollup-init node dist/main.js
+
+MACHINE_DIR=$1
+ROLLUP_HTTP_SERVER_PORT=5004
+
+cartesi-machine \
+    --assert-rolling-template \
+    --ram-length=128Mi \
+    --rollup \
+    --flash-drive=label:root,filename:dapp.ext2 \
+    --ram-image=linux.bin \
+    --rom-image=rom.bin \
+    --store=$MACHINE_DIR \
+    -- "cd /opt/cartesi/dapp; \
+        ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:$ROLLUP_HTTP_SERVER_PORT\" \
+        ./entrypoint.sh"

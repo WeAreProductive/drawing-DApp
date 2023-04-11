@@ -1,4 +1,4 @@
-import { URL, API_ENDPOINTS, API_HEADERS, API_CONFIG } from "../config";
+import { URL, API_ENDPOINTS, API_HEADERS, API_CONFIG } from "../config.js";
 export const get = async () => {
   const r = await fetch("https://httpbin.org/get");
   console.log(r);

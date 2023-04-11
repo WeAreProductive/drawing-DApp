@@ -5,3 +5,4 @@ drawing/dist/main.js
 drawing/config.js 
 drawing/dist/*
 .env
+drawing/yarn-error.log
