@@ -15,6 +15,9 @@ To build the application, run the following command:
 ```shell
 docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load
 ```
+## Remove all docker images 
+
+docker system prune -a
 
 ## Running ( in production mode )
 
@@ -181,3 +184,5 @@ docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-co
 - delete func
 - color palete - as in the fluid.js
 
+
+#

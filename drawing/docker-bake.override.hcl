@@ -1,3 +1,4 @@
+
 variable "TAG" {
   default = "devel"
 }
@@ -12,13 +13,13 @@ target "dapp" {
 }
 
 target "server" {
-  tags = ["${DOCKER_ORGANIZATION}/dapp:echo-js-${TAG}-server"]
+  tags = ["${DOCKER_ORGANIZATION}/dapp:drawing-${TAG}-server"]
 }
 
 target "console" {
-  tags = ["${DOCKER_ORGANIZATION}/dapp:echo-js-${TAG}-console"]
+  tags = ["${DOCKER_ORGANIZATION}/dapp:drawing-${TAG}-console"]
 }
 
 target "machine" {
-  tags = ["${DOCKER_ORGANIZATION}/dapp:echo-js-${TAG}-machine"]
+  tags = ["${DOCKER_ORGANIZATION}/dapp:drawing-${TAG}-machine"]
 }
