@@ -74,6 +74,20 @@ body {
   color: white;
   font-size: 12px;
 }
+.react-colorful {
+  width: 100%!important
+}
+.react-colorful__saturation, .react-colorful__last-control  {
+  border-radius: 0!important;
+}
+.react-colorful__pointer {
+  width: 20px!important;
+  height: 20px!important
+}
+.react-colorful__alpha, .react-colorful__hue { 
+  height: 20px!important;
+  margin-top: 4px
+}
 .drawing-options.linewidth-controls {
   flex-direction: column;
   justify-content: center;
