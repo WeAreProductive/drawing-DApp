@@ -6,6 +6,12 @@ const CanvasToJson = () => {
   const handleCanvasToJson = async () => {
     const canvasData = JSON.stringify(canvas.toDatalessJSON()); //toDataLessJSON minifies the data
     const resultSave = await canvasStore(canvasData);
+    console.log(JSON.stringify(canvas.toSVG()), "canvas to svg");
+    // @TODO - send as svg
+    // @TODO - load from svg
+    //@TODO steps - copy rollups examples to a new branch
+    //@TODO - remove the unused folders
+    //@TODO - don-t forget to reset the docker containers
     //handle the result or error
     if (resultSave.success) {
       alert("Success saved!");
