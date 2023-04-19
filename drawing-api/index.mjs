@@ -20,12 +20,19 @@ app.use(express.static("public")); //make the images accessible by the drawing-u
 app.post(API_ENDPOINTS.canvasStore, (req, res) => {
   res.set("Content-Type", "application/json");
   if (req.body) {
-    console.log(req.body.length, "req body");
+    console.log(req.body.length, "req body"); //temp check
+
     req.body.map((data) => {
+      const canvasItem = JSON.parse(data);
+      const filename = canvasItem.name;
+      const fullPath = `public/canvas-images/${filename}.png`;
+      //check if file exists
+      if (fs.existsSync(fullPath)) {
+        console.log(`The ${filename}.png exists. Create file is skipped.`);
+        return;
+      }
       try {
-        const canvasItem = JSON.parse(data);
         //# create .png and save it on disk
-        //@TODO perform some checks for not duplicating the image files
         const canvas = new fabric.Canvas(null, { width: 600, height: 600 }); //sync width & height with FE
         canvas.loadFromJSON(
           JSON.stringify({ objects: canvasItem.content.objects }),

@@ -10,6 +10,8 @@ import { storeAsFiles } from "../../services/canvas";
 // - add checks - do not attempt to create file if already exists
 // - add eraser and other drawing tools
 // - cache the notice loaded canvases on page load (?)
+// - load the confirmed canvases at the top of the screen or smaller images - 2 columns x 5
+// - add nodemon or some vite utillity to reload the BE on change
 // GraphQL query to retrieve notices given a cursor
 const GET_NOTICES = gql`
   query GetNotices($cursor: String) {
