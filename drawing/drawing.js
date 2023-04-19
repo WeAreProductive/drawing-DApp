@@ -11,7 +11,6 @@
 // specific language governing permissions and limitations under the License.
 
 const { ethers } = require("ethers");
-import { storeSvg } from "./utils/fetch";
 
 const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL;
 console.log("HTTP rollup_server url is " + rollup_server);
@@ -39,30 +38,7 @@ async function handle_advance(data) {
       " with body " +
       JSON.stringify(json)
   );
-  const id = Date.now();
-  const svgName = `${id}-canvas`; //@TODO revise the name eventually
-  storeSvg(svgName, payload);
-  // const data_req = JSON.stringify({
-  //   ...API_CONFIG,
-  //   document: {
-  //     name: svgName,
-  //     content: payload,
-  //   },
-  // });
-  // try {
-  //   const advance_req = await fetch(
-  //     `https://eu-central-1.aws.data.mongodb-api.com/app/data-jhpfj/endpoint/data/v1/action/insertOne`,
-  //     {
-  //       method: "POST",
-  //       headers: API_HEADERS,
-  //       body: data_req,
-  //     }
-  //   );
-  //   const json = await advance_req.json();
-  //   console.log(json, "mongo request");
-  // } catch (e) {
-  //   console.log(e, "the error");
-  // }
+
   return "accept";
 }
 
