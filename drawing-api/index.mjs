@@ -20,52 +20,50 @@ app.use(express.static("public")); //make the images accessible by the drawing-u
 app.post(API_ENDPOINTS.canvasStore, (req, res) => {
   res.set("Content-Type", "application/json");
   if (req.body) {
-    try {
-      //Array of canvas data or 1 object ?? check the type
-      // const content = JSON.parse(req.body);
-      const canvasItem = JSON.parse(req.body);
-      // console.log(content);
-      console.log(canvasItem);
-      // content.map((canvasItem) => {
-      //#2 create .png and save it on disk
-      //@TODO perform some checks for not duplicating the image files
-      const canvas = new fabric.Canvas(null, { width: 600, height: 600 }); //sync width & height with FE
-      canvas.loadFromJSON(
-        JSON.stringify({ objects: canvasItem.content.objects }),
-        function () {
-          canvas.renderAll();
-          fs.promises
-            .mkdir(
-              path.dirname(`public/canvas-images/${canvasItem.name}.png`),
-              {
-                recursive: true,
-              }
-            )
-            .then((x) => {
-              const out = fs.createWriteStream(
-                `public/canvas-images/${canvasItem.name}.png`
-              );
-              const stream = canvas.createPNGStream();
-              stream.pipe(out);
-              out.on("finish", () => console.log("The PNG file was created."));
-            })
-            .catch((error) => {
-              console.log(error);
-            });
-        }
-      );
-
-      //@TODO - can return the newly created filename f.ex. also
-      res.send(
-        JSON.stringify({
-          success: true,
-          filename: canvasItem.name,
-        })
-      );
-    } catch (error) {
-      //@TODO handle error, return error response
-      console.log(error);
-    }
+    console.log(req.body.length, "req body");
+    req.body.map((data) => {
+      try {
+        const canvasItem = JSON.parse(data);
+        //# create .png and save it on disk
+        //@TODO perform some checks for not duplicating the image files
+        const canvas = new fabric.Canvas(null, { width: 600, height: 600 }); //sync width & height with FE
+        canvas.loadFromJSON(
+          JSON.stringify({ objects: canvasItem.content.objects }),
+          function () {
+            canvas.renderAll();
+            fs.promises
+              .mkdir(
+                path.dirname(`public/canvas-images/${canvasItem.name}.png`),
+                {
+                  recursive: true,
+                }
+              )
+              .then((x) => {
+                const out = fs.createWriteStream(
+                  `public/canvas-images/${canvasItem.name}.png`
+                );
+                const stream = canvas.createPNGStream();
+                stream.pipe(out);
+                out.on("finish", () =>
+                  console.log("The PNG file was created.")
+                );
+              })
+              .catch((error) => {
+                console.log(error);
+              });
+          }
+        );
+        //@TODO - can return the newly created filename f.ex. also
+      } catch (error) {
+        //@TODO handle error, return error response
+        console.log(error);
+      }
+    });
+    res.send(
+      JSON.stringify({
+        success: true,
+      })
+    );
   } else {
     res.send(
       JSON.stringify({

@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react";
-import { useCanvasContext } from "../../context/CanvasContext";
 import CanvasSnapshot from "./CanvasSnapshot";
 import { ethers } from "ethers";
 import { useQuery, gql } from "@apollo/client";
 import { useToast } from "@chakra-ui/react";
 import { storeAsFiles } from "../../services/canvas";
 
+//@TODO
+// - add pagination for canvas images
+// - add checks - do not attempt to create file if already exists
+// - add eraser and other drawing tools
+// - cache the notice loaded canvases on page load (?)
 // GraphQL query to retrieve notices given a cursor
 const GET_NOTICES = gql`
   query GetNotices($cursor: String) {
@@ -36,12 +40,6 @@ const GET_NOTICES = gql`
 // This component sends GraphQL requests to the Cartesi Rollups Query Server
 
 const ImagesListRollups = () => {
-  const [canvasImages, setCanvasImages] = useState([]);
-  const { canvasesList } = useCanvasContext();
-  useEffect(() => {
-    setCanvasImages(canvasesList);
-  }, [canvasesList]);
-
   const toast = useToast();
   const [noticeEchoes, setNoticeEchoes] = useState([]);
   const [cursor, setCursor] = useState(null);
@@ -50,7 +48,6 @@ const ImagesListRollups = () => {
     variables: { cursor },
     pollInterval: 500,
   });
-  console.log(loading, error, data);
   // Check query status
   useEffect(() => {
     if (loading) {
@@ -85,24 +82,26 @@ const ImagesListRollups = () => {
 
   // Render new echoes
   const newEchoes = data?.notices?.nodes;
-
   // Concat new echoes with previous ones
+
   let ret = noticeEchoes;
   if (newEchoes && newEchoes.length) {
     // Add new rendered echoes to stored data
-    console.log("there are new echoes, convert them to files");
-
-    //@TODO - ad a name to the canvas before sending to rollups inittially
     //store as file
-    storeAsFiles(newEchoes);
-    ret = noticeEchoes.concat(newEchoes);
-    setNoticeEchoes(ret);
+    console.log(newEchoes, "new echoes");
+    console.log("store as files");
+    storeAsFiles(newEchoes)
+      .then((res) => {
+        ret = noticeEchoes.concat(newEchoes);
+        setNoticeEchoes(ret);
+      })
+      .catch((e) => console.log(e));
+    // await the neww files to be created, then attach the new echoes, and display them in the left column
   }
   return (
     <div className="list-wrapper">
       <div className="list-header">
-        <h5>Svgs saved in Rollups</h5>
-        <i>Updates on canvas save</i>
+        <h5>Canvases confirmed by Rollups</h5>
       </div>
       <div className="images-list">
         <div className="images-list-box">

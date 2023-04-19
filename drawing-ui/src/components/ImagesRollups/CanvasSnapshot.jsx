@@ -1,15 +1,15 @@
 import { BASE_API_URL } from "../../config/constants";
 import { useCanvasContext } from "../../context/CanvasContext";
+import { parseCanvasData } from "../../utils";
 //src is a json string containing the canvas info - json to load on click an filename to display
 
 const CanvasSnapshot = ({ src }) => {
   const { canvas } = useCanvasContext();
   const loadCanvasFromImage = async () => {
     canvas.clear();
-    // fabric.loadSVGFromString(src, function (objects, options) {
-    //   var obj = fabric.util.groupSVGElements(objects, options);
-    //   canvas.add(obj).renderAll();
-    // });
+
+    const canvasParsedData = parseCanvasData(src.content);
+    canvas.loadFromJSON(canvasParsedData);
   };
   return (
     <div className="canvas-image" onClick={loadCanvasFromImage}>

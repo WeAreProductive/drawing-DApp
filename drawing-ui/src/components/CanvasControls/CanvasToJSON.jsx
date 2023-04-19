@@ -84,7 +84,7 @@ const CanvasToJSON = () => {
       toast({
         title: "The saved canvas",
         description:
-          "will appear in the right column once its notice is in the rollups",
+          "will appear on the left once its notice is in the rollups",
         status: "warning",
         duration: 15000,
         isClosable: true,

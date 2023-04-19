@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 export const parseCanvasData = (data) => {
-  const canvasObjData = JSON.parse(data);
-  return JSON.stringify({ objects: canvasObjData.objects });
+  console.log(data);
+  return JSON.stringify({ objects: data.objects });
 };
 
 export const srcToJson = (src) => {

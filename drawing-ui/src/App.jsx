@@ -1,5 +1,4 @@
 import { CanvasContextProvider } from "./context/CanvasContext";
-import ImagesList from "./components/Images";
 import ImagesListRollups from "./components/ImagesRollups";
 import DrawingControls from "./components/Drawing/DrawingControls";
 import FabricJSCanvas from "./components/FabricJSCanvas";
@@ -10,7 +9,7 @@ const App = () => {
   return (
     <CanvasContextProvider>
       <div className="App">
-        <ImagesList />
+        <ImagesListRollups />
         <div className="canvas-wrapper">
           <FabricJSCanvas />
           <div className="controls-container">
@@ -18,7 +17,6 @@ const App = () => {
             <CanvasControls />
           </div>
         </div>
-        <ImagesListRollups />
       </div>
     </CanvasContextProvider>
   );
