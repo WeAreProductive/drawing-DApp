@@ -27,8 +27,8 @@ export const CanvasContextProvider = ({ children }) => {
   // each time a canvas is saved
   // we will update the canvases list
   const manageCanvasesList = async () => {
-    const list = await getCanvasImages(); 
-    setCanvasesList(list);
+    // const list = await getCanvasImages();
+    // setCanvasesList(list);
   };
   useEffect(() => {
     manageCanvasesList();

@@ -1,7 +1,8 @@
-export const BASE_API_URL = "http://localhost:8000";
+export const BASE_API_URL = "http://localhost:3000";
 export const API_ENDPOINTS = {
-  canvasLoad: "canvas/load",
-  imagesList: "images/list",
+  // canvasLoad: "canvas/load",
+  // imagesList: "images/list",
+  canvasesStore: "canvases/store",
 };
 
 export const INITIAL_DRAWING_OPTIONS = {

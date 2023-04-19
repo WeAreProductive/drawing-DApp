@@ -4,6 +4,7 @@ import CanvasSnapshot from "./CanvasSnapshot";
 import { ethers } from "ethers";
 import { useQuery, gql } from "@apollo/client";
 import { useToast } from "@chakra-ui/react";
+import { storeAsFiles } from "../../services/canvas";
 
 // GraphQL query to retrieve notices given a cursor
 const GET_NOTICES = gql`
@@ -89,6 +90,11 @@ const ImagesListRollups = () => {
   let ret = noticeEchoes;
   if (newEchoes && newEchoes.length) {
     // Add new rendered echoes to stored data
+    console.log("there are new echoes, convert them to files");
+
+    //@TODO - ad a name to the canvas before sending to rollups inittially
+    //store as file
+    storeAsFiles(newEchoes);
     ret = noticeEchoes.concat(newEchoes);
     setNoticeEchoes(ret);
   }

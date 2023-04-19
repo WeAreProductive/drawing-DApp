@@ -18,8 +18,12 @@ const App = () => {
             <CanvasControls />
           </div>
         </div>
-        {/* <ImagesListRollups /> */}
+        <ImagesListRollups />
       </div>
+      <img
+        src="http://localhost:3000/public/canvas-images/1681894496264-canvas.png"
+        alt="new"
+      />
     </CanvasContextProvider>
   );
 };
