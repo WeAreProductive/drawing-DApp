@@ -25,24 +25,25 @@ app.post(API_ENDPOINTS.canvasStore, (req, res) => {
       // const content = JSON.parse(req.body);
       const canvasItem = JSON.parse(req.body);
       // console.log(content);
-
-      // content.map((canvasItem) => {
       console.log(canvasItem);
-      const id = Date.now();
+      // content.map((canvasItem) => {
       //#2 create .png and save it on disk
       //@TODO perform some checks for not duplicating the image files
       const canvas = new fabric.Canvas(null, { width: 600, height: 600 }); //sync width & height with FE
       canvas.loadFromJSON(
-        JSON.stringify({ objects: canvasItem.objects }),
+        JSON.stringify({ objects: canvasItem.content.objects }),
         function () {
           canvas.renderAll();
           fs.promises
-            .mkdir(path.dirname(`public/canvas-images/${id}-canvas.png`), {
-              recursive: true,
-            })
+            .mkdir(
+              path.dirname(`public/canvas-images/${canvasItem.name}.png`),
+              {
+                recursive: true,
+              }
+            )
             .then((x) => {
               const out = fs.createWriteStream(
-                `public/canvas-images/${id}-canvas.png`
+                `public/canvas-images/${canvasItem.name}.png`
               );
               const stream = canvas.createPNGStream();
               stream.pipe(out);
@@ -53,26 +54,12 @@ app.post(API_ENDPOINTS.canvasStore, (req, res) => {
             });
         }
       );
-      // }
-      // );
 
-      //TODO  handle the errors properly
-
-      //#1 save canvas state as json
-      // fs.promises
-      //   .mkdir(path.dirname(`canvas-json/${id}-canvas.json`), {
-      //     recursive: true,
-      //   })
-      //   .then((x) =>
-      //     fs.promises.writeFile(`canvas-json/${id}-canvas.json`, content)
-      //   )
-      //   .catch((error) => {
-      //     console.log(error);
-      //   });
       //@TODO - can return the newly created filename f.ex. also
       res.send(
         JSON.stringify({
           success: true,
+          filename: canvasItem.name,
         })
       );
     } catch (error) {

@@ -4,6 +4,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { ethers } from "ethers";
 import { InputFacet__factory } from "@cartesi/rollups";
 import { useToast, Button } from "@chakra-ui/react";
+import { v4 as uuidv4 } from "uuid";
 
 const HARDHAT_DEFAULT_MNEMONIC =
   "test test test test test test test test test test test junk";
@@ -25,7 +26,13 @@ const CanvasToJSON = () => {
     });
     // const canvasData = JSON.stringify(canvas.toSVG()); //data to be saved in rollups
     //for better handling - send the canvas as json
-    const canvasData = JSON.stringify(canvas.toDatalessJSON()); //toDataLessJSON minifies the data
+    const canvasContent = canvas.toDatalessJSON(); //toDataLessJSON minifies the data
+    const canvasName = uuidv4();
+    const canvasData = JSON.stringify({
+      content: canvasContent,
+      name: canvasName,
+    }); 
+
     const sendInput = async () => {
       setLoading(true);
       // Start a connection
