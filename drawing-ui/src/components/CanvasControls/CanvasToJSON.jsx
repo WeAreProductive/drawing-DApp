@@ -6,6 +6,9 @@ import { InputFacet__factory } from "@cartesi/rollups";
 import { useToast, Button } from "@chakra-ui/react";
 import { v4 as uuidv4 } from "uuid";
 import { storeAsFiles } from "../../services/canvas";
+import { useRollups } from "../../hooks/useRollups";
+import { useWallets } from "@web3-onboard/react";
+import { IERC20__factory } from "../../generated/rollups";
 
 const HARDHAT_DEFAULT_MNEMONIC =
   "test test test test test test test test test test test junk";
@@ -13,6 +16,8 @@ const HARDHAT_LOCALHOST_RPC_URL = "http://localhost:8545";
 const LOCALHOST_DAPP_ADDRESS = "0xF8C694fd58360De278d5fF2276B7130Bfdc0192A";
 
 const CanvasToJSON = () => {
+  //   const [connectedWallet] = useWallets();
+  //   const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
   const { canvas } = useCanvasContext();
   const [accountIndex] = useState(0);
   const toast = useToast();
@@ -35,72 +40,70 @@ const CanvasToJSON = () => {
       name: canvasName,
     });
 
-    storeAsFiles(canvasContent.objects)
-      .then((res) => console.log(res))
-      .catch((e) => console.log(e));
+    const base64str = await storeAsFiles(canvasContent.objects);
 
-    // const sendInput = async () => {
-    //   setLoading(true);
-    //   // Start a connection
-    //   const provider = new JsonRpcProvider(HARDHAT_LOCALHOST_RPC_URL);
-    //   const signer = ethers.Wallet.fromMnemonic(
-    //     HARDHAT_DEFAULT_MNEMONIC,
-    //     `m/44'/60'/0'/0/${accountIndex}`
-    //   ).connect(provider);
+    const sendInput = async () => {
+      setLoading(true);
+      // Start a connection
+      const provider = new JsonRpcProvider(HARDHAT_LOCALHOST_RPC_URL);
+      const signer = ethers.Wallet.fromMnemonic(
+        HARDHAT_DEFAULT_MNEMONIC,
+        `m/44'/60'/0'/0/${accountIndex}`
+      ).connect(provider);
 
-    //   // Instantiate the Input Contract
-    //   const inputContract = InputFacet__factory.connect(
-    //     LOCALHOST_DAPP_ADDRESS,
-    //     signer
-    //   );
+      // Instantiate the Input Contract
+      const inputContract = InputFacet__factory.connect(
+        LOCALHOST_DAPP_ADDRESS,
+        signer
+      );
+      const str = JSON.stringify({ image: base64str });
+      // Encode the input
+      const inputBytes = ethers.utils.isBytesLike(str)
+        ? str
+        : ethers.utils.toUtf8Bytes(str);
 
-    //   // Encode the input
-    //   const inputBytes = ethers.utils.isBytesLike(canvasData)
-    //     ? canvasData
-    //     : ethers.utils.toUtf8Bytes(canvasData);
+      // Send the transaction
+      const tx = await inputContract.addInput(inputBytes);
+      console.log(`transaction: ${tx.hash}`);
+      toast({
+        title: "Transaction Sent",
+        description: "waiting for confirmation",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+        position: "top-left",
+      });
 
-    //   // Send the transaction
-    //   const tx = await inputContract.addInput(inputBytes);
-    //   console.log(`transaction: ${tx.hash}`);
-    //   toast({
-    //     title: "Transaction Sent",
-    //     description: "waiting for confirmation",
-    //     status: "success",
-    //     duration: 9000,
-    //     isClosable: true,
-    //     position: "top-left",
-    //   });
+      // Wait for confirmation
+      console.log("waiting for confirmation...");
+      const receipt = await tx.wait(1);
 
-    //   // Wait for confirmation
-    //   console.log("waiting for confirmation...");
-    //   const receipt = await tx.wait(1);
+      // Search for the InputAdded event
+      const event = receipt.events?.find((e) => e.event === "InputAdded");
 
-    //   // Search for the InputAdded event
-    //   const event = receipt.events?.find((e) => e.event === "InputAdded");
-
-    //   setLoading(false);
-    //   toast({
-    //     title: "Transaction Confirmed",
-    //     description: `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `,
-    //     status: "success",
-    //     duration: 9000,
-    //     isClosable: true,
-    //     position: "top-left",
-    //   });
-    //   toast({
-    //     title: "The saved canvas",
-    //     description:
-    //       "will appear on the left once its notice is in the rollups",
-    //     status: "warning",
-    //     duration: 15000,
-    //     isClosable: true,
-    //     position: "top",
-    //   });
-    //   console.log(
-    //     `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `
-    //   );
-    // };
-    // sendInput();
+      setLoading(false);
+      toast({
+        title: "Transaction Confirmed",
+        description: `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `,
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+        position: "top-left",
+      });
+      toast({
+        title: "The saved canvas",
+        description:
+          "will appear on the left once its notice is in the rollups",
+        status: "warning",
+        duration: 15000,
+        isClosable: true,
+        position: "top",
+      });
+      console.log(
+        `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `
+      );
+    };
+    sendInput();
   };
   let buttonProps = {};
   if (loading) {

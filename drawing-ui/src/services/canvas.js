@@ -39,7 +39,7 @@ export const storeAsFiles = async (canvasObject) => {
       }
     );
     const data = await response.json();
-    return data;
+    return data.base64out;
   } catch (error) {
     //@TODO handle the error properly
     console.log(error);
