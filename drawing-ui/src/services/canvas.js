@@ -23,16 +23,16 @@ export const getCanvasImages = async () => {
  * one or more canvas data
  * @TODO on success display the neq canvas file in the left column
  */
-export const storeAsFiles = async (noticeRawData) => {
-  console.log(noticeRawData, "store as files");
-  const canvasData = parseNoticeData(noticeRawData); 
-  console.log(canvasData, "canvas data");
+export const storeAsFiles = async (canvasObject) => {
+  // console.log(noticeRawData, "store as files");
+  // const canvasData = parseNoticeData(noticeRawData);
+  // console.log(canvasData, "canvas data");
   try {
     const response = await fetch(
       `${BASE_API_URL}/${API_ENDPOINTS.canvasesStore}`,
       {
         method: "POST",
-        body: JSON.stringify(canvasData),
+        body: JSON.stringify(canvasObject),
         headers: {
           "Content-Type": "application/json",
         },

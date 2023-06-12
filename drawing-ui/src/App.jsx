@@ -9,7 +9,7 @@ const App = () => {
   return (
     <CanvasContextProvider>
       <div className="App">
-        <ImagesListRollups />
+        {/* <ImagesListRollups /> */}
         <div className="canvas-wrapper">
           <FabricJSCanvas />
           <div className="controls-container">

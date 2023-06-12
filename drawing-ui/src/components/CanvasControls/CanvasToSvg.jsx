@@ -24,6 +24,7 @@ const CanvasToSvg = () => {
       position: "top",
     });
     const canvasData = JSON.stringify(canvas.toSVG()); //data to be saved in rollups
+    console.log(canvas.toSVG());
     const sendInput = async () => {
       setLoading(true);
       // Start a connection

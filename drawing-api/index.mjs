@@ -6,6 +6,7 @@ import path from "path";
 import { fabric } from "fabric"; // v5
 import { API_ENDPOINTS, ORIGIN_BASE } from "./config.mjs";
 
+
 const port = 3000;
 const corsOptions = {
   origin: ORIGIN_BASE,
@@ -20,55 +21,40 @@ app.use(express.static("public")); //make the images accessible by the drawing-u
 app.post(API_ENDPOINTS.canvasStore, (req, res) => {
   res.set("Content-Type", "application/json");
   if (req.body) {
-    console.log(req.body.length, "req body"); //temp check
+    const filename = "temp-canvas";
+    const fullPath = `public/canvas-images/${filename}.png`;
 
-    req.body.map((data) => {
-      const canvasItem = JSON.parse(data);
-      const filename = canvasItem.name;
-      const fullPath = `public/canvas-images/${filename}.png`;
-      //check if file exists
-      if (fs.existsSync(fullPath)) {
-        console.log(`The ${filename}.png exists. Create file is skipped.`);
-        return;
-      }
-      try {
-        //# create .png and save it on disk
-        const canvas = new fabric.Canvas(null, { width: 600, height: 600 }); //sync width & height with FE
-        canvas.loadFromJSON(
-          JSON.stringify({ objects: canvasItem.content.objects }),
-          function () {
-            canvas.renderAll();
-            fs.promises
-              .mkdir(
-                path.dirname(`public/canvas-images/${canvasItem.name}.png`),
-                {
-                  recursive: true,
-                }
-              )
-              .then((x) => {
-                const out = fs.createWriteStream(
-                  `public/canvas-images/${canvasItem.name}.png`
-                );
-                const stream = canvas.createPNGStream();
-                stream.pipe(out);
-                out.on("finish", () =>
-                  console.log("The PNG file was created.")
-                );
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-          }
-        );
-        //@TODO - can return the newly created filename f.ex. also
-      } catch (error) {
-        //@TODO handle error, return error response
-        console.log(error);
-      }
-    });
+    try {
+      //     //# create .png and save it on disk
+      const canvas = new fabric.Canvas(null, { width: 600, height: 600 }); //sync width & height with FE
+      canvas.loadFromJSON(JSON.stringify({ objects: req.body }), function () {
+        canvas.renderAll();
+        fs.promises
+          .mkdir(
+            path.dirname(fullPath), //@TODO set temp name
+            {
+              recursive: true,
+            }
+          )
+          .then((x) => {
+            const out = fs.createWriteStream(fullPath);
+            const stream = canvas.createPNGStream();
+            stream.pipe(out);
+            out.on("finish", () => console.log("The PNG file was created."));
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+      //     //@TODO - can return the newly created filename f.ex. also
+    } catch (error) {
+      //@TODO handle error, return error response
+      console.log(error);
+    }
+    // });
     res.send(
       JSON.stringify({
-        success: true,
+        success: true, //@TODO return the base64 string
       })
     );
   } else {

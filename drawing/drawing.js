@@ -10,11 +10,15 @@
 // CONDITIONS OF ANY KIND, either express or implied. See the License for the
 // specific language governing permissions and limitations under the License.
 
+
+
 const { ethers } = require("ethers");
 const { base64 } = require("ethers/lib/utils");
 
 const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL;
 console.log("HTTP rollup_server url is " + rollup_server);
+// URI TIKEN - QmVnsFfpytX1vohVppn1C5cgVo66HcXu2VFjepyA7d4i2M /pencil/
+// URI TIKEN - QmNVeTk9XdgB62cCYeSdMkaT9HJpbgtnLwVDWbuNKfaMG4 /eraser/
 
 const mint_erc721_with_uri_from_image = (
   msg_sender,
@@ -26,7 +30,8 @@ const mint_erc721_with_uri_from_image = (
     msg_sender,
     erc721_to_mint,
     mint_header,
-    "QmVnsFfpytX1vohVppn1C5cgVo66HcXu2VFjepyA7d4i2M"
+    // "QmVnsFfpytX1vohVppn1C5cgVo66HcXu2VFjepyA7d4i2M",
+    "QmNVeTk9XdgB62cCYeSdMkaT9HJpbgtnLwVDWbuNKfaMG4"
   );
 };
 
@@ -49,6 +54,7 @@ const mint_erc721_with_string = (
   //   - store the base64
   //   - test that the produced token is ok here - in js
   // 2. manage the steps to produce a token
+  //3. convert svg string to base64 and send to rollups
 
   const coder = new ethers.utils.AbiCoder();
   const data1 = coder.encode(["address", "string"], [msg_sender, string]);
