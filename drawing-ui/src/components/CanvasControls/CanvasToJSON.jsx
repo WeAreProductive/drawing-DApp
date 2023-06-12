@@ -6,9 +6,6 @@ import { InputFacet__factory } from "@cartesi/rollups";
 import { useToast, Button } from "@chakra-ui/react";
 import { v4 as uuidv4 } from "uuid";
 import { storeAsFiles } from "../../services/canvas";
-import { useRollups } from "../../hooks/useRollups";
-import { useWallets } from "@web3-onboard/react";
-import { IERC20__factory } from "../../generated/rollups";
 
 const HARDHAT_DEFAULT_MNEMONIC =
   "test test test test test test test test test test test junk";
