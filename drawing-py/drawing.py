@@ -79,22 +79,6 @@ def send_post(endpoint,json_data):
     response = requests.post(rollup_server + f"/{endpoint}", json=json_data)
     logger.info(f"/{endpoint}: Received response status {response.status_code} body {response.content}")
 
-def check_point_in_fence(fence, latitude, longitude):
-    # shapely
-    fence = json.loads(fence)
-    y = shape(fence)
-    x = Point(longitude, latitude)
-    return y.contains(x)
-
-def process_sql_statement(statement):
-    con = sqlite3.connect("data.db")
-    cur = con.cursor()
-    cur.execute(statement)
-    result = cur.fetchall()
-    con.commit()
-    con.close()
-    return result
-
 def process_image(image):
     b64str = image
     png = base64.decodebytes(b64str)
@@ -147,16 +131,7 @@ def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string):
     
     send_notice({"payload": str2hex(str(f"Emmited voucher to mint ERC721 {erc721_to_mint} with the content {string}"))})
 
-def mint_erc721_no_data(msg_sender,erc721_to_mint,mint_header):
-    mint_header = clean_header(mint_header)
-    data = encode_abi(['address'], [msg_sender])
-    payload = f"0x{(mint_header+data).hex()}"
-    voucher = {"address": erc721_to_mint , "payload": payload}
-    logger.info(f"voucher {voucher}")
-    send_voucher(voucher)
-    
-    send_notice({"payload": str2hex(str(f"Emmited voucher to mint ERC721 {erc721_to_mint}"))})
-
+ 
 def clean_header(mint_header):
     if mint_header[:2] == "0x":
         mint_header = mint_header[2:]
@@ -198,26 +173,9 @@ def handle_advance(request):
             try:
                 logger.info(f"Trying to decode json")
                 # try json data
-                json_data = json.loads(payload)
-                # check geo data
-                if json_data.get("fence") and json_data.get("latitude") and json_data.get("longitude"):
-                    latitude = json_data["latitude"]
-                    longitude = json_data["longitude"]
-                    # logger.info(f"Received geo request lat,long({latitude},{longitude})")
-                    # payload = f"{check_point_in_fence(latitude, longitude)}"
-                    fence = json_data["fence"]
-                    logger.info(f"Received geo request fence ({fence}) lat,long({latitude},{longitude})")
-                    payload = f"{check_point_in_fence(fence, latitude, longitude)}"
-                # check sql
-                elif json_data.get("sql"):
-                    sql_statement = json_data["sql"]
-                    logger.info(f"Received sql statement ({sql_statement})")
-                    payload = f"{process_sql_statement(sql_statement)}"
-                elif json_data.get("array"):
-                    logger.info(f"Received array to sort ({json_data['array']})")
-                    a = np.array(json_data["array"])
-                    payload = f"{np.sort(a)}"
-                elif json_data.get("image"):
+                json_data = json.loads(payload) 
+                 
+                if json_data.get("image"):
                     b64out = process_image(json_data["image"].encode("utf-8"))
                     payload = f"{b64out}"
                     # if json_data.get("erc721_to_mint") and json_data.get("selector"): @TODO fix the payload shape
@@ -225,11 +183,11 @@ def handle_advance(request):
                     json_data["selector"]= '0xd0def521'
                     mint_erc721_with_uri_from_image(data["metadata"]["msg_sender"],json_data["erc721_to_mint"],json_data["selector"],b64out)
                 elif json_data.get("erc721_to_mint") and json_data.get("selector"):
+                    #@TODO check the case when
                     logger.info(f"Received mint request to ({json_data['erc721_to_mint']})")
                     if json_data.get("string"):
                         mint_erc721_with_string(data["metadata"]["msg_sender"],json_data["erc721_to_mint"],json_data["selector"],json_data["string"])
-                    else:
-                        mint_erc721_no_data(data["metadata"]["msg_sender"],json_data["erc721_to_mint"],json_data["selector"])
+                    
                 else:
                     raise Exception('Not supported json operation')
             except Exception as e2:
@@ -262,62 +220,7 @@ def handle_tx(sender,payload):
     binary = bytes.fromhex(payload[2:])
     input_header = decode_abi(['bytes32'], binary)[0]
     logger.info(f"header {input_header}")
-    voucher = None
-
-    if input_header == ERC20_TRANSFER_HEADER:
-        decoded = decode_abi(['bytes32', 'address', 'address', 'uint256', 'bytes'], binary)
-        logger.info(f"depositor: {decoded[1]}; erc20: {decoded[2]}; amount: {decoded[3]}; data: {decoded[4]}")
-        withdraw_header = ERC20_WITHDRAWAL_HEADER[0:4]
-        logger.info(f"withdraw_header() {withdraw_header}")
-
-        # (address tokenAddr, address payable receiver, uint256 value)
-        # data = encode_abi(['address', 'address', 'uint256'], [decoded[2],decoded[1],decoded[3]])
-
-        # print(Web3.keccak(b"transfer(address,uint256)")) -> will be called as [token_address].transfer([address receiver],[uint256 amount])
-        data = encode_abi(['address', 'uint256'], [decoded[1],decoded[3]])
-        # logger.info(f"data {data}")
-        # logger.info(f"data(hex) {data.hex()}")
-        payload = f"0x{(withdraw_header+data).hex()}"
-        # payload = encode_abi(['bytes'], [withdraw_header+data])
-        # payload = f"0x{payload.hex()}"
-        logger.info(f"voucher_payload(hex) {payload}")
-        voucher = {"address": decoded[2] , "payload": payload}
-        logger.info(f"voucher {voucher}")
-
-    elif input_header == ERC721_TRANSFER_HEADER:
-        decoded = decode_abi(['bytes32', 'address', 'address', 'address', 'uint256', 'bytes'], binary)
-        logger.info(f"erc721: {decoded[1]}; caller: {decoded[2]}; prev owner: {decoded[3]}; nftid: {decoded[4]}; data: {decoded[5]}")
-        withdraw_header = ERC721_SAFETRANSFER_HEADER[0:4]
-        # (address sender, address payable receiver, uint256 nftId) 
-        # data = encode_abi(['address', 'address', 'uint256'], [decoded[2],decoded[1],decoded[3]])
-
-        # print(Web3.keccak(b"safeTransferFrom(address,address,uint256)")) -> will be called as [nft_address].transfer([address sender],[address receiver],[uint256 id])
-        data = encode_abi(['address', 'address', 'uint256'], [rollup_address,decoded[2],decoded[4]])
-
-        payload = f"0x{(withdraw_header+data).hex()}"
-        logger.info(f"voucher_payload(hex) {payload}")
-        voucher = {"address": decoded[1] , "payload": payload}
-        logger.info(f"voucher {voucher}")
-
-    elif input_header == ETHER_TRANSFER_HEADER:
-        decoded = decode_abi(['bytes32', 'address', 'uint256', 'bytes'], binary)
-        logger.info(f"depositor: {decoded[1]}; amount: {decoded[2]}; data: {decoded[3]}")
-        withdraw_header = ETHER_WITHDRAWAL_HEADER[0:4]
-        # (address payable receiver, uint256 value) 
-        # data = encode_abi(['address', 'uint256'], [decoded[1],decoded[2]])
-
-        # print(Web3.keccak(b"etherWithdrawal(bytes)")) -> will be called as [rollups_address].etherWithdrawal(bytes) where bytes is ([address receiver],[uint256 amount])
-        data = encode_abi(['address', 'uint256'], [decoded[1],decoded[2]])
-        data2 = encode_abi(['bytes'],[data])
-
-        payload = f"0x{(withdraw_header+data2).hex()}"
-        logger.info(f"voucher_payload(hex) {payload}")
-        voucher = {"address": rollup_address , "payload": payload}
-        logger.info(f"voucher {voucher}")
-
-    else:
-        pass
-
+    voucher = None  
     if voucher:
         send_voucher(voucher)
 
