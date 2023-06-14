@@ -1,7 +1,8 @@
 
 target "dapp" {
-  # default context is "."
-  # default dockerfile is "Dockerfile"
+  contexts = {
+    toolchain-python = "target:toolchain-python"
+  }
 }
 
 variable "TAG" {

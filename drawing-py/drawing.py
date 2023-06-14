@@ -13,14 +13,10 @@
 from os import environ
 import sys
 import logging
-import requests
-# from web3_input_decoder import decode_constructor, decode_function
-# from web3 import Web3
+import requests 
 import traceback
 import json
-import sqlite3
-from eth_abi import decode_abi, encode_abi
-# from shapely.geometry import shape, Point
+from eth_abi import decode_abi, encode_abi 
 import numpy as np
 import cv2
 from Cryptodome.Hash import SHA256

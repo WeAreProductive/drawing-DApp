@@ -1,0 +1,65 @@
+eth_feeHistory
+drawing-py-state_server-1                 | 2023-06-14T18:16:12.776984Z  WARN background_process: block_history::block_subscriber: `listen_and_broadcast` error `New block subscriber timeout: timed out`, retrying subscription
+drawing-py-hardhat-1                      | eth_subscribe
+drawing-py-hardhat-1                      | Mined empty block #206 with base fee 7
+drawing-py-hardhat-1                      | eth_getBlockByHash
+drawing-py-hardhat-1                      | eth_getLogs
+drawing-py-hardhat-1                      | eth_blockNumber
+drawing-py-hardhat-1                      | eth_getTransactionReceipt
+drawing-py-hardhat-1                      | eth_getBlockByHash
+drawing-py-hardhat-1                      | eth_call
+drawing-py-hardhat-1                      |   Contract call:       CartesiDApp#<unrecognized-selector>
+drawing-py-hardhat-1                      |   From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+drawing-py-hardhat-1                      |   To:                  0xf8c694fd58360de278d5ff2276b7130bfdc0192a
+drawing-py-hardhat-1                      | 
+drawing-py-hardhat-1                      |   Error: VM Exception while processing transaction: reverted with reason string 'Diamond: Function does not exist'
+drawing-py-hardhat-1                      |       at CartesiDApp.<fallback> (contracts/CartesiDApp.sol:41)
+drawing-py-hardhat-1                      |       at processTicksAndRejections (node:internal/process/task_queues:96:5)
+drawing-py-hardhat-1                      |       at async HardhatNode.runCall (/app/node_modules/hardhat/src/internal/hardhat-network/provider/node.ts:652:20)
+drawing-py-hardhat-1                      |       at async EthModule._callAction (/app/node_modules/hardhat/src/internal/hardhat-network/provider/modules/eth.ts:354:9)
+drawing-py-hardhat-1                      |       at async HardhatNetworkProvider._sendWithLogging (/app/node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:139:22)
+drawing-py-hardhat-1                      |       at async HardhatNetworkProvider.request (/app/node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:116:18)
+drawing-py-hardhat-1                      |       at async JsonRpcHandler._handleRequest (/app/node_modules/hardhat/src/internal/hardhat-network/jsonrpc/handler.ts:188:20)
+drawing-py-hardhat-1                      |       at async JsonRpcHandler._handleSingleRequest (/app/node_modules/hardhat/src/internal/hardhat-network/jsonrpc/handler.ts:167:17)
+drawing-py-hardhat-1                      | 
+drawing-py-hardhat-1                      | eth_call
+drawing-py-hardhat-1                      |   Contract call:       CartesiDApp#<unrecognized-selector>
+drawing-py-hardhat-1                      |   From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+drawing-py-hardhat-1                      |   To:                  0xf8c694fd58360de278d5ff2276b7130bfdc0192a
+drawing-py-hardhat-1                      | 
+drawing-py-hardhat-1                      |   Error: VM Exception while processing transaction: reverted with reason string 'Diamond: Function does not exist'
+drawing-py-hardhat-1                      |       at CartesiDApp.<fallback> (contracts/CartesiDApp.sol:41)
+drawing-py-hardhat-1                      |       at processTicksAndRejections (node:internal/process/task_queues:96:5)
+drawing-py-hardhat-1                      |       at async HardhatNode.runCall (/app/node_modules/hardhat/src/internal/hardhat-network/provider/node.ts:652:20)
+drawing-py-hardhat-1                      |       at async EthModule._callAction (/app/node_modules/hardhat/src/internal/hardhat-network/provider/modules/eth.ts:354:9)
+drawing-py-hardhat-1                      |       at async HardhatNetworkProvider._sendWithLogging (/app/node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:139:22)
+drawing-py-hardhat-1                      |       at async HardhatNetworkProvider.request (/app/node_modules/hardhat/src/internal/hardhat-network/provider/provider.ts:116:18)
+drawing-py-hardhat-1                      |       at async JsonRpcHandler._handleRequest (/app/node_modules/hardhat/src/internal/hardhat-network/jsonrpc/handler.ts:188:20)
+drawing-py-hardhat-1                      |       at async JsonRpcHandler._handleSingleRequest (/app/node_modules/hardhat/src/internal/hardhat-network/jsonrpc/handler.ts:167:17)
+drawing-py-hardhat-1                      | 
+drawing-py-hardhat-1                      | eth_blockNumber
+drawing-py-hardhat-1                      | eth_getBlockByNumber
+drawing-py-hardhat-1                      | eth_feeHistory
+drawing-py-hardhat-1                      | Mined empty block #207 with base fee 7
+drawing-py-hardhat-1                      | Mined empty block range #207 to #208
+drawing-py-hardhat-1                      | eth_getTransactionCount
+drawing-py-hardhat-1                      | Mined empty block #209 with base fee 7
+drawing-py-hardhat-1                      | eth_getLogs
+drawing-py-hardhat-1                      | Mined empty block #210 with base fee 7
+drawing-py-hardhat-1                      | eth_call
+drawing-py-hardhat-1                      |   Contract call:       CartesiDApp#<unrecognized-selector>
+drawing-py-hardhat-1                      |   From:                0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+drawing-py-hardhat-1                      |   To:                  0xf8c694fd58360de278d5ff2276b7130bfdc0192a
+drawing-py-hardhat-1                      | 
+drawing-py-hardhat-1                      | Mined empty block #211 with base fee 7
+drawing-py-hardhat-1                      | Mined empty block range #211 to #212
+drawing-py-hardhat-1                      | Mined empty block range #211 to #213
+drawing-py-hardhat-1                      | Mined empty block range #211 to #214
+drawing-py-hardhat-1                      | Mined empty block range #211 to #215
+drawing-py-hardhat-1                      | Mined empty block range #211 to #216
+drawing-py-hardhat-1                      | Mined empty block range #211 to #217
+drawing-py-hardhat-1                      | Mined empty block range #211 to #218
+drawing-py-hardhat-1                      | Mined empty block range #211 to #219
+drawing-py-hardhat-1                      | Mined empty block range #211 to #220
+drawing-py-hardhat-1                      | Mined empty block range #211 to #221
+drawing-py-hardhat-1                      | Mined empty block range #211 to #222

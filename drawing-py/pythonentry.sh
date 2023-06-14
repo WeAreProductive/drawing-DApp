@@ -11,8 +11,10 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
-set -e
+# Add lib paths (to work with numpy)
+export LD_LIBRARY_PATH=/lib  
 
-sh /mnt/dapp/initlibs.sh
+# Add opencv lib paths 
+export LD_LIBRARY_PATH=/mnt/dapp/3rdparty/opencv/lib/:$LD_LIBRARY_PATH
 
-PYTHONPATH=/mnt/dapp/.crossenv/cross/lib/python3.10/site-packages rollup-init /mnt/dapp/pythonentry.sh
+python3 /mnt/dapp/drawing.py
