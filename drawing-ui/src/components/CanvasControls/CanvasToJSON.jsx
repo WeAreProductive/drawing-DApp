@@ -5,102 +5,44 @@ import { ethers } from "ethers";
 import { InputFacet__factory } from "@cartesi/rollups";
 import { useToast, Button } from "@chakra-ui/react";
 import { v4 as uuidv4 } from "uuid";
+import { useWallets } from "@web3-onboard/react";
+import { useRollups } from "../../hooks/useRollups";
+
 import { storeAsFiles } from "../../services/canvas";
 
-const HARDHAT_DEFAULT_MNEMONIC =
-  "test test test test test test test test test test test junk";
-const HARDHAT_LOCALHOST_RPC_URL = "http://localhost:8545";
-const LOCALHOST_DAPP_ADDRESS = "0xF8C694fd58360De278d5fF2276B7130Bfdc0192A";
+// const HARDHAT_DEFAULT_MNEMONIC =
+//   "test test test test test test test test test test test junk";
+// const HARDHAT_LOCALHOST_RPC_URL = "http://localhost:8545";
+// const LOCALHOST_DAPP_ADDRESS = "0xF8C694fd58360De278d5fF2276B7130Bfdc0192A";
 
 const CanvasToJSON = () => {
-  //   const [connectedWallet] = useWallets();
-  //   const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
+  const rollups = useRollups();
+  const [connectedWallet] = useWallets();
+  // const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
+
   const { canvas } = useCanvasContext();
   const [accountIndex] = useState(0);
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const handleCanvasToSvg = async () => {
-    // toast({
-    //   title: "Sending input to rollups...",
-    //   status: "warning",
-    //   duration: 3000,
-    //   isClosable: true,
-    //   position: "top",
-    // });
-    // const canvasData = JSON.stringify(canvas.toSVG()); //data to be saved in rollups
-    //for better handling - send the canvas as json
-    const canvasContent = canvas.toJSON(); //toDataLessJSON minifies the data
-    console.log(canvasContent);
-    const canvasName = uuidv4();
-    const canvasData = JSON.stringify({
-      content: canvasContent,
-      name: canvasName,
+    toast({
+      title: "Sending input to rollups...",
+      status: "warning",
+      duration: 3000,
+      isClosable: true,
+      position: "top",
     });
-
+    const canvasContent = canvas.toJSON();
     const base64str = await storeAsFiles(canvasContent.objects);
-
-    const sendInput = async () => {
-      setLoading(true);
-      // Start a connection
-      const provider = new JsonRpcProvider(HARDHAT_LOCALHOST_RPC_URL);
-      const signer = ethers.Wallet.fromMnemonic(
-        HARDHAT_DEFAULT_MNEMONIC,
-        `m/44'/60'/0'/0/${accountIndex}`
-      ).connect(provider);
-
-      // Instantiate the Input Contract
-      const inputContract = InputFacet__factory.connect(
-        LOCALHOST_DAPP_ADDRESS,
-        signer
-      );
-      const str = JSON.stringify({ image: base64str });
-      // Encode the input
-      const inputBytes = ethers.utils.isBytesLike(str)
-        ? str
-        : ethers.utils.toUtf8Bytes(str);
-
-      // Send the transaction
-      const tx = await inputContract.addInput(inputBytes);
-      console.log(`transaction: ${tx.hash}`);
-      toast({
-        title: "Transaction Sent",
-        description: "waiting for confirmation",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top-left",
-      });
-
-      // Wait for confirmation
-      console.log("waiting for confirmation...");
-      const receipt = await tx.wait(1);
-
-      // Search for the InputAdded event
-      const event = receipt.events?.find((e) => e.event === "InputAdded");
-
-      setLoading(false);
-      toast({
-        title: "Transaction Confirmed",
-        description: `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `,
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top-left",
-      });
-      toast({
-        title: "The saved canvas",
-        description:
-          "will appear on the left once its notice is in the rollups",
-        status: "warning",
-        duration: 15000,
-        isClosable: true,
-        position: "top",
-      });
-      console.log(
-        `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `
-      );
+    const addInput = async (strInput) => {
+      const str = JSON.stringify({ image: strInput });
+      if (rollups) {
+        console.log(rollups);
+        rollups.inputContract.addInput(ethers.utils.toUtf8Bytes(str));
+      }
     };
-    sendInput();
+    addInput(base64str);
+    // @TOdo handle tx results
   };
   let buttonProps = {};
   if (loading) {
