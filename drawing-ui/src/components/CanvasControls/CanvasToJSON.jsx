@@ -39,35 +39,47 @@ const CanvasToJSON = () => {
       //@TODO handle tx error - tx reject or any tx error
       const str = JSON.stringify({ image: strInput });
       if (rollups) {
-        const tx = await rollups.inputContract.addInput(
-          ethers.utils.toUtf8Bytes(str)
-        );
-        console.log(`transaction: ${tx.hash}`);
-        toast({
-          title: "Transaction Sent",
-          description: "waiting for confirmation",
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-          position: "top-left",
-        });
-        // Wait for confirmation
-        console.log("waiting for confirmation...");
-        const receipt = await tx.wait(1);
+        try {
+          const tx = await rollups.inputContract.addInput(
+            ethers.utils.toUtf8Bytes(str)
+          );
+          console.log(`transaction: ${tx.hash}`);
+          toast({
+            title: "Transaction Sent",
+            description: "waiting for confirmation",
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+            position: "top-left",
+          });
+          // Wait for confirmation
+          console.log("waiting for confirmation...");
+          const receipt = await tx.wait(1);
 
-        // Search for the InputAdded event
-        const event = receipt.events?.find((e) => e.event === "InputAdded");
-        toast({
-          title: "Transaction Confirmed",
-          description: `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `,
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-          position: "top-left",
-        });
-        console.log(
-          `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `
-        );
+          // Search for the InputAdded event
+          const event = receipt.events?.find((e) => e.event === "InputAdded");
+          toast({
+            title: "Transaction Confirmed",
+            description: `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `,
+            status: "success",
+            duration: 9000,
+            isClosable: true,
+            position: "top-left",
+          });
+          console.log(
+            `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `
+          );
+        } catch (e) {
+          console.log(e);
+          toast({
+            title: "Transaction Cancelled",
+            description: `try again!`,
+            status: "error",
+            duration: 9000,
+            isClosable: true,
+            position: "top-left",
+          });
+        }
 
         setLoading(false);
       }

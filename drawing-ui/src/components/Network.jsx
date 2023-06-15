@@ -18,6 +18,7 @@ const config = configFile;
 const Network = () => {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
+
   return (
     <div>
       {!wallet ? (
