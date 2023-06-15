@@ -32,17 +32,47 @@ const CanvasToJSON = () => {
       isClosable: true,
       position: "top",
     });
+    setLoading(true);
     const canvasContent = canvas.toJSON();
     const base64str = await storeAsFiles(canvasContent.objects);
     const addInput = async (strInput) => {
+      //@TODO handle tx error - tx reject or any tx error
       const str = JSON.stringify({ image: strInput });
       if (rollups) {
-        console.log(rollups);
-        rollups.inputContract.addInput(ethers.utils.toUtf8Bytes(str));
+        const tx = await rollups.inputContract.addInput(
+          ethers.utils.toUtf8Bytes(str)
+        );
+        console.log(`transaction: ${tx.hash}`);
+        toast({
+          title: "Transaction Sent",
+          description: "waiting for confirmation",
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          position: "top-left",
+        });
+        // Wait for confirmation
+        console.log("waiting for confirmation...");
+        const receipt = await tx.wait(1);
+
+        // Search for the InputAdded event
+        const event = receipt.events?.find((e) => e.event === "InputAdded");
+        toast({
+          title: "Transaction Confirmed",
+          description: `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          position: "top-left",
+        });
+        console.log(
+          `Input added => epoch : ${event?.args.epochNumber} index: ${event?.args.inputIndex} `
+        );
+
+        setLoading(false);
       }
     };
-    addInput(base64str);
-    // @TOdo handle tx results
+    addInput(base64str); 
   };
   let buttonProps = {};
   if (loading) {
