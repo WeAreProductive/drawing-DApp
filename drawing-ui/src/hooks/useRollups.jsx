@@ -15,7 +15,7 @@ import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import {
   InputFacet__factory,
-  // OutputFacet__factory,
+  OutputFacet__factory,
   RollupsFacet__factory,
   //   ERC20PortalFacet__factory,
   //   EtherPortalFacet__factory,
@@ -67,10 +67,10 @@ export const useRollups = () => {
         provider.getSigner()
       );
 
-      // const outputContract = OutputFacet__factory.connect(
-      //   address,
-      //   provider.getSigner()
-      // );
+      const outputContract = OutputFacet__factory.connect(
+        address,
+        provider.getSigner()
+      );
 
       // // output contract
       // const erc20PortalContract = ERC20PortalFacet__factory.connect(
@@ -86,7 +86,7 @@ export const useRollups = () => {
       return {
         rollupsContract,
         inputContract,
-        // outputContract,
+        outputContract,
         // erc20PortalContract,
         // etherPortalContract,
       };

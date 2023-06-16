@@ -151,3 +151,10 @@ body {
 .canvas-load:active {
   background: #040a12;
 }
+.vouchers-to-execute-table, .vouchers-to-execute-table td, .vouchers-to-execute-table th {
+  border: 1px solid #000;
+  border-collapse: collapse
+}
+ .vouchers-to-execute-table td, .vouchers-to-execute-table th {
+ padding: 8px
+}

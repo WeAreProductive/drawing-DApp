@@ -1,10 +1,8 @@
 import { useCanvasContext } from "../../context/CanvasContext";
 import React, { useState } from "react";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { ethers } from "ethers";
-import { InputFacet__factory } from "@cartesi/rollups";
+import { ethers } from "ethers"; 
 import { useToast, Button } from "@chakra-ui/react";
-import { v4 as uuidv4 } from "uuid";
+//import { v4 as uuidv4 } from "uuid";
 import { useWallets } from "@web3-onboard/react";
 import { useRollups } from "../../hooks/useRollups";
 

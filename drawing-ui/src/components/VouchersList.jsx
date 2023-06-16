@@ -20,35 +20,24 @@ const VouchersList = () => {
     setVoucherIdToFetch(voucher.id);
     reexecuteVoucherQuery({ requestPolicy: "network-only" });
   };
-  // const reloadExecutedList = useCallback(() => {
-  //   if (rollups) {
-  //     const filter = rollups.outputContract.filters.VoucherExecuted();
-  //     rollups.outputContract.queryFilter(filter).then((d) => {
-  //       const execs = {};
-  //       for (const ev of d) {
-  //         execs[ev.args.voucherPosition._hex] = true;
-  //       }
-  //       setExecutedVouchers(execs);
-  //     });
-  //   }
-  // }, [rollups]);
-  //@TODO - get the contract
-  //ExecutedList = useCallback(() => {
-  //   if (rollups) {
-  //     const filter = rollups.outputContract.filters.VoucherExecuted();
-  //     rollups.outputContract.queryFilter(filter).then((d) => {
-  //       const execs = {};
-  //       for (const ev of d) {
-  //         execs[ev.args.voucherPosition._hex] = true;
-  //       }
-  //       setExecutedVouchers(execs);
-  //     });
-  //   }
-  // }, [rollups]);
 
-  // useEffect(() => {
-  //   if (!result.fetching) reloadExecutedList();
-  // }, [result, reloadExecutedList]);
+  //@TODO - get the contract
+  const reloadExecutedList = useCallback(() => {
+    if (rollups) {
+      const filter = rollups.outputContract.filters.VoucherExecuted();
+      rollups.outputContract.queryFilter(filter).then((d) => {
+        const execs = {};
+        for (const ev of d) {
+          execs[ev.args.voucherPosition._hex] = true;
+        }
+        setExecutedVouchers(execs);
+      });
+    }
+  }, [rollups]);
+
+  useEffect(() => {
+    if (!result.fetching) reloadExecutedList();
+  }, [result, reloadExecutedList]);
 
   const executeVoucher = async (voucher) => {
     console.log(voucher);
@@ -124,32 +113,6 @@ const VouchersList = () => {
         console.log("SELECTOR", selector);
         try {
           switch (selector) {
-            case "0xa9059cbb": {
-              // erc20 transfer;
-              const decode = decoder.decode(["address", "uint256"], payload);
-              payload = `Erc20 Transfer - Amount: ${ethers.utils.formatEther(
-                decode[1]
-              )} - Address: ${decode[0]}`;
-              break;
-            }
-            case "0x42842e0e": {
-              //erc721 safe transfer;
-              const decode = decoder.decode(
-                ["address", "address", "uint256"],
-                payload
-              );
-              payload = `Erc721 Transfer - Id: ${decode[2]} - Address: ${decode[1]}`;
-              break;
-            }
-            case "0x74956b94": {
-              //ether transfer;
-              const decode = decoder.decode(["bytes"], payload);
-              const decode2 = decoder.decode(["address", "uint256"], decode[0]);
-              payload = `Ether Transfer - Amount: ${ethers.utils.formatEther(
-                decode2[1]
-              )} (Native eth) - Address: ${decode2[0]}`;
-              break;
-            }
             case "0xd0def521": {
               //erc721 mint;
               const decode = decoder.decode(["address", "string"], payload);
@@ -199,7 +162,7 @@ const VouchersList = () => {
     <div>
       <p>Voucher to execute</p>
       {voucherToExecute ? (
-        <table>
+        <table className="vouchers-to-execute-table">
           <thead>
             <tr>
               <th>Epoch</th>
@@ -234,9 +197,12 @@ const VouchersList = () => {
                     : "No proof yet"}
                 </button>
               </td>
-              <td>{voucherToExecute.payload}</td>
-              <td>{voucherToExecute.proof}</td>
-              <td>{voucherToExecute.msg}</td>
+              {/* <td>{voucherToExecute.payload}</td> 
+              <td>{voucherToExecute.proof && "is proofed"}</td>
+              <td>{voucherToExecute.msg}</td> */}
+              <td>voucherToExecute.payload</td>
+              <td>voucherToExecute.proof</td>
+              <td>voucherToExecute.msg</td>
             </tr>
           </tbody>
         </table>
@@ -246,7 +212,7 @@ const VouchersList = () => {
       <button onClick={() => reexecuteQuery({ requestPolicy: "network-only" })}>
         Reload
       </button>
-      <table>
+      <table className="vouchers-to-execute-table">
         <thead>
           <tr>
             <th>Epoch</th>
