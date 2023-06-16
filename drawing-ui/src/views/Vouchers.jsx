@@ -1,10 +1,17 @@
 import Page from "../layouts/Page";
+import VouchersList from "../components/VouchersList";
+import { GraphQLProvider } from "../context/GraphQLContext";
+
+//@TODO move to components - vauchersList or smth ... @TODO graphql setup?
 const Vouchers = () => {
   return (
-    <Page>
-      <h2>Vouchers ...</h2>
-    </Page>
+    <GraphQLProvider>
+      <Page>
+        <VouchersList />
+      </Page>
+    </GraphQLProvider>
   );
 };
 
 export default Vouchers;
+//
