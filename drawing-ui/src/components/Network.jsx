@@ -27,28 +27,6 @@ const Network = () => {
         </button>
       ) : (
         <div>
-          <label>Switch Chain</label>
-          {settingChain ? (
-            <span>Switching chain...</span>
-          ) : (
-            <select
-              onChange={({ target: { value } }) => {
-                if (config[value] !== undefined) {
-                  setChain({ chainId: value });
-                } else {
-                  alert("No deploy on this chain");
-                }
-              }}
-              value={connectedChain?.id}>
-              {chains.map(({ id, label }) => {
-                return (
-                  <option key={id} value={id}>
-                    {label}
-                  </option>
-                );
-              })}
-            </select>
-          )}
           <button onClick={() => disconnect(wallet)}>Disconnect Wallet</button>
         </div>
       )}

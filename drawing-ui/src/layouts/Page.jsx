@@ -1,15 +1,12 @@
+import { Link } from "react-router-dom";
 import { init } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
-import { CanvasContextProvider } from "./context/CanvasContext";
-import Network from "./components/Network";
-import ImagesListRollups from "./components/ImagesRollups";
-import DrawingControls from "./components/Drawing/DrawingControls";
-import FabricJSCanvas from "./components/FabricJSCanvas";
-import CanvasControls from "./components/CanvasControls";
-import blocknativeIcon from "./icons/blocknative-icon"; //@TODO use app's own icon instead
-import "./App.css";
+import Network from "../components/Network";
+import blocknativeIcon from "../icons/blocknative-icon"; //@TODO use app's own icon instead
 
-import configFile from "./config/config.json";
+import "../App.css";
+
+import configFile from "../config/config.json";
 
 const config = configFile;
 
@@ -47,24 +44,23 @@ init({
   // theme: "dark",
 });
 
-const App = () => {
+export default function Page({ children }) {
   return (
-    <div>
-      <Network />
-      <div className="App">
-        <CanvasContextProvider>
-          {/* <ImagesListRollups /> */}
-          <div className="canvas-wrapper">
-            <FabricJSCanvas />
-            <div className="controls-container">
-              <DrawingControls />
-              <CanvasControls />
-            </div>
-          </div>
-        </CanvasContextProvider>
-      </div>
-    </div>
+    <>
+      <nav>
+        <ul>
+          <li>
+            <Link to={`/`}>Draw</Link>
+          </li>
+          <li>
+            <Link to={`/vouchers`}>Vouchers</Link>
+          </li>
+          <li>
+            <Network />
+          </li>
+        </ul>
+      </nav>
+      <div className="page-content">{children}</div>
+    </>
   );
-};
-
-export default App;
+}

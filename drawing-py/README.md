@@ -4,6 +4,7 @@ To build the application, run the following command:
 
 ```shell
 docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load
+```
 
 ### Production mode
 
@@ -39,7 +40,15 @@ When executing an example, it is possible to advance time in order to simulate t
 curl --data '{"id":1337,"jsonrpc":"2.0","method":"evm_increaseTime","params":[864010]}' http://localhost:8545
 ```
  
- 
+ ### Host mode
+
+The _Cartesi Rollups Host Environment_ provides the very same HTTP API as the regular one, mimicking the behavior of the actual layer-1 and layer-2 components. This way, the Cartesi Rollups infrastructure can make HTTP requests to a back-end that is running natively on localhost. This allows the developer to test and debug the back-end logic using familiar tools, such as an IDE.
+
+The host environment can be executed with the following command:
+
+```shell
+docker compose -f ../docker-compose.yml -f ./docker-compose.override.yml -f ../docker-compose-host.yml up
+```
 
 ## Running the back-end in host mode
 
@@ -53,7 +62,7 @@ In order to start the back-end, run the following commands in a dedicated termin
 cd drawing-py/
 python3 -m venv .venv
 . .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements-host.txt
 ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 drawing.py
 ```
 
