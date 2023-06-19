@@ -8,7 +8,7 @@ contract DrawingNFT is ERC721URIStorage {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  constructor() ERC721("DummyDataNFT", "DDNFT") {}
+  constructor() ERC721("DrawingNFT", "NFT") {}
 
   function mint(address recipient, string memory tokenURI) public returns (uint256) {
     _tokenIds.increment();
@@ -20,3 +20,4 @@ contract DrawingNFT is ERC721URIStorage {
     return newItemId;
   }
 }
+
