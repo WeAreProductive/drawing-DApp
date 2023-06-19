@@ -2,21 +2,15 @@ import { useCanvasContext } from "../../context/CanvasContext";
 import React, { useState } from "react";
 import { ethers } from "ethers"; 
 import { useToast, Button } from "@chakra-ui/react";
-//import { v4 as uuidv4 } from "uuid";
 import { useWallets } from "@web3-onboard/react";
 import { useRollups } from "../../hooks/useRollups";
 
 import { storeAsFiles } from "../../services/canvas";
-
-// const HARDHAT_DEFAULT_MNEMONIC =
-//   "test test test test test test test test test test test junk";
-// const HARDHAT_LOCALHOST_RPC_URL = "http://localhost:8545";
-// const LOCALHOST_DAPP_ADDRESS = "0xF8C694fd58360De278d5fF2276B7130Bfdc0192A";
+import { ERC721_TO_MINT, MINT_SELECTOR } from "../../config/constants";
 
 const CanvasToJSON = () => {
   const rollups = useRollups();
   const [connectedWallet] = useWallets();
-  // const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
 
   const { canvas } = useCanvasContext();
   const [accountIndex] = useState(0);
@@ -34,8 +28,11 @@ const CanvasToJSON = () => {
     const canvasContent = canvas.toJSON();
     const base64str = await storeAsFiles(canvasContent.objects);
     const addInput = async (strInput) => {
-      //@TODO handle tx error - tx reject or any tx error
-      const str = JSON.stringify({ image: strInput });
+      const str = JSON.stringify({
+        image: strInput,
+        erc721_to_mint: ERC721_TO_MINT,
+        selector: MINT_SELECTOR,
+      });
       if (rollups) {
         try {
           const tx = await rollups.inputContract.addInput(
@@ -82,7 +79,7 @@ const CanvasToJSON = () => {
         setLoading(false);
       }
     };
-    addInput(base64str); 
+    addInput(base64str);
   };
   let buttonProps = {};
   if (loading) {
