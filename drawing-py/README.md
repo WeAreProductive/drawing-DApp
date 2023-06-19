@@ -69,10 +69,12 @@ ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 drawing.py
 The final command will effectively run the back-end and send corresponding outputs to port `5004`.
 It can optionally be configured in an IDE to allow interactive debugging using features like breakpoints.
 
+## How to automatically restart the back-end
+
 You can also use a tool like [entr](https://eradman.com/entrproject/) to restart the back-end automatically when the code changes. For example:
 
 ```shell
-ls *.py | ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" entr -r python3 echo.py
+ls *.py | ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" entr -r python3 drawing.py
 ```
 
 After the back-end successfully starts, it should print an output like the following:
@@ -83,3 +85,33 @@ INFO:__main__:Sending finish
 ```
 
 After that, you can interact with the application normally [as explained above](#interacting-with-the-application).
+
+
+#### Querying the wallet state
+
+The state of any account may be queried at any time via [inspect state calls](../frontend-console#inspecting-dapp-state).
+
+##### How to query an account balance
+
+In order to retrieve an account balance, send an inspect request against `balance` passing the account address as part of the URL.
+The example below shows how to query the balance of default account `0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266`:
+
+```shell
+yarn start inspect \
+    --payload  balance/0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+```
+
+    ##### How to mint NFTs to be auctioned
+
+Simply proceed and [mint a CartesiNFT](../common-contracts/README.md#how-to-mint-a-cartesinft) and take note of the `token_id`.
+It will be used when [depositing NFTs into a user account](#how-to-deposit-nfts) using the front-end console.
+
+##### How to deposit NFTs
+
+In order to [deposit NFTs](../frontend-console#depositing-erc-721-tokens), they must have been minted beforehand as explained above.
+
+From the front-end console, deposit an NFT whose `token_id` is `1` as follows:
+
+```shell
+yarn start erc721 deposit --tokenId 1
+ ```
