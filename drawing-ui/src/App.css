@@ -54,6 +54,7 @@ body {
   flex: 2;
   display: flex; 
   margin-top: 50px;
+  justify-content: center
 }
 .canvas-container{
   background-color: #fff;
@@ -157,4 +158,26 @@ body {
 }
  .vouchers-to-execute-table td, .vouchers-to-execute-table th {
  padding: 8px
+}
+
+nav ul {
+  display: flex;
+  border-bottom: 1px solid #ccc
+}
+nav ul li {
+  padding: 18px 24px;
+  list-style-type: none
+}
+.page-content {
+  margin-top: 20px;
+  padding: 10px 30px
+}
+button {
+  padding: 6px!important;
+  text-decoration: underline
+}
+nav ul li a {
+  display: inline-block;
+  padding: 6px;
+  text-decoration: underline
 }

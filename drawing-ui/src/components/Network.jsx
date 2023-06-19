@@ -20,17 +20,15 @@ const Network = () => {
   const [{ chains, connectedChain, settingChain }, setChain] = useSetChain();
 
   return (
-    <div>
+    <>
       {!wallet ? (
         <button onClick={() => connect()}>
           {connecting ? "connecting" : "connect"}
         </button>
       ) : (
-        <div>
-          <button onClick={() => disconnect(wallet)}>Disconnect Wallet</button>
-        </div>
+        <button onClick={() => disconnect(wallet)}>Disconnect Wallet</button>
       )}
-    </div>
+    </>
   );
 };
 

@@ -7,7 +7,6 @@ import CanvasControls from "../components/CanvasControls";
 const Draw = () => {
   return (
     <Page>
-      <h2>Draw...</h2>
       <CanvasContextProvider>
         {/* <ImagesListRollups /> */}
         <div className="canvas-wrapper">

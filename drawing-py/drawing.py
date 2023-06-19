@@ -172,14 +172,12 @@ def handle_advance(request):
                 logger.info(f"Trying to decode json")
                 # try json data
                 json_data = json.loads(payload) 
-                 
+                logger.info(f'JSON DATA {json_data}')
                 if json_data.get("image"):
                     b64out = process_image(json_data["image"].encode("utf-8"))
                     payload = f"{b64out}"
-                    # if json_data.get("erc721_to_mint") and json_data.get("selector"): @TODO fix the payload shape
-                    json_data["erc721_to_mint"] = '0x95401dc811bb5740090279Ba06cfA8fcF6113778'
-                    json_data["selector"]= '0xd0def521'
-                    mint_erc721_with_uri_from_image(data["metadata"]["msg_sender"],json_data["erc721_to_mint"],json_data["selector"],b64out)
+                    if json_data.get("erc721_to_mint") and json_data.get("selector"):  
+                        mint_erc721_with_uri_from_image(data["metadata"]["msg_sender"],json_data["erc721_to_mint"],json_data["selector"],b64out)
                 elif json_data.get("erc721_to_mint") and json_data.get("selector"):
                     #@TODO check the case when
                     logger.info(f"Received mint request to ({json_data['erc721_to_mint']})")
