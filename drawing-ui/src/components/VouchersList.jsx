@@ -5,7 +5,6 @@ import { useRollups } from "../hooks/useRollups";
 
 //@TODO move to components - vauchersList or smth ... @TODO graphql setup?
 const VouchersList = () => {
-  console.log("vouchers list");
   const [result, reexecuteQuery] = useVouchersQuery();
   const [voucherIdToFetch, setVoucherIdToFetch] = useState();
   const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({
@@ -40,7 +39,6 @@ const VouchersList = () => {
   }, [result, reloadExecutedList]);
 
   const executeVoucher = async (voucher) => {
-    console.log(voucher);
     if (rollups && !!voucher.proof) {
       const proof = {
         ...voucher.proof,
@@ -50,16 +48,18 @@ const VouchersList = () => {
       };
 
       const newVoucherToExecute = { ...voucher };
-      console.log(proof, "proof");
       try {
         const tx = await rollups.outputContract.executeVoucher(
           voucher.destination,
           voucher.payload,
           proof
         );
-        console.log(voucher.destination, "DESTINATION");
-        console.log(voucher.payload, "PAYLOAD");
+
         const receipt = await tx.wait();
+        console.log(`voucher executed! (tx="${tx.hash}")`);
+        if (receipt.events) {
+          console.log(`resulting events: ${JSON.stringify(receipt.events)}`);
+        }
         newVoucherToExecute.msg = `voucher executed! (tx="${tx.hash}")`;
         if (receipt.events) {
           newVoucherToExecute.msg = `${
@@ -85,6 +85,8 @@ const VouchersList = () => {
           voucher.input.index,
           voucher.index
         );
+        console.log({ bitMaskPosition });
+
         if (executedVouchers[bitMaskPosition._hex]) {
           voucher.executed = true;
         }
@@ -109,8 +111,6 @@ const VouchersList = () => {
         const decoder = new ethers.utils.AbiCoder();
         const selector = decoder.decode(["bytes4"], payload)[0];
         payload = ethers.utils.hexDataSlice(payload, 4);
-        console.log("PAYLOAD", ethers.utils.hexDataSlice(payload, 4));
-        console.log("SELECTOR", selector);
         try {
           switch (selector) {
             case "0xd0def521": {
@@ -190,6 +190,7 @@ const VouchersList = () => {
                     !voucherToExecute.proof || voucherToExecute.executed
                   }
                   onClick={() => executeVoucher(voucherToExecute)}>
+                  {console.log(voucherToExecute, "VOUCHER TO EXECUTE")}
                   {voucherToExecute.proof
                     ? voucherToExecute.executed
                       ? "Voucher executed"
