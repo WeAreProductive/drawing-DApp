@@ -35,6 +35,8 @@ The application can afterwards be shut down with the following command:
 ```shell
 docker compose -f docker-bake.hcl -f docker-bake.override.hcl down -v
 ```
+The command is wrong!
+use this instead
 ```
 docker compose -f docker-compose.yml -f docker-compose.override.yml down -v
 ```
