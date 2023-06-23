@@ -14,7 +14,7 @@ const VouchersList = () => {
   const [executedVouchers, setExecutedVouchers] = useState({});
   const { data, fetching, error } = result;
   const rollups = useRollups();
-
+  console.log(result);
   const getProof = async (voucher) => {
     setVoucherIdToFetch(voucher.id);
     reexecuteVoucherQuery({ requestPolicy: "network-only" });
@@ -33,7 +33,7 @@ const VouchersList = () => {
       });
     }
   }, [rollups]);
-
+  // console.log(result);
   useEffect(() => {
     if (!result.fetching) reloadExecutedList();
   }, [result, reloadExecutedList]);
@@ -48,6 +48,7 @@ const VouchersList = () => {
       };
 
       const newVoucherToExecute = { ...voucher };
+      // console.log(rollups.outputContract);
       try {
         const tx = await rollups.outputContract.executeVoucher(
           voucher.destination,
@@ -56,7 +57,8 @@ const VouchersList = () => {
         );
 
         const receipt = await tx.wait();
-        console.log(`voucher executed! (tx="${tx.hash}")`);
+        // console.log(`voucher executed! (tx="${tx.hash}")`);
+        console.log({ receipt });
         if (receipt.events) {
           console.log(`resulting events: ${JSON.stringify(receipt.events)}`);
         }
@@ -70,7 +72,7 @@ const VouchersList = () => {
         newVoucherToExecute.msg = `COULD NOT EXECUTE VOUCHER: ${JSON.stringify(
           e
         )}`;
-        console.log(newVoucherToExecute.msg);
+        // console.log(newVoucherToExecute.msg);
       }
       setVoucherToExecute(newVoucherToExecute);
       reloadExecutedList();
@@ -85,7 +87,7 @@ const VouchersList = () => {
           voucher.input.index,
           voucher.index
         );
-        console.log({ bitMaskPosition });
+        // console.log({ bitMaskPosition });
 
         if (executedVouchers[bitMaskPosition._hex]) {
           voucher.executed = true;
@@ -190,7 +192,7 @@ const VouchersList = () => {
                     !voucherToExecute.proof || voucherToExecute.executed
                   }
                   onClick={() => executeVoucher(voucherToExecute)}>
-                  {console.log(voucherToExecute, "VOUCHER TO EXECUTE")}
+                  {/* {console.log(voucherToExecute, "VOUCHER TO EXECUTE")} */}
                   {voucherToExecute.proof
                     ? voucherToExecute.executed
                       ? "Voucher executed"

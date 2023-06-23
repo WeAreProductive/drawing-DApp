@@ -4,36 +4,18 @@
 // You can also run a script with `npx hardhat run <script>`. If you do that, Hardhat
 // will compile your contracts, add the Hardhat Runtime Environment's members to the
 // global scope, and execute the script.
+const { ethers } = require("hardhat");
 const hre = require("hardhat");
+const fs = require("fs");
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const [deployer] = await ethers.getSigners();
+  const Drawing = await hre.ethers.getContractFactory("DrawingNFT");
+  const drawing = await hre.ethers.deployContract("DrawingNFT");
 
-  const lockedAmount = hre.ethers.parseEther("0.001");
+  await drawing.waitForDeployment();
 
-  const lock = await hre.ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
-
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
-
-  //  //Pull the address and ABI out while you deploy, since that will be key in interacting with the smart contract later
-  //@TODO fix it!
-  //  const data = {
-  //   address: nftDrawing.address,
-  //   abi: JSON.parse(nftDrawing.interface.format("json")),
-  // };
-
-  // //This writes the ABI and address to the  nftDrawing.json
-  // //This data is then used by frontend files to connect with the smart contract
-  // fs.writeFileSync("./src/nftDrawing.json", JSON.stringify(data));
+  console.log(`Deployed to ${drawing.target}; }`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

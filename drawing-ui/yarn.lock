@@ -243,23 +243,23 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
-"@cartesi/rollups@^0.7.0":
-  version "0.7.0"
-  resolved "https://registry.yarnpkg.com/@cartesi/rollups/-/rollups-0.7.0.tgz#e721f4eb5ab1b263aefc7f0819bf4c4aa8fa2d49"
-  integrity sha512-U4yZ8C2K7mJORia1qGpUAFx3XumGk7Hrmrtw2EcGgZvJ09M1BWq4dh65g0+QOodVgDSDHk6qrvZl1KU9cYqlow==
+"@cartesi/rollups@0.8.2":
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/@cartesi/rollups/-/rollups-0.8.2.tgz#9f8323926e9c823b331b539d6e104eb4804d5e03"
+  integrity sha512-EiBJn2ZmkafCJSs7J02W/3xfhpThJrEx0S/+KQaEeC8r5O5JqIPHS9B34D2VcCevkLR+51VNv8O3O/aBl15Q4Q==
   dependencies:
-    "@cartesi/token" "^1.7.0"
-    "@cartesi/util" "^5.0.0"
+    "@cartesi/token" "^1.8.0"
+    "@cartesi/util" "^5.0.1"
     "@openzeppelin/contracts" "^4.7.1"
 
-"@cartesi/token@^1.7.0":
+"@cartesi/token@^1.8.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@cartesi/token/-/token-1.8.0.tgz#1f19bda1c5bd4e9e784cbd671c096e0333f11fb3"
   integrity sha512-jcr1ItbEjvhfy0A5KjOwLUd8Yqawo+F7o6p+9sxqfi1RYa39jTL1qhbF9xui4dR7slVrTwqWQTRHHwlfSHzq8A==
   dependencies:
     "@openzeppelin/contracts" "^2.5.0"
 
-"@cartesi/util@^5.0.0":
+"@cartesi/util@^5.0.1":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@cartesi/util/-/util-5.0.2.tgz#dfe0ff88b1998b88eafc4089949c3df71e3246e1"
   integrity sha512-mIaOplU+RKkiW10JRpDBG8IG7lGKyXrkF6w4WHVZ2YKWze5I+mzJBaPALZLtJSuwb6GCqLZbB7NZx3A7iZyWkA==
@@ -2315,9 +2315,9 @@
   integrity sha512-qIy6tLx8rtybEsIOAlrM4J/85s2q2nPkDqj/Rx46VakBZ0LwtFhXIVub96LXHczQX0vaqmAueDqNPXtbSXSaYQ==
 
 "@openzeppelin/contracts@^4.7.1":
-  version "4.8.3"
-  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.8.3.tgz#cbef3146bfc570849405f59cba18235da95a252a"
-  integrity sha512-bQHV8R9Me8IaJoJ2vPG4rXcL7seB7YVuskr4f+f5RyOStSZetwzkWtoqDMl5erkBJy0lDRUnIR2WIkPiC0GJlg==
+  version "4.9.2"
+  resolved "https://registry.yarnpkg.com/@openzeppelin/contracts/-/contracts-4.9.2.tgz#1cb2d5e4d3360141a17dbc45094a8cad6aac16c1"
+  integrity sha512-mO+y6JaqXjWeMh9glYVzVu8HYPGknAAnWyxTRhGeckOruyXQMNnlcW6w/Dx9ftLeIQk6N+ZJFuVmTwF7lEIFrg==
 
 "@pedrouid/environment@^1.0.1":
   version "1.0.1"

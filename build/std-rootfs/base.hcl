@@ -3,8 +3,14 @@ group "default" {
 }
 
 # crossenv toolchain for python dapps
+# target "toolchain-python" {
+# context = "../build/std-rootfs"
+ # target  = "toolchain-python"
+ # tags    = ["cartesi/toolchain-python"]
+#}
+# crossenv toolchain for python dapps
 target "toolchain-python" {
-  context = "../build/std-rootfs"
+  context = "./docker"
   target  = "toolchain-python"
   tags    = ["cartesi/toolchain-python"]
 }

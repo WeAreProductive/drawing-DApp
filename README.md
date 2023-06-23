@@ -344,6 +344,3 @@ Demonstrates how to create simple auctions for NFTs.
 The application comes with an integrated wallet and is capable of handling deposits, transfers and withdrawals for ERC-20 and ERC-721 tokens.
 It also implements a simple auction engine, which is responsible for creating auctions and handling bids, as well as transferring the auctioned NFTs to the winning bidder when the auction ends.
 It exercises the Rollups API, showing how to process advance and inspect requests, as well as how to generate Notices, Vouchers, and Reports.
-
-
- write cache to path -> /private/var/folders/6n/kkyc2rh90mj4h6p7m9x_qw9m0000gn/T/pip-install-z565viu1/numpy_4b0a39d9be1740ae966a0c8408e9519d/build/temp.macosx-10.14-arm64-3.8/ccompiler_opt_cache_ext.py

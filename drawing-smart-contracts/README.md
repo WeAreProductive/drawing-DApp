@@ -12,7 +12,7 @@ npx hardhat node
 npx hardhat run scripts/deploy.js
 ```
 
-Address 0x95401dc811bb5740090279Ba06cfA8fcF6113778
+Address 0x67d269191c92Caf3cD7723F116c85e6E9bf55933
 
 npx hardhat compile
 
