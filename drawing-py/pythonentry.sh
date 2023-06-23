@@ -11,8 +11,11 @@
 # CONDITIONS OF ANY KIND, either express or implied. See the License for the
 # specific language governing permissions and limitations under the License.
 
-# Add lib paths (to work with numpy)
-export LD_LIBRARY_PATH=/lib  
+# Add lib paths (to work with geos and numpy)
+export LD_LIBRARY_PATH=/lib 
+
+# Add geos lib paths 
+export LD_LIBRARY_PATH=/mnt/dapp/3rdparty/geos/lib:$LD_LIBRARY_PATH
 
 # Add opencv lib paths 
 export LD_LIBRARY_PATH=/mnt/dapp/3rdparty/opencv/lib/:$LD_LIBRARY_PATH

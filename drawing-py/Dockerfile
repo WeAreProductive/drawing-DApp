@@ -12,7 +12,7 @@ RUN apt update && apt install -y cmake
 
 COPY . .
 
-RUN source compiler-envs.sh && cd 3rdparty  
+RUN source compiler-envs.sh && cd 3rdparty
 
 RUN <<EOF 
 pip3.10 install crossenv 

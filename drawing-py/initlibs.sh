@@ -13,6 +13,18 @@
 
 
 ###
+# Prepare enviroment to import Geos libs
+
+# Rename (by linking)
+echo '( ln -s $1 $(echo $1 | sed "s/\(.*\/lib\/\)\(lib.*.so\).*/\1\2/") ) || true;' > linklib.sh
+find /mnt/dapp/3rdparty/geos -name "lib*.so*" -type f -exec sh linklib.sh {} \;
+
+# add libc fallbacks
+sed -i "s/load_dll('c')/load_dll('c',fallbacks=['libc.so','libc.so.6'])/" /mnt/dapp/.crossenv/cross/lib/python3.10/site-packages/shapely/geos.py
+
+
+
+###
 # Prepare enviroment to import Opencv libs
 
 # Rename cv2 lib

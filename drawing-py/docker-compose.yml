@@ -135,6 +135,7 @@ services:
       RUST_LOG: info
 
   server_manager:
+    image: drawing-py-cartesi/dapp:drawing-py-devel-server
     restart: always
     ports:
       - "5001:5001"
