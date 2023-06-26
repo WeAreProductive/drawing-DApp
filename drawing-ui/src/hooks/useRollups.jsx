@@ -13,21 +13,13 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
+ 
+
 import {
   InputFacet__factory,
   OutputFacet__factory,
   RollupsFacet__factory,
-  //   ERC20PortalFacet__factory,
-  //   EtherPortalFacet__factory,
-} from "@cartesi/rollups";
-
-// import {
-//   InputFacet__factory,
-//   OutputFacet__factory,
-//   RollupsFacet__factory,
-//   ERC20PortalFacet__factory,
-//   EtherPortalFacet__factory,
-// } from "../generated/rollups";
+} from "../generated/rollups";
 
 import configFile from "../config/config.json";
 
