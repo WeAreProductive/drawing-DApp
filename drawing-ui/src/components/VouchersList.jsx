@@ -2,8 +2,7 @@ import { ethers } from "ethers";
 import { useEffect, useCallback, useState } from "react";
 import { useVouchersQuery, useVoucherQuery } from "../generated/graphql";
 import { useRollups } from "../hooks/useRollups";
-
-//@TODO move to components - vauchersList or smth ... @TODO graphql setup?
+ 
 const VouchersList = () => {
   const [result, reexecuteQuery] = useVouchersQuery();
   const [voucherIdToFetch, setVoucherIdToFetch] = useState();
