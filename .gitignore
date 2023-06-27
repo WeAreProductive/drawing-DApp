@@ -3,3 +3,6 @@ node_modules/
 canvas.json
 *.json
 public/canvas-images/  
+drawing-py/.venv
+drawing-api/public/canvas-images/*
+drawing-ui/dist/*
