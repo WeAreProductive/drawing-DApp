@@ -1,21 +1,24 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { ChakraProvider } from "@chakra-ui/react";
-
-//Setup GraphQL Apollo client
-const URL_QUERY_GRAPHQL = "http://localhost:4000/graphql";
-
-const client = new ApolloClient({
-  uri: URL_QUERY_GRAPHQL,
-  cache: new InMemoryCache(),
-});
+import Root from "./views/Draw";
+import Vouchers from "./views/Vouchers";
+import ErrorPage from "./views/Error";
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Root />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/vouchers",
+    element: <Vouchers />,
+  },
+]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <ApolloProvider client={client}>
-    <ChakraProvider>
-      <App />
-    </ChakraProvider>
-  </ApolloProvider>
+  <ChakraProvider>
+    <RouterProvider router={router} />
+  </ChakraProvider>
 );
