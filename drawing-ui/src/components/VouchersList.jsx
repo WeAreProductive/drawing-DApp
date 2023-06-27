@@ -59,8 +59,8 @@ const VouchersList = () => {
         // console.log(`voucher executed! (tx="${tx.hash}")`);
         console.log({ receipt });
         if (receipt.events) {
-          console.log(`resulting events: ${JSON.stringify(receipt.events)}`);
-        }
+          console.log(`resulting events: ${JSON.stringify(receipt.events)}`); //make it a toast and disable the vouchers execution instead the reload button
+        } //on click to execute set a loading
         newVoucherToExecute.msg = `voucher executed! (tx="${tx.hash}")`;
         if (receipt.events) {
           newVoucherToExecute.msg = `${

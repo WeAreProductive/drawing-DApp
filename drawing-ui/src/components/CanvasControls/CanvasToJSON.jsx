@@ -31,7 +31,6 @@ const CanvasToJSON = () => {
       const str = JSON.stringify({
         image: strInput,
         erc721_to_mint: ERC721_TO_MINT,
-        // erc721_to_mint: "0xc3e53f4d16ae77db1c982e75a937b9f60fe63690",
         selector: MINT_SELECTOR,
       });
       if (rollups) {
