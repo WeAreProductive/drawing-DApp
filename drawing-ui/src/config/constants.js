@@ -16,7 +16,7 @@ export const INITIAL_DRAWING_OPTIONS = {
   canvasHeight: 600,
 };
 //the nft smart contract
-export const ERC721_TO_MINT = "0x84eA74d481Ee0A5332c457a4d796187F6Ba67fEB";
+export const ERC721_TO_MINT = "0xc3e53F4d16Ae77Db1c982e75a937B9f60FE63690";
 export const MINT_SELECTOR = "0xd0def521";
 
 //localhost
