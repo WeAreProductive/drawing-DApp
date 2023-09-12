@@ -1,0 +1,15 @@
+{
+  "fs": {
+    "files": [
+      "entrypoint.sh",
+      "pythonentry.sh",
+      "initlibs.sh",
+      "drawing.py",
+      ".crossenv",
+      "3rdparty",
+      "protobuf/merkle_dag_pb2.py",
+      "protobuf/unixfs_pb2.py"
+    ],
+    "size": 524288
+  }
+}

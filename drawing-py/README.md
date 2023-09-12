@@ -14,7 +14,7 @@ Please refer to the [rollups-examples requirements](https://github.com/cartesi/r
 To build the application, run the following command:
 
 ```shell
-docker buildx bake --load
+docker buildx bake --load --no-cache
 ```
 
 ## Running
@@ -181,7 +181,7 @@ In order to start the back-end, run the following commands in a dedicated termin
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements-host.txt
-ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 echo-plus.py
+ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 drawing.py
 ```
 
 The final command will effectively run the back-end and send corresponding outputs to port `5004`.

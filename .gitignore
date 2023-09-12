@@ -1,6 +1,5 @@
 
-node_modules/ 
-*.json 
+node_modules/  
 drawing/dist/main.js 
 drawing/config.js 
 drawing/dist/*
@@ -8,4 +7,5 @@ drawing/dist/*
 drawing/yarn-error.log
 drawing-api/public/ 
 drawing-py/.venv 
+drawing-py/.venv39
 TODO.md
