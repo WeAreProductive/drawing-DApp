@@ -29,6 +29,6 @@ RUN rm requirements.txt \
     && find /var/log \( -name '*.log' -o -name '*.log.*' \) -exec truncate -s 0 {} \;
 
 COPY dapp/entrypoint.sh .
-COPY dapp/echo-plus.py .
+COPY dapp/drawing.py .
 COPY dapp/protobuf_models/merkle_dag_pb2.py protobuf_models/.
 COPY dapp/protobuf_models/unixfs_pb2.py protobuf_models/.

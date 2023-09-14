@@ -2,4 +2,4 @@ version: "3"
 
 services:
   server_manager:
-    image: ${DAPP_IMAGE:-cartesi/dapp:drawing-py-devel-server}
+    image: ${DAPP_IMAGE:-cartesi/dapp:drawing-devel-server}

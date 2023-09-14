@@ -1,17 +1,18 @@
+
 group "default" {
   targets = ["server", "console"]
 }
 target "local-deployments" {
-  context = "./docker"
+  context = "build/docker-riscv"
   target = "local-deployments-stage"
 }
 
 target "deployments" {
-  context = "./docker"
+  context = "build/docker-riscv"
   target = "deployments-stage"
 }
 target "wrapped" {
-  context = "./docker"
+  context = "build/docker-riscv"
   target = "wrapped-stage"
   contexts = {
     dapp = "target:dapp"
@@ -19,7 +20,7 @@ target "wrapped" {
 }
 
 target "fs" {
-  context = "./docker"
+  context = "build/docker-riscv"
   target  = "fs-stage"
   contexts = {
     wrapped = "target:wrapped"
@@ -29,7 +30,7 @@ target "fs" {
 }
 
 target "server" {
-  context = "./docker"
+  context = "build/docker-riscv"
   target  = "server-stage"
   contexts = {
     fs = "target:fs"
@@ -37,7 +38,7 @@ target "server" {
 }
 
 target "console" {
-  context = "./docker"
+  context = "build/docker-riscv"
   target  = "console-stage"
   contexts = {
     fs = "target:fs"
@@ -45,9 +46,11 @@ target "console" {
 }
 
 target "machine" {
-  context = "./docker"
+  context = "build/docker-riscv"
   target  = "machine-stage"
   contexts = {
     fs = "target:fs"
   }
 }
+
+
