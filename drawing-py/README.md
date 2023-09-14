@@ -27,22 +27,12 @@ Remember: when running in HOST mode you do not need to build the machine!
 To start the application, execute the following command:
 
 ```shell
-docker compose -f docker-bake.hcl -f docker-bake.override.hcl up 
-```
-
-The command is wrong!
-use this instead
-```
 docker compose -f docker-compose.yml -f docker-compose.override.yml up
 ```
+
 The application can afterwards be shut down with the following command:
 
 ```shell
-docker compose -f docker-bake.hcl -f docker-bake.override.hcl down -v
-```
-The command is wrong!
-use this instead
-```
 docker compose -f docker-compose.yml -f docker-compose.override.yml down -v
 ```
 
@@ -170,6 +160,7 @@ When developing an application, it is often important to easily test and debug i
 To start the application, execute the following command:
 ```
 docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose-host.yml up
+
 ```
 
 The application can afterwards be shut down with the following command:

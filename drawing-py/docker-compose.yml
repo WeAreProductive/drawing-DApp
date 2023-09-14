@@ -120,7 +120,7 @@ services:
       SNAPSHOT_LATEST: /var/opt/cartesi/machine-snapshots/latest
 
   server_manager:
-    image: cartesi/drawing-devel-server}
+    image: cartesi/drawing-devel-server
     restart: always
     platform: linux/amd64
     ports:

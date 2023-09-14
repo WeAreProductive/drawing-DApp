@@ -22,7 +22,7 @@ import cv2
 from Cryptodome.Hash import SHA256
 import base64
 import base58
-from protobuf import unixfs_pb2, merkle_dag_pb2
+from protobuf_models import unixfs_pb2, merkle_dag_pb2
 
 #@TODO - check header is received, check smart contract is received not hardcoded
 

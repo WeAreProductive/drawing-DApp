@@ -16,4 +16,4 @@ set -e
 export PATH="/opt/venv/bin:$PATH"
 export PYTHONPATH=/opt/venv/lib/python3.10/site-packages:/usr/lib/python3/dist-packages
 # @TODO update path after refactoring
-rollup-init python3 /opt/cartesi/drawing.py
+rollup-init python3 /opt/cartesi/dapp/drawing.py
