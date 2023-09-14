@@ -1,136 +1,149 @@
 # syntax=docker.io/docker/dockerfile:1.4
 # layers for caching and versioning
-FROM cartesi/toolchain:0.12.0 as toolchain
-FROM cartesi/rootfs:0.15.0 as rootfs
-FROM cartesi/server-manager:0.5.0 as server-manager
+FROM cartesi/toolchain:0.14.0 as toolchain
+FROM cartesi/server-manager:0.7.0 as server-manager
+FROM cartesi/rollups-hardhat:0.9.1 as rollups-hardhat
 
-FROM rootfs as toolchain-python
 
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt update \
-    && apt install -y \
-    libncurses-dev \
-    libgdbm-dev \
-    libz-dev \
-    tk-dev \
-    libsqlite3-dev \
-    libreadline-dev \
-    liblzma-dev \
-    libffi-dev \
-    libssl-dev
-
-ENV PYTHON_VERSION=3.10
-ENV PYTHON_VERSION_FULL=3.10.1
-ENV BUILD_PYTHON_PREFIX=/opt/build-python
-ENV HOST_PYTHON_PREFIX=/mnt/python-dapp
-
-# Download Python source
-WORKDIR /tmp
-RUN wget https://www.python.org/ftp/python/$PYTHON_VERSION_FULL/Python-$PYTHON_VERSION_FULL.tgz
-RUN tar zxfv Python-$PYTHON_VERSION_FULL.tgz
-
-# Build build-python from source
-RUN cp -r Python-$PYTHON_VERSION_FULL build-python
-WORKDIR /tmp/build-python
-RUN ./configure --prefix=$BUILD_PYTHON_PREFIX
-RUN make -j$(nproc)
-RUN make install
-
-ENV PATH=$BUILD_PYTHON_PREFIX/bin:$PATH
-
-# Build host-python
-WORKDIR /tmp
-RUN cp -r Python-$PYTHON_VERSION_FULL host-python
-WORKDIR /tmp/host-python
-RUN CPPFLAGS="-I/opt/riscv/rootfs/buildroot/work/staging/usr/include" \
-    LDFLAGS="-L/opt/riscv/rootfs/buildroot/work/staging/usr/lib" \
-    ./configure \
-    --enable-shared \
-    --enable-optimizations \
-    --prefix=$HOST_PYTHON_PREFIX \
-    --host=riscv64-cartesi-linux-gnu \
-    --build=x86_64-linux-gnu \
-    --without-ensurepip \
-    --disable-test-modules \
-    ac_cv_buggy_getaddrinfo=no \
-    ac_cv_file__dev_ptmx=yes \
-    ac_cv_file__dev_ptc=no
-WORKDIR /tmp/host-python
-RUN make -j$(nproc)
-RUN make install
-
-WORKDIR /tmp
-RUN pip3 install crossenv
-RUN rm -rf Python-$PYTHON_VERSION_FULL*
-
-# download standard machine drives
+# stage to download dependencies
 FROM busybox as machine-core
 
 WORKDIR /opt/cartesi/share
 
-# download dependencies
 COPY dependencies .
 COPY shasumfile .
-RUN cat dependencies | xargs wget
+RUN while read DEP; do wget -O $DEP; done < dependencies
 RUN sha1sum -c shasumfile
 
 
-# stage to build the dapp ext2 filesystem
-FROM toolchain as dapp-fs-build
+# Deploy contracts locally
+FROM rollups-hardhat AS local-deployments-stage
 
-# install jq
-RUN <<EOF
-apt-get update
-DEBIAN_FRONTEND="noninteractive" apt-get install -y jq
-rm -rf /var/lib/apt/lists/*
+ARG NETWORK=localhost
+
+RUN <<EOF 
+if [ "$NETWORK" = "localhost" ] ; then
+    echo "Add localhost deployments"
+    sh -c "npx hardhat deploy --write true --network hardhat"
+else
+   mkdir /app/rollups/deployments/hardhat
+fi
 EOF
 
-WORKDIR /opt/cartesi/dapp
-COPY --from=dapp-build /opt/cartesi/dapp .
-COPY build-dapp-fs.sh /usr/local/bin
-COPY default.json /opt/cartesi/
+ENTRYPOINT [ "/bin/sh" ]
 
-RUN build-dapp-fs.sh /opt/cartesi/default.json dapp.json dapp.ext2
+
+
+# Download known testnet/mainet deployments
+FROM busybox as deployments-stage
+
+WORKDIR /opt/cartesi/share
+COPY --from=machine-core opt/cartesi/share/rollups.tgz ./
+RUN tar -xzvf ./rollups.tgz 
+
+# stage to wrap the dapp installing resources needed to run inside the Cartesi Machine
+FROM dapp as wrapped-stage
+
+WORKDIR /
+
+# normalize date for subsequent operations
+ENV SOURCE_DATE_EPOCH=1640995200
+
+# add the required 'dapp' user
+RUN useradd --create-home --user-group --uid 2874 dapp
+RUN chown -R 2874:2874 /opt/cartesi/dapp
+
+# install busybox
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+    busybox-static=1:1.30.1-7ubuntu3 \
+    && rm -rf /var/lib/apt/lists/* \
+    && find /var/log \( -name '*.log' -o -name '*.log.*' \) -exec truncate -s 0 {} \;
+
+# stage to build the final ext2 filesystem for the dapp
+FROM toolchain as fs-stage
+
+WORKDIR /var/tmp/dapp_fs/
+
+# copy wrapped dapp filesystem
+COPY --from=wrapped / ./
+
+# add emulator tools
+COPY --from=machine-core /opt/cartesi/share/machine-emulator-tools.tar.gz /var/tmp/dapp_fs/
+RUN tar -xvf machine-emulator-tools.tar.gz ./
+RUN rm machine-emulator-tools.tar.gz
+
+#add deployments 
+COPY --from=deployments /opt/cartesi/share/package/deployments* /var/tmp/dapp_fs/opt/cartesi/dapp/deployments/
+COPY --from=local-deployments /app/rollups/deployments/hardhat/* /var/tmp/dapp_fs/opt/cartesi/dapp/deployments/localhost/
+
+# build tar normalizing file timestamps and create final ext2 file with the appropriate size
+RUN <<EOF
+tar -cf /dapp.tar --transform='s:^./::g'  --mtime="2022-01-01" --format=gnu --numeric-owner ./
+
+blocksize=4096
+bytes=$(($(wc -c < "/dapp.tar") +0))
+bcargs="$(cat <<- EOF
+	define max(a, b) { return (a > b) * a + (a <= b) * b }
+	max(8, 1.5 * ($bytes + $blocksize - 1) / $blocksize)
+	EOF
+)"
+blocks=$(echo "$bcargs" | bc)
+genext2fs -fzB $blocksize -i $blocksize -b $blocks -a /dapp.tar /dapp.ext2
+truncate -s %4096 /dapp.ext2
+EOF
 
 
 # stage to build the initial cartesi machine
-FROM server-manager as machine-server
+FROM server-manager as build-server-stage
+
+ARG NETWORK=localhost
 
 WORKDIR /opt/cartesi/dapp
 
-# copy dapp ext2 from dapp stage
-COPY --from=dapp-fs-build /opt/cartesi/dapp/dapp.ext2 .
+# copy dapp ext2 from fs stage
+COPY --from=fs /dapp.ext2 ./dapp.ext2
 
-# copy rootfs, linux, rom
-COPY --from=machine-core /opt/cartesi/share/* .
+# copy machine dependencies (rom, linux kernel)
+COPY --from=machine-core /opt/cartesi/share/rom.bin .
+COPY --from=machine-core /opt/cartesi/share/linux.bin .
+
+# create var dir with correct permissions
+USER root
+RUN mkdir -p /var/opt/cartesi
+RUN chown cartesi:cartesi /var/opt/cartesi
+USER cartesi
 
 # build machine
 COPY build-machine.sh /usr/local/bin
-RUN build-machine.sh /opt/cartesi/share/dapp-bin
+RUN mkdir -p /var/opt/cartesi/machine-snapshots
+RUN build-machine.sh /var/opt/cartesi/machine-snapshots/0_0 $NETWORK
 
-# switch back to server-manager workdir
+FROM server-manager as server-stage
+
 WORKDIR /opt/cartesi/bin
-
+COPY --from=build-server-stage --chown=cartesi:cartesi /var/opt/cartesi/machine-snapshots/0_0 /var/opt/cartesi/machine-snapshots/0_0
+RUN ln -s /var/opt/cartesi/machine-snapshots/0_0 /var/opt/cartesi/machine-snapshots/latest
 
 # stage to run machine shell
-FROM server-manager as machine-console
+FROM server-manager as console-stage
 
 WORKDIR /opt/cartesi/dapp
 
-# copy dapp ext2 from stage 1
-COPY --from=dapp-fs-build /opt/cartesi/dapp/dapp.ext2 .
+# copy dapp ext2 from fs stage
+COPY --from=fs /dapp.ext2 ./dapp.ext2
 
-# copy rootfs, kernel, rom
-COPY --from=machine-core /opt/cartesi/share/* .
+# copy machine dependencies (rom, linux kernel)
+COPY --from=machine-core /opt/cartesi/share/rom.bin .
+COPY --from=machine-core /opt/cartesi/share/linux.bin .
 
 COPY run-machine-console.sh /usr/local/bin
 CMD ["run-machine-console.sh"]
 
 
 # stage to copy the stored machine
-FROM busybox as machine-standalone
+FROM busybox as machine-stage
 
-WORKDIR /opt/cartesi/share/dapp-bin
-COPY --from=machine-server /opt/cartesi/share/dapp-bin .
-
+WORKDIR /var/opt/cartesi/machine-snapshots
+COPY --from=server-stage /var/opt/cartesi/machine-snapshots .
 CMD ["xxd", "-c", "256", "-p", "hash"]

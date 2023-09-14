@@ -2,11 +2,15 @@ version: "3"
 
 services:
   server_manager:
-    image: cartesi/host-server-manager:0.7.0
+    image: cartesi/host-server-manager:0.9.1
     ports:
       - "5004:5004"
     environment:
       - RUST_LOG=warn
+
+  advance_runner:
+    environment:
+      - SNAPSHOT_ENABLED=false
 
   deployer:
     command: [
@@ -14,7 +18,7 @@ services:
         "--rpc",
         "http://hardhat:8545",
         "--deploymentFile",
-        "/opt/cartesi/share/blockchain/localhost.json",
+        "/opt/cartesi/share/deployments/localhost.json",
         "--mnemonic",
         "test test test test test test test test test test test junk",
         # template hash is not relevant in host mode, so we can specify hash zero

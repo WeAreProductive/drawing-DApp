@@ -16,6 +16,11 @@ To build the application, run the following command:
 ```shell
 docker buildx bake --load --no-cache
 ```
+or 
+```shell
+docker buildx bake --load
+```
+Remember: when running in HOST mode you do not need to build the machine!
 
 ## Running
 

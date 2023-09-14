@@ -13,6 +13,7 @@
 
 set -e
 
-sh /mnt/dapp/initlibs.sh
-
-PYTHONPATH=/mnt/dapp/.crossenv/cross/lib/python3.10/site-packages rollup-init /mnt/dapp/pythonentry.sh
+export PATH="/opt/venv/bin:$PATH"
+export PYTHONPATH=/opt/venv/lib/python3.10/site-packages:/usr/lib/python3/dist-packages
+# @TODO update path after refactoring
+rollup-init python3 /opt/cartesi/drawing.py
