@@ -176,7 +176,7 @@ In order to start the back-end, run the following commands in a dedicated termin
 ```shell
 python3 -m venv .venv
 . .venv/bin/activate
-pip install -r requirements-host.txt
+pip install -r dapp/requirements-host.txt
 ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 drawing.py
 ```
 
