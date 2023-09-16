@@ -2,112 +2,91 @@ import { ethers } from "ethers";
 import { useEffect, useCallback, useState } from "react";
 import { useVouchersQuery, useVoucherQuery } from "../generated/graphql";
 import { useRollups } from "../hooks/useRollups";
- 
+import { DAPP_ADDRESS } from "../config/constants";
+
 const VouchersList = () => {
   const [result, reexecuteQuery] = useVouchersQuery();
-  const [voucherIdToFetch, setVoucherIdToFetch] = useState();
+  const [voucherToFetch, setVoucherToFetch] = useState([0, 0]);
   const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({
-    variables: { id: voucherIdToFetch }, //, pause: !!voucherIdToFetch
+    variables: {
+      voucherIndex: voucherToFetch[0],
+      inputIndex: voucherToFetch[1],
+    }, //, pause: !!voucherIdToFetch
   });
   const [voucherToExecute, setVoucherToExecute] = useState();
   const [executedVouchers, setExecutedVouchers] = useState({});
   const { data, fetching, error } = result;
-  const rollups = useRollups();
-  console.log(result);
+  const rollups = useRollups(DAPP_ADDRESS);
   const getProof = async (voucher) => {
-    setVoucherIdToFetch(voucher.id);
+    setVoucherToFetch([voucher.index, voucher.input.index]);
     reexecuteVoucherQuery({ requestPolicy: "network-only" });
   };
 
-  //@TODO - get the contract
-  const reloadExecutedList = useCallback(() => {
-    if (rollups) {
-      const filter = rollups.outputContract.filters.VoucherExecuted();
-      rollups.outputContract.queryFilter(filter).then((d) => {
-        const execs = {};
-        for (const ev of d) {
-          execs[ev.args.voucherPosition._hex] = true;
-        }
-        setExecutedVouchers(execs);
-      });
-    }
-  }, [rollups]);
-  // console.log(result);
-  useEffect(() => {
-    if (!result.fetching) reloadExecutedList();
-  }, [result, reloadExecutedList]);
-
   const executeVoucher = async (voucher) => {
     if (rollups && !!voucher.proof) {
-      const proof = {
-        ...voucher.proof,
-        epochIndex: voucher.input.epoch.index,
-        inputIndex: voucher.input.index,
-        outputIndex: voucher.index,
-      };
-
       const newVoucherToExecute = { ...voucher };
-      // console.log(rollups.outputContract);
       try {
-        const tx = await rollups.outputContract.executeVoucher(
+        const tx = await rollups.dappContract.executeVoucher(
           voucher.destination,
           voucher.payload,
-          proof
+          voucher.proof
         );
-
         const receipt = await tx.wait();
-        // console.log(`voucher executed! (tx="${tx.hash}")`);
-        console.log({ receipt });
-        if (receipt.events) {
-          console.log(`resulting events: ${JSON.stringify(receipt.events)}`); //make it a toast and disable the vouchers execution instead the reload button
-        } //on click to execute set a loading
         newVoucherToExecute.msg = `voucher executed! (tx="${tx.hash}")`;
         if (receipt.events) {
           newVoucherToExecute.msg = `${
             newVoucherToExecute.msg
           } - resulting events: ${JSON.stringify(receipt.events)}`;
+          newVoucherToExecute.executed =
+            await rollups.dappContract.wasVoucherExecuted(
+              BigNumber.from(voucher.input.index),
+              BigNumber.from(voucher.index)
+            );
         }
       } catch (e) {
         newVoucherToExecute.msg = `COULD NOT EXECUTE VOUCHER: ${JSON.stringify(
           e
         )}`;
-        // console.log(newVoucherToExecute.msg);
+        console.log(`COULD NOT EXECUTE VOUCHER: ${JSON.stringify(e)}`);
       }
       setVoucherToExecute(newVoucherToExecute);
-      reloadExecutedList();
     }
   };
-
   useEffect(() => {
-    const getBitMaskPositionAndSetVoucher = async (voucher) => {
+    const setVoucher = async (voucher) => {
       if (rollups) {
-        const bitMaskPosition = await rollups.outputContract.getBitMaskPosition(
-          voucher.input.epoch.index,
-          voucher.input.index,
-          voucher.index
+        voucher.executed = await rollups.dappContract.wasVoucherExecuted(
+          BigNumber.from(voucher.input.index),
+          BigNumber.from(voucher.index)
         );
-        // console.log({ bitMaskPosition });
-
-        if (executedVouchers[bitMaskPosition._hex]) {
-          voucher.executed = true;
-        }
       }
       setVoucherToExecute(voucher);
     };
 
     if (!voucherResult.fetching && voucherResult.data) {
-      getBitMaskPositionAndSetVoucher(voucherResult.data.voucher);
+      setVoucher(voucherResult.data.voucher);
     }
-  }, [voucherResult, rollups, executedVouchers]);
+  }, [voucherResult, rollups]);
 
   if (fetching) return <p>Loading...</p>;
+  console.log(result);
   if (error) return <p>Oh no... {error.message}</p>;
 
   if (!data || !data.vouchers) return <p>No vouchers</p>;
-
-  const vouchers = data?.vouchers.nodes
-    .map((n) => {
+  const vouchers = data.vouchers.edges
+    .map((node) => {
+      const n = node.node;
       let payload = n?.payload;
+      let inputPayload = n?.input.payload;
+      if (inputPayload) {
+        try {
+          inputPayload = ethers.utils.toUtf8String(inputPayload);
+        } catch (e) {
+          inputPayload = inputPayload + " (hex)";
+        }
+      } else {
+        inputPayload = "(empty)";
+      }
       if (payload) {
         const decoder = new ethers.utils.AbiCoder();
         const selector = decoder.decode(["bytes4"], payload)[0];
@@ -121,7 +100,13 @@ const VouchersList = () => {
               break;
             }
             case "0x755edd17": {
-              //erc721 mintTo;
+              //erc721 mintTo; ?
+              const decode = decoder.decode(["address"], payload);
+              payload = `Mint Erc721 - Address: ${decode[0]}`;
+              break;
+            }
+            case "0x6a627842": {
+              //erc721 mint; ?
               const decode = decoder.decode(["address"], payload);
               payload = `Mint Erc721 - Address: ${decode[0]}`;
               break;
@@ -141,20 +126,16 @@ const VouchersList = () => {
         index: parseInt(n?.index),
         destination: `${n?.destination ?? ""}`,
         payload: `${payload}`,
-        input: n?.input || { epoch: {} },
+        input: n ? { index: n.input.index, payload: inputPayload } : {},
         proof: null,
         executed: null,
       };
     })
     .sort((b, a) => {
-      if (a.epoch === b.epoch) {
-        if (a.input === b.input) {
-          return a.voucher - b.voucher;
-        } else {
-          return a.input - b.input;
-        }
+      if (a.input.index === b.input.index) {
+        return b.index - a.index;
       } else {
-        return a.epoch - b.epoch;
+        return b.input.index - a.input.index;
       }
     });
 
@@ -163,27 +144,24 @@ const VouchersList = () => {
     <div>
       <p>Voucher to execute</p>
       {voucherToExecute ? (
-        <table className="vouchers-to-execute-table">
+        <table>
           <thead>
             <tr>
-              <th>Epoch</th>
               <th>Input Index</th>
               <th>Voucher Index</th>
-              <th>Voucher Id</th>
               <th>Destination</th>
               <th>Action</th>
-              <th>Payload</th>
-              <th>Proof</th>
+              {/* <th>Payload</th> */}
+              {/* <th>Proof</th> */}
+              <th>Input Payload</th>
               <th>Msg</th>
             </tr>
           </thead>
           <tbody>
             <tr
-              key={`${voucherToExecute.input.epoch.index}-${voucherToExecute.input.index}-${voucherToExecute.index}`}>
-              <td>{voucherToExecute.input.epoch.index}</td>
+              key={`${voucherToExecute.input.index}-${voucherToExecute.index}`}>
               <td>{voucherToExecute.input.index}</td>
               <td>{voucherToExecute.index}</td>
-              <td>{voucherToExecute.id}</td>
               <td>{voucherToExecute.destination}</td>
               <td>
                 <button
@@ -191,7 +169,6 @@ const VouchersList = () => {
                     !voucherToExecute.proof || voucherToExecute.executed
                   }
                   onClick={() => executeVoucher(voucherToExecute)}>
-                  {/* {console.log(voucherToExecute, "VOUCHER TO EXECUTE")} */}
                   {voucherToExecute.proof
                     ? voucherToExecute.executed
                       ? "Voucher executed"
@@ -199,12 +176,10 @@ const VouchersList = () => {
                     : "No proof yet"}
                 </button>
               </td>
-              {/* <td>{voucherToExecute.payload}</td> 
-              <td>{voucherToExecute.proof && "is proofed"}</td>
-              <td>{voucherToExecute.msg}</td> */}
-              <td>voucherToExecute.payload</td>
-              <td>voucherToExecute.proof</td>
-              <td>voucherToExecute.msg</td>
+              {/* <td>{voucherToExecute.payload}</td> */}
+              {/* <td>{voucherToExecute.proof}</td> */}
+              <td>{voucherToExecute.input.payload}</td>
+              <td>{voucherToExecute.msg}</td>
             </tr>
           </tbody>
         </table>
@@ -214,16 +189,16 @@ const VouchersList = () => {
       <button onClick={() => reexecuteQuery({ requestPolicy: "network-only" })}>
         Reload
       </button>
-      <table className="vouchers-to-execute-table">
+      <table>
         <thead>
           <tr>
-            <th>Epoch</th>
             <th>Input Index</th>
             <th>Voucher Index</th>
-            <th>Voucher Id</th>
             <th>Destination</th>
             <th>Action</th>
+            {/* <th>Input Payload</th> */}
             <th>Payload</th>
+            {/* <th>Proof</th> */}
           </tr>
         </thead>
         <tbody>
@@ -233,15 +208,14 @@ const VouchersList = () => {
             </tr>
           )}
           {vouchers.map((n) => (
-            <tr key={`${n.input.epoch.index}-${n.input.index}-${n.index}`}>
-              <td>{n.input.epoch.index}</td>
+            <tr key={`${n.input.index}-${n.index}`}>
               <td>{n.input.index}</td>
               <td>{n.index}</td>
-              <td>{n.id}</td>
               <td>{n.destination}</td>
               <td>
                 <button onClick={() => getProof(n)}>Get Proof</button>
               </td>
+              {/* <td>{n.input.payload}</td> */}
               <td>{n.payload}</td>
               <td>
                 <button disabled={!!n.proof} onClick={() => executeVoucher(n)}>
@@ -255,5 +229,4 @@ const VouchersList = () => {
     </div>
   );
 };
-
 export default VouchersList;

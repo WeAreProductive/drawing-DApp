@@ -44,10 +44,7 @@ const useGraphQL = () => {
 };
 
 export const GraphQLProvider = (props) => {
-  console.log(props);
   const client = useGraphQL();
-
-  console.log(client);
   if (!client) {
     return <div />;
   }

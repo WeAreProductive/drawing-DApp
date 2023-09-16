@@ -112,7 +112,7 @@ def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string):
     mint_header = clean_header(mint_header)
     data = encode_abi(['address', 'string'], [msg_sender,string])
     payload = f"0x{(mint_header+data).hex()}"
-    voucher = {"address": erc721_to_mint , "payload": payload}
+    voucher = {"destination": erc721_to_mint , "payload": payload}
     logger.info(f"voucher {voucher}")
     send_voucher(voucher)
     
