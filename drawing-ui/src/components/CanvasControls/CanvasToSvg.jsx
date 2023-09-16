@@ -63,7 +63,7 @@ const CanvasToSvg = () => {
 
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
-
+console.log({ event });
       setLoading(false);
       toast({
         title: "Transaction Confirmed",

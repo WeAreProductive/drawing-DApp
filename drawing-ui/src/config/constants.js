@@ -29,5 +29,5 @@ export const DEFAULT_CHAIN = networks[31337];
 export const LOCALHOST_DAPP_ADDRESS =
   "0xF8C694fd58360De278d5fF2276B7130Bfdc0192A";
 // Standard configuration for local development environment
-// export const INPUTBOX_ADDRESS = "0x59b22D57D4f067708AB0c00552767405926dc768";
-export const INPUTBOX_ADDRESS = "0x5a723220579C0DCb8C9253E6b4c62e572E379945"; //@TODO get it dynamically
+export const INPUTBOX_ADDRESS = "0x59b22D57D4f067708AB0c00552767405926dc768"; //@TODO get it dynamically
+// export const INPUTBOX_ADDRESS = "0x5a723220579C0DCb8C9253E6b4c62e572E379945"; v 0.9 ?

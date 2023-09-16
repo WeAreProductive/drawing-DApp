@@ -14,64 +14,81 @@ import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
  
-
 import {
-  InputFacet__factory,
-  OutputFacet__factory,
-  RollupsFacet__factory,
-} from "../generated/rollups";
+  InputBox__factory,
+  DAppAddressRelay__factory,
+  CartesiDApp__factory,
+  ERC721Portal__factory,
+} from "@cartesi/rollups";
 
 import configFile from "../config/config.json";
 
 const config = configFile;
 
-export const useRollups = () => {
+export const useRollups = (dAddress) => {
   const [contracts, setContracts] = useState();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
-
+  const [dappAddress] = useState(dAddress);
   useEffect(() => {
     const connect = async (chain) => {
-      //@TODO - This provider is causing the errors!!!
-      //hardhat localhost issue, can be ignored
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider
       );
-      let address = "0x0000000000000000000000000000000000000000"; //zero addr as placeholder
+      const signer = provider.getSigner();
 
-      if (config[chain.id]?.rollupAddress) {
-        address = config[chain.id].rollupAddress;
+      let dappRelayAddress = "";
+      if (config[chain.id]?.DAppRelayAddress) {
+        dappRelayAddress = config[chain.id].DAppRelayAddress;
       } else {
         console.error(
-          `No rollup address interface defined for chain ${chain.id}`
+          `No dapp relay address address defined for chain ${chain.id}`
         );
-        // alert(`No rollup address interface defined for chain ${chain.id}`);
       }
 
-      const rollupsContract = RollupsFacet__factory.connect(
-        address,
-        provider.getSigner()
-      );
-      // input contract
-      const inputContract = InputFacet__factory.connect(
-        address,
-        provider.getSigner()
-      );
-      const outputContract = OutputFacet__factory.connect(
-        address,
-        provider.getSigner()
-      );
+      let inputBoxAddress = "";
+      if (config[chain.id]?.InputBoxAddress) {
+        inputBoxAddress = config[chain.id].InputBoxAddress;
+      } else {
+        console.error(
+          `No input box address address defined for chain ${chain.id}`
+        );
+      }
 
-      // const etherPortalContract = EtherPortalFacet__factory.connect(
-      //   address,
-      //   provider.getSigner()
-      // );
+      let erc721PortalAddress = "";
+      if (config[chain.id]?.Erc721PortalAddress) {
+        erc721PortalAddress = config[chain.id].Erc721PortalAddress;
+      } else {
+        console.error(
+          `No erc721 portal address address defined for chain ${chain.id}`
+        );
+        alert(`No box erc721 portal address defined for chain ${chain.id}`);
+      }
+
+      // dapp contract
+      const dappContract = CartesiDApp__factory.connect(dappAddress, signer);
+      console.log({ dappContract });
+      // relay contract
+      const realyContract = DAppAddressRelay__factory.connect(
+        dappRelayAddress,
+        signer
+      );
+      console.log({ realyContract });
+
+      // input contract
+      const inputContract = InputBox__factory.connect(inputBoxAddress, signer);
+      console.log({ inputContract });
+      const erc721PortalContract = ERC721Portal__factory.connect(
+        erc721PortalAddress,
+        signer
+      );
 
       return {
-        rollupsContract,
+        dappContract,
+        signer,
+        realyContract,
         inputContract,
-        outputContract,
-        // etherPortalContract,
+        erc721PortalContract,
       };
     };
     if (connectedWallet) {
@@ -81,6 +98,6 @@ export const useRollups = () => {
         });
       }
     }
-  }, [connectedWallet, connectedChain]);
+  }, [connectedWallet, connectedChain, dappAddress]);
   return contracts;
 };
