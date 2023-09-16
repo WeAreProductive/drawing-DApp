@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { useEffect, useCallback, useState } from "react";
 import { useVouchersQuery, useVoucherQuery } from "../generated/graphql";
 import { useRollups } from "../hooks/useRollups";
@@ -23,8 +23,11 @@ const VouchersList = () => {
   };
 
   const executeVoucher = async (voucher) => {
+    console.log({ rollups });
+    console.log({ voucher });
     if (rollups && !!voucher.proof) {
       const newVoucherToExecute = { ...voucher };
+      console.log({ newVoucherToExecute });
       try {
         const tx = await rollups.dappContract.executeVoucher(
           voucher.destination,

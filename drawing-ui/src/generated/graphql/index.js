@@ -104,25 +104,26 @@ export function useNoticesByEpochQuery(options = null) {
   return Urql.useQuery({ query: NoticesByEpochDocument, ...options });
 }
 export const VoucherDocument = gql`
-  query voucher($id: ID!) {
-    voucher(id: $id) {
-      id
-      destination
-      payload
+  query voucher($voucherIndex: Int!, $inputIndex: Int!) {
+    voucher(voucherIndex: $voucherIndex, inputIndex: $inputIndex) {
       index
-      proof {
-        outputHashesRootHash
-        vouchersEpochRootHash
-        noticesEpochRootHash
-        machineStateHash
-        keccakInHashesSiblings
-        outputHashesInEpochSiblings
-      }
       input {
         index
-        epoch {
-          index
+      }
+      destination
+      payload
+      proof {
+        validity {
+          inputIndexWithinEpoch
+          outputIndexWithinInput
+          outputHashesRootHash
+          vouchersEpochRootHash
+          noticesEpochRootHash
+          machineStateHash
+          outputHashInOutputHashesSiblings
+          outputHashesInEpochSiblings
         }
+        context
       }
     }
   }
