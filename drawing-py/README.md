@@ -12,6 +12,7 @@ Please refer to the [rollups-examples requirements](https://github.com/cartesi/r
 ## Building
 
 To build the application, run the following command:
+! add --no-cache when in development mode
 
 ```shell
 docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load --no-cache
