@@ -36,23 +36,12 @@ export const CanvasContextProvider = ({ children }: Props) => {
     canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
     canvasHeight: INITIAL_DRAWING_OPTIONS.canvasHeight,
   });
-  // On 1st load and
-  // each time a canvas is saved
-  // we will update the canvases list
-  const manageCanvasesList = async () => {
-    // const list = await getCanvasImages();
-    // setCanvasesList(list);
-  };
-  useEffect(() => {
-    manageCanvasesList();
-  }, []);
+
   const value = {
     canvas,
     setCanvas,
     canvasOptions,
     setOptions,
-    // canvasesList,
-    // manageCanvasesList,
   };
   return (
     <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>

@@ -1,28 +1,14 @@
 import { BASE_API_URL, API_ENDPOINTS } from "../shared/constants";
 
 /**
- * Get all the canvases as svgs data objects
- * {id: '', name: '', content: ''}
- * @returns array of svgs data
- */
-export const getCanvasImages = async () => {
-  try {
-    const response = await fetch(`${BASE_API_URL}/${API_ENDPOINTS.imagesList}`);
-    return response.json();
-  } catch (error) {
-    //@TODO handle the error properly
-    console.log(error);
-    return { error: "Something went wrong ..." };
-  }
-};
-/**
  * Store the new canvas data
  * received and confirmed from the BE
  * as .png(?) files
  * one or more canvas data
  * @TODO on success display the neq canvas file in the left column
  */
-export const storeAsFiles = async (canvasObject) => {
+//canvasObject shape is controlled by Fabric.js
+export const storeAsFiles = async (canvasObject: any) => {
   try {
     const response = await fetch(
       `${BASE_API_URL}/${API_ENDPOINTS.canvasesStore}`,
