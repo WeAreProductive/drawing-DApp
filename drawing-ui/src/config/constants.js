@@ -1,4 +1,3 @@
-import { networks } from "./networks";
 export const BASE_API_URL = "http://localhost:3000";
 
 export const API_ENDPOINTS = {
@@ -20,7 +19,7 @@ export const ERC721_TO_MINT = "0x3F101a631Bce1374A7138c3ec02994344E350a89";
 export const MINT_SELECTOR = "0xd0def521";
 
 //localhost
-export const DEFAULT_CHAIN = networks[31337];
+// export const DEFAULT_CHAIN = networks[31337];
 //Goerli
 // export const DEFAULT_CHAIN = networks[5];
 //Arbitrum Goerli

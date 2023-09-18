@@ -13,25 +13,38 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
- 
+import { JsonRpcSigner } from "@ethersproject/providers";
+import { ConnectedChain } from "@web3-onboard/core";
+import { Network } from "../shared/types";
 import {
   InputBox__factory,
+  InputBox,
   DAppAddressRelay__factory,
+  DAppAddressRelay,
   CartesiDApp__factory,
+  CartesiDApp,
   ERC721Portal__factory,
+  ERC721Portal,
 } from "@cartesi/rollups";
 
 import configFile from "../config/config.json";
+const config: { [name: string]: Network } = configFile;
 
-const config = configFile;
+export interface RollupsContracts {
+  dappContract: CartesiDApp;
+  signer: JsonRpcSigner;
+  realyContract: DAppAddressRelay;
+  inputContract: InputBox;
+  erc721PortalContract: ERC721Portal;
+}
 
-export const useRollups = (dAddress) => {
-  const [contracts, setContracts] = useState();
+export const useRollups = (dAddress: string): RollupsContracts | undefined => {
+  const [contracts, setContracts] = useState<RollupsContracts | undefined>();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
-  const [dappAddress] = useState(dAddress);
+  const [dappAddress] = useState<string>(dAddress);
   useEffect(() => {
-    const connect = async (chain) => {
+    const connect = async (chain: ConnectedChain) => {
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider
       );
@@ -67,7 +80,6 @@ export const useRollups = (dAddress) => {
 
       // dapp contract
       const dappContract = CartesiDApp__factory.connect(dappAddress, signer);
-      console.log({ dappContract });
       // relay contract
       const realyContract = DAppAddressRelay__factory.connect(
         dappRelayAddress,

@@ -11,9 +11,7 @@ import configFile from "../config/config.json";
 const config = configFile;
 
 const injected = injectedModule();
-//for more customizations look here
-// https://github.com/kokolina1888/react-demo
-// https://github.com/blocknative/react-demo/tree/master
+
 init({
   connect: {
     autoConnectAllPreviousWallet: true,
@@ -40,11 +38,17 @@ init({
       minimal: false,
       // containerElement: "<div></div>", @TODO must be an existing DOM element selector ?!
     },
+    mobile: {
+      enabled: true, //@TODO manage this and other mobile props
+    },
   },
   // theme: "dark",
 });
+type Props = {
+  children: React.ReactNode;
+};
 
-export default function Page({ children }) {
+export default function Page({ children }: Props) {
   return (
     <>
       <nav>

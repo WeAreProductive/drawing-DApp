@@ -17,7 +17,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <ChakraProvider>
     <RouterProvider router={router} />
   </ChakraProvider>
