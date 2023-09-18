@@ -8,7 +8,6 @@ const Draw = () => {
   return (
     <Page>
       <CanvasContextProvider>
-        {/* <ImagesListRollups /> */}
         <div className="canvas-wrapper">
           <FabricJSCanvas />
           <div className="controls-container">

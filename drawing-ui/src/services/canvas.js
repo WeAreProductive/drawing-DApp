@@ -1,5 +1,4 @@
 import { BASE_API_URL, API_ENDPOINTS } from "../shared/constants";
-import { parseNoticeData } from "../utils";
 
 /**
  * Get all the canvases as svgs data objects
