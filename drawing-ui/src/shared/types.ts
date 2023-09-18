@@ -15,3 +15,12 @@ export type CanvasOptions = {
   canvasWidth: number;
   canvasHeight: number;
 };
+export type Voucher = {
+  id: string;
+  index: number;
+  destination: string;
+  input: any; //{index: number; epoch: {index: number; }
+  payload: string;
+  proof: any;
+  executed: any;
+};

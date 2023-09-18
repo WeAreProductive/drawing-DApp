@@ -2,7 +2,6 @@ import Page from "../layouts/Page";
 import VouchersList from "../components/VouchersList";
 import { GraphQLProvider } from "../context/GraphQLContext";
 
-//@TODO move to components - vauchersList or smth ... @TODO graphql setup?
 const Vouchers = () => {
   return (
     <GraphQLProvider>
@@ -14,4 +13,3 @@ const Vouchers = () => {
 };
 
 export default Vouchers;
-//
