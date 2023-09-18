@@ -12,7 +12,7 @@ import {
   MINT_SELECTOR,
   DAPP_ADDRESS,
   INPUTBOX_ADDRESS,
-} from "../../config/constants";
+} from "../../shared/constants";
 
 const CanvasToJSON = () => {
   const [connectedWallet] = useWallets();

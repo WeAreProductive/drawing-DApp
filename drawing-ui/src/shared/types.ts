@@ -8,3 +8,10 @@ export type Network = {
   InputBoxAddress: string;
   Erc721PortalAddress: string;
 };
+
+export type CanvasOptions = {
+  color: string;
+  lineWidth: number;
+  canvasWidth: number;
+  canvasHeight: number;
+};

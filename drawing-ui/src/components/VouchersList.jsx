@@ -2,7 +2,7 @@ import { BigNumber, ethers } from "ethers";
 import { useEffect, useCallback, useState } from "react";
 import { useVouchersQuery, useVoucherQuery } from "../generated/graphql";
 import { useRollups } from "../hooks/useRollups";
-import { DAPP_ADDRESS } from "../config/constants";
+import { DAPP_ADDRESS } from "../shared/constants";
 
 const VouchersList = () => {
   const [result, reexecuteQuery] = useVouchersQuery();

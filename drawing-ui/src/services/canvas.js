@@ -1,4 +1,4 @@
-import { BASE_API_URL, API_ENDPOINTS } from "../config/constants";
+import { BASE_API_URL, API_ENDPOINTS } from "../shared/constants";
 import { parseNoticeData } from "../utils";
 
 /**

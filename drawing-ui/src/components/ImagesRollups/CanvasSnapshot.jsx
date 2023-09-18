@@ -1,4 +1,4 @@
-import { BASE_API_URL } from "../../config/constants";
+import { BASE_API_URL } from "../../shared/constants";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { parseCanvasData } from "../../utils";
 //src is a json string containing the canvas info - json to load on click an filename to display

@@ -1,8 +1,21 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { getCanvasImages } from "../services/canvas";
-import { INITIAL_DRAWING_OPTIONS } from "../config/constants";
+import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
+import { CanvasOptions } from "../shared/types";
 
-const CanvasContext = createContext();
+type Props = {
+  children: React.ReactNode;
+};
+const CanvasContext = createContext({
+  canvas: null,
+  setCanvas: () => undefined,
+  canvasOptions: {
+    color: INITIAL_DRAWING_OPTIONS.color,
+    lineWidth: INITIAL_DRAWING_OPTIONS.brushWidth,
+    canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
+    canvasHeight: INITIAL_DRAWING_OPTIONS.canvasHeight,
+  },
+  setOptions: () => undefined,
+});
 
 export const useCanvasContext = () => {
   const context = useContext(CanvasContext);
@@ -14,10 +27,10 @@ export const useCanvasContext = () => {
   return context;
 };
 
-export const CanvasContextProvider = ({ children }) => {
+export const CanvasContextProvider = ({ children }: Props) => {
   const [canvas, setCanvas] = useState(null);
-  const [canvasesList, setCanvasesList] = useState([]); //canvases saved as images
-  const [canvasOptions, setOptions] = useState({
+  // const [canvasesList, setCanvasesList] = useState([]); //canvases saved as images
+  const [canvasOptions, setOptions] = useState<CanvasOptions>({
     color: INITIAL_DRAWING_OPTIONS.color,
     lineWidth: INITIAL_DRAWING_OPTIONS.brushWidth,
     canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
@@ -38,8 +51,8 @@ export const CanvasContextProvider = ({ children }) => {
     setCanvas,
     canvasOptions,
     setOptions,
-    canvasesList,
-    manageCanvasesList,
+    // canvasesList,
+    // manageCanvasesList,
   };
   return (
     <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>

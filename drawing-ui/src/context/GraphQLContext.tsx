@@ -15,12 +15,13 @@ import React, { useMemo } from "react";
 import { Client, createClient, Provider } from "urql";
 
 import configFile from "../config/config.json";
+import { Network } from "../shared/types";
 
-const config = configFile;
+const config: { [name: string]: Network } = configFile;
 
 const useGraphQL = () => {
   const [{ connectedChain }] = useSetChain();
-  return useMemo(() => {
+  return useMemo<Client | null>(() => {
     if (!connectedChain) {
       return null;
     }
@@ -43,7 +44,7 @@ const useGraphQL = () => {
   }, [connectedChain]);
 };
 
-export const GraphQLProvider = (props) => {
+export const GraphQLProvider: any = (props: any) => {
   const client = useGraphQL();
   if (!client) {
     return <div />;

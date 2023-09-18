@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { fabric } from "fabric"; // v5
 import { useCanvasContext } from "../context/CanvasContext";
-import { INITIAL_DRAWING_OPTIONS } from "../config/constants";
+import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
 const FabricJSCanvas = () => {
   const canvasEl = useRef(null);
   const { canvas, setCanvas, canvasOptions } = useCanvasContext();
