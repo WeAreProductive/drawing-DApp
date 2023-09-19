@@ -1,21 +1,25 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
-import { CanvasOptions } from "../shared/types";
+import { CanvasContext, CanvasOptions } from "../shared/types";
+import { Canvas } from "fabric/fabric-impl";
 
 type Props = {
   children: React.ReactNode;
 };
-const CanvasContext = createContext({
+
+const initialOptions = {
+  color: INITIAL_DRAWING_OPTIONS.color,
+  lineWidth: INITIAL_DRAWING_OPTIONS.brushWidth,
+  canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
+  canvasHeight: INITIAL_DRAWING_OPTIONS.canvasHeight,
+};
+const initialCanvasContext = {
   canvas: null,
-  setCanvas: () => undefined,
-  canvasOptions: {
-    color: INITIAL_DRAWING_OPTIONS.color,
-    lineWidth: INITIAL_DRAWING_OPTIONS.brushWidth,
-    canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
-    canvasHeight: INITIAL_DRAWING_OPTIONS.canvasHeight,
-  },
-  setOptions: () => undefined,
-});
+  setCanvas: (canvas: null) => undefined,
+  canvasOptions: initialOptions,
+  setOptions: (options: CanvasOptions) => undefined,
+};
+const CanvasContext = createContext<CanvasContext>(initialCanvasContext);
 
 export const useCanvasContext = () => {
   const context = useContext(CanvasContext);
@@ -28,14 +32,9 @@ export const useCanvasContext = () => {
 };
 
 export const CanvasContextProvider = ({ children }: Props) => {
-  const [canvas, setCanvas] = useState(null);
+  const [canvas, setCanvas] = useState<Canvas | null>(null);
   // const [canvasesList, setCanvasesList] = useState([]); //canvases saved as images
-  const [canvasOptions, setOptions] = useState<CanvasOptions>({
-    color: INITIAL_DRAWING_OPTIONS.color,
-    lineWidth: INITIAL_DRAWING_OPTIONS.brushWidth,
-    canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
-    canvasHeight: INITIAL_DRAWING_OPTIONS.canvasHeight,
-  });
+  const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
 
   const value = {
     canvas,

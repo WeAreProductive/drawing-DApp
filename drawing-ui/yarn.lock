@@ -2780,6 +2780,11 @@
   dependencies:
     "@types/ms" "*"
 
+"@types/fabric@^5.3.4":
+  version "5.3.4"
+  resolved "https://registry.yarnpkg.com/@types/fabric/-/fabric-5.3.4.tgz#67d87054bfd1d0dcdbafb4c0a226d637c23fb9ca"
+  integrity sha512-tunniULcy73pbFbH7W8vtNF6MbOBxL40DNWjT2CrBPe+MJ9Wb8qIpbNAFB7eIpDZkmzYySnIZnxrDMSg8iPNvA==
+
 "@types/lodash.mergewith@4.6.7":
   version "4.6.7"
   resolved "https://registry.yarnpkg.com/@types/lodash.mergewith/-/lodash.mergewith-4.6.7.tgz#eaa65aa5872abdd282f271eae447b115b2757212"

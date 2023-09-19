@@ -26,8 +26,7 @@ const FabricJSCanvas = () => {
       const brush = canvas.freeDrawingBrush;
       brush.color = canvasOptions.color;
       brush.width =
-        parseInt(canvasOptions.lineWidth, 10) ||
-        INITIAL_DRAWING_OPTIONS.minBrushWidth;
+        canvasOptions.lineWidth || INITIAL_DRAWING_OPTIONS.minBrushWidth;
     }
   }, [canvas, canvasOptions.color, canvasOptions.lineWidth]);
   return (
