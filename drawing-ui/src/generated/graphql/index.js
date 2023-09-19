@@ -129,7 +129,7 @@ export const VoucherDocument = gql`
   }
 `;
 
-export function useVoucherQuery(options = null) {
+export function useVoucherQuery(options) {
   return Urql.useQuery({ query: VoucherDocument, ...options });
 }
 export const VouchersDocument = gql`

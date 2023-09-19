@@ -17,10 +17,11 @@ export type CanvasOptions = {
 };
 export type Voucher = {
   id: string;
-  index: number;
+  index: string;
   destination: string;
   input: any; //{index: number; epoch: {index: number; }
   payload: string;
   proof: any;
   executed: any;
+  msg: string;
 };
