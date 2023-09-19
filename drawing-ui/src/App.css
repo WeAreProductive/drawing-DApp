@@ -128,9 +128,14 @@ body {
   align-items: center;
   margin-top:20px
 }
-
 .eraser {
   background: #989191;
+}
+#drawing-color:hover {
+  cursor: pointer;
+}
+#drawing-line-width:hover{
+  cursor:grab;
 }
 .canvas-reset {
   background: #d00d0d;
