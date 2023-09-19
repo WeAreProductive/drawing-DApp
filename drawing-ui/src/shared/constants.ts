@@ -18,5 +18,3 @@ export const MINT_SELECTOR = "0xd0def521";
 
 // OBS: change the DApp address as appropriate
 export const DAPP_ADDRESS = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C";
-// Standard configuration for local development environment
-export const INPUTBOX_ADDRESS = "0x59b22D57D4f067708AB0c00552767405926dc768"; //@TODO get it dynamically

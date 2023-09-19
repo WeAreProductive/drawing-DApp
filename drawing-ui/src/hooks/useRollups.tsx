@@ -85,11 +85,8 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
         dappRelayAddress,
         signer
       );
-      console.log({ realyContract });
-
       // input contract
       const inputContract = InputBox__factory.connect(inputBoxAddress, signer);
-      console.log({ inputContract });
       const erc721PortalContract = ERC721Portal__factory.connect(
         erc721PortalAddress,
         signer

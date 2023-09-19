@@ -1,8 +1,8 @@
 import { useCanvasContext } from "../../context/CanvasContext";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { useToast, Button } from "@chakra-ui/react";
-import { useWallets } from "@web3-onboard/react";
+import { useSetChain, useWallets } from "@web3-onboard/react";
 
 import { InputBox__factory } from "@cartesi/rollups";
 
@@ -11,15 +11,23 @@ import {
   ERC721_TO_MINT,
   MINT_SELECTOR,
   DAPP_ADDRESS,
-  INPUTBOX_ADDRESS,
 } from "../../shared/constants";
+import configFile from "../../config/config.json";
+import { Network } from "../../shared/types";
+const config: { [name: string]: Network } = configFile;
 
 const CanvasToJSON = () => {
   const [connectedWallet] = useWallets();
   const { canvas } = useCanvasContext();
-
+  const [{ connectedChain }] = useSetChain();
   const toast = useToast();
+  const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (!connectedChain) return;
+    setInputBoxAddress(config[connectedChain.id].InputBoxAddress);
+  }, [connectedChain]);
 
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
@@ -47,7 +55,7 @@ const CanvasToJSON = () => {
       const signer = provider.getSigner();
 
       // Instantiate the InputBox contract
-      const inputBox = InputBox__factory.connect(INPUTBOX_ADDRESS, signer);
+      const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
 
       // Encode the input
       const inputBytes = ethers.utils.isBytesLike(str)
@@ -72,7 +80,6 @@ const CanvasToJSON = () => {
 
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
-      console.log({ event });
       setLoading(false);
       toast({
         title: "Transaction Confirmed",
@@ -90,11 +97,16 @@ const CanvasToJSON = () => {
   if (loading) {
     buttonProps.isLoading = true;
   }
-  return (
+
+  return connectedChain ? (
     <Button
       {...buttonProps}
       onClick={handleCanvasToSvg}
       className="button canvas-store">
+      Save Canvas
+    </Button>
+  ) : (
+    <Button disabled className="button canvas-disabled">
       Save Canvas
     </Button>
   );

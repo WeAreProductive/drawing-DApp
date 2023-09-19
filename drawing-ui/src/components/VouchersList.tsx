@@ -29,7 +29,6 @@ const VouchersList = () => {
   const executeVoucher = async (voucher: VoucherExtended) => {
     if (rollups && !!voucher.proof) {
       const newVoucherToExecute = { ...voucher };
-      console.log({ newVoucherToExecute });
       try {
         const tx = await rollups.dappContract.executeVoucher(
           voucher.destination,

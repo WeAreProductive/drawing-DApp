@@ -6,7 +6,7 @@
     "graphqlAPIURL": "http://localhost:4000",
     "inspectAPIURL": "http://localhost:5005",
     "DAppRelayAddress": "0x8Bbc0e6daB541DF0A9f0bDdA5D41B3B08B081d55",
-    "InputBoxAddress": "0x5a723220579C0DCb8C9253E6b4c62e572E379945",
+    "InputBoxAddress": "0x59b22D57D4f067708AB0c00552767405926dc768",
     "Erc721PortalAddress": "0x4CA354590EB934E6094Be762b38dE75d1Dd605a9"
   },
   "0x5": {
