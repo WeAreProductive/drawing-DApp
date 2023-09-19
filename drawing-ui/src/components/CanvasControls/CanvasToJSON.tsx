@@ -81,14 +81,28 @@ const CanvasToJSON = () => {
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setLoading(false);
-      toast({
-        title: "Transaction Confirmed",
-        description: `Input added => index: ${event?.args?.inputIndex} `,
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top-left",
-      });
+      let toastData = {};
+      if (event?.args?.inputIndex) {
+        canvas.clear();
+        toastData = {
+          title: "Transaction Confirmed",
+          description: `Input added => index: ${event?.args?.inputIndex} `,
+          status: "success",
+          duration: 9000,
+          isClosable: true,
+          position: "top-left",
+        };
+      } else {
+        toastData = {
+          title: "Error",
+          description: `Input not added => index: ${event?.args?.inputIndex} `,
+          status: "error",
+          duration: 9000,
+          isClosable: true,
+          position: "top-left",
+        };
+      }
+      toast(toastData);
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
     sendInput(base64str);
