@@ -1,9 +1,13 @@
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
-import { useVouchersQuery, useVoucherQuery } from "../generated/graphql";
+import {
+  useVouchersQuery,
+  useVoucherQuery,
+  Voucher,
+} from "../generated/graphql";
 import { useRollups } from "../hooks/useRollups";
 import { DAPP_ADDRESS } from "../shared/constants";
-import { Voucher } from "../shared/types";
+import { VoucherExtended } from "../shared/types";
 
 const VouchersList = () => {
   const [result, reexecuteQuery] = useVouchersQuery();
@@ -14,15 +18,15 @@ const VouchersList = () => {
       inputIndex: voucherToFetch[1],
     }, //, pause: !!voucherIdToFetch
   });
-  const [voucherToExecute, setVoucherToExecute] = useState<Voucher>();
+  const [voucherToExecute, setVoucherToExecute] = useState<VoucherExtended>();
   const { data, fetching, error } = result;
   const rollups = useRollups(DAPP_ADDRESS);
-  const getProof = async (voucher: Voucher) => {
+  const getProof = async (voucher: VoucherExtended) => {
     setVoucherToFetch([voucher.index, voucher.input.index]);
     reexecuteVoucherQuery({ requestPolicy: "network-only" });
   };
 
-  const executeVoucher = async (voucher: Voucher) => {
+  const executeVoucher = async (voucher: VoucherExtended) => {
     if (rollups && !!voucher.proof) {
       const newVoucherToExecute = { ...voucher };
       console.log({ newVoucherToExecute });
@@ -54,7 +58,7 @@ const VouchersList = () => {
     }
   };
   useEffect(() => {
-    const setVoucher = async (voucher: Voucher) => {
+    const setVoucher = async (voucher: VoucherExtended) => {
       if (rollups) {
         voucher.executed = await rollups.dappContract.wasVoucherExecuted(
           BigNumber.from(voucher.input.index),
@@ -74,7 +78,7 @@ const VouchersList = () => {
 
   if (!data || !data.vouchers) return <p>No vouchers</p>;
   const vouchers = data.vouchers.edges
-    .map((node: { node: Voucher }) => {
+    .map((node: { node: VoucherExtended }) => {
       const n = node.node;
       let payload = n?.payload;
       let inputPayload = n?.input.payload;
@@ -123,7 +127,7 @@ const VouchersList = () => {
       }
       return {
         id: `${n?.id}`,
-        index: parseInt(n?.index),
+        index: n?.index,
         destination: `${n?.destination ?? ""}`,
         payload: `${payload}`,
         input: n ? { index: n.input.index, payload: inputPayload } : {},
@@ -131,18 +135,13 @@ const VouchersList = () => {
         executed: null,
       };
     })
-    .sort(
-      (
-        b: { input: { index: number }; index: number },
-        a: { input: { index: number }; index: number }
-      ) => {
-        if (a.input.index === b.input.index) {
-          return b.index - a.index;
-        } else {
-          return b.input.index - a.input.index;
-        }
+    .sort((b, a) => {
+      if (a.input.index === b.input.index) {
+        return b.index - a.index;
+      } else {
+        return b.input.index - a.input.index;
       }
-    );
+    });
 
   // const forceUpdate = useForceUpdate();
   return (
@@ -212,7 +211,7 @@ const VouchersList = () => {
               <td colSpan={4}>no vouchers</td>
             </tr>
           )}
-          {vouchers.map((n: Voucher) => (
+          {vouchers.map((n: VoucherExtended) => (
             <tr key={`${n.input.index}-${n.index}`}>
               <td>{n.input.index}</td>
               <td>{n.index}</td>

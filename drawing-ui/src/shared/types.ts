@@ -24,13 +24,13 @@ export type CanvasContextType = {
   canvasOptions: CanvasOptions;
   setOptions: React.Dispatch<React.SetStateAction<CanvasOptions>>;
 };
-export type Voucher = {
-  id: string;
-  index: string;
+export type VoucherExtended = {
+  id?: string;
+  index: number;
   destination: string;
   input: any; //{index: number; epoch: {index: number; }
   payload: string;
-  proof: any;
-  executed: any;
-  msg: string;
+  proof?: any;
+  executed?: any;
+  msg?: string;
 };
