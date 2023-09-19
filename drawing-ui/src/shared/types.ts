@@ -18,7 +18,7 @@ export type CanvasOptions = {
   canvasHeight: number;
 };
 
-export type CanvasContext = {
+export type CanvasContextType = {
   canvas: Canvas | null;
   setCanvas: React.Dispatch<React.SetStateAction<Canvas | null>>;
   canvasOptions: CanvasOptions;

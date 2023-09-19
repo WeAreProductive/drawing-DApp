@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
-import { CanvasContext, CanvasOptions } from "../shared/types";
+import { CanvasContextType, CanvasOptions } from "../shared/types";
 import { Canvas } from "fabric/fabric-impl";
 
 type Props = {
@@ -19,7 +19,7 @@ const initialCanvasContext = {
   canvasOptions: initialOptions,
   setOptions: (options: CanvasOptions) => undefined,
 };
-const CanvasContext = createContext<CanvasContext>(initialCanvasContext);
+const CanvasContext = createContext<CanvasContextType>(initialCanvasContext);
 
 export const useCanvasContext = () => {
   const context = useContext(CanvasContext);

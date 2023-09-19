@@ -7,8 +7,8 @@ const LineWidthControl = () => {
     INITIAL_DRAWING_OPTIONS.brushWidth
   );
 
-  const handleLineWidthChange = (e) => {
-    setLineWidth(e.target.value);
+  const handleLineWidthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLineWidth(parseInt(e.target.value));
     setOptions({
       ...canvasOptions,
       lineWidth: lineWidth,

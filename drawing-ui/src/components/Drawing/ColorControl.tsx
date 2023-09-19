@@ -5,7 +5,7 @@ const ColorControl = () => {
   const { canvasOptions, setOptions } = useCanvasContext();
   const [color, setColor] = useState(INITIAL_DRAWING_OPTIONS.color);
 
-  const handleColorChange = (e) => {
+  const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value);
     setOptions({ ...canvasOptions, color: e.target.value });
   };
