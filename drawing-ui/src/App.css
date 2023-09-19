@@ -147,10 +147,11 @@ body {
   background: #22bd42!important;
   vertical-align: top!important
 }
-.canvas-disabled {
+.disabled {
   margin:0!important;
   opacity: 0.9;
-  color: #cccccc!important
+  color: #cccccc!important;
+  cursor: default;
 }
 .canvas-store:active{
   background: #07280d;

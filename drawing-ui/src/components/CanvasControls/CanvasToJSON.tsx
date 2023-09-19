@@ -120,7 +120,7 @@ const CanvasToJSON = () => {
       Save Canvas
     </Button>
   ) : (
-    <Button disabled className="button canvas-disabled">
+    <Button disabled className="button disabled">
       Save Canvas
     </Button>
   );

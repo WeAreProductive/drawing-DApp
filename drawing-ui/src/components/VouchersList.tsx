@@ -8,6 +8,7 @@ import {
 import { useRollups } from "../hooks/useRollups";
 import { DAPP_ADDRESS } from "../shared/constants";
 import { VoucherExtended } from "../shared/types";
+import { Button } from "@chakra-ui/react";
 
 const VouchersList = () => {
   const [result, reexecuteQuery] = useVouchersQuery();
@@ -25,7 +26,6 @@ const VouchersList = () => {
     setVoucherToFetch([voucher.index, voucher.input.index]);
     reexecuteVoucherQuery({ requestPolicy: "network-only" });
   };
-
   const executeVoucher = async (voucher: VoucherExtended) => {
     if (rollups && !!voucher.proof) {
       const newVoucherToExecute = { ...voucher };
@@ -143,6 +143,7 @@ const VouchersList = () => {
     });
 
   // const forceUpdate = useForceUpdate();
+  console.log({ voucherToExecute });
   return (
     <div>
       <p>Voucher to execute</p>
@@ -154,8 +155,6 @@ const VouchersList = () => {
               <th>Voucher Index</th>
               <th>Destination</th>
               <th>Action</th>
-              {/* <th>Payload</th> */}
-              {/* <th>Proof</th> */}
               <th>Input Payload</th>
               <th>Msg</th>
             </tr>
@@ -167,20 +166,20 @@ const VouchersList = () => {
               <td>{voucherToExecute.index}</td>
               <td>{voucherToExecute.destination}</td>
               <td>
-                <button
-                  disabled={
-                    !voucherToExecute.proof || voucherToExecute.executed
-                  }
-                  onClick={() => executeVoucher(voucherToExecute)}>
-                  {voucherToExecute.proof
-                    ? voucherToExecute.executed
+                {!voucherToExecute.proof || voucherToExecute.executed ? (
+                  <Button disabled className="disabled">
+                    {voucherToExecute.executed
                       ? "Voucher executed"
-                      : "Execute voucher"
-                    : "No proof yet"}
-                </button>
+                      : "No proof yet"}
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => executeVoucher(voucherToExecute)}
+                    className="voucher-action">
+                    Execute voucher
+                  </Button>
+                )}
               </td>
-              {/* <td>{voucherToExecute.payload}</td> */}
-              {/* <td>{voucherToExecute.proof}</td> */}
               <td>{voucherToExecute.input.payload}</td>
               <td>{voucherToExecute.msg}</td>
             </tr>
@@ -199,9 +198,7 @@ const VouchersList = () => {
             <th>Voucher Index</th>
             <th>Destination</th>
             <th>Action</th>
-            {/* <th>Input Payload</th> */}
             <th>Payload</th>
-            {/* <th>Proof</th> */}
           </tr>
         </thead>
         <tbody>
@@ -210,23 +207,19 @@ const VouchersList = () => {
               <td colSpan={4}>no vouchers</td>
             </tr>
           )}
-          {vouchers.map((n: VoucherExtended) => (
-            <tr key={`${n.input.index}-${n.index}`}>
-              <td>{n.input.index}</td>
-              <td>{n.index}</td>
-              <td>{n.destination}</td>
-              <td>
-                <button onClick={() => getProof(n)}>Get Proof</button>
-              </td>
-              {/* <td>{n.input.payload}</td> */}
-              <td>{n.payload}</td>
-              <td>
-                <button disabled={!!n.proof} onClick={() => executeVoucher(n)}>
-                  Execute voucher
-                </button>
-              </td>
-            </tr>
-          ))}
+          {vouchers.map((n: VoucherExtended) => {
+            return (
+              <tr key={`${n.input.index}-${n.index}`}>
+                <td>{n.input.index}</td>
+                <td>{n.index}</td>
+                <td>{n.destination}</td>
+                <td>
+                  <button onClick={() => getProof(n)}>Get Proof</button>
+                </td>
+                <td>{n.payload}</td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
