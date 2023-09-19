@@ -3,6 +3,7 @@ import { useCanvasContext } from "../../context/CanvasContext";
 const CanvasReset = () => {
   const { canvas } = useCanvasContext();
   const handleCanvasClear = () => {
+    if (!canvas) return;
     canvas.clear();
   };
   return (

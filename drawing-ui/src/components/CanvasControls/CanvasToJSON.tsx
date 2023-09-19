@@ -1,6 +1,6 @@
 import { useCanvasContext } from "../../context/CanvasContext";
 import React, { useState } from "react";
-import { ethers } from "ethers"; 
+import { ethers } from "ethers";
 import { useToast, Button } from "@chakra-ui/react";
 import { useWallets } from "@web3-onboard/react";
 
@@ -22,6 +22,7 @@ const CanvasToJSON = () => {
   const [loading, setLoading] = useState(false);
 
   const handleCanvasToSvg = async () => {
+    if (!canvas) return;
     toast({
       title: "Sending input to rollups...",
       status: "warning",
@@ -33,7 +34,7 @@ const CanvasToJSON = () => {
     const canvasContent = canvas.toJSON();
     const base64str = await storeAsFiles(canvasContent.objects);
 
-    const sendInput = async (strInput) => {
+    const sendInput = async (strInput: string) => {
       const str = JSON.stringify({
         image: strInput,
         erc721_to_mint: ERC721_TO_MINT,
@@ -75,17 +76,17 @@ const CanvasToJSON = () => {
       setLoading(false);
       toast({
         title: "Transaction Confirmed",
-        description: `Input added => index: ${event?.args.inputIndex} `,
+        description: `Input added => index: ${event?.args?.inputIndex} `,
         status: "success",
         duration: 9000,
         isClosable: true,
         position: "top-left",
       });
-      console.log(`Input added => index: ${event?.args.inputIndex} `);
+      console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
     sendInput(base64str);
   };
-  let buttonProps = {};
+  let buttonProps = { isLoading: false };
   if (loading) {
     buttonProps.isLoading = true;
   }

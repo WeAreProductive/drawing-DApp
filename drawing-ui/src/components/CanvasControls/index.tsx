@@ -1,6 +1,6 @@
 import CanvasReset from "./CanvasReset";
-import CanvasToJSON from "./CanvasToJSON";
-// import CanvasToSvg from "./CanvasToSvg";
+import CanvasToJSON from "./CanvasToJSON"; 
+
 const CanvasControls = () => {
   return (
     <div className="actions">
