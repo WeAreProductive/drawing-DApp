@@ -63,8 +63,7 @@ const CanvasToJSON = () => {
         : ethers.utils.toUtf8Bytes(str);
 
       // Send the transaction
-      const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
-      console.log(`transaction: ${tx.hash}`);
+      const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes); 
       toast({
         title: "Transaction Sent",
         description: "waiting for confirmation",

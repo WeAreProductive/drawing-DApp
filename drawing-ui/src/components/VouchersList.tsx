@@ -143,7 +143,6 @@ const VouchersList = () => {
     });
 
   // const forceUpdate = useForceUpdate();
-  console.log({ voucherToExecute });
   return (
     <div>
       <p>Voucher to execute</p>
