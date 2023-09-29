@@ -85,9 +85,9 @@ def process_image(image):
 
 def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out):
     logger.info(f"MINTING AN NFT")
-    pngout = base64.decodebytes(b64out)
+    pngout = base64.decodebytes(b64out)# With the help of base64.decodebytes(s) method, we can decode the binary string with the help of base64 data into normal form.
 
-    unixf = unixfs_pb2.Data()
+    unixf = unixfs_pb2.Data() # Allow to add IPFS Unixfs objects via a python protobuf interface, https://protobuf.dev/overview/
     unixf.Type = 2 # file
     unixf.Data = pngout
     unixf.filesize = len(unixf.Data)
@@ -97,13 +97,20 @@ def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out
 
     data = mdag.SerializeToString()
 
+    # SHA-256 belongs to the SHA-2 family of cryptographic hashes. It produces the 256 bit digest of a message.
+    # https://pycryptodome.readthedocs.io/en/latest/src/hash/sha256.html
     h = SHA256.new()
-    h.update(data)
+    h.update(data)# the image data
     sha256_code = "12"
+    # Return the hexadecimal representation of an integer.
     size = hex(h.digest_size)[2:]
+    # The sha256() returns a HASH object.
+    # So if you want to get the hash as a string, use the hexdigest().
     digest = h.hexdigest()
     combined = f"{sha256_code}{size}{digest}"
+    # convert string hex to bytes hex format before feeding it to b58encode to produce base58 str
     multihash = base58.b58encode(bytes.fromhex(combined))
+    # decode a string encoded in UTF-8 format
     tokenURI = multihash.decode('utf-8') # it is not the ipfs unixfs 'file' hash
 
     mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,tokenURI)
