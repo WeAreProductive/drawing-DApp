@@ -9,6 +9,7 @@ import { useRollups } from "../hooks/useRollups";
 import { DAPP_ADDRESS } from "../shared/constants";
 import { VoucherExtended } from "../shared/types";
 import { Button } from "@chakra-ui/react";
+import { VoucherExecutedEvent } from "@cartesi/rollups/dist/src/types/contracts/dapp/CartesiDApp";
 
 const VouchersList = () => {
   const [result, reexecuteQuery] = useVouchersQuery();
@@ -36,8 +37,21 @@ const VouchersList = () => {
           voucher.proof
         );
         const receipt = await tx.wait();
+
         newVoucherToExecute.msg = `voucher executed! (tx="${tx.hash}")`;
         if (receipt.events) {
+          const event = receipt.events?.find(
+            (e) => e.event === "VoucherExecuted"
+          );
+
+          if (!event) {
+            throw new Error(
+              `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`
+            );
+          }
+          // https://medium.com/linum-labs/everything-you-ever-wanted-to-know-about-events-and-logs-on-ethereum-fec84ea7d0a5
+          //?event.data === index or id?
+          console.log(event);
           newVoucherToExecute.msg = `${
             newVoucherToExecute.msg
           } - resulting events: ${JSON.stringify(receipt.events)}`;
@@ -71,7 +85,6 @@ const VouchersList = () => {
       setVoucher(voucherResult.data.voucher);
     }
   }, [voucherResult, rollups]);
-
   if (fetching) return <p>Loading...</p>;
   if (error) return <p>Oh no... {error.message}</p>;
 
@@ -80,6 +93,7 @@ const VouchersList = () => {
     .map((node: { node: VoucherExtended }) => {
       const n = node.node;
       let payload = n?.payload;
+      console.log(payload);
       let inputPayload = n?.input.payload;
       if (inputPayload) {
         try {
