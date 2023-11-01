@@ -1,34 +1,44 @@
-# dapp dependencies stage
-FROM --platform=linux/riscv64 cartesi/python:3.10-slim-jammy as dapp-build
+# syntax=docker.io/docker/dockerfile:1.4
+FROM --platform=linux/riscv64 cartesi/python:3.10-slim-jammy
+
+LABEL io.sunodo.sdk_version=0.2.0
+LABEL io.cartesi.rollups.ram_size=128Mi
 
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TZ=Etc/UTC
 
-WORKDIR /opt/cartesi/dapp
+ARG MACHINE_EMULATOR_TOOLS_VERSION=0.12.0
+RUN <<EOF
+apt-get update
+apt-get install -y --no-install-recommends busybox-static=1:1.30.1-7ubuntu3 ca-certificates=20230311ubuntu0.22.04.1 curl=7.81.0-1ubuntu1.14 \
+    build-essential=12.9ubuntu3 python3-numpy=1:1.21.5-1ubuntu22.04.1 python3-opencv=4.5.4+dfsg-9ubuntu4 python3-shapely=1.8.0-1build1
+curl -fsSL https://github.com/cartesi/machine-emulator-tools/releases/download/v${MACHINE_EMULATOR_TOOLS_VERSION}/machine-emulator-tools-v${MACHINE_EMULATOR_TOOLS_VERSION}.tar.gz \
+  | tar -C / --overwrite -xvzf -
+rm -rf /var/lib/apt/lists/*
+EOF
 
-RUN apt update \
-    && apt install -y --no-install-recommends \
-    build-essential=12.9ubuntu3 \
-    python3-numpy=1:1.21.5-1ubuntu22.04.1 \
-    python3-opencv=4.5.4+dfsg-9ubuntu4 \
-    python3-shapely=1.8.0-1build1
+ENV PATH="/opt/cartesi/bin:${PATH}"
+
+WORKDIR /opt/cartesi/dapp
 
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-ENV PYTHONPATH=/opt/venv/lib/python3.10/site-packages:/usr/lib/python3/dist-packages
 
-COPY dapp .
-RUN pip3 install -r requirements.txt
+COPY dapp/requirements.txt .
+RUN pip3 install -r requirements.txt --no-cache
 
-RUN apt remove -y python3-pip build-essential
+RUN apt remove -y build-essential curl && apt -y autoremove
 
 RUN rm requirements.txt \
-    && find /usr/lib/python3/dist-packages -type d -name __pycache__ -exec rm -r {} + \
-    && find /opt/venv/lib/python3.10/site-packages -type d -name __pycache__ -exec rm -r {} + \
-    && rm -rf /var/lib/apt/lists/* \
+    && find /usr/local/lib -type d -name __pycache__ -exec rm -r {} + \
     && find /var/log \( -name '*.log' -o -name '*.log.*' \) -exec truncate -s 0 {} \;
 
-COPY dapp/entrypoint.sh .
 COPY dapp/drawing.py .
-COPY dapp/protobuf_models/merkle_dag_pb2.py protobuf_models/.
-COPY dapp/protobuf_models/unixfs_pb2.py protobuf_models/.
+COPY dapp/entrypoint.sh .
+COPY dapp/protobuf_models/merkle_dag_pb2.py protobuf_models/merkle_dag_pb2.py 
+COPY dapp/protobuf_models/unixfs_pb2.py protobuf_models/unixfs_pb2.py
+
+ENV ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004"
+
+ENTRYPOINT ["rollup-init"]
+CMD ["/opt/cartesi/dapp/entrypoint.sh"]

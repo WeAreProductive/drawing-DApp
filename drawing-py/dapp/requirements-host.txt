@@ -1,6 +1,6 @@
 requests == 2.23.0
-eth_abi == 3.0.1
-cytoolz == 0.11.2
+eth_abi == 4.2.1
+cytoolz == 0.12.2
 Cython == 0.29.32
 base58 == 2.1.1
 numpy == 1.23.4

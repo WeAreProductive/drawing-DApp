@@ -1,7 +1,7 @@
-requests == 2.23.0
-cytoolz == 0.11.2
+requests == 2.31.0
+cytoolz == 0.12.2
 Cython == 0.29.32
 base58 == 2.1.1
-eth_abi == 3.0.1
+eth_abi == 4.2.1
 protobuf==4.23.2
 pycryptodomex==3.15.0
