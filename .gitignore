@@ -9,5 +9,5 @@ drawing-api/public/
 drawing-py/.venv 
 drawing-py/.venv39
 TODO.md
-deployments/
-sunodo
+drawing-py/deployments/
+drawing-py/.sunodo
