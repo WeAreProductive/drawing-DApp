@@ -30,17 +30,38 @@ logger.info(f"HTTP rollup_server url is {rollup_server}")
 ##
 # Aux Functions 
 
-def hex2str(hex):
+def str2hex(string):
+    """
+    Encode a string as a hex string
+    """
+    return binary2hex(str2binary(string))
+
+def str2binary(string):
+    """
+    Encode a string as a binary string
+    """
+    return string.encode("utf-8")
+
+def binary2hex(binary):
+    """
+    Encode a binary as a hex string
+    """
+    return "0x" + binary.hex()
+
+
+def hex2binary(hexstr):
+    """
+    Decodes a hex string into a regular byte string
+    """
+    return bytes.fromhex(hexstr[2:])
+
+def hex2str(hexstr):
     """
     Decodes a hex string into a regular string
     """
-    return bytes.fromhex(hex[2:]).decode("utf-8")
+    return hex2binary(hexstr).decode("utf-8")
 
-def str2hex(str):
-    """
-    Encodes a string as a hex string
-    """
-    return "0x" + str.encode("utf-8").hex()
+
 
 def send_voucher(voucher):
     send_post("voucher",voucher)
@@ -109,7 +130,7 @@ def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out
     
 def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string):
     mint_header = clean_header(mint_header)
-    data = encode_abi(['address', 'string'], [msg_sender,string])
+    data = encode(['address', 'string'], [msg_sender,string])
     payload = f"0x{(mint_header+data).hex()}"
     voucher = {"destination": erc721_to_mint , "payload": payload}
     logger.info(f"voucher {voucher}")
@@ -117,7 +138,16 @@ def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string):
     
     send_notice({"payload": str2hex(str(f"Emmited voucher to mint ERC721 {erc721_to_mint} with the content {string}"))})
 
- 
+def mint_erc721_no_data(msg_sender,erc721_to_mint,mint_header):
+    mint_header = clean_header(mint_header)
+    data = encode(['address'], [msg_sender])
+    payload = f"0x{(mint_header+data).hex()}"
+    voucher = {"destination": erc721_to_mint , "payload": payload}
+    logger.info(f"voucher {voucher}")
+    send_voucher(voucher)
+    
+    send_notice({"payload": str2hex(str(f"Emmited voucher to mint ERC721 {erc721_to_mint}"))})
+
 def clean_header(mint_header):
     if mint_header[:2] == "0x":
         mint_header = mint_header[2:]
@@ -128,64 +158,75 @@ def clean_header(mint_header):
 # handlers
 
 def handle_advance(data):
-    logger.info(f"Received advance request data {data}")
-    logger.info("Adding notice")
+    logger.info(f"Received advance request")
+    # logger.info("Adding notice")
+    logger.info(data)
     status = "accept"
     payload = None
+    sender = data["metadata"]["msg_sender"].lower()
     try:
-        payload = hex2str(data["payload"])
-        logger.info(f"Received str {payload}")
-        if payload == "exception":
-            status = "reject"
-            exception = {"payload": str2hex(str(payload))}
-            send_exception(exception)
-            sys.exit(1)
-        elif payload == "reject":
-            status = "reject"
-            report = {"payload": str2hex(str(payload))}
-            send_report(report)
-        elif payload == "report":
-            report = {"payload": str2hex(str(payload))}
-            send_report(report)
-        elif payload[0:7] == "voucher":
-            payload = f"{payload}"
-            voucher = json.loads(payload[7:])
-            send_voucher(voucher)
-        elif payload == "notice":
-            notice = {"payload": str2hex(str(payload))}
-            send_notice(notice)
+        payload = data["payload"]
+        if sender == DAPP_RELAY_ADDRESS:
+            logger.info(f"Received advance from dapp relay")
+            global rollup_address
+            rollup_address = payload
+            send_report({"payload": str2hex(f"Set rollup_address {rollup_address}")})
+        elif sender in [ERC721_PORTAL_ADDRESS]:
+            logger.info(f"Received advance from portal")
+            # or was sent by the Portals, which is where deposits must come from
+            handle_tx(sender,payload)
         else:
-            try:
-                logger.info(f"Trying to decode json {payload}")
-                # try json data
-                json_data = json.loads(payload) 
-                logger.info(f'JSON DATA {json_data}')
-                if json_data.get("image"):
-                    b64out = process_image(json_data["image"].encode("utf-8"))
-                    payload = f"{b64out}"
-                    if json_data.get("erc721_to_mint") and json_data.get("selector"):  
-                        mint_erc721_with_uri_from_image(data["metadata"]["msg_sender"],json_data["erc721_to_mint"],json_data["selector"],b64out)
-                elif json_data.get("erc721_to_mint") and json_data.get("selector"):
-                    #@TODO check the case when
-                    logger.info(f"Received mint request to ({json_data['erc721_to_mint']})")
-                    if json_data.get("string"):
-                        mint_erc721_with_string(data["metadata"]["msg_sender"],json_data["erc721_to_mint"],json_data["selector"],json_data["string"])        
-                else:
-                    raise Exception('Not supported json operation')
-            except Exception as e2:
-                msg = f"Not valid json: {e2}"
-                traceback.print_exc()
-                logger.info(msg)
+            payload = hex2str(payload)
+            logger.info(f"Received str {payload}")
+            if payload == "exception":
+                status = "reject"
+                exception = {"payload": str2hex(str(payload))}
+                send_exception(exception)
+                sys.exit(1)
+            elif payload == "reject":
+                status = "reject"
+                report = {"payload": str2hex(str(payload))}
+                send_report(report)
+            elif payload == "report":
+                report = {"payload": str2hex(str(payload))}
+                send_report(report)
+            elif payload[0:7] == "voucher":
+                payload = f"{payload}"
+                voucher = json.loads(payload[7:])
+                send_voucher(voucher)
+            elif payload == "notice":
+                notice = {"payload": str2hex(str(payload))}
+                send_notice(notice)
+            else:
+                try:
+                    logger.info(f"Trying to decode json {payload}")
+                    # try json data
+                    json_data = json.loads(payload) 
+                    logger.info(f'JSON DATA {json_data}')
+                    if json_data.get("image"):
+                        b64out = process_image(json_data["image"].encode("utf-8"))
+                        payload = f"{b64out}"
+                        if json_data.get("erc721_to_mint") and json_data.get("selector"):
+                            mint_erc721_with_uri_from_image(sender,json_data["erc721_to_mint"],json_data["selector"],b64out)
+                    elif json_data.get("erc721_to_mint") and json_data.get("selector"):
+                        logger.info(f"Received mint request to ({json_data['erc721_to_mint']})")
+                        if json_data.get("string"):
+                            mint_erc721_with_string(sender,json_data["erc721_to_mint"],json_data["selector"],json_data["string"])
+                        else:
+                            mint_erc721_no_data(sender,json_data["erc721_to_mint"],json_data["selector"])
+                    else:
+                        raise Exception('Not supported json operation')
+                except Exception as e2:
+                    msg = f"Not valid json: {e2}"
+                    traceback.print_exc()
+                    logger.info(msg)
     except Exception as e:
-        try:
-            logger.info(f"Trying to decode deposit")
-            handle_tx(data["metadata"]["msg_sender"],data["payload"])
-        except Exception as e2:
-            status = "reject"
-            msg = f"Error executing deposit: {e}"
-            # traceback.print_exc()
-            logger.error(msg)
-            send_report({"payload": str2hex(msg)})
+        status = "reject"
+        msg = f"Error: {e}"
+        traceback.print_exc()
+        logger.error(msg)
+        send_report({"payload": str2hex(msg)})
+
     if not payload:
         payload = data["payload"]
     else:
@@ -193,16 +234,36 @@ def handle_advance(data):
     notice = {"payload": payload}
     send_notice(notice)
 
-    logger.info(f"Payload is {payload}")
+    logger.info(f"Notice payload was {payload}")
     return status
 
 def handle_tx(sender,payload):
-    binary = bytes.fromhex(payload[2:])
-    input_header = decode_abi(['bytes32'], binary)[0]
-    logger.info(f"header {input_header}")
-    voucher = None  
+    binary = hex2binary(payload)
+    voucher = None 
+
+    if sender == ERC721_PORTAL_ADDRESS:
+        logger.info(f"Received ERC721 deposit")
+
+        token_address = binary2hex(binary[:20])
+        depositor = binary2hex(binary[20:40])
+        token_id = int.from_bytes(binary[40:72], "big")
+        deposit_data = binary[72:]
+
+        # send deposited erc721 back to depositor
+        if rollup_address is not None:
+            # Function to be called in voucher [token_address].transfer([address sender],[address receiver],[uint256 id])
+            receiver = depositor
+            data = encode(['address', 'address', 'uint256'], [sender,receiver,token_id])
+            voucher_payload = binary2hex(ERC721_SAFETRANSFER_FUNCTION_SELECTOR + data)
+            voucher = {"destination": token_address, "payload": voucher_payload}
+    
+    else:
+        pass
+
     if voucher:
-        send_voucher(voucher)   
+        send_voucher(voucher)
+        logger.info(f"Voucher was {voucher}")
+
 
 def handle_inspect(request):
     data = request["data"]
@@ -218,6 +279,7 @@ handlers = {
 }
 
 finish = {"status": "accept"}
+rollup_address = None
 
 while True:
     logger.info("Sending finish")
@@ -226,10 +288,6 @@ while True:
     if response.status_code == 202:
         logger.info("No pending rollup request, trying again")
     else:
-        rollup_request = response.json()
-        logger.info(f"Received rollup_request {rollup_request}")
-        
-        data = rollup_request["data"]
-        
+        rollup_request = response.json() 
         handler = handlers[rollup_request["request_type"]]
         finish["status"] = handler(rollup_request["data"])
