@@ -169,14 +169,25 @@ When developing an application, it is often important to easily test and debug i
 To start the application, execute the following command from the project's root directory:
 
 ```shell
-cd drawing-py
-docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose-host.yml up
+sunodo run
 ```
 
-The application can afterwards be shut down with the following command:
+to get a detailed running log
+```shell
+sunodo run --verbose
+```
+
+To get system status on error
 
 ```shell
-docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose-host.yml down -v
+sunodo doctor
+```
+## Running the back-end in host mode
+
+To start the rollups node, execute the following command:
+
+```shell
+sunodo run --no-backend
 ```
 
 This DApp's back-end is written in Python, so to run it in your machine you need to have `python3` installed.
@@ -189,7 +200,7 @@ cd dapp
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements-host.txt
-ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" python3 drawing.py
+ROLLUP_HTTP_SERVER_URL="http://localhost:8080/host-runner python3 drawing.py
 ```
 
 The final command will effectively run the back-end and send corresponding outputs to port `5004`.
@@ -210,3 +221,6 @@ INFO:__main__:Sending finish
 
 After that, you can interact with the application normally [as explained above](#interacting-with-the-application).
 
+## For more useful sunodo commands
+
+Check the link - https://github.com/sunodo/sunodo
