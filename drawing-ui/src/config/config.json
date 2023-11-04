@@ -3,7 +3,7 @@
     "token": "ETH",
     "label": "localhost",
     "rpcUrl": "http://localhost:8545",
-    "graphqlAPIURL": "http://localhost:4000",
+    "graphqlAPIURL": "http://localhost:8080",
     "inspectAPIURL": "http://localhost:5005",
     "DAppRelayAddress": "0x8Bbc0e6daB541DF0A9f0bDdA5D41B3B08B081d55",
     "InputBoxAddress": "0x59b22D57D4f067708AB0c00552767405926dc768",
