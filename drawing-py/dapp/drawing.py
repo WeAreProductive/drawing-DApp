@@ -5,7 +5,7 @@ import requests
 import traceback
 import json
 from eth_abi import encode
-from shapely.geometry import shape, Point
+# from shapely.geometry import shape, Point
 import numpy as np
 import cv2
 from Cryptodome.Hash import SHA256

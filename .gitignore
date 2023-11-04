@@ -5,9 +5,10 @@ drawing/config.js
 drawing/dist/*
 .env
 drawing/yarn-error.log
-drawing-api/public/ 
-drawing-py/.venv 
-drawing-py/.venv39
+drawing-api/public/
 TODO.md
+ 
+drawing-py/dapp/.venv
 drawing-py/deployments/
 drawing-py/.sunodo
+drawing-py/dapp/protobuf_models/__pycache__/

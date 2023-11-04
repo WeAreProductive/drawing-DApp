@@ -3,7 +3,8 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import fs from "fs";
 import path from "path";
-import { fabric } from "fabric"; // v5
+// import { fabric } from "fabric"; // v5
+import * as fabric from 'fabric/node';
 import { API_ENDPOINTS, ORIGIN_BASE } from "./config.mjs";
 import imageToBase64 from "image-to-base64";
 
