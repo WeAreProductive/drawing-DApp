@@ -16,29 +16,35 @@ To build the application, run the following command from the project's root dire
 
 ```shell
 cd drawing-py
-docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load --no-cache
-```
-or 
-```shell
-cd drawing-py
-docker buildx bake -f docker-bake.hcl -f docker-bake.override.hcl --load
-```
-Remember: when running in HOST mode you do not need to build the machine!
-
+sunodo build
+``` 
 ## Running
 
 To start the application, execute the following command from the project's root directory:
 
 ```shell
 cd drawing-py
-docker compose -f docker-compose.yml -f docker-compose.override.yml up
+sunodo run
 ```
-
-The application can afterwards be shut down with the following command:
+To get a more detailed running log
 
 ```shell
-docker compose -f docker-compose.yml -f docker-compose.override.yml down -v
+sunodo run --verbose
 ```
+To check system status on error 
+```shell
+sunodo doctor
+```
+
+## Epoch
+
+By default the node closes an epoch `once a day`, but this can be controlled by the 
+
+`--epoch-duration <seconds>` command option. 
+It's an important settings when it comes down to voucher execution.
+
+The application can afterwards be shut down with `CTRL+C`
+
 ## Smart contracts
 
 This dApp needs a smart contract to be able to mint NSTs from canvas drawings.
@@ -52,24 +58,7 @@ cd smart-contracts
 yarn && yarn build
 ```
 
-### Building & Deploying
-
-The DApp will specify their deployment within their corresponding `docker-compose.override.yml` file. This makes building and deploying the smart contracts manually obsolete. 
-
-You may build the project's `smart contract` manually as follows. From the project's root directory execute:
-
-```shell
-cd smart-contracts
-yarn && yarn build
-```
-
-Aditionally, the project's smart contract can be deployed manually on the local development network by running 
-```shell
-yarn deploy
-``` 
-
-Manual deployment to other supported testnets can be done by executing `yarn deploy:<network>`.
-
+### Building & Deploying 
 
 ### The Contracts
 
@@ -104,63 +93,7 @@ cd drawing-api
 yarn dev
 ```
 
-## Deploying to a testnet (revise the cli commands!)
-
-Deploying the application to a blockchain requires creating a smart contract on that network, as well as running a validator node for the DApp.
-
-The first step is to build the DApp's back-end machine, which will produce a hash that serves as a unique identifier.
-
-```shell
-cd drawing-py
-docker buildx bake machine --load
-```
-
-Once the machine docker image is ready, we can use it to deploy a corresponding Rollups smart contract. This requires you to define a few environment variables to specify which network you are deploying to, which account to use, and which RPC gateway to use when submitting the deploy transaction.
-
-```shell
-export NETWORK=<network>
-export MNEMONIC=<user sequence of twelve words>
-export RPC_URL=<https://your.rpc.gateway>
-```
-
-For example, to deploy to the Goerli testnet using an Alchemy RPC node, you could execute:
-
-```shell
-export NETWORK=goerli
-export MNEMONIC=<user sequence of twelve words>
-export RPC_URL=https://eth-goerli.alchemyapi.io/v2/<USER_KEY>
-```
-
-With that in place, you can submit a deploy transaction to the Cartesi DApp Factory contract on the target network by executing the following command:
-
-```shell
-DAPP_NAME=drawing docker compose -f ./deploy-testnet.yml up
-```
-
-This will create a file at `./deployments/<network>/drawing.json` with the deployed contract's address.
-Once the command finishes, it is advisable to stop the docker compose and remove the volumes created when executing it.
-
-```shell
-DAPP_NAME=drawing docker compose -f ./deploy-testnet.yml down -v
-```
-
-After that, a corresponding Cartesi Validator Node must also be instantiated in order to interact with the deployed smart contract on the target network and handle the back-end logic of the DApp.
-Aside from the environment variables defined above, the node will also need a secure websocket endpoint for the RPC gateway (WSS URL) and the chain ID of the target network.
-
-For example, for Goerli and Alchemy, you would set the following additional variables:
-
-```shell
-export WSS_URL=wss://eth-goerli.alchemyapi.io/v2/<USER_KEY>
-export CHAIN_ID=5
-```
-
-Then, the node itself can be started by running a docker compose as follows:
-
-```shell
-DAPP_NAME=drawing docker compose -f ./docker-compose-testnet.yml -f ./docker-compose.override.yml up
-```
-
-## Interacting with the deployed application 
+## Deploying to a testnet (revise the cli commands!) 
 
 ## Running the back-end in host mode
 
@@ -169,26 +102,8 @@ When developing an application, it is often important to easily test and debug i
 To start the application, execute the following command from the project's root directory:
 
 ```shell
-sunodo run
-```
-
-to get a detailed running log
-```shell
-sunodo run --verbose
-```
-
-To get system status on error
-
-```shell
-sunodo doctor
-```
-## Running the back-end in host mode
-
-To start the rollups node, execute the following command:
-
-```shell
 sunodo run --no-backend
-```
+``` 
 
 This DApp's back-end is written in Python, so to run it in your machine you need to have `python3` installed.
 The backend uses hsapely library, so you should install libgeos-c on your host (refer to [geos](https://libgeos.org/usage/install/)).
@@ -223,4 +138,7 @@ After that, you can interact with the application normally [as explained above](
 
 ## For more useful sunodo commands
 
-Check the link - https://github.com/sunodo/sunodo
+Check these links for more infor,mation on Sunodo
+- https://github.com/sunodo/sunodo
+- https://docs.sunodo.io/guide/running/running-application?fbclid=IwAR3OW0tUEVeB42FBnh-cjkYIOgdPDrG262HRT5bObXyaNXX-9fqQtZ0TSog
+- https://docs.sunodo.io
