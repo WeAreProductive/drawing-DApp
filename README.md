@@ -136,9 +136,9 @@ INFO:__main__:Sending finish
 
 After that, you can interact with the application normally [as explained above](#interacting-with-the-application).
 
-## For more useful sunodo commands
+## For more information on how to work with Sunodo
 
-Check these links for more infor,mation on Sunodo
+Check these links 
 - https://github.com/sunodo/sunodo
 - https://docs.sunodo.io/guide/running/running-application?fbclid=IwAR3OW0tUEVeB42FBnh-cjkYIOgdPDrG262HRT5bObXyaNXX-9fqQtZ0TSog
 - https://docs.sunodo.io
