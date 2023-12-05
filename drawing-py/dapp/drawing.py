@@ -97,6 +97,7 @@ def process_image(image):
     return b64out
 
 def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out):
+    # b64out is the payload after string is processed
     logger.info(f"MINTING AN NFT")
     pngout = base64.decodebytes(b64out)# With the help of base64.decodebytes(s) method, we can decode the binary string with the help of base64 data into normal form.
 

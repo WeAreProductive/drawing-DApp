@@ -44,6 +44,7 @@ const CanvasToJSON = () => {
 
     const sendInput = async (strInput: string) => {
       const str = JSON.stringify({
+        // string: strInput,
         image: strInput,
         erc721_to_mint: ERC721_TO_MINT,
         selector: MINT_SELECTOR,
