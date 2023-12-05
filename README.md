@@ -190,13 +190,13 @@ yarn dev
         
         For detailed string processing information refer to: drawing-py/drawing.py `mint_erc721_with_uri_from_image` method definition.
 
-        - emmits a voucher - containing 
+        - emits a voucher - containing 
         
             + destination: (the mint NFT smart contract address), 
 
             + payload: `the Mint Erc721 - tokenURI` and the `owner` of the picture to be minted as a NFT and the NFT itself
 
-        - emmits a notice with information about the emmited voucher `Emmited voucher to mint ERC721 {erc721 string to mint}`
+        - emits a notice with information about the emited voucher `Emmited voucher to mint ERC721 {erc721 string to mint}`
 
     - The new `voucher` is accessible at DrawingDapp `Vouchers` tab
 
