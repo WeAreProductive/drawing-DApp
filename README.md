@@ -1,20 +1,24 @@
 # Drawing DApp
+
 Drawing is a customized DApp written in Python, which originally resembles the one provided by the sample [Echo Python DApp](https://github.com/cartesi/rollups-examples/tree/main/echo-python).
 Contrary to that example, this DApp does not use shared resources from the `rollups-examples` main directory to be set and run, but instead uses [Sunodo](https://docs.sunodo.io). 
 That is why the commands for `building`, `running` and `deploying` differ from the ones given for the [rollups examples](https://github.com/cartesi/rollups-examples/tree/main).
 
 ## Requirements
+
 Please refer to [system requirements](https://docs.sunodo.io/guide/introduction/installing#system-requirements) before start building a dApp with Sunodo.
 
 ## Epoch
+
 By default the node closes an epoch `once a day`, but this can be controlled by the 
 `--epoch-duration <seconds>` command option when executing the run dApp command.
 
 It's an important settings when it comes down to `voucher` execution.
 
 ## Building
-To build the application, run the following command from the project's root directory:
-/add `--no-cache` when in development mode/ 
+
+To build the application, run the following command from the project's root directory 
+(add `--no-cache` when in development mode):
 
 ```shell
 cd drawing-py
@@ -22,6 +26,7 @@ sunodo build
 ``` 
 
 ## Running
+
 To `start` the application, execute the following command from the project's root directory:
 ```shell
 cd drawing-py
@@ -30,7 +35,7 @@ sunodo run
 
 ### useful command options
 
-To control epoch duration - see [Epoch][#Epoch] @TODO - check the link
+To control epoch duration - see [Epoch](#epoch)
 
 To get a more `detailed running log` run:
 ```shell
@@ -43,9 +48,11 @@ sunodo doctor
 ```
 
 ## Shut down
+
 The application can afterwards be shut down with `CTRL+C`
 
 ## Running the back-end in host mode
+
 When developing an application, it is often important to easily test and debug it. 
 
 To `start` the application, execute the following command from the project's root directory:
@@ -82,15 +89,17 @@ INFO:__main__:HTTP rollup_server url is http://127.0.0.1:5004
 INFO:__main__:Sending finish
 ```
 
-After that, you can interact with the application normally [as explained above](#interacting-with-the-application). @TODO - check the link
+After that, you can interact with the application normally [as explained below](#interacting-with-the-application).
 
 ## For more information on how to work with Sunodo
+
 Check these links:
 - https://github.com/sunodo/sunodo
 - https://docs.sunodo.io/guide/running/running-application?fbclid=IwAR3OW0tUEVeB42FBnh-cjkYIOgdPDrG262HRT5bObXyaNXX-9fqQtZ0TSog
 - https://docs.sunodo.io
 
 ## Smart contracts. Building & Deploying.  
+
 This dApp needs a smart contract to be able to mint NSTs from canvas drawings.
 
 ### Building the smart contract and deploying manually
@@ -112,27 +121,38 @@ yarn deploy
 Manual deployment to other supported testnets can be done by executing `yarn deploy:<network>`.
 
 ### Building and deploying the smart contracts when running the application
+
 @TODO - see https://docs.sunodo.io/guide/building/customizing
 
 ### Use the smart contract
-To use the smart contract, you must first retrieve the contract address from the deployment data. 
-When deploying the contract manually its address is printed in CLI:
-deploying "DrawingNFT" (tx: tx-hash)...: `deployed at` `address` with 1348001 gas
 
-You can also check the address in amsart-contracts/deploymets/smart-contract-name.json, { address: `address`}.
-The smart `contract's address` is used in the FE (`drawing-ui/src/shared/constants.ts`) as `ERC721_TO_MINT`.
+To use the smart contract, you must first retrieve the contract address from the deployment data. 
+When deploying the contract manually its address is printed in CLI as follows:
+```
+deploying "DrawingNFT" (tx: tx-hash)...: `deployed at` `address` with 1348001 gas
+```
+
+You can also check the address in 
+```
+smart-contracts/deploymets/smart-contract-name.json, { address: `address`}.
+```
+The smart `contract's address` is used in the frontend application - (see `drawing-ui/src/shared/constants.ts`) as `ERC721_TO_MINT`.
 
 ## Interacting with the application
-Use the frontend `drawing-ui` [drawing-ui](https://github.com/...) application to interact with the DApp. @TODO link
+
+Use the frontend `drawing-ui` application to interact with the DApp. 
 
 ### Requirements 
+
 1. Vouchers cannot be executed when running the backend in host mode.
-2. You should have a wallet (MetaMask) installed in the browser.
-3. When restarting the application be sure to `Clear wallet's activity and nonce data` from Setting - Advanced - Clear activity and nonce data
-4. Be sure to have small amount of assets in the wallet account used in the dApp interactions.
-5. Be sure to redeploy the smart-contract if it's been deployed manually (`@TODO setup smart-contract build and deploy when starting the dApp; check smart contrat address`)
+2. You should have a wallet (MetaMask) installed in the browser and be able to connect to account in that wallet.
+3. When restarting the application be sure to `Clear wallet's activity and nonce data` from Settings - Advanced - Clear activity and nonce data
+4. Be sure to have small amount of assets in the wallet account for the dApp interactions.
+5. Be sure to [redeploy](#building-the-smart-contract-and-deploying-manually) the dApp's smart contract if it's been deployed manually 
+(`@TODO setup smart-contract build and deploy when starting the dApp; check smart contrat address`)
 
 ### Running the frontend in development mode
+
 To run the frontend application execute from the project `root directory`: 
 ```shell
 cd drawing-ui
@@ -140,15 +160,19 @@ yarn dev
 ```
 
 ### drawing-api server
-In order the frontend to work properly, you need to start a server that will convert the `canvas into a base64 string`` needed for the NFT to be minted at the backend.
-Execute the following commands from the project's `root directory` (refer to drawing-api/package.json scripts)
+
+In order the frontend to work properly, you need to start a server that will convert the `canvas into a base64 string`.
+This string format is required for the backend to be able to prepare a suitable tokenURI for the NFT to be minted on voucher execution.
+
+To `start the server` execute the following commands from the project's `root directory` (refer to drawing-api/package.json scripts).
 
 ```shell
 cd drawing-api
+yarn
 yarn dev
 ```
 
-## Steps to mint a NFT from drawing
+## Steps to mint a NFT from a drawing
 
 1. Draw a picture on canvas 
 2. Save the canvas
@@ -161,5 +185,6 @@ yarn dev
 3. Execute the voucher
     - After the current epoch is closed the `voucher` can be executed.
     - You can see your newly minted NFT in your wallet by importing it using the `smart contract address` and the `id` of the minted NFT.
+
     `note:` the ids start from 1, and currently there is no way of knowing the nft's id.
 
