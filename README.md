@@ -1,7 +1,7 @@
 # Drawing DApp
 Drawing is a customized DApp written in Python, which originally resembles the one provided by the sample [Echo Python DApp](https://github.com/cartesi/rollups-examples/tree/main/echo-python).
-Contrary to that example, this DApp does not use shared resources from the `rollups-examples` main directory, but instead uses [Sunodo](https://docs.sunodo.io). 
-That is why the commands for `building`, `running` and `deploying` the application are different.
+Contrary to that example, this DApp does not use shared resources from the `rollups-examples` main directory to be set and run, but instead uses [Sunodo](https://docs.sunodo.io). 
+That is why the commands for `building`, `running` and `deploying` differ from the ones given for the [rollups examples](https://github.com/cartesi/rollups-examples/tree/main).
 
 ## Requirements
 Please refer to [system requirements](https://docs.sunodo.io/guide/introduction/installing#system-requirements) before start building a dApp with Sunodo.
