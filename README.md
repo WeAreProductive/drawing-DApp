@@ -190,9 +190,9 @@ yarn dev
 
         - emmits a voucher - containing 
         
-            + `destination`: (the mint NFT smart contract address), 
+            + destination: (the mint NFT smart contract address), 
 
-            + `payload``: `the Mint Erc721 - tokenURI` and the `owner` of the picture to be minted as a NFT and the NFT itself
+            + payload: `the Mint Erc721 - tokenURI` and the `owner` of the picture to be minted as a NFT and the NFT itself
 
         - emmits a notice with information about the emmited voucher `Emmited voucher to mint ERC721 {erc721 string to mint}`
 
@@ -203,5 +203,5 @@ yarn dev
     - You can execute the `voucher` once the current epoch is closed.
     - The newly minted NFT can be imoprted in your wallet by using the `smart contract address` and the `id` of the minted NFT.
 
-    > Note: the ids start from 1, and currently there is no way of knowing the nft's id.
+    > Note: the ids start from 1, and currently there is no way of knowing the newly minted nft's id.
 
