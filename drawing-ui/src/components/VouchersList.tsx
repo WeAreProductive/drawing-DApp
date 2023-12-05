@@ -8,8 +8,7 @@ import {
 import { useRollups } from "../hooks/useRollups";
 import { DAPP_ADDRESS } from "../shared/constants";
 import { VoucherExtended } from "../shared/types";
-import { Button } from "@chakra-ui/react";
-import { VoucherExecutedEvent } from "@cartesi/rollups/dist/src/types/contracts/dapp/CartesiDApp";
+import { Button, Spinner } from "@chakra-ui/react";
 
 const VouchersList = () => {
   const [result, reexecuteQuery] = useVouchersQuery();
@@ -22,6 +21,7 @@ const VouchersList = () => {
   });
   const [voucherToExecute, setVoucherToExecute] = useState<VoucherExtended>();
   const { data, fetching, error } = result;
+  const [loading, setLoading] = useState(false);
   const rollups = useRollups(DAPP_ADDRESS);
   const getProof = async (voucher: VoucherExtended) => {
     setVoucherToFetch([voucher.index, voucher.input.index]);
@@ -29,6 +29,7 @@ const VouchersList = () => {
   };
   const executeVoucher = async (voucher: VoucherExtended) => {
     if (rollups && !!voucher.proof) {
+      setLoading(true);
       const newVoucherToExecute = { ...voucher };
       try {
         const tx = await rollups.dappContract.executeVoucher(
@@ -51,7 +52,6 @@ const VouchersList = () => {
           }
           // https://medium.com/linum-labs/everything-you-ever-wanted-to-know-about-events-and-logs-on-ethereum-fec84ea7d0a5
           //?event.data === index or id?
-          console.log(event);
           newVoucherToExecute.msg = `${
             newVoucherToExecute.msg
           } - resulting events: ${JSON.stringify(receipt.events)}`;
@@ -61,6 +61,7 @@ const VouchersList = () => {
               BigNumber.from(voucher.index)
             );
         }
+        setLoading(false);
       } catch (e) {
         newVoucherToExecute.msg = `COULD NOT EXECUTE VOUCHER: ${JSON.stringify(
           e
@@ -68,6 +69,7 @@ const VouchersList = () => {
         console.log(`COULD NOT EXECUTE VOUCHER: ${JSON.stringify(e)}`);
       }
       setVoucherToExecute(newVoucherToExecute);
+      setLoading(false);
     }
   };
   useEffect(() => {
@@ -185,6 +187,10 @@ const VouchersList = () => {
                       ? "Voucher executed"
                       : "No proof yet"}
                   </Button>
+                ) : loading ? (
+                  <Button disabled className="disabled">
+                    Execute voucher
+                  </Button>
                 ) : (
                   <Button
                     onClick={() => executeVoucher(voucherToExecute)}
@@ -194,7 +200,7 @@ const VouchersList = () => {
                 )}
               </td>
               <td>{voucherToExecute.input.payload}</td>
-              <td>{voucherToExecute.msg}</td>
+              <td>{loading ? <Spinner /> : voucherToExecute.msg}</td>
             </tr>
           </tbody>
         </table>

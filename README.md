@@ -17,8 +17,7 @@ It's an important settings when it comes down to `voucher` execution.
 
 ## Building
 
-To build the application, run the following command from the project's root directory 
-(add `--no-cache` when in development mode):
+To build the application, run the following command from the project's root directory  
 
 ```shell
 cd drawing-py
@@ -30,7 +29,8 @@ sunodo build
 To `start` the application, execute the following command from the project's root directory:
 ```shell
 cd drawing-py
-sunodo run
+cd smart-contracts yarn deploy && cd drawing-py sunodo run 
+
 ```
 
 #### useful command options
@@ -124,7 +124,7 @@ Manual deployment to other supported testnets can be done by executing `yarn dep
 
 #### Building and deploying the smart contracts when running the application
 
-@TODO - see https://docs.sunodo.io/guide/building/customizing
+@TODO  
 
 #### Use the smart contract
 
@@ -176,6 +176,8 @@ cd drawing-api
 yarn
 yarn dev
 ```
+
+## [Deploying the application](https://docs.sunodo.io/guide/deploying/deploying-application)
 
 ## Steps to mint a NFT from a drawing
 
