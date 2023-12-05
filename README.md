@@ -132,7 +132,7 @@ To use the smart contract, you must first retrieve the contract address from the
 When deploying the contract manually its address is printed in CLI as follows:
 
 ```shell
-deploying "DrawingNFT" (tx: tx-hash)...: `deployed at` `smart-contract-address` with 1348001 gas
+deploying "DrawingNFT" (tx: tx-hash)...: deployed at `smart-contract-address` with amount-of-gas-used gas
 ```
 
 You can also check the address in 
@@ -150,10 +150,10 @@ Use the frontend `drawing-ui` application to interact with the DApp.
 #### Requirements 
 
 1. Vouchers cannot be executed when running the backend in `host mode`.
-2. You should have a wallet (MetaMask) installed in the browser and be able to connect to an account in that wallet.
+2. You should have a wallet (MetaMask) installed in the browser and be able to connect to account in that wallet.
 3. When restarting the application be sure to `Clear wallet's activity and nonce data` from Settings - Advanced - Clear activity and nonce data
 4. Be sure to have small amount of assets in the wallet account for the dApp interactions.
-5. Be sure to [redeploy](#building-the-smart-contract-and-deploying-manually) the dApp's smart contract if it's been deployed manually 
+5. If you restart the dApp, be sure to [redeploy](#building-the-smart-contract-and-deploying-manually) the dApp's smart contract if it's been deployed manually 
 (`@TODO setup smart-contract build and deploy when starting the dApp; check smart contrat address`)
 
 #### Running the frontend in development mode
@@ -182,26 +182,26 @@ yarn dev
 1. Draw a picture on canvas 
 2. Save the canvas
 
-    2.1 Behind the scenes the canvas is being converted to a base64 string. This string is sent as an input to the rollups.
-    2.2 The backend retrieves the sent input and if sent with the proper heading and in correct format -
-        a. processes the bas64 string to produce the NFT tokenURI; 
+    - Behind the scenes the canvas is being converted to a base64 string. This string is sent as an input to the rollups.
+    - The backend retrieves the sent input and if sent with the proper heading and in correct format -
+        - processes the bas64 string to produce the NFT tokenURI; 
         
         For detailed string processing information refer to: drawing-py/drawing.py `mint_erc721_with_uri_from_image` method definition.
 
-        b. emmits a voucher - containing 
+        - emmits a voucher - containing 
         
-        `destination`: (the mint NFT smart contract address), 
+            + `destination`: (the mint NFT smart contract address), 
 
-        `payload``: `the Mint Erc721 - tokenURI` and the `owner` of the picture to be minted as a NFT and the NFT itself
+            + `payload``: `the Mint Erc721 - tokenURI` and the `owner` of the picture to be minted as a NFT and the NFT itself
 
-        c. emmits a notice with information about the emmited voucher `Emmited voucher to mint ERC721 {erc721 string to mint}`
+        - emmits a notice with information about the emmited voucher `Emmited voucher to mint ERC721 {erc721 string to mint}`
 
-    2.3 The new `voucher` is accessible at DrawingDapp `Vouchers` tab
+    - The new `voucher` is accessible at DrawingDapp `Vouchers` tab
 
 3. Execute the voucher
 
-    3.1 You can execute the `voucher` once the current epoch is closed.
-    3.2 The newly minted NFT can be imoprted in your wallet by using the `smart contract address` and the `id` of the minted NFT.
+    - You can execute the `voucher` once the current epoch is closed.
+    - The newly minted NFT can be imoprted in your wallet by using the `smart contract address` and the `id` of the minted NFT.
 
-    `Note:` the ids start from 1, and currently there is no way of knowing the nft's id.
+    > Note: the ids start from 1, and currently there is no way of knowing the nft's id.
 
