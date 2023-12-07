@@ -17,6 +17,13 @@ It's an important settings when it comes down to `voucher` execution.
 
 ## Building
 
+This project works with [Sunodo](https://docs.sunodo.io), so to run it you should first install sunodo.
+
+```shell
+npm install -g @sunodo/cli
+alias sunodo="npx @sunodo/cli"
+```
+
 To build the application, run the following command from the project's root directory  
 
 ```shell
