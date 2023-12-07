@@ -33,14 +33,60 @@ sunodo build
 
 ## Running
 
+### Smart contracts. Building & Deploying.  
+
+This dApp needs a smart contract to be able to mint NSTs from canvas drawings. 
+> Before starting the dApp you have to build and deploy the smart contract.
+
+### Building and deploying the smart contract
+
+This is a simple contract to perform operations with NFTs (minting a nft). 
+You may build the project's `smart contract` as follows. 
+From the `project's root` directory execute:
+
+```shell
+cd smart-contracts
+yarn && yarn build
+```
+
+To deploy the smart contract on localhost from the `project's root` directory execute:
+
+```shell
+cd smart-contracts
+yarn deploy
+```
+Manual deployment to other supported testnets can be done by executing `yarn deploy:<network>`. 
+
+### Use the smart contract
+
+To use the smart contract, you must first retrieve the contract address from the deployment data. 
+When deploying the contract manually its address is printed in CLI as follows:
+
+```shell
+deploying "DrawingNFT" (tx: tx-hash)...: deployed at `smart-contract-address` with amount-of-gas-used gas
+```
+
+You can also check the address in 
+
+```shell
+smart-contracts/deploymets/<network-name>/<smart-contract-name>.json, { address: `smart-contract-address`, ...}.
+```
+
+The smart `contract's address` is used in the frontend application - (see `drawing-ui/src/shared/constants.ts`) as `ERC721_TO_MINT`.
+
 To `start` the application, execute the following command from the project's root directory:
+
+### Run the dApp 
+
+From the project `root` directory run
+
 ```shell
 cd drawing-py
-cd smart-contracts yarn deploy && cd drawing-py sunodo run 
+cd sunodo run 
 
 ```
 
-#### useful command options
+### useful command options
 
 To control epoch duration - see [Epoch](#epoch)
 
@@ -107,63 +153,21 @@ Check these links:
 - https://docs.sunodo.io/guide/running/running-application?fbclid=IwAR3OW0tUEVeB42FBnh-cjkYIOgdPDrG262HRT5bObXyaNXX-9fqQtZ0TSog
 - https://docs.sunodo.io
 
-### Smart contracts. Building & Deploying.  
 
-This dApp needs a smart contract to be able to mint NSTs from canvas drawings.
-
-##### Building the smart contract and deploying manually
-This is a simple contract to perform operations with NFTs (minting a nft). 
-You may build the project's `smart contract` as follows. 
-From the `project's root` directory execute:
-
-```shell
-cd smart-contracts
-yarn && yarn build
-```
-
-To deploy the smart contract on localhost from the `project's root` directory execute:
-
-```shell
-cd smart-contracts
-yarn deploy
-```
-Manual deployment to other supported testnets can be done by executing `yarn deploy:<network>`.
-
-#### Building and deploying the smart contracts when running the application
-
-@TODO  
-
-#### Use the smart contract
-
-To use the smart contract, you must first retrieve the contract address from the deployment data. 
-When deploying the contract manually its address is printed in CLI as follows:
-
-```shell
-deploying "DrawingNFT" (tx: tx-hash)...: deployed at `smart-contract-address` with amount-of-gas-used gas
-```
-
-You can also check the address in 
-
-```shell
-smart-contracts/deploymets/smart-contract-name.json, { address: `smart-contract-address`, ...}.
-```
-
-The smart `contract's address` is used in the frontend application - (see `drawing-ui/src/shared/constants.ts`) as `ERC721_TO_MINT`.
 
 ## Interacting with the application
 
 Use the frontend `drawing-ui` application to interact with the DApp. 
 
-#### Requirements 
+### Requirements 
 
 1. Vouchers cannot be executed when running the backend in `host mode`.
 2. You should have a wallet (MetaMask) installed in the browser and be able to connect to account in that wallet.
 3. When restarting the application be sure to `Clear wallet's activity and nonce data` from Settings - Advanced - Clear activity and nonce data
 4. Be sure to have small amount of assets in the wallet account for the dApp interactions.
-5. If you restart the dApp, be sure to [redeploy](#building-the-smart-contract-and-deploying-manually) the dApp's smart contract if it's been deployed manually 
-(`@TODO setup smart-contract build and deploy when starting the dApp; check smart contrat address`)
+5. If you restart the dApp, be sure to [redeploy](#building-the-smart-contract-and-deploying-manually) the dApp's smart contract if it's been deployed manually  
 
-#### Running the frontend in development mode
+### Running the frontend in development mode
 
 To run the frontend application execute from the project `root directory`: 
 ```shell
@@ -171,7 +175,7 @@ cd drawing-ui
 yarn dev
 ```
 
-#### drawing-api server
+### drawing-api server
 
 In order the frontend to work properly, you need to start a server that will convert the `canvas into a base64 string`.
 This string format is required for the backend to be able to prepare a suitable tokenURI for the NFT to be minted on voucher execution.
