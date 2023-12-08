@@ -10,7 +10,7 @@ ARG TZ=Etc/UTC
 ARG MACHINE_EMULATOR_TOOLS_VERSION=0.12.0
 RUN <<EOF
 apt-get update
-apt-get install -y --no-install-recommends busybox-static=1:1.30.1-7ubuntu3 ca-certificates=20230311ubuntu0.22.04.1 curl=7.81.0-1ubuntu1.14 \
+apt-get install -y --no-install-recommends busybox-static=1:1.30.1-7ubuntu3 ca-certificates=20230311ubuntu0.22.04.1 curl=7.81.0-1ubuntu1.15 \
     build-essential=12.9ubuntu3 python3-numpy=1:1.21.5-1ubuntu22.04.1 python3-opencv=4.5.4+dfsg-9ubuntu4 python3-shapely=1.8.0-1build1
 curl -fsSL https://github.com/cartesi/machine-emulator-tools/releases/download/v${MACHINE_EMULATOR_TOOLS_VERSION}/machine-emulator-tools-v${MACHINE_EMULATOR_TOOLS_VERSION}.tar.gz \
   | tar -C / --overwrite -xvzf -
