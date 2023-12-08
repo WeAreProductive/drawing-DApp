@@ -15,7 +15,25 @@ By default the node closes an epoch `once a day`, but this can be controlled by 
 
 It's an important settings when it comes down to `voucher` execution.
 
+## Follow these steps to run the DApp
+
+1. [Install Sunodo (if not available)](#install-sunodo)
+2. [Run `sunodo build`](#build-the-application)
+3. [Build Smart contracts](#build-the-smart-contract)
+4. [Deploy Smart contracts](#deploy-the-smart-contract)
+5. [Run `sunodo run`](#run-the-dapp)
+    - [`sunodo run` options](#sunodo-run-command-options)
+6. [Install API](#drawing-api-server)
+7. [Run API](#drawing-api-server)
+8. [Install the frontend application](#running-the-frontend-in-development-mode)
+9. [Run the frontend application](#running-the-frontend-in-development-mode)
+10. [Interact with the Drawing DApp](#interacting-with-the-application)
+    - [Requirement](#requirements)
+    - [Steps to mint a NFT from a drawing](#steps-to-mint-a-nft-from-a-drawing)
+
 ## Building
+
+### Install Sunodo
 
 This project works with [Sunodo](https://docs.sunodo.io), so to run it you should first install sunodo.
 
@@ -24,6 +42,7 @@ npm install -g @sunodo/cli
 alias sunodo="npx @sunodo/cli"
 ```
 
+### Build the application
 To build the application, run the following command from the project's root directory  
 
 ```shell
@@ -38,7 +57,7 @@ sunodo build
 This dApp needs a smart contract to be able to mint NSTs from canvas drawings. 
 > Before starting the dApp you have to build and deploy the smart contract.
 
-### Building and deploying the smart contract
+### Build the smart contract
 
 This is a simple contract to perform operations with NFTs (minting a nft). 
 You may build the project's `smart contract` as follows. 
@@ -48,6 +67,8 @@ From the `project's root` directory execute:
 cd smart-contracts
 yarn && yarn build
 ```
+
+### Deploy the smart contract
 
 To deploy the smart contract on localhost from the `project's root` directory execute:
 
@@ -83,17 +104,25 @@ From the project `root` directory run
 ```shell
 cd drawing-py
 cd sunodo run 
-
 ```
 
-### useful command options
+### `sunodo run` command options 
 
-To control epoch duration - see [Epoch](#epoch)
+#### Control epoch duration
+
+By default the node closes an epoch `once a day`, but this can be controlled by the 
+`--epoch-duration <seconds>` command option when executing the run dApp command.
+
+It's an important settings when it comes down to `voucher` execution. 
+
+#### Detailed running log
 
 To get a more `detailed running log` run:
 ```shell
 sunodo run --verbose
 ```
+
+#### Check system status
 
 To check the `system status` on error run:
 ```shell
