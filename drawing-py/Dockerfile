@@ -1,5 +1,5 @@
 # syntax=docker.io/docker/dockerfile:1.4
-FROM --platform=linux/riscv64 cartesi/python:3.10-slim-jammy
+FROM --platform=linux/riscv64 cartesi/python:3.11-jammy
 
 LABEL io.sunodo.sdk_version=0.2.0
 LABEL io.cartesi.rollups.ram_size=128Mi
@@ -30,8 +30,8 @@ RUN pip3 install -r requirements.txt --no-cache
 RUN apt remove -y build-essential curl && apt -y autoremove
 
 RUN rm requirements.txt \
-    && find /usr/local/lib -type d -name __pycache__ -exec rm -r {} + \
-    && find /var/log \( -name '*.log' -o -name '*.log.*' \) -exec truncate -s 0 {} \;
+  && find /usr/local/lib -type d -name __pycache__ -exec rm -r {} + \
+  && find /var/log \( -name '*.log' -o -name '*.log.*' \) -exec truncate -s 0 {} \;
 
 COPY dapp/drawing.py .
 COPY dapp/entrypoint.sh .
