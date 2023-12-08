@@ -106,12 +106,16 @@ cd drawing-py
 cd sunodo run 
 ```
 
-### `sunodo run` command options 
+### Other useful commands and options 
 
 #### Control epoch duration
 
 By default the node closes an epoch `once a day`, but this can be controlled by the 
 `--epoch-duration <seconds>` command option when executing the run dApp command.
+
+```shell
+cd sunodo run --epoch-duration <seconds>
+```
 
 It's an important settings when it comes down to `voucher` execution. 
 
