@@ -3,19 +3,24 @@ import { CanvasContextProvider } from "../context/CanvasContext";
 import DrawingControls from "../components/Drawing/DrawingControls";
 import FabricJSCanvas from "../components/FabricJSCanvas";
 import CanvasControls from "../components/CanvasControls";
+import ImagesListRollups from "../components/ImagesRollups";
+import { GraphQLProvider } from "../context/GraphQLContext";
 
 const Draw = () => {
   return (
     <Page>
-      <CanvasContextProvider>
-        <div className="canvas-wrapper">
-          <FabricJSCanvas />
-          <div className="controls-container">
-            <DrawingControls />
-            <CanvasControls />
+      <GraphQLProvider>
+        <CanvasContextProvider>
+          <div className="canvas-wrapper">
+            <FabricJSCanvas />
+            <div className="controls-container">
+              <DrawingControls />
+              <CanvasControls />
+            </div>
           </div>
-        </div>
-      </CanvasContextProvider>
+        </CanvasContextProvider>
+        <ImagesListRollups />
+      </GraphQLProvider>
     </Page>
   );
 };

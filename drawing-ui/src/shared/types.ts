@@ -34,3 +34,13 @@ export type VoucherExtended = {
   executed?: any;
   msg?: string;
 };
+
+export type DrawingInput = {
+  id: string; // creator's account - timestamp
+  dateCreated: string; // date-time string
+  lastUpdated: null | string; // last update date-time string
+  owner: string; //last painter's account
+  updateLog: { dateUpdated: string; painter: string }[];
+  drawing: string; // svg's json string
+  action: string;
+};

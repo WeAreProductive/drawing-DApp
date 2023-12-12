@@ -177,26 +177,30 @@ def handle_advance(data):
             # or was sent by the Portals, which is where deposits must come from
             handle_tx(sender,payload)
         else:
-            payload = hex2str(payload)
+            json_payload = hex2str(payload)
+            payload = json.loads(json_payload)
             logger.info(f"Received str {payload}")
-            if payload == "exception":
-                status = "reject"
-                exception = {"payload": str2hex(str(payload))}
-                send_exception(exception)
-                sys.exit(1)
-            elif payload == "reject":
-                status = "reject"
-                report = {"payload": str2hex(str(payload))}
-                send_report(report)
-            elif payload == "report":
-                report = {"payload": str2hex(str(payload))}
-                send_report(report)
-            elif payload[0:7] == "voucher":
-                payload = f"{payload}"
-                voucher = json.loads(payload[7:])
-                send_voucher(voucher)
-            elif payload == "notice":
-                notice = {"payload": str2hex(str(payload))}
+
+            # if payload == "exception":
+            #     status = "reject"
+            #     exception = {"payload": str2hex(str(payload))}
+            #     send_exception(exception)
+            #     sys.exit(1)
+            # elif payload == "reject":
+            #     status = "reject"
+            #     report = {"payload": str2hex(str(payload))}
+            #     send_report(report)
+            # elif payload == "report":
+            #     report = {"payload": str2hex(str(payload))}
+            #     send_report(report)
+            # elif payload[0:7] == "voucher":
+            #     payload = f"{payload}"
+            #     voucher = json.loads(payload[7:])
+            #     send_voucher(voucher)
+            if payload['action'] == "notice": 
+                logger.info(f"Adding notice {json.dumps(payload)}")
+
+                notice = {"payload": str2hex(json.dumps(payload))}
                 send_notice(notice)
             else:
                 try:
@@ -228,12 +232,12 @@ def handle_advance(data):
         logger.error(msg)
         send_report({"payload": str2hex(msg)})
 
-    if not payload:
-        payload = data["payload"]
-    else:
-        payload = str2hex(str(payload))
-    notice = {"payload": payload}
-    send_notice(notice)
+    # if not payload:
+    #     payload = data["payload"]
+    # else:
+    #     payload = str2hex(json.dumps(payload))
+    # notice = {"payload": payload}
+    # send_notice(notice) #@TODO possible notice dupl
 
     logger.info(f"Notice payload was {payload}")
     return status
