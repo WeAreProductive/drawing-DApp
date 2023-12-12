@@ -94,8 +94,7 @@ const VouchersList = () => {
   const vouchers = data.vouchers.edges
     .map((node: { node: VoucherExtended }) => {
       const n = node.node;
-      let payload = n?.payload;
-      console.log(payload);
+      let payload = n?.payload; 
       let inputPayload = n?.input.payload;
       if (inputPayload) {
         try {

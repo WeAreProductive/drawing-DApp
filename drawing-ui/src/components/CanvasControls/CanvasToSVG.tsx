@@ -49,11 +49,8 @@ const CanvasToSVG = () => {
         connectedWallet.provider
       );
       const signer = provider.getSigner();
-      console.log(connectedWallet.accounts[0].address);
       const now = moment().utc(true).format("YY-MM-DD hh:mm:s");
       const timestamp = moment().unix();
-      console.log(timestamp);
-      console.log(now);
       // @TODO check -> old or new drawing to prepare the proper data
       const drawingNoticePayload: DrawingInput = {
         id: `${connectedWallet.accounts[0].address}-${timestamp}`,
@@ -72,8 +69,7 @@ const CanvasToSVG = () => {
         JSON.stringify(drawingNoticePayload)
       )
         ? JSON.stringify(drawingNoticePayload)
-        : ethers.utils.toUtf8Bytes(JSON.stringify(drawingNoticePayload));
-      console.log(JSON.stringify(drawingNoticePayload));
+        : ethers.utils.toUtf8Bytes(JSON.stringify(drawingNoticePayload)); 
       // Send the transaction
       const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
       toast({
