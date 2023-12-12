@@ -42,5 +42,4 @@ export type DrawingInput = {
   owner: string; //last painter's account
   updateLog: { dateUpdated: string; painter: string }[];
   drawing: string; // svg's json string
-  action: string;
 };

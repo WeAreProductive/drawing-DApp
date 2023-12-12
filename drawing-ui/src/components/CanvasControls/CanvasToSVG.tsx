@@ -3,14 +3,16 @@
  * and save the drawings data in rollups
  * as notices
  */
-import { useCanvasContext } from "../../context/CanvasContext";
+
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { useToast, Button } from "@chakra-ui/react";
 import { useSetChain, useWallets } from "@web3-onboard/react";
+import moment from "moment";
 
 import { InputBox__factory } from "@cartesi/rollups";
 
+import { useCanvasContext } from "../../context/CanvasContext";
 import { DAPP_ADDRESS } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import { DrawingInput, Network } from "../../shared/types";
@@ -39,25 +41,28 @@ const CanvasToSVG = () => {
       position: "top",
     });
     setLoading(true);
-    const canvasData = canvas.toSVG();
-    // const canvasData = canvas.toJSON();
 
+    const canvasData = canvas.toSVG();
     const sendInput = async (strInput: string) => {
-      // @TODO check -> old or new drawing to prepare the proper data
-      const drawingNoticePayload: DrawingInput = {
-        id: "strInput",
-        dateCreated: "",
-        lastUpdated: null,
-        owner: "",
-        updateLog: [],
-        drawing: strInput,
-        action: "notice", //@TODO declare const strings
-      };
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider
       );
       const signer = provider.getSigner();
+      console.log(connectedWallet.accounts[0].address);
+      const now = moment().utc(true).format("YY-MM-DD hh:mm:s");
+      const timestamp = moment().unix();
+      console.log(timestamp);
+      console.log(now);
+      // @TODO check -> old or new drawing to prepare the proper data
+      const drawingNoticePayload: DrawingInput = {
+        id: `${connectedWallet.accounts[0].address}-${timestamp}`,
+        dateCreated: now,
+        lastUpdated: null,
+        owner: connectedWallet.accounts[0].address,
+        updateLog: [],
+        drawing: strInput,
+      };
 
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
@@ -133,3 +138,4 @@ const CanvasToSVG = () => {
 };
 
 export default CanvasToSVG;
+

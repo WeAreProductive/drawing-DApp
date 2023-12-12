@@ -2,12 +2,14 @@ body {
   background: #ccc;
   font-family: 'Open Sans', Helvetica, sans-serif;
 }
-.App {
+.page-content {
   display: flex;
   align-items: center;
   flex-direction: row;
   justify-content: center;
-  align-items:center; 
+  align-items:center;  
+  margin-top: 20px;
+  padding: 10px 30px 
 } 
 .list-wrapper { 
   margin-top:100px; 
@@ -27,6 +29,7 @@ body {
   align-items: center;
   justify-content: center;  
   max-height:800px;
+  margin-top:100px
 }
 
 .images-list-box {
@@ -190,8 +193,4 @@ nav ul li a {
 button {
   padding: 6px!important;
   text-decoration: underline
-}
-.page-content {
-  margin-top: 20px;
-  padding: 10px 30px
 }

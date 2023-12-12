@@ -197,7 +197,7 @@ def handle_advance(data):
             #     payload = f"{payload}"
             #     voucher = json.loads(payload[7:])
             #     send_voucher(voucher)
-            if payload['action'] == "notice": 
+            if payload == "notice": 
                 logger.info(f"Adding notice {json.dumps(payload)}")
 
                 notice = {"payload": str2hex(json.dumps(payload))}
@@ -232,12 +232,12 @@ def handle_advance(data):
         logger.error(msg)
         send_report({"payload": str2hex(msg)})
 
-    # if not payload:
-    #     payload = data["payload"]
-    # else:
-    #     payload = str2hex(json.dumps(payload))
-    # notice = {"payload": payload}
-    # send_notice(notice) #@TODO possible notice dupl
+    if not payload:
+        payload = data["payload"]
+    else:
+        payload = str2hex(json.dumps(payload))
+    notice = {"payload": payload}
+    send_notice(notice) #@TODO possible notice dupl
 
     logger.info(f"Notice payload was {payload}")
     return status
