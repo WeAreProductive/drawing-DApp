@@ -64,32 +64,9 @@ const ImagesListRollups = () => {
   //     </table>
   //   </div>
   // );
+  // @TODO move the lists in separate component
   return (
-    @TODO move the lists in separate component
-    <>
-      <div className="list-wrapper">
-        <div className="list-header">
-          <h5>Mine Drawings</h5>
-          <i>Updates on canvas save</i>
-        </div>
-        <div className="images-list">
-          <div className="images-list-box">
-            {mineDrawings.length > 0 ? (
-              mineDrawings.map((drawing) => {
-                try {
-                  return <CanvasSnapshot key={drawing.id} src={drawing} />;
-                } catch (e) {
-                  console.log(e);
-                }
-              })
-            ) : (
-              <div className="canvas-image">
-                Canvas shanpshots will appear here...
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+    <div className="lists-container">
       <div className="list-wrapper">
         <div className="list-header">
           <h5>All Svgs saved in Rollups</h5>
@@ -113,7 +90,30 @@ const ImagesListRollups = () => {
           </div>
         </div>
       </div>
-    </>
+      <div className="list-wrapper">
+        <div className="list-header">
+          <h5>Mine Drawings</h5>
+          <i>Updates on canvas save</i>
+        </div>
+        <div className="images-list">
+          <div className="images-list-box">
+            {mineDrawings.length > 0 ? (
+              mineDrawings.map((drawing) => {
+                try {
+                  return <CanvasSnapshot key={drawing.id} src={drawing} />;
+                } catch (e) {
+                  console.log(e);
+                }
+              })
+            ) : (
+              <div className="canvas-image">
+                Canvas shanpshots will appear here...
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

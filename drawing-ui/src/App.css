@@ -11,8 +11,14 @@ body {
   margin-top: 20px;
   padding: 10px 30px 
 } 
+.lists-container{
+  display: flex;
+  flex-direction: column;
+  width: 40%
+   /* @TODO with flex */
+}
 .list-wrapper { 
-  margin-top:100px; 
+  margin-top:30px; 
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -24,27 +30,32 @@ body {
 }
 .images-list { 
   display:flex;
-  flex-direction:column; 
+  /* flex-direction:column;  */
   overflow: auto; 
   align-items: center;
   justify-content: center;  
-  max-height:800px;
-  margin-top:100px
+  /* max-height:800px; */
+  /* margin-top:100px */
 }
 
 .images-list-box {
   display: flex;
-  flex-direction: column;
-  min-height: 500px;
+  width: 100%;
+  /* flex-direction: column; */
+  /* min-height: 500px; */
+}
+.drawing-wrapper { 
+    padding: 10px;
+    height: 200px;
+    width: 200px;
 }
 .canvas-image {
-  width: 200px;
+ width: 100px;
+ height: 100px;
   background: #fff;
   margin-top:20px;
   box-shadow: 1px 1px 5px 5px #8f8d8d;
-  cursor: pointer;
-  height: 200px;
-  display: flex;
+  cursor: pointer; 
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -54,9 +65,9 @@ body {
   height:100%
 }
 .canvas-wrapper {
-  flex: 2;
   display: flex; 
   margin-top: 50px;
+  margin-left: 25px;
   justify-content: center
 }
 .canvas-container{
