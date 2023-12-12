@@ -251,3 +251,9 @@ yarn dev
 
     > Note: the ids start from 1, and currently there is no way of knowing the newly minted nft's id.
 
+
+> Note: To clean the docker builds and cache execute:
+```shell
+cd drawing-py
+docker system prune
+```
