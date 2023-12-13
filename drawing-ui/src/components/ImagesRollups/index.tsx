@@ -1,17 +1,27 @@
-import { useState, useEffect } from "react";
 import CanvasSnapshot from "./CanvasSnapshot";
 import { ethers } from "ethers";
 import { useNoticesQuery } from "../../generated/graphql";
 import { useToast } from "@chakra-ui/react";
 import { useWallets } from "@web3-onboard/react";
+import { useEffect } from "react";
+import { DAPP_STATE } from "../../shared/constants";
+import { useCanvasContext } from "../../context/CanvasContext";
 
 const ImagesListRollups = () => {
+  const { dappState, setDappState } = useCanvasContext();
   const [connectedWallet] = useWallets();
-  // const toast = useToast();
   const [result, reexecuteQuery] = useNoticesQuery();
   const { data, fetching, error } = result;
   const mineDrawings: any[] = [];
   const account = connectedWallet.accounts[0].address;
+  useEffect(() => {
+    if (result.fetching) return;
+    if (dappState !== DAPP_STATE.CANVAS_SAVE) return;
+
+    reexecuteQuery({ requestPolicy: "network-only" });
+
+    setDappState(DAPP_STATE.CANVAS_INIT);
+  }, [result.fetching, reexecuteQuery, dappState]);
 
   if (fetching) return <p>Loading...</p>;
   if (error) return <p>Oh no... {error.message}</p>;
@@ -35,36 +45,7 @@ const ImagesListRollups = () => {
     }
     return drawingData;
   });
-  // return (
-  //   <div>
-  //     <button onClick={() => reexecuteQuery({ requestPolicy: "network-only" })}>
-  //       Reload
-  //     </button>
-  //     <table>
-  //       <thead>
-  //         <tr>
-  //           <th>Epoch</th>
-  //           <th>Input Index</th>
-  //           <th>Notice Index</th>
-  //           <th>Payload</th>
-  //         </tr>
-  //       </thead>
-  //       <tbody>
-  //         {notices.length === 0 && (
-  //           <tr>
-  //             <td colSpan={4}>no notices</td>
-  //           </tr>
-  //         )}
-  //         {notices.map((n: any, idx) => (
-  //           <tr key={idx}>
-  //             <td>{n.payload}</td>
-  //           </tr>
-  //         ))}
-  //       </tbody>
-  //     </table>
-  //   </div>
-  // );
-  // @TODO move the lists in separate component
+
   return (
     <div className="lists-container">
       <div className="list-wrapper">

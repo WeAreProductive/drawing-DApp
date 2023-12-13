@@ -53,6 +53,24 @@ query noticesByInput($inputIndex: Int!) {
   }
 }
 
+query GetNotices($cursor: String) {
+  notices(first: 10, after: $cursor) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        index
+        input {
+          index
+        }
+        payload
+      }
+    }
+  }
+}
 
 # VOUCHERS
 

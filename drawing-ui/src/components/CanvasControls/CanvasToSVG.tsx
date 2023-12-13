@@ -104,6 +104,7 @@ const CanvasToSVG = () => {
 
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
+      setDappState(DAPP_STATE.CANVAS_SAVE);
       setLoading(false);
       let toastData = {};
       if (event?.args?.inputIndex) {
@@ -128,7 +129,6 @@ const CanvasToSVG = () => {
       }
       toast(toastData);
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
-      setDappState(DAPP_STATE.CANVAS_SAVE);
     };
     sendInput(canvasData);
   };
