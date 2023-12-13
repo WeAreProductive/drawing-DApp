@@ -203,6 +203,9 @@ button {
 .fetching, .error, .no-notices {
   position: absolute;
   z-index: 1000;
-  margin-top: 50vh;
-  margin-left: 45%
+  margin-top: 20vh;
+  margin-left: 35%;
+  background: rgba(0,0,0,0.4);
+  padding: 20px;
+  color: #fff;
 }

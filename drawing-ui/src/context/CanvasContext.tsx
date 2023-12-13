@@ -19,15 +19,15 @@ const initialOptions = {
 };
 const initialCanvasContext = {
   canvas: null,
-  setCanvas: (canvas: null) => undefined,
+  setCanvas: (canvas: Canvas | null) => undefined,
   canvasOptions: initialOptions,
   setOptions: (options: CanvasOptions) => undefined,
   dappState: DAPP_STATE.CANVAS_INIT,
   setDappState: (dappState: string) => undefined,
   currentDrawingData: null,
-  setCurrentDrawingData: (data: null) => undefined,
+  setCurrentDrawingData: (data: null | DrawingInput) => undefined,
 };
-const CanvasContext = createContext<CanvasContextType>(initialCanvasContext); //@TODO fix types incomp - canvas
+const CanvasContext = createContext<CanvasContextType>(initialCanvasContext);
 
 export const useCanvasContext = () => {
   const context = useContext(CanvasContext);
