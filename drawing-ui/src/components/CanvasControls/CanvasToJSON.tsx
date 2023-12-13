@@ -41,10 +41,9 @@ const CanvasToJSON = () => {
     setLoading(true);
     const canvasContent = canvas.toJSON();
     const base64str = await storeAsFiles(canvasContent.objects);
-
     const sendInput = async (strInput: string) => {
+      console.log(strInput);
       const str = JSON.stringify({
-        // string: strInput,
         image: strInput,
         erc721_to_mint: ERC721_TO_MINT,
         selector: MINT_SELECTOR,
@@ -64,7 +63,7 @@ const CanvasToJSON = () => {
         : ethers.utils.toUtf8Bytes(str);
 
       // Send the transaction
-      const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes); 
+      const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
       toast({
         title: "Transaction Sent",
         description: "waiting for confirmation",
@@ -111,19 +110,15 @@ const CanvasToJSON = () => {
   if (loading) {
     buttonProps.isLoading = true;
   }
-
+  // @TODO there is a loaded / drawn image on the canvas
   return connectedChain ? (
     <Button
       {...buttonProps}
       onClick={handleCanvasToSvg}
       className="button canvas-store">
-      Save Canvas
+      Mint NFT
     </Button>
-  ) : (
-    <Button disabled className="button disabled">
-      Save Canvas
-    </Button>
-  );
+  ) : null;
 };
 
 export default CanvasToJSON;

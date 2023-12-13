@@ -1,13 +1,16 @@
 import { fabric } from "fabric";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { DAPP_STATE } from "../../shared/constants";
+import { DrawingInput } from "../../shared/types";
 
-const CanvasSnapshot = ({ src }: any) => {
+type CanvasSnapshotProp = {
+  src: DrawingInput;
+};
+const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, dappState, setDappState, setCurrentDrawingData } =
     useCanvasContext();
   const { drawing, owner } = src;
   const loadCanvasFromImage = async () => {
-    console.log(src);
     if (!canvas) return;
     canvas.clear();
     fabric.loadSVGFromString(drawing, function (objects, options) {
@@ -18,6 +21,7 @@ const CanvasSnapshot = ({ src }: any) => {
     setCurrentDrawingData(src);
   };
   const sliceAccount = (str: string) => {
+    if (!str) return;
     const len = str.length;
     const start = str.slice(0, 3);
     const end = str.slice(len - 5, len - 1);

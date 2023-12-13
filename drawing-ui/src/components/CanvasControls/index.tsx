@@ -7,7 +7,7 @@ const CanvasControls = () => {
     <div className="actions">
       <div>
         <CanvasToSVG />
-        {/* <CanvasToJSON /> */}
+        <CanvasToJSON />
         <CanvasReset />
       </div>
     </div>

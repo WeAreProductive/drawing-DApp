@@ -177,8 +177,7 @@ def handle_advance(data):
             # or was sent by the Portals, which is where deposits must come from
             handle_tx(sender,payload)
         else:
-            json_payload = hex2str(payload)
-            payload = json.loads(json_payload)
+            payload = hex2str(payload)
             logger.info(f"Received str {payload}")
 
             # if payload == "exception":
@@ -197,17 +196,15 @@ def handle_advance(data):
             #     payload = f"{payload}"
             #     voucher = json.loads(payload[7:])
             #     send_voucher(voucher)
-            if payload == "noticee": 
-                logger.info(f"Adding notice {json.dumps(payload)}")
-
-                notice = {"payload": str2hex(json.dumps(payload))}
+            if payload == "notice": 
+                notice = {"payload": str2hex(str(payload))}
                 send_notice(notice)
             else:
                 try:
                     logger.info(f"Trying to decode json {payload}")
                     # try json data
                     json_data = json.loads(payload) 
-                    logger.info(f'JSON DATA {json_data}')
+                    # logger.info(f'JSON DATA {json_data}')
                     if json_data.get("image"):
                         b64out = process_image(json_data["image"].encode("utf-8"))
                         payload = f"{b64out}"

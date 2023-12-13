@@ -157,7 +157,7 @@ cd dapp
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements-host.txt
-ROLLUP_HTTP_SERVER_URL="http://localhost:8080/host-runner python3 drawing.py
+ROLLUP_HTTP_SERVER_URL="http://localhost:8080/host-runner" python3 drawing.py
 ```
 
 The final command will effectively run the back-end and send corresponding outputs to port `5004`.
