@@ -44,6 +44,7 @@ export type DrawingInput = {
   dateCreated: string; // date-time string
   lastUpdated: null | string; // last update date-time string
   owner: string; //last painter's account
-  updateLog: { dateUpdated: string; painter: string }[];
+  updateLog: { dateUpdated: string; painter: string; action: string }[];
   drawing: string; // svg's json string
+  voucherRequested: boolean;
 };

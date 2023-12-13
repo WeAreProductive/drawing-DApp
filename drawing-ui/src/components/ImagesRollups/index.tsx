@@ -28,11 +28,11 @@ const ImagesListRollups = () => {
   const account = connectedWallet.accounts[0].address;
   useEffect(() => {
     if (result.fetching) return;
-    if (dappState !== DAPP_STATE.CANVAS_SAVE) return;
+    if (dappState !== DAPP_STATE.canvasSave) return;
 
     reexecuteQuery({ requestPolicy: "network-only" });
 
-    setDappState(DAPP_STATE.CANVAS_INIT);
+    setDappState(DAPP_STATE.canvasInit);
   }, [result.fetching, reexecuteQuery, dappState]);
 
   if (fetching) return <p className="fetching">Loading...</p>;
@@ -42,19 +42,28 @@ const ImagesListRollups = () => {
 
   const drawingsData = data.notices.edges.map(({ node }: DataNoticeEdge) => {
     let payload = node?.payload;
+    let drawingData;
     if (payload) {
       try {
         payload = ethers.utils.toUtf8String(payload);
+        console.log(payload, "1");
       } catch (e) {
         payload = payload;
+        console.log(payload, "2");
       }
     } else {
       payload = "(empty)";
     }
-    const drawingData = JSON.parse(payload);
-    if (drawingData.owner?.toLowerCase() == account.toLowerCase()) {
-      mineDrawings.push(drawingData);
+
+    try {
+      drawingData = JSON.parse(payload);
+      if (drawingData.owner?.toLowerCase() == account.toLowerCase()) {
+        mineDrawings.push(drawingData);
+      }
+    } catch (e) {
+      console.log(e);
     }
+
     return drawingData;
   });
 

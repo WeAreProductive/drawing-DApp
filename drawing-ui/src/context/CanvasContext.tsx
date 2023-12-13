@@ -22,7 +22,7 @@ const initialCanvasContext = {
   setCanvas: (canvas: Canvas | null) => undefined,
   canvasOptions: initialOptions,
   setOptions: (options: CanvasOptions) => undefined,
-  dappState: DAPP_STATE.CANVAS_INIT,
+  dappState: DAPP_STATE.canvasInit,
   setDappState: (dappState: string) => undefined,
   currentDrawingData: null,
   setCurrentDrawingData: (data: null | DrawingInput) => undefined,
@@ -43,7 +43,7 @@ export const CanvasContextProvider = ({ children }: Props) => {
   const [canvas, setCanvas] = useState<Canvas | null>(null);
   // const [canvasesList, setCanvasesList] = useState([]); //canvases saved as images
   const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
-  const [dappState, setDappState] = useState<string>(DAPP_STATE.CANVAS_INIT);
+  const [dappState, setDappState] = useState<string>(DAPP_STATE.canvasInit);
   const [currentDrawingData, setCurrentDrawingData] =
     useState<DrawingInput | null>(null);
 

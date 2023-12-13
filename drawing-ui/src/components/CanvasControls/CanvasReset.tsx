@@ -7,7 +7,7 @@ const CanvasReset = () => {
     console.log("will clear canvas");
     if (!canvas) return;
     canvas.clear();
-    setDappState(DAPP_STATE.CANVAS_CLEAR);
+    setDappState(DAPP_STATE.canvasClear);
   };
   return (
     <button className="button canvas-reset" onClick={handleCanvasClear}>

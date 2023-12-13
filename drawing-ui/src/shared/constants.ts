@@ -20,9 +20,14 @@ export const MINT_SELECTOR = "0xd0def521";
 export const DAPP_ADDRESS = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C";
 
 export const DAPP_STATE = {
-  CANVAS_INIT: "initialize a canvas",
-  CANVAS_CLEAR: "canvas clear",
-  CANVAS_SAVE: "saving the canvas in a rollups notice",
-  DRAWING_UPDATE: "updating existing drawing",
-  VOUCHER_REQUEST: "requesting a voucher for minting an nft from the drawing", //
+  canvasInit: "initialize a canvas",
+  canvasClear: "canvas clear",
+  canvasSave: "saving the canvas in a rollups notice",
+  drawingUpdate: "updating existing drawing",
+  voucherRequset: "requesting a voucher for minting an nft from the drawing", //
+};
+
+export const LOG_ACTIONS = {
+  update: "update",
+  voucherRequest: "voucher request",
 };

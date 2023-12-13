@@ -8,7 +8,7 @@ const Network = () => {
   const { setDappState, setCurrentDrawingData } = useCanvasContext();
   const handleDisconnect = (wallet: WalletState) => {
     disconnect(wallet);
-    setDappState(DAPP_STATE.CANVAS_CLEAR);
+    setDappState(DAPP_STATE.canvasClear);
     setCurrentDrawingData(null);
   };
   return (

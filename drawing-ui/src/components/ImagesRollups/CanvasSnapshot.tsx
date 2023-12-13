@@ -10,6 +10,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, dappState, setDappState, setCurrentDrawingData } =
     useCanvasContext();
   const { drawing, owner } = src;
+  console.log({ src });
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
@@ -17,7 +18,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       var obj = fabric.util.groupSVGElements(objects, options);
       canvas.add(obj).renderAll();
     });
-    setDappState(DAPP_STATE.DRAWING_UPDATE);
+    setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
   };
   const sliceAccount = (str: string) => {

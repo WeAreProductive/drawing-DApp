@@ -96,7 +96,7 @@ def process_image(image):
     b64out = base64.b64encode(byte_encode)
     return b64out
 
-def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out):
+def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out, drawing_input):
     # b64out is the payload after string is processed
     logger.info(f"MINTING AN NFT")
     pngout = base64.decodebytes(b64out)# With the help of base64.decodebytes(s) method, we can decode the binary string with the help of base64 data into normal form.
@@ -127,17 +127,19 @@ def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out
     # decode a string encoded in UTF-8 format
     tokenURI = multihash.decode('utf-8') # it is not the ipfs unixfs 'file' hash
 
-    mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,tokenURI)
+    mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,tokenURI,drawing_input)
     
-def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string):
+def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string,drawing_input):
     mint_header = clean_header(mint_header)
     data = encode(['address', 'string'], [msg_sender,string])
     payload = f"0x{(mint_header+data).hex()}"
     voucher = {"destination": erc721_to_mint , "payload": payload}
     logger.info(f"voucher {voucher}")
     send_voucher(voucher)
-    
-    send_notice({"payload": str2hex(str(f"Emmited voucher to mint ERC721 {erc721_to_mint} with the content {string}"))})
+    # @TODO add some info that voucher is emitted 
+    payload = str2hex(json.dumps(drawing_input))
+    notice = {"payload": payload}
+    send_notice(notice)
 
 def mint_erc721_no_data(msg_sender,erc721_to_mint,mint_header):
     mint_header = clean_header(mint_header)
@@ -178,50 +180,34 @@ def handle_advance(data):
             handle_tx(sender,payload)
         else:
             payload = hex2str(payload)
-            logger.info(f"Received str {payload}")
-
-            # if payload == "exception":
-            #     status = "reject"
-            #     exception = {"payload": str2hex(str(payload))}
-            #     send_exception(exception)
-            #     sys.exit(1)
-            # elif payload == "reject":
-            #     status = "reject"
-            #     report = {"payload": str2hex(str(payload))}
-            #     send_report(report)
-            # elif payload == "report":
-            #     report = {"payload": str2hex(str(payload))}
-            #     send_report(report)
-            # elif payload[0:7] == "voucher":
-            #     payload = f"{payload}"
-            #     voucher = json.loads(payload[7:])
-            #     send_voucher(voucher)
-            if payload == "notice": 
-                notice = {"payload": str2hex(str(payload))}
-                send_notice(notice)
-            else:
-                try:
-                    logger.info(f"Trying to decode json {payload}")
-                    # try json data
-                    json_data = json.loads(payload) 
-                    # logger.info(f'JSON DATA {json_data}')
-                    if json_data.get("image"):
-                        b64out = process_image(json_data["image"].encode("utf-8"))
-                        payload = f"{b64out}"
-                        if json_data.get("erc721_to_mint") and json_data.get("selector"):
-                            mint_erc721_with_uri_from_image(sender,json_data["erc721_to_mint"],json_data["selector"],b64out)
-                    elif json_data.get("erc721_to_mint") and json_data.get("selector"):
-                        logger.info(f"Received mint request to ({json_data['erc721_to_mint']})")
-                        if json_data.get("string"):
-                            mint_erc721_with_string(sender,json_data["erc721_to_mint"],json_data["selector"],json_data["string"])
-                        else:
-                            mint_erc721_no_data(sender,json_data["erc721_to_mint"],json_data["selector"])
+            # logger.info(f"Received str {payload}") 
+            try:
+                logger.info(f"Trying to decode json ")
+                # try json data
+                json_data = json.loads(payload) 
+                # logger.info(f'JSON DATA {json_data}')
+                if json_data.get("image"):
+                    b64out = process_image(json_data["image"].encode("utf-8"))
+                    payload = f"{b64out}"
+                    if json_data.get("erc721_to_mint") and json_data.get("selector"): 
+                        mint_erc721_with_uri_from_image(sender,json_data["erc721_to_mint"],json_data["selector"],b64out, json_data["drawing_input"])
+                elif json_data.get("erc721_to_mint") and json_data.get("selector"):
+                    # logger.info(f"Received mint request to ({json_data['erc721_to_mint']})")
+                    if json_data.get("string"):
+                        mint_erc721_with_string(sender,json_data["erc721_to_mint"],json_data["selector"],json_data["string"])
                     else:
-                        raise Exception('Not supported json operation')
-                except Exception as e2:
-                    msg = f"Not valid json: {e2}"
-                    traceback.print_exc()
-                    logger.info(msg)
+                        mint_erc721_no_data(sender,json_data["erc721_to_mint"],json_data["selector"])
+                else:
+                    # logger.info(f"Sending notice {payload}") 
+                    payload = str2hex(payload)
+                    notice = {"payload": payload}
+                    
+                    send_notice(notice)
+                    # raise Exception('Not supported json operation') @TODO add case
+            except Exception as e2:
+                msg = f"Not valid json: {e2}"
+                traceback.print_exc()
+                logger.info(msg)
     except Exception as e:
         status = "reject"
         msg = f"Error: {e}"
@@ -231,12 +217,13 @@ def handle_advance(data):
 
     if not payload:
         payload = data["payload"]
-    else:
-        payload = str2hex(json.dumps(payload))
-    notice = {"payload": payload}
-    send_notice(notice) #@TODO possible notice dupl
+    else: 
+        payload = str2hex(payload)
+        notice = {"payload": payload}
+        logger.info(f"Sending notice") 
+        send_notice(notice)
 
-    logger.info(f"Notice payload was {payload}")
+    # logger.info(f"Notice payload was {payload}")
     return status
 
 def handle_tx(sender,payload):
@@ -264,12 +251,12 @@ def handle_tx(sender,payload):
 
     if voucher:
         send_voucher(voucher)
-        logger.info(f"Voucher was {voucher}")
+        logger.info(f"Voucher was ")
 
 
 def handle_inspect(request):
     data = request["data"]
-    logger.info(f"Received inspect request data {data}")
+    logger.info(f"Received inspect request data ")
     logger.info("Adding report")
     report = {"payload": data["payload"]}
     send_report(report)

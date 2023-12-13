@@ -13,7 +13,7 @@ import moment from "moment";
 import { InputBox__factory } from "@cartesi/rollups";
 
 import { useCanvasContext } from "../../context/CanvasContext";
-import { DAPP_ADDRESS, DAPP_STATE } from "../../shared/constants";
+import { DAPP_ADDRESS, DAPP_STATE, LOG_ACTIONS } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import { DrawingInput, Network } from "../../shared/types";
 const config: { [name: string]: Network } = configFile;
@@ -52,10 +52,11 @@ const CanvasToSVG = () => {
       const timestamp = moment().unix();
       // prepare drawing data notice input
       let drawingNoticePayload: DrawingInput;
-      if (dappState == DAPP_STATE.DRAWING_UPDATE && currentDrawingData) {
+      if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         currentDrawingData.updateLog.push({
           dateUpdated: now,
           painter: connectedWallet.accounts[0].address,
+          action: LOG_ACTIONS.update,
         });
 
         drawingNoticePayload = {
@@ -73,6 +74,7 @@ const CanvasToSVG = () => {
           owner: connectedWallet.accounts[0].address,
           updateLog: [],
           drawing: strInput,
+          voucherRequested: false,
         };
       }
 
@@ -102,7 +104,7 @@ const CanvasToSVG = () => {
 
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
-      setDappState(DAPP_STATE.CANVAS_SAVE);
+      setDappState(DAPP_STATE.canvasSave);
       setLoading(false);
       let toastData = {};
       if (event?.args?.inputIndex) {

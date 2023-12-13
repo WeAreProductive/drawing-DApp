@@ -11,14 +11,19 @@ import {
   ERC721_TO_MINT,
   MINT_SELECTOR,
   DAPP_ADDRESS,
+  DAPP_STATE,
+  LOG_ACTIONS,
 } from "../../shared/constants";
 import configFile from "../../config/config.json";
-import { Network } from "../../shared/types";
+import { DrawingInput, Network } from "../../shared/types";
+
+import moment from "moment";
 const config: { [name: string]: Network } = configFile;
 
 const CanvasToJSON = () => {
   const [connectedWallet] = useWallets();
-  const { canvas } = useCanvasContext();
+  const { canvas, dappState, currentDrawingData, setDappState } =
+    useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   const toast = useToast();
   const [inputBoxAddress, setInputBoxAddress] = useState("");
@@ -39,21 +44,63 @@ const CanvasToJSON = () => {
       position: "top",
     });
     setLoading(true);
-    const canvasContent = canvas.toJSON();
-    const base64str = await storeAsFiles(canvasContent.objects);
-    const sendInput = async (strInput: string) => {
-      console.log(strInput);
-      const str = JSON.stringify({
-        image: strInput,
-        erc721_to_mint: ERC721_TO_MINT,
-        selector: MINT_SELECTOR,
-      });
+
+    const sendInput = async (strInput: string, svg: string) => {
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider
       );
       const signer = provider.getSigner();
 
+      const now = moment().utc().format("YY-MM-DD hh:mm:s");
+      // prepare drawing data notice input
+      let drawingNoticePayload: DrawingInput;
+      if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
+        //  #1 log update for drawing created
+        currentDrawingData.updateLog.push({
+          dateUpdated: now,
+          painter: connectedWallet.accounts[0].address,
+          action: LOG_ACTIONS.update,
+        });
+        // #2 log update for voucher request
+        currentDrawingData.updateLog.push({
+          dateUpdated: now,
+          painter: connectedWallet.accounts[0].address,
+          action: LOG_ACTIONS.voucherRequest,
+        });
+
+        drawingNoticePayload = {
+          ...currentDrawingData,
+          lastUpdated: now,
+          owner: connectedWallet.accounts[0].address,
+          drawing: svg,
+          voucherRequested: true,
+        };
+      } else {
+        // new drawing is sent to rollups, and voucher is requested
+        const timestamp = moment().unix();
+        drawingNoticePayload = {
+          id: `${connectedWallet.accounts[0].address}-${timestamp}`,
+          dateCreated: now,
+          lastUpdated: now, // to allow sorting by date
+          owner: connectedWallet.accounts[0].address,
+          updateLog: [
+            {
+              dateUpdated: now,
+              painter: connectedWallet.accounts[0].address,
+              action: LOG_ACTIONS.voucherRequest,
+            },
+          ],
+          drawing: svg,
+          voucherRequested: true,
+        };
+      }
+      const str = JSON.stringify({
+        drawing_input: drawingNoticePayload, //data to save in a notice
+        image: strInput,
+        erc721_to_mint: ERC721_TO_MINT,
+        selector: MINT_SELECTOR,
+      });
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
 
@@ -80,6 +127,7 @@ const CanvasToJSON = () => {
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setLoading(false);
+      setDappState(DAPP_STATE.canvasSave);
       let toastData = {};
       if (event?.args?.inputIndex) {
         canvas.clear();
@@ -104,7 +152,10 @@ const CanvasToJSON = () => {
       toast(toastData);
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
-    sendInput(base64str);
+    const canvasContent = canvas.toJSON();
+    const canvasSVG = canvas.toSVG();
+    const base64str = await storeAsFiles(canvasContent.objects);
+    sendInput(base64str, canvasSVG);
   };
   let buttonProps = { isLoading: false };
   if (loading) {
