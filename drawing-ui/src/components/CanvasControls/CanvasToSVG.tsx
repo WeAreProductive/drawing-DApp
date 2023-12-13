@@ -30,9 +30,7 @@ const CanvasToSVG = () => {
     if (!connectedChain) return;
     setInputBoxAddress(config[connectedChain.id].InputBoxAddress);
   }, [connectedChain]);
-
   const handleCanvasToSvg = async () => {
-    console.log("will save a canvas in a rollups notice");
     if (!canvas) return;
     toast({
       title: "Sending input to rollups...",

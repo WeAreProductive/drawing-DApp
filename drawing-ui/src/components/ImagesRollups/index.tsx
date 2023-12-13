@@ -22,11 +22,11 @@ const ImagesListRollups = () => {
 
     setDappState(DAPP_STATE.CANVAS_INIT);
   }, [result.fetching, reexecuteQuery, dappState]);
+  
+if (fetching) return <p className="fetching">Loading...</p>;
+if (error) return <p className="error">Oh no... {error.message}</p>;
 
-  if (fetching) return <p>Loading...</p>;
-  if (error) return <p>Oh no... {error.message}</p>;
-
-  if (!data || !data.notices) return <p>No notices</p>;
+if (!data || !data.notices) return <p className="no-notices">No notices</p>;
   // @TODO cache results, reexecute query notices on new canvas saved
   const drawingsData = data.notices.edges.map(({ node }: any) => {
     let payload = node?.payload;

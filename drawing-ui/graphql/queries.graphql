@@ -53,7 +53,7 @@ query noticesByInput($inputIndex: Int!) {
   }
 }
 
-query GetNotices($cursor: String) {
+query getNotices($cursor: String) {
   notices(first: 10, after: $cursor) {
     totalCount
     pageInfo {

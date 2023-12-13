@@ -11,7 +11,6 @@ const Draw = () => {
     <Page>
       <GraphQLProvider>
         <CanvasContextProvider>
-          <ImagesListRollups />
           <div className="canvas-wrapper">
             <FabricJSCanvas />
             <div className="controls-container">
@@ -19,6 +18,7 @@ const Draw = () => {
               <CanvasControls />
             </div>
           </div>
+          <ImagesListRollups />
         </CanvasContextProvider>
       </GraphQLProvider>
     </Page>

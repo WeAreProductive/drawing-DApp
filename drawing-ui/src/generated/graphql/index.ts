@@ -363,6 +363,13 @@ export type NoticesByInputQueryVariables = Exact<{
 
 export type NoticesByInputQuery = { __typename?: 'Query', input: { __typename?: 'Input', notices: { __typename?: 'NoticeConnection', edges: Array<{ __typename?: 'NoticeEdge', node: { __typename?: 'Notice', index: number, payload: string, input: { __typename?: 'Input', index: number } } }> } } };
 
+export type GetNoticesQueryVariables = Exact<{
+  cursor?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type GetNoticesQuery = { __typename?: 'Query', notices: { __typename?: 'NoticeConnection', totalCount: number, pageInfo: { __typename?: 'PageInfo', hasNextPage: boolean, endCursor?: string | null }, edges: Array<{ __typename?: 'NoticeEdge', node: { __typename?: 'Notice', index: number, payload: string, input: { __typename?: 'Input', index: number } } }> } };
+
 export type VoucherQueryVariables = Exact<{
   voucherIndex: Scalars['Int'];
   inputIndex: Scalars['Int'];
@@ -471,6 +478,30 @@ export const NoticesByInputDocument = gql`
 
 export function useNoticesByInputQuery(options: Omit<Urql.UseQueryArgs<NoticesByInputQueryVariables>, 'query'>) {
   return Urql.useQuery<NoticesByInputQuery, NoticesByInputQueryVariables>({ query: NoticesByInputDocument, ...options });
+};
+export const GetNoticesDocument = gql`
+    query getNotices($cursor: String) {
+  notices(first: 10, after: $cursor) {
+    totalCount
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    edges {
+      node {
+        index
+        input {
+          index
+        }
+        payload
+      }
+    }
+  }
+}
+    `;
+
+export function useGetNoticesQuery(options?: Omit<Urql.UseQueryArgs<GetNoticesQueryVariables>, 'query'>) {
+  return Urql.useQuery<GetNoticesQuery, GetNoticesQueryVariables>({ query: GetNoticesDocument, ...options });
 };
 export const VoucherDocument = gql`
     query voucher($voucherIndex: Int!, $inputIndex: Int!) {

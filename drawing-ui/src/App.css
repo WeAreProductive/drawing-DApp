@@ -3,11 +3,8 @@ body {
   font-family: 'Open Sans', Helvetica, sans-serif;
 }
 .page-content {
-  display: flex;
-  align-items: center;
-  flex-direction: row;
-  justify-content: center;
-  align-items:center;  
+  display: flex; 
+  flex-direction: row; 
   margin-top: 20px;
   padding: 10px 30px 
 } 
@@ -15,7 +12,6 @@ body {
   display: flex;
   flex-direction: column;
   width: 40%
-   /* @TODO with flex */
 }
 .list-wrapper { 
   margin-top:30px; 
@@ -29,13 +25,10 @@ body {
   margin-bottom: 10px
 }
 .images-list { 
-  display:flex;
-  /* flex-direction:column;  */
+  display:flex; 
   overflow: auto; 
   align-items: center;
-  justify-content: center;  
-  /* max-height:800px; */
-  /* margin-top:100px */
+  justify-content: center;   
 }
 
 .images-list-box {
@@ -68,7 +61,9 @@ body {
   display: flex; 
   margin-top: 50px;
   margin-left: 25px;
-  justify-content: center
+  /* justify-content: center; */
+  width: 980px;
+  height: 600px;
 }
 .canvas-container{
   background-color: #fff;
@@ -204,4 +199,10 @@ nav ul li a {
 button {
   padding: 6px!important;
   text-decoration: underline
+}
+.fetching, .error, .no-notices {
+  position: absolute;
+  z-index: 1000;
+  margin-top: 50vh;
+  margin-left: 45%
 }
