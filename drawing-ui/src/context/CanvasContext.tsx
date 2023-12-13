@@ -1,6 +1,10 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
-import { CanvasContextType, CanvasOptions } from "../shared/types";
+import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../shared/constants";
+import {
+  CanvasContextType,
+  CanvasOptions,
+  DrawingInput,
+} from "../shared/types";
 import { Canvas } from "fabric/fabric-impl";
 
 type Props = {
@@ -18,8 +22,12 @@ const initialCanvasContext = {
   setCanvas: (canvas: null) => undefined,
   canvasOptions: initialOptions,
   setOptions: (options: CanvasOptions) => undefined,
+  dappState: DAPP_STATE.CANVAS_INIT,
+  setDappState: (dappState: string) => undefined,
+  currentDrawingData: null,
+  setCurrentDrawingData: (data: null) => undefined,
 };
-const CanvasContext = createContext<CanvasContextType>(initialCanvasContext);
+const CanvasContext = createContext<CanvasContextType>(initialCanvasContext); //@TODO fix types incomp - canvas
 
 export const useCanvasContext = () => {
   const context = useContext(CanvasContext);
@@ -35,12 +43,19 @@ export const CanvasContextProvider = ({ children }: Props) => {
   const [canvas, setCanvas] = useState<Canvas | null>(null);
   // const [canvasesList, setCanvasesList] = useState([]); //canvases saved as images
   const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
+  const [dappState, setDappState] = useState<string>(DAPP_STATE.CANVAS_INIT);
+  const [currentDrawingData, setCurrentDrawingData] =
+    useState<DrawingInput | null>(null);
 
   const value = {
     canvas,
     setCanvas,
     canvasOptions,
     setOptions,
+    dappState,
+    setDappState,
+    currentDrawingData,
+    setCurrentDrawingData,
   };
   return (
     <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>

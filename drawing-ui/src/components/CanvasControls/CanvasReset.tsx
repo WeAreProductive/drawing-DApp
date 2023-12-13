@@ -1,10 +1,13 @@
 import { useCanvasContext } from "../../context/CanvasContext";
+import { DAPP_STATE } from "../../shared/constants";
 
 const CanvasReset = () => {
-  const { canvas } = useCanvasContext();
+  const { canvas, setDappState } = useCanvasContext();
   const handleCanvasClear = () => {
+    console.log("will clear canvas");
     if (!canvas) return;
     canvas.clear();
+    setDappState(DAPP_STATE.CANVAS_CLEAR);
   };
   return (
     <button className="button canvas-reset" onClick={handleCanvasClear}>

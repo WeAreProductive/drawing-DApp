@@ -13,25 +13,26 @@ import moment from "moment";
 import { InputBox__factory } from "@cartesi/rollups";
 
 import { useCanvasContext } from "../../context/CanvasContext";
-import { DAPP_ADDRESS } from "../../shared/constants";
+import { DAPP_ADDRESS, DAPP_STATE } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import { DrawingInput, Network } from "../../shared/types";
 const config: { [name: string]: Network } = configFile;
 
 const CanvasToSVG = () => {
   const [connectedWallet] = useWallets();
-  const { canvas } = useCanvasContext();
+  const { canvas, dappState, setDappState, currentDrawingData } =
+    useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   const toast = useToast();
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
-
   useEffect(() => {
     if (!connectedChain) return;
     setInputBoxAddress(config[connectedChain.id].InputBoxAddress);
   }, [connectedChain]);
 
   const handleCanvasToSvg = async () => {
+    console.log("will save a canvas in a rollups notice");
     if (!canvas) return;
     toast({
       title: "Sending input to rollups...",
@@ -49,17 +50,33 @@ const CanvasToSVG = () => {
         connectedWallet.provider
       );
       const signer = provider.getSigner();
-      const now = moment().utc(true).format("YY-MM-DD hh:mm:s");
+      const now = moment().utc().format("YY-MM-DD hh:mm:s");
       const timestamp = moment().unix();
-      // @TODO check -> old or new drawing to prepare the proper data
-      const drawingNoticePayload: DrawingInput = {
-        id: `${connectedWallet.accounts[0].address}-${timestamp}`,
-        dateCreated: now,
-        lastUpdated: null,
-        owner: connectedWallet.accounts[0].address,
-        updateLog: [],
-        drawing: strInput,
-      };
+      // prepare drawing data notice input
+      let drawingNoticePayload: DrawingInput;
+      if (dappState == DAPP_STATE.DRAWING_UPDATE && currentDrawingData) {
+        currentDrawingData.updateLog.push({
+          dateUpdated: now,
+          painter: connectedWallet.accounts[0].address,
+        });
+
+        drawingNoticePayload = {
+          ...currentDrawingData,
+          lastUpdated: now,
+          owner: connectedWallet.accounts[0].address,
+          drawing: strInput,
+        };
+      } else {
+        // new drawing is sent to rollups
+        drawingNoticePayload = {
+          id: `${connectedWallet.accounts[0].address}-${timestamp}`,
+          dateCreated: now,
+          lastUpdated: null,
+          owner: connectedWallet.accounts[0].address,
+          updateLog: [],
+          drawing: strInput,
+        };
+      }
 
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
@@ -69,7 +86,7 @@ const CanvasToSVG = () => {
         JSON.stringify(drawingNoticePayload)
       )
         ? JSON.stringify(drawingNoticePayload)
-        : ethers.utils.toUtf8Bytes(JSON.stringify(drawingNoticePayload)); 
+        : ethers.utils.toUtf8Bytes(JSON.stringify(drawingNoticePayload));
       // Send the transaction
       const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
       toast({
@@ -111,6 +128,7 @@ const CanvasToSVG = () => {
       }
       toast(toastData);
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
+      setDappState(DAPP_STATE.CANVAS_SAVE);
     };
     sendInput(canvasData);
   };

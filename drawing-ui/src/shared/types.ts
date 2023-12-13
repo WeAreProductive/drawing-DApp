@@ -23,6 +23,10 @@ export type CanvasContextType = {
   setCanvas: React.Dispatch<React.SetStateAction<Canvas | null>>;
   canvasOptions: CanvasOptions;
   setOptions: React.Dispatch<React.SetStateAction<CanvasOptions>>;
+  dappState: string; // @TODO enum one of the predefined values
+  setDappState: React.Dispatch<React.SetStateAction<string>>;
+  currentDrawingData: null | DrawingInput;
+  setCurrentDrawingData: (data: null | DrawingInput) => undefined;
 };
 export type VoucherExtended = {
   id?: string;

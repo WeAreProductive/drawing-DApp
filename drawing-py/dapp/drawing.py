@@ -197,7 +197,7 @@ def handle_advance(data):
             #     payload = f"{payload}"
             #     voucher = json.loads(payload[7:])
             #     send_voucher(voucher)
-            if payload == "notice": 
+            if payload == "noticee": 
                 logger.info(f"Adding notice {json.dumps(payload)}")
 
                 notice = {"payload": str2hex(json.dumps(payload))}

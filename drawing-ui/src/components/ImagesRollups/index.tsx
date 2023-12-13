@@ -75,9 +75,14 @@ const ImagesListRollups = () => {
         <div className="images-list">
           <div className="images-list-box">
             {drawingsData.length > 0 ? (
-              drawingsData.map((drawing) => {
+              drawingsData.map((drawing, idx) => {
                 try {
-                  return <CanvasSnapshot key={drawing.id} src={drawing} />;
+                  return (
+                    <CanvasSnapshot
+                      key={`${drawing.id}-${idx}`}
+                      src={drawing}
+                    />
+                  );
                 } catch (e) {
                   console.log(e);
                 }
@@ -98,9 +103,14 @@ const ImagesListRollups = () => {
         <div className="images-list">
           <div className="images-list-box">
             {mineDrawings.length > 0 ? (
-              mineDrawings.map((drawing) => {
+              mineDrawings.map((drawing, idx) => {
                 try {
-                  return <CanvasSnapshot key={drawing.id} src={drawing} />;
+                  return (
+                    <CanvasSnapshot
+                      key={`${drawing.id}-${idx}`}
+                      src={drawing}
+                    />
+                  );
                 } catch (e) {
                   console.log(e);
                 }
