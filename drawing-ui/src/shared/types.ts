@@ -41,8 +41,8 @@ export type VoucherExtended = {
 // @TODO change after drawing input is managed in the BE
 export type DrawingInput = {
   id: string; // creator's account - timestamp
-  dateCreated: string; // date-time string
-  lastUpdated: null | string; // last update date-time string
+  date_created: string; // date-time string
+  last_updated: null | string; // last update date-time string
   owner: string; //last painter's account
   updateLog: { dateUpdated: string; painter: string; action: string }[];
   drawing: string; // svg's json string

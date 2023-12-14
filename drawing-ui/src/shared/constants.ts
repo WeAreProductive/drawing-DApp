@@ -33,7 +33,23 @@ export const LOG_ACTIONS = {
 };
 
 export const COMMANDS = {
-  update: "u",
-  voucherRequest: "vr",
-  noticeRequest: "nr",
+  createAndStore: {
+    cmd: "cn",
+    description:
+      "BE will emit a notice with the data of the newly created drawing",
+  },
+  updateAndStore: {
+    cmd: "un",
+    description: "BE will emit a notice with the data of the updated drawing",
+  },
+  createAndMint: {
+    cmd: "cv",
+    description:
+      "BE will emit a notice (with the data of the newly created drawing) and a voucher to mint a NFT",
+  },
+  updateAndMint: {
+    cmd: "uv",
+    description:
+      "BE will emit a notice (with the data of the updated drawing) and a voucher to mint a NFT",
+  },
 };

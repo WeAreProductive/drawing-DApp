@@ -12,6 +12,8 @@ from Cryptodome.Hash import SHA256
 import base64
 import base58
 from protobuf_models import unixfs_pb2, merkle_dag_pb2
+from datetime import datetime, timezone
+import uuid
 
 DAPP_RELAY_ADDRESS = "0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE".lower()
 ERC721_PORTAL_ADDRESS = "0x237F8DD094C0e47f4236f12b4Fa01d6Dae89fb87".lower()
@@ -96,7 +98,7 @@ def process_image(image):
     b64out = base64.b64encode(byte_encode)
     return b64out
 #
-def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out, drawing_input):
+def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out, drawing_input, cmd):
     # b64out is the payload after string is processed
     logger.info(f"MINTING AN NFT")
     pngout = base64.decodebytes(b64out)# With the help of base64.decodebytes(s) method, we can decode the binary string with the help of base64 data into normal form.
@@ -127,22 +129,46 @@ def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out
     # decode a string encoded in UTF-8 format
     tokenURI = multihash.decode('utf-8') # it is not the ipfs unixfs 'file' hash
 
-    mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,tokenURI,drawing_input)
+    mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,tokenURI,drawing_input, cmd)
 #    
-def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string,drawing_input):
+def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string,drawing_input,cmd):
     mint_header = clean_header(mint_header)
     data = encode(['address', 'string'], [msg_sender,string])
     payload = f"0x{(mint_header+data).hex()}"
     voucher = {"destination": erc721_to_mint , "payload": payload}
     logger.info(f"voucher {voucher}")
     send_voucher(voucher)
-    payload = str2hex(json.dumps(drawing_input))
-    notice = {"payload": payload}
-    send_notice(notice)
+    store_drawing_data(msg_sender,drawing_input, cmd)
 
-def store_drawing_data(sender,drawing):
-    # @TODO handle uodate log, id, dates etc drawing notice input payload at BE
-    payload = str2hex(json.dumps(drawing))
+# @TODO handle uodate log, id, dates etc drawing notice input payload at BE
+    # id: string; // creator's account - timestamp
+    # dateCreated: string; // date-time string
+    # lastUpdated: null | string; // last update date-time string
+    # owner: string; //last painter's account
+    # updateLog: { dateUpdated: string; painter: string; action: string }[];
+    # drawing: string; // svg's json string
+    # voucherRequested: boolean;
+def store_drawing_data(sender,drawing_input, cmd):
+    now = str(datetime.now(timezone.utc))
+    
+    if cmd == 'cn' or cmd == 'cv':
+        # set drawing id wneh new drawing
+        unix_timestamp = str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
+        drawing_input["id"]= f"{sender}-{unix_timestamp}"
+        drawing_input["owner"] = sender
+        drawing_input["date_created"]= now 
+        drawing_input["last_updated"] = now
+        if cmd == 'cv':
+            drawing_input['voucher_requested'] = True
+        else:
+            drawing_input['voucher_requested'] = False
+    elif cmd == 'un' or cmd == 'uv':
+        drawing_input["owner"] = sender
+        drawing_input["last_updated"] = now
+        if cmd == 'uv':
+            drawing_input['voucher_requested'] = True
+      
+    payload = str2hex(json.dumps(drawing_input))
     notice = {"payload": payload}
     send_notice(notice)
 #
@@ -157,7 +183,6 @@ def clean_header(mint_header):
 
 def handle_advance(data):
     logger.info(f"Received advance request")
-    # logger.info("Adding notice")
     logger.info(data)
     status = "accept"
     payload = None
@@ -165,20 +190,28 @@ def handle_advance(data):
     try:
         payload = data["payload"]
         payload = hex2str(payload)
-        # logger.info(f"Received str {payload}") 
         try:
             logger.info(f"Trying to decode json ")
             # try json data
             json_data = json.loads(payload) 
-            if json_data.get("image"):
-                logger.info(f'MINTING - JSON DATA {json_data}')
-                b64out = process_image(json_data["image"].encode("utf-8"))
-                payload = f"{b64out}"
-                if json_data.get("erc721_to_mint") and json_data.get("selector"): 
-                    mint_erc721_with_uri_from_image(sender,json_data["erc721_to_mint"],json_data["selector"],b64out, json_data["drawing_input"])
-            elif json_data.get("notice"):
-                if json_data.get("drawing_input"): 
-                    store_drawing_data(sender,json_data["drawing_input"])
+            if json_data.get("cmd"):
+                if json_data['cmd']== 'cv' or json_data['cmd']== 'uv':
+                    logger.info(f"COMMAND {json_data['cmd']}")
+                    if json_data.get('image'):
+                        b64out = process_image(json_data["image"].encode("utf-8"))
+                        payload = f"{b64out}"
+                        if json_data.get("erc721_to_mint") and json_data.get("selector"): 
+                            erc721_to_mint=json_data["erc721_to_mint"]
+                            selector=json_data["selector"]
+                            drawing_input=json_data["drawing_input"]
+                            cmd=json_data['cmd']
+                            mint_erc721_with_uri_from_image(sender, erc721_to_mint,selector,b64out, drawing_input, cmd)
+                elif json_data['cmd']== 'cn' or json_data['cmd']== 'un':
+                    logger.info(f"COMMAND {json_data['cmd']}")
+                    if json_data.get("drawing_input"): 
+                        drawing_input=json_data["drawing_input"]
+                        cmd=json_data['cmd']
+                        store_drawing_data(sender,drawing_input, cmd)
             else:
                 raise Exception('Not supported json operation')
         except Exception as e2:

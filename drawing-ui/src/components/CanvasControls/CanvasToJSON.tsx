@@ -20,6 +20,7 @@ import {
   DAPP_ADDRESS,
   DAPP_STATE,
   LOG_ACTIONS,
+  COMMANDS,
 } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import { DrawingInput, Network } from "../../shared/types";
@@ -61,7 +62,8 @@ const CanvasToJSON = () => {
 
       const now = moment().utc().format("YY-MM-DD hh:mm:s");
       // prepare drawing data notice input
-      let drawingNoticePayload: DrawingInput;
+      let drawingNoticePayload: any; //@TODO fix typing
+      let str: string;
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         //  #1 log update for drawing created
         currentDrawingData.updateLog.push({
@@ -78,19 +80,26 @@ const CanvasToJSON = () => {
 
         drawingNoticePayload = {
           ...currentDrawingData,
-          lastUpdated: now,
-          owner: connectedWallet.accounts[0].address,
+          // lastUpdated: now,
+          // owner: connectedWallet.accounts[0].address,
           drawing: svg,
           voucherRequested: true,
         };
+        str = JSON.stringify({
+          drawing_input: drawingNoticePayload, //data to save in a notice
+          image: strInput,
+          erc721_to_mint: ERC721_TO_MINT,
+          selector: MINT_SELECTOR,
+          cmd: COMMANDS.updateAndMint.cmd,
+        });
       } else {
         // new drawing is sent to rollups, and voucher is requested
         const timestamp = moment().unix();
         drawingNoticePayload = {
-          id: `${connectedWallet.accounts[0].address}-${timestamp}`,
-          dateCreated: now,
-          lastUpdated: now, // to allow sorting by date
-          owner: connectedWallet.accounts[0].address,
+          // id: `${connectedWallet.accounts[0].address}-${timestamp}`,
+          // dateCreated: now,
+          // lastUpdated: now, // to allow sorting by date
+          // owner: connectedWallet.accounts[0].address,
           updateLog: [
             {
               dateUpdated: now,
@@ -101,13 +110,15 @@ const CanvasToJSON = () => {
           drawing: svg,
           voucherRequested: true,
         };
+        str = JSON.stringify({
+          drawing_input: drawingNoticePayload, //data to save in a notice
+          image: strInput,
+          erc721_to_mint: ERC721_TO_MINT,
+          selector: MINT_SELECTOR,
+          cmd: COMMANDS.createAndMint.cmd,
+        });
       }
-      const str = JSON.stringify({
-        drawing_input: drawingNoticePayload, //data to save in a notice
-        image: strInput,
-        erc721_to_mint: ERC721_TO_MINT,
-        selector: MINT_SELECTOR,
-      });
+
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
 

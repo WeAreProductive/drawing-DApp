@@ -13,7 +13,12 @@ import moment from "moment";
 import { InputBox__factory } from "@cartesi/rollups";
 
 import { useCanvasContext } from "../../context/CanvasContext";
-import { DAPP_ADDRESS, DAPP_STATE, LOG_ACTIONS } from "../../shared/constants";
+import {
+  COMMANDS,
+  DAPP_ADDRESS,
+  DAPP_STATE,
+  LOG_ACTIONS,
+} from "../../shared/constants";
 import configFile from "../../config/config.json";
 import { DrawingInput, Network } from "../../shared/types";
 const config: { [name: string]: Network } = configFile;
@@ -52,7 +57,8 @@ const CanvasToSVG = () => {
       const timestamp = moment().unix();
 
       // prepare drawing data notice input
-      let drawingNoticePayload: DrawingInput;
+      let drawingNoticePayload: any; // @TODO fix typing
+      let str: string;
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         currentDrawingData.updateLog.push({
           dateUpdated: now,
@@ -62,27 +68,31 @@ const CanvasToSVG = () => {
 
         drawingNoticePayload = {
           ...currentDrawingData,
-          lastUpdated: now,
-          owner: connectedWallet.accounts[0].address,
+          // lastUpdated: now,
+          // owner: connectedWallet.accounts[0].address,
           drawing: strInput,
         };
+        str = JSON.stringify({
+          drawing_input: drawingNoticePayload, // data to save in a notice
+          cmd: COMMANDS.updateAndStore.cmd, // BE will be notified to emit a notice
+        });
       } else {
         // new drawing is sent to rollups
         drawingNoticePayload = {
-          id: `${connectedWallet.accounts[0].address}-${timestamp}`,
-          dateCreated: now,
-          lastUpdated: null,
-          owner: connectedWallet.accounts[0].address,
+          // id: `${connectedWallet.accounts[0].address}-${timestamp}`,
+          // dateCreated: now,
+          // lastUpdated: null,
+          // owner: connectedWallet.accounts[0].address,
           updateLog: [],
           drawing: strInput,
           voucherRequested: false,
         };
+        str = JSON.stringify({
+          drawing_input: drawingNoticePayload, // data to save in a notice
+          cmd: COMMANDS.createAndStore.cmd, // BE will be notified to emit a notice
+        });
       }
 
-      const str = JSON.stringify({
-        drawing_input: drawingNoticePayload, // data to save in a notice
-        notice: true, // BE will be notified to send a notice
-      });
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
 
