@@ -23,7 +23,11 @@ import {
   COMMANDS,
 } from "../../shared/constants";
 import configFile from "../../config/config.json";
-import { DrawingInput, Network } from "../../shared/types";
+import {
+  DrawingInput,
+  DrawingInputExtended,
+  Network,
+} from "../../shared/types";
 
 import moment from "moment";
 const config: { [name: string]: Network } = configFile;
@@ -60,7 +64,7 @@ const CanvasToJSON = () => {
       );
       const signer = provider.getSigner();
       // prepare drawing data notice input
-      let drawingNoticePayload: any; //@TODO fix typing
+      let drawingNoticePayload: DrawingInput | DrawingInputExtended;
       let str: string;
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {

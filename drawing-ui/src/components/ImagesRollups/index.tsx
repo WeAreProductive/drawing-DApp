@@ -6,7 +6,7 @@ import { useWallets } from "@web3-onboard/react";
 import { useEffect } from "react";
 import { DAPP_STATE } from "../../shared/constants";
 import { useCanvasContext } from "../../context/CanvasContext";
-import { DrawingInput } from "../../shared/types";
+import { DrawingInput, DrawingInputExtended } from "../../shared/types";
 type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;
   node: {
@@ -24,7 +24,7 @@ const ImagesListRollups = () => {
   const [connectedWallet] = useWallets();
   const [result, reexecuteQuery] = useNoticesQuery();
   const { data, fetching, error } = result;
-  const mineDrawings: DrawingInput[] = [];
+  const mineDrawings: DrawingInputExtended[] = [];
   const account = connectedWallet.accounts[0].address;
   useEffect(() => {
     if (result.fetching) return;

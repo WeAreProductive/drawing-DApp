@@ -142,7 +142,7 @@ def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string,drawing
 
 def store_drawing_data(sender,drawing_input, cmd):
     now = str(datetime.now(timezone.utc))
-    new_log_item = { "dateUpdated": now,
+    new_log_item = { "date_updated": now,
                 "painter": sender,
                 "action": cmd } 
     if cmd == 'cn' or cmd == 'cv':

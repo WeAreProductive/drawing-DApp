@@ -20,7 +20,11 @@ import {
   LOG_ACTIONS,
 } from "../../shared/constants";
 import configFile from "../../config/config.json";
-import { DrawingInput, Network } from "../../shared/types";
+import {
+  DrawingInput,
+  DrawingInputExtended,
+  Network,
+} from "../../shared/types";
 const config: { [name: string]: Network } = configFile;
 
 const CanvasToSVG = () => {
@@ -57,7 +61,7 @@ const CanvasToSVG = () => {
       const timestamp = moment().unix();
 
       // prepare drawing data notice input
-      let drawingNoticePayload: any; // @TODO fix typing
+      let drawingNoticePayload: DrawingInput | DrawingInputExtended; // @TODO fix typing
       let str: string;
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {

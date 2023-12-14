@@ -38,13 +38,16 @@ export type VoucherExtended = {
   executed?: any;
   msg?: string;
 };
-// @TODO change after drawing input is managed in the BE
-export type DrawingInput = {
+ 
+export interface DrawingInput {
+  drawing: string; // svg's json string
+}
+export interface DrawingInputExtended extends DrawingInput {
   id: string; // creator's account - timestamp
   date_created: string; // date-time string
   last_updated: null | string; // last update date-time string
   owner: string; //last painter's account
-  updateLog: { dateUpdated: string; painter: string; action: string }[];
+  update_log: { date_updated: string; painter: string; action: string }[];
   drawing: string; // svg's json string
-  voucherRequested: boolean;
+  voucher_requested: boolean;
 };

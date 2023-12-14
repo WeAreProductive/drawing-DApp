@@ -1,15 +1,14 @@
 import { fabric } from "fabric";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { DAPP_STATE } from "../../shared/constants";
-import { DrawingInput } from "../../shared/types";
+import { DrawingInputExtended } from "../../shared/types";
 
 type CanvasSnapshotProp = {
-  src: DrawingInput;
+  src: DrawingInputExtended;
 };
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
-  const { drawing, owner } = src; 
-  console.log(src.update_log);
+  const { drawing, owner } = src;
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
