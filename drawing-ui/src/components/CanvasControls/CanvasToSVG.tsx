@@ -1,9 +1,9 @@
 /**
- * Convert Drawings to svg strings
- * and save the drawings data in rollups
- * as notices
- */
-
+ * Converts Drawing to svg string
+ * sends drawing data to rollups
+ * to emit a notice with 
+ * the current drawing data
+ */ 
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { useToast, Button } from "@chakra-ui/react";
@@ -50,6 +50,7 @@ const CanvasToSVG = () => {
       const signer = provider.getSigner();
       const now = moment().utc().format("YY-MM-DD hh:mm:s");
       const timestamp = moment().unix();
+
       // prepare drawing data notice input
       let drawingNoticePayload: DrawingInput;
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
@@ -78,15 +79,17 @@ const CanvasToSVG = () => {
         };
       }
 
+      const str = JSON.stringify({
+        drawing_input: drawingNoticePayload, // data to save in a notice
+        notice: true, // BE will be notified to send a notice
+      });
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
 
       // Encode the input
-      const inputBytes = ethers.utils.isBytesLike(
-        JSON.stringify(drawingNoticePayload)
-      )
-        ? JSON.stringify(drawingNoticePayload)
-        : ethers.utils.toUtf8Bytes(JSON.stringify(drawingNoticePayload));
+      const inputBytes = ethers.utils.isBytesLike(str)
+        ? str
+        : ethers.utils.toUtf8Bytes(str);
       // Send the transaction
       const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
       toast({

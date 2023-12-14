@@ -1,14 +1,12 @@
 import { BASE_API_URL, API_ENDPOINTS } from "../shared/constants";
 
 /**
- * Store the new canvas data
- * received and confirmed from the BE
- * as .png(?) files
- * one or more canvas data
- * @TODO on success display the neq canvas file in the left column
+ * 
+ * Convert the new canvas data
+ * to base64 encoded string
  */
 //canvasObject shape is controlled by Fabric.js
-export const storeAsFiles = async (canvasObject: any) => {
+export const storeAsFiles = async (canvasObject: Object[]) => {
   try {
     const response = await fetch(
       `${BASE_API_URL}/${API_ENDPOINTS.canvasesStore}`,
@@ -23,7 +21,6 @@ export const storeAsFiles = async (canvasObject: any) => {
     const data = await response.json();
     return data.base64out;
   } catch (error) {
-    //@TODO handle the error properly
     console.log(error);
     return { error: "Something went wrong ..." };
   }

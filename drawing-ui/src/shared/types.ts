@@ -38,7 +38,7 @@ export type VoucherExtended = {
   executed?: any;
   msg?: string;
 };
-
+// @TODO change after drawing input is managed in the BE
 export type DrawingInput = {
   id: string; // creator's account - timestamp
   dateCreated: string; // date-time string

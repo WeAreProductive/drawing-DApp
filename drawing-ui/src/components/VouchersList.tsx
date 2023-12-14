@@ -1,10 +1,6 @@
 import { BigNumber, ethers } from "ethers";
 import { useEffect, useState } from "react";
-import {
-  useVouchersQuery,
-  useVoucherQuery,
-  Voucher,
-} from "../generated/graphql";
+import { useVouchersQuery, useVoucherQuery } from "../generated/graphql";
 import { useRollups } from "../hooks/useRollups";
 import { DAPP_ADDRESS } from "../shared/constants";
 import { VoucherExtended } from "../shared/types";
@@ -17,7 +13,7 @@ const VouchersList = () => {
     variables: {
       voucherIndex: voucherToFetch[0],
       inputIndex: voucherToFetch[1],
-    }, //, pause: !!voucherIdToFetch
+    },
   });
   const [voucherToExecute, setVoucherToExecute] = useState<VoucherExtended>();
   const { data, fetching, error } = result;
@@ -50,8 +46,6 @@ const VouchersList = () => {
               `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`
             );
           }
-          // https://medium.com/linum-labs/everything-you-ever-wanted-to-know-about-events-and-logs-on-ethereum-fec84ea7d0a5
-          //?event.data === index or id?
           newVoucherToExecute.msg = `${
             newVoucherToExecute.msg
           } - resulting events: ${JSON.stringify(receipt.events)}`;
@@ -94,7 +88,7 @@ const VouchersList = () => {
   const vouchers = data.vouchers.edges
     .map((node: { node: VoucherExtended }) => {
       const n = node.node;
-      let payload = n?.payload; 
+      let payload = n?.payload;
       let inputPayload = n?.input.payload;
       if (inputPayload) {
         try {
@@ -117,18 +111,18 @@ const VouchersList = () => {
               payload = `Mint Erc721 - String: ${decode[1]} - Address: ${decode[0]}`;
               break;
             }
-            case "0x755edd17": {
-              //erc721 mintTo; ?
-              const decode = decoder.decode(["address"], payload);
-              payload = `Mint Erc721 - Address: ${decode[0]}`;
-              break;
-            }
-            case "0x6a627842": {
-              //erc721 mint; ?
-              const decode = decoder.decode(["address"], payload);
-              payload = `Mint Erc721 - Address: ${decode[0]}`;
-              break;
-            }
+            // case "0x755edd17": {
+            //   //erc721 mintTo;
+            //   const decode = decoder.decode(["address"], payload);
+            //   payload = `Mint Erc721 - Address: ${decode[0]}`;
+            //   break;
+            // }
+            // case "0x6a627842": {
+            //   //erc721 mint; ?
+            //   const decode = decoder.decode(["address"], payload);
+            //   payload = `Mint Erc721 - Address: ${decode[0]}`;
+            //   break;
+            // }
             default: {
               break;
             }

@@ -43,13 +43,12 @@ const ImagesListRollups = () => {
   const drawingsData = data.notices.edges.map(({ node }: DataNoticeEdge) => {
     let payload = node?.payload;
     let drawingData;
+
     if (payload) {
       try {
         payload = ethers.utils.toUtf8String(payload);
-        console.log(payload, "1");
       } catch (e) {
         payload = payload;
-        console.log(payload, "2");
       }
     } else {
       payload = "(empty)";
@@ -57,14 +56,14 @@ const ImagesListRollups = () => {
 
     try {
       drawingData = JSON.parse(payload);
+      // @TODO check drawing data has drawing prop and is not empty
       if (drawingData.owner?.toLowerCase() == account.toLowerCase()) {
         mineDrawings.push(drawingData);
       }
+      return drawingData;
     } catch (e) {
       console.log(e);
     }
-
-    return drawingData;
   });
 
   return (

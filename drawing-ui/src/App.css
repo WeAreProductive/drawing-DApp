@@ -156,6 +156,9 @@ body {
   background: #22bd42!important;
   vertical-align: top!important
 }
+.canvas-mint {
+  vertical-align: top!important
+}
 .disabled {
   margin:0!important;
   opacity: 0.9;

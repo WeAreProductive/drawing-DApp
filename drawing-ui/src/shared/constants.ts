@@ -31,3 +31,9 @@ export const LOG_ACTIONS = {
   update: "update",
   voucherRequest: "voucher request",
 };
+
+export const COMMANDS = {
+  update: "u",
+  voucherRequest: "vr",
+  noticeRequest: "nr",
+};

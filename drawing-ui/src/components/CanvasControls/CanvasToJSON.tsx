@@ -1,3 +1,10 @@
+/**
+ * Converts Drawing
+ * to svg string and json string
+ * sends drawing data to rollups
+ * to request a voucher for minting an NFT
+ * and a notice with the current drawing data
+ */
 import { useCanvasContext } from "../../context/CanvasContext";
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
@@ -161,12 +168,12 @@ const CanvasToJSON = () => {
   if (loading) {
     buttonProps.isLoading = true;
   }
-  // @TODO there is a loaded / drawn image on the canvas
+  // @TODO disable if no loaded / drawn image on the canvas
   return connectedChain ? (
     <Button
       {...buttonProps}
       onClick={handleCanvasToSvg}
-      className="button canvas-store">
+      className="button canvas-mint">
       Mint NFT
     </Button>
   ) : null;

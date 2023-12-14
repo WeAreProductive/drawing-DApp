@@ -36,13 +36,11 @@ init({
       position: "topRight",
       enabled: true,
       minimal: false,
-      // containerElement: "<div></div>", @TODO must be an existing DOM element selector ?!
     },
     mobile: {
-      enabled: true, //@TODO manage this and other mobile props
+      enabled: true,
     },
   },
-  // theme: "dark",
 });
 type Props = {
   children: React.ReactNode;

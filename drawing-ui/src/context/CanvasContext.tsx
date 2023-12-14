@@ -40,8 +40,7 @@ export const useCanvasContext = () => {
 };
 
 export const CanvasContextProvider = ({ children }: Props) => {
-  const [canvas, setCanvas] = useState<Canvas | null>(null);
-  // const [canvasesList, setCanvasesList] = useState([]); //canvases saved as images
+  const [canvas, setCanvas] = useState<Canvas | null>(null); 
   const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
   const [dappState, setDappState] = useState<string>(DAPP_STATE.canvasInit);
   const [currentDrawingData, setCurrentDrawingData] =
