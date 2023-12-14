@@ -59,31 +59,13 @@ const CanvasToJSON = () => {
         connectedWallet.provider
       );
       const signer = provider.getSigner();
-
-      const now = moment().utc().format("YY-MM-DD hh:mm:s");
       // prepare drawing data notice input
       let drawingNoticePayload: any; //@TODO fix typing
       let str: string;
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
-        //  #1 log update for drawing created
-        currentDrawingData.updateLog.push({
-          dateUpdated: now,
-          painter: connectedWallet.accounts[0].address,
-          action: LOG_ACTIONS.update,
-        });
-        // #2 log update for voucher request
-        currentDrawingData.updateLog.push({
-          dateUpdated: now,
-          painter: connectedWallet.accounts[0].address,
-          action: LOG_ACTIONS.voucherRequest,
-        });
-
         drawingNoticePayload = {
           ...currentDrawingData,
-          // lastUpdated: now,
-          // owner: connectedWallet.accounts[0].address,
-          drawing: svg,
-          voucherRequested: true,
+          drawing: svg, // FE updates the svg string only
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
@@ -96,19 +78,7 @@ const CanvasToJSON = () => {
         // new drawing is sent to rollups, and voucher is requested
         const timestamp = moment().unix();
         drawingNoticePayload = {
-          // id: `${connectedWallet.accounts[0].address}-${timestamp}`,
-          // dateCreated: now,
-          // lastUpdated: now, // to allow sorting by date
-          // owner: connectedWallet.accounts[0].address,
-          updateLog: [
-            {
-              dateUpdated: now,
-              painter: connectedWallet.accounts[0].address,
-              action: LOG_ACTIONS.voucherRequest,
-            },
-          ],
-          drawing: svg,
-          voucherRequested: true,
+          drawing: svg, // FE is responsible for the svg string only
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice

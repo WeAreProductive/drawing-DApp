@@ -80,7 +80,7 @@ def send_exception(exception):
 def send_post(endpoint,json_data):
     response = requests.post(rollup_server + f"/{endpoint}", json=json_data)
     logger.info(f"/{endpoint}: Received response status {response.status_code} body {response.content}")
-#
+
 def process_image(image):
     b64str = image
     png = base64.decodebytes(b64str)
@@ -97,7 +97,7 @@ def process_image(image):
     byte_encode = data_encode.tobytes()
     b64out = base64.b64encode(byte_encode)
     return b64out
-#
+
 def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out, drawing_input, cmd):
     # b64out is the payload after string is processed
     logger.info(f"MINTING AN NFT")
@@ -130,7 +130,7 @@ def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out
     tokenURI = multihash.decode('utf-8') # it is not the ipfs unixfs 'file' hash
 
     mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,tokenURI,drawing_input, cmd)
-#    
+ 
 def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string,drawing_input,cmd):
     mint_header = clean_header(mint_header)
     data = encode(['address', 'string'], [msg_sender,string])
@@ -140,17 +140,11 @@ def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string,drawing
     send_voucher(voucher)
     store_drawing_data(msg_sender,drawing_input, cmd)
 
-# @TODO handle uodate log, id, dates etc drawing notice input payload at BE
-    # id: string; // creator's account - timestamp
-    # dateCreated: string; // date-time string
-    # lastUpdated: null | string; // last update date-time string
-    # owner: string; //last painter's account
-    # updateLog: { dateUpdated: string; painter: string; action: string }[];
-    # drawing: string; // svg's json string
-    # voucherRequested: boolean;
 def store_drawing_data(sender,drawing_input, cmd):
     now = str(datetime.now(timezone.utc))
-    
+    new_log_item = { "dateUpdated": now,
+                "painter": sender,
+                "action": cmd } 
     if cmd == 'cn' or cmd == 'cv':
         # set drawing id wneh new drawing
         unix_timestamp = str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
@@ -158,6 +152,8 @@ def store_drawing_data(sender,drawing_input, cmd):
         drawing_input["owner"] = sender
         drawing_input["date_created"]= now 
         drawing_input["last_updated"] = now
+        drawing_input["update_log"] = []
+        drawing_input["update_log"].append(new_log_item) 
         if cmd == 'cv':
             drawing_input['voucher_requested'] = True
         else:
@@ -165,13 +161,14 @@ def store_drawing_data(sender,drawing_input, cmd):
     elif cmd == 'un' or cmd == 'uv':
         drawing_input["owner"] = sender
         drawing_input["last_updated"] = now
+        drawing_input["update_log"].append(new_log_item)
         if cmd == 'uv':
             drawing_input['voucher_requested'] = True
-      
+   
     payload = str2hex(json.dumps(drawing_input))
     notice = {"payload": payload}
     send_notice(notice)
-#
+
 def clean_header(mint_header):
     if mint_header[:2] == "0x":
         mint_header = mint_header[2:]
@@ -182,8 +179,7 @@ def clean_header(mint_header):
 # handlers
 
 def handle_advance(data):
-    logger.info(f"Received advance request")
-    logger.info(data)
+    logger.info(f"Received advance request") 
     status = "accept"
     payload = None
     sender = data["metadata"]["msg_sender"].lower()

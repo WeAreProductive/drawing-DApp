@@ -60,32 +60,17 @@ const CanvasToSVG = () => {
       let drawingNoticePayload: any; // @TODO fix typing
       let str: string;
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
-        currentDrawingData.updateLog.push({
-          dateUpdated: now,
-          painter: connectedWallet.accounts[0].address,
-          action: LOG_ACTIONS.update,
-        });
-
         drawingNoticePayload = {
           ...currentDrawingData,
-          // lastUpdated: now,
-          // owner: connectedWallet.accounts[0].address,
-          drawing: strInput,
+          drawing: strInput, // FE updates the svg string
         };
         str = JSON.stringify({
-          drawing_input: drawingNoticePayload, // data to save in a notice
+          drawing_input: drawingNoticePayload,
           cmd: COMMANDS.updateAndStore.cmd, // BE will be notified to emit a notice
         });
       } else {
-        // new drawing is sent to rollups
         drawingNoticePayload = {
-          // id: `${connectedWallet.accounts[0].address}-${timestamp}`,
-          // dateCreated: now,
-          // lastUpdated: null,
-          // owner: connectedWallet.accounts[0].address,
-          updateLog: [],
-          drawing: strInput,
-          voucherRequested: false,
+          drawing: strInput, // FE is responsible for the svg string only
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, // data to save in a notice

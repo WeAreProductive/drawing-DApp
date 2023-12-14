@@ -9,7 +9,7 @@ type CanvasSnapshotProp = {
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
   const { drawing, owner } = src; 
-  console.log({ src });
+  console.log(src.update_log);
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
