@@ -78,7 +78,7 @@ def send_exception(exception):
 def send_post(endpoint,json_data):
     response = requests.post(rollup_server + f"/{endpoint}", json=json_data)
     logger.info(f"/{endpoint}: Received response status {response.status_code} body {response.content}")
-
+#
 def process_image(image):
     b64str = image
     png = base64.decodebytes(b64str)
@@ -95,7 +95,7 @@ def process_image(image):
     byte_encode = data_encode.tobytes()
     b64out = base64.b64encode(byte_encode)
     return b64out
-
+#
 def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out, drawing_input):
     # b64out is the payload after string is processed
     logger.info(f"MINTING AN NFT")
@@ -128,7 +128,7 @@ def mint_erc721_with_uri_from_image(msg_sender,erc721_to_mint,mint_header,b64out
     tokenURI = multihash.decode('utf-8') # it is not the ipfs unixfs 'file' hash
 
     mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,tokenURI,drawing_input)
-    
+#    
 def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string,drawing_input):
     mint_header = clean_header(mint_header)
     data = encode(['address', 'string'], [msg_sender,string])
@@ -136,21 +136,16 @@ def mint_erc721_with_string(msg_sender,erc721_to_mint,mint_header,string,drawing
     voucher = {"destination": erc721_to_mint , "payload": payload}
     logger.info(f"voucher {voucher}")
     send_voucher(voucher)
-    # @TODO add some info that voucher is emitted 
     payload = str2hex(json.dumps(drawing_input))
     notice = {"payload": payload}
     send_notice(notice)
 
-def mint_erc721_no_data(msg_sender,erc721_to_mint,mint_header):
-    mint_header = clean_header(mint_header)
-    data = encode(['address'], [msg_sender])
-    payload = f"0x{(mint_header+data).hex()}"
-    voucher = {"destination": erc721_to_mint , "payload": payload}
-    logger.info(f"voucher {voucher}")
-    send_voucher(voucher)
-    
-    send_notice({"payload": str2hex(str(f"Emmited voucher to mint ERC721 {erc721_to_mint}"))})
-
+def store_drawing_data(sender,drawing):
+    # @TODO handle uodate log, id, dates etc drawing notice input payload at BE
+    payload = str2hex(json.dumps(drawing))
+    notice = {"payload": payload}
+    send_notice(notice)
+#
 def clean_header(mint_header):
     if mint_header[:2] == "0x":
         mint_header = mint_header[2:]
@@ -169,45 +164,27 @@ def handle_advance(data):
     sender = data["metadata"]["msg_sender"].lower()
     try:
         payload = data["payload"]
-        if sender == DAPP_RELAY_ADDRESS:
-            logger.info(f"Received advance from dapp relay")
-            global rollup_address
-            rollup_address = payload
-            send_report({"payload": str2hex(f"Set rollup_address {rollup_address}")})
-        elif sender in [ERC721_PORTAL_ADDRESS]:
-            logger.info(f"Received advance from portal")
-            # or was sent by the Portals, which is where deposits must come from
-            handle_tx(sender,payload)
-        else:
-            payload = hex2str(payload)
-            # logger.info(f"Received str {payload}") 
-            try:
-                logger.info(f"Trying to decode json ")
-                # try json data
-                json_data = json.loads(payload) 
-                # logger.info(f'JSON DATA {json_data}')
-                if json_data.get("image"):
-                    b64out = process_image(json_data["image"].encode("utf-8"))
-                    payload = f"{b64out}"
-                    if json_data.get("erc721_to_mint") and json_data.get("selector"): 
-                        mint_erc721_with_uri_from_image(sender,json_data["erc721_to_mint"],json_data["selector"],b64out, json_data["drawing_input"])
-                elif json_data.get("erc721_to_mint") and json_data.get("selector"):
-                    # logger.info(f"Received mint request to ({json_data['erc721_to_mint']})")
-                    if json_data.get("string"):
-                        mint_erc721_with_string(sender,json_data["erc721_to_mint"],json_data["selector"],json_data["string"])
-                    else:
-                        mint_erc721_no_data(sender,json_data["erc721_to_mint"],json_data["selector"])
-                else:
-                    # logger.info(f"Sending notice {payload}") 
-                    payload = str2hex(payload)
-                    notice = {"payload": payload}
-                    
-                    send_notice(notice)
-                    # raise Exception('Not supported json operation') @TODO add case
-            except Exception as e2:
-                msg = f"Not valid json: {e2}"
-                traceback.print_exc()
-                logger.info(msg)
+        payload = hex2str(payload)
+        # logger.info(f"Received str {payload}") 
+        try:
+            logger.info(f"Trying to decode json ")
+            # try json data
+            json_data = json.loads(payload) 
+            if json_data.get("image"):
+                logger.info(f'MINTING - JSON DATA {json_data}')
+                b64out = process_image(json_data["image"].encode("utf-8"))
+                payload = f"{b64out}"
+                if json_data.get("erc721_to_mint") and json_data.get("selector"): 
+                    mint_erc721_with_uri_from_image(sender,json_data["erc721_to_mint"],json_data["selector"],b64out, json_data["drawing_input"])
+            elif json_data.get("notice"):
+                if json_data.get("drawing_input"): 
+                    store_drawing_data(sender,json_data["drawing_input"])
+            else:
+                raise Exception('Not supported json operation')
+        except Exception as e2:
+            msg = f"Not valid json: {e2}"
+            traceback.print_exc()
+            logger.info(msg)
     except Exception as e:
         status = "reject"
         msg = f"Error: {e}"
@@ -215,44 +192,8 @@ def handle_advance(data):
         logger.error(msg)
         send_report({"payload": str2hex(msg)})
 
-    if not payload:
-        payload = data["payload"]
-    else: 
-        payload = str2hex(payload)
-        notice = {"payload": payload}
-        logger.info(f"Sending notice") 
-        send_notice(notice)
-
-    # logger.info(f"Notice payload was {payload}")
+   
     return status
-
-def handle_tx(sender,payload):
-    binary = hex2binary(payload)
-    voucher = None 
-
-    if sender == ERC721_PORTAL_ADDRESS:
-        logger.info(f"Received ERC721 deposit")
-
-        token_address = binary2hex(binary[:20])
-        depositor = binary2hex(binary[20:40])
-        token_id = int.from_bytes(binary[40:72], "big")
-        deposit_data = binary[72:]
-
-        # send deposited erc721 back to depositor
-        if rollup_address is not None:
-            # Function to be called in voucher [token_address].transfer([address sender],[address receiver],[uint256 id])
-            receiver = depositor
-            data = encode(['address', 'address', 'uint256'], [sender,receiver,token_id])
-            voucher_payload = binary2hex(ERC721_SAFETRANSFER_FUNCTION_SELECTOR + data)
-            voucher = {"destination": token_address, "payload": voucher_payload}
-    
-    else:
-        pass
-
-    if voucher:
-        send_voucher(voucher)
-        logger.info(f"Voucher was ")
-
 
 def handle_inspect(request):
     data = request["data"]
