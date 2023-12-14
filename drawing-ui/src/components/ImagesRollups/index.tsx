@@ -77,12 +77,19 @@ const ImagesListRollups = () => {
       console.log(e);
     }
   });
-
   drawingsData.sort((a, b) => {
-    return moment(b.last_updated).isSameOrAfter(a.last_updated);
+    const res = moment(b.last_updated).isSameOrAfter(a.last_updated);
+    if (res) {
+      return 1;
+    }
+    return -1;
   });
   mineDrawings.sort((a, b) => {
-    return moment(b.last_updated).isSameOrAfter(a.last_updated);
+    const res = moment(b.last_updated).isSameOrAfter(a.last_updated);
+    if (res) {
+      return 1;
+    }
+    return -1;
   });
 
   return (
