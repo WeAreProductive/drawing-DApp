@@ -3,10 +3,11 @@ import { ethers } from "ethers";
 import { useNoticesQuery } from "../../generated/graphql";
 import { useToast } from "@chakra-ui/react";
 import { useWallets } from "@web3-onboard/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DAPP_STATE } from "../../shared/constants";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { DrawingInput, DrawingInputExtended } from "../../shared/types";
+import moment from "moment";
 type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;
   node: {
@@ -20,12 +21,12 @@ type DataNoticeEdge = {
   };
 };
 const ImagesListRollups = () => {
-  const { dappState, setDappState } = useCanvasContext();
   const [connectedWallet] = useWallets();
   const [result, reexecuteQuery] = useNoticesQuery();
-  const { data, fetching, error } = result;
+  const { data, error } = result;
   const mineDrawings: DrawingInputExtended[] = [];
   const account = connectedWallet.accounts[0].address;
+  const [length, setLength] = useState(0);
 
   // useEffect(() => {
   //   if (result.fetching) return;
@@ -35,19 +36,18 @@ const ImagesListRollups = () => {
 
   //   setDappState(DAPP_STATE.canvasInit);
   // }, [result.fetching, reexecuteQuery, dappState]);
+
   useEffect(() => {
     if (result.fetching) return;
-
     // Set up to refetch in one second, if the query is idle
     // and to be able to fetch the new notices
     const timerId = setTimeout(() => {
       reexecuteQuery({ requestPolicy: "network-only" });
-    }, 1000);
+    }, 5000);
 
     return () => clearTimeout(timerId);
   }, [result.fetching, reexecuteQuery]);
 
-  // if (fetching) return <p className="fetching">Loading...</p>;
   if (error) return <p className="error">Oh no... {error.message}</p>;
 
   if (!data || !data.notices) return <p className="no-notices">No notices</p>;
@@ -68,7 +68,7 @@ const ImagesListRollups = () => {
 
     try {
       drawingData = JSON.parse(payload);
-      // @TODO check drawing data has drawing prop and is not empty
+      // sort by last_updated descending and check the drawing data
       if (drawingData.owner?.toLowerCase() == account.toLowerCase()) {
         mineDrawings.push(drawingData);
       }
@@ -76,6 +76,13 @@ const ImagesListRollups = () => {
     } catch (e) {
       console.log(e);
     }
+  });
+
+  drawingsData.sort((a, b) => {
+    return moment(b.last_updated).isSameOrAfter(a.last_updated);
+  });
+  mineDrawings.sort((a, b) => {
+    return moment(b.last_updated).isSameOrAfter(a.last_updated);
   });
 
   return (

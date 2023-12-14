@@ -79,7 +79,7 @@ body {
   display: flex;
   flex-direction: column; 
   background-color: #2c2b2b;
-  margin-left: 60px;
+  margin-left: 40px;
   box-shadow: 1px 1px 5px 5px #8f8d8d; 
   padding:30px;
   justify-content: center
