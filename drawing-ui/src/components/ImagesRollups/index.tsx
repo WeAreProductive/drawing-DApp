@@ -26,16 +26,28 @@ const ImagesListRollups = () => {
   const { data, fetching, error } = result;
   const mineDrawings: DrawingInputExtended[] = [];
   const account = connectedWallet.accounts[0].address;
+
+  // useEffect(() => {
+  //   if (result.fetching) return;
+  //   if (dappState !== DAPP_STATE.canvasSave) return;
+
+  //   reexecuteQuery({ requestPolicy: "network-only" });
+
+  //   setDappState(DAPP_STATE.canvasInit);
+  // }, [result.fetching, reexecuteQuery, dappState]);
   useEffect(() => {
     if (result.fetching) return;
-    if (dappState !== DAPP_STATE.canvasSave) return;
 
-    reexecuteQuery({ requestPolicy: "network-only" });
+    // Set up to refetch in one second, if the query is idle
+    // and to be able to fetch the new notices
+    const timerId = setTimeout(() => {
+      reexecuteQuery({ requestPolicy: "network-only" });
+    }, 1000);
 
-    setDappState(DAPP_STATE.canvasInit);
-  }, [result.fetching, reexecuteQuery, dappState]);
+    return () => clearTimeout(timerId);
+  }, [result.fetching, reexecuteQuery]);
 
-  if (fetching) return <p className="fetching">Loading...</p>;
+  // if (fetching) return <p className="fetching">Loading...</p>;
   if (error) return <p className="error">Oh no... {error.message}</p>;
 
   if (!data || !data.notices) return <p className="no-notices">No notices</p>;
@@ -70,8 +82,7 @@ const ImagesListRollups = () => {
     <div className="lists-container">
       <div className="list-wrapper">
         <div className="list-header">
-          <h5>All Svgs saved in Rollups</h5>
-          <i>Updates on canvas save</i>
+          <h5>All Drawings</h5>
         </div>
         <div className="images-list">
           <div className="images-list-box">
@@ -99,7 +110,6 @@ const ImagesListRollups = () => {
       <div className="list-wrapper">
         <div className="list-header">
           <h5>Mine Drawings</h5>
-          <i>Updates on canvas save</i>
         </div>
         <div className="images-list">
           <div className="images-list-box">

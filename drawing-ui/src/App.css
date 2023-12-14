@@ -6,19 +6,22 @@ body {
   display: flex; 
   flex-direction: row; 
   margin-top: 20px;
-  padding: 10px 30px 
+  padding: 10px 30px;
+  gap: 40px;
+  justify-content: center;
 } 
 .lists-container{
   display: flex;
   flex-direction: column;
-  width: 40%
+  width: 420px;
+  margin-top: 50px
 }
 .list-wrapper { 
   margin-top:30px; 
   display: flex;
-  flex-direction: column;
-  flex: 1;
-  justify-content: center
+  flex-direction: column; 
+  justify-content: center;
+  width: 100%
 }
 .list-header {
   text-align: center;
@@ -29,22 +32,21 @@ body {
   overflow: auto; 
   align-items: center;
   justify-content: center;   
+  width: 100%;
 }
 
 .images-list-box {
   display: flex;
   width: 100%;
-  /* flex-direction: column; */
-  /* min-height: 500px; */
 }
 .drawing-wrapper { 
-    padding: 10px;
-    height: 200px;
-    width: 200px;
+  padding: 10px;
+  height: 220px;
+  width: 200px;
 }
 .canvas-image {
- width: 100px;
- height: 100px;
+  width: 120px;
+  height: 120px;
   background: #fff;
   margin-top:20px;
   box-shadow: 1px 1px 5px 5px #8f8d8d;
@@ -68,12 +70,16 @@ body {
 .canvas-container{
   background-color: #fff;
   box-shadow: 1px 1px 5px 5px #8f8d8d;
+  width: 620px!important;
+}
+.canvas-meta {
+  margin-top: 5px
 }
 .controls-container {
   display: flex;
   flex-direction: column; 
   background-color: #2c2b2b;
-  margin-left: 20px;
+  margin-left: 60px;
   box-shadow: 1px 1px 5px 5px #8f8d8d; 
   padding:30px;
   justify-content: center

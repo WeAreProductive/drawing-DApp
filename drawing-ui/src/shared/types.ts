@@ -23,7 +23,7 @@ export type CanvasContextType = {
   setCanvas: React.Dispatch<Canvas | null>;
   canvasOptions: CanvasOptions;
   setOptions: React.Dispatch<CanvasOptions>;
-  dappState: string; // @TODO enum one of the predefined values
+  dappState: string;
   setDappState: React.Dispatch<string>;
   currentDrawingData: null | DrawingInput;
   setCurrentDrawingData: React.Dispatch<null | DrawingInput>;
