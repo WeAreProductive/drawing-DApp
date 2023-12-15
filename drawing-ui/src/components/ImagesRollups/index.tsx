@@ -1,13 +1,9 @@
 import CanvasSnapshot from "./CanvasSnapshot";
 import { ethers } from "ethers";
-import { useNoticesQuery } from "../../generated/graphql";
-import { useToast } from "@chakra-ui/react";
+import { useGetNoticesQuery } from "../../generated/graphql";
 import { useWallets } from "@web3-onboard/react";
 import { useEffect, useState } from "react";
-import { DAPP_STATE } from "../../shared/constants";
-import { useCanvasContext } from "../../context/CanvasContext";
-import { DrawingInput, DrawingInputExtended } from "../../shared/types";
-import moment from "moment";
+import { DrawingInputExtended } from "../../shared/types";
 type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;
   node: {
@@ -22,75 +18,79 @@ type DataNoticeEdge = {
 };
 const ImagesListRollups = () => {
   const [connectedWallet] = useWallets();
-  const [result, reexecuteQuery] = useNoticesQuery();
-  const { data, error } = result;
-  const mineDrawings: DrawingInputExtended[] = [];
   const account = connectedWallet.accounts[0].address;
-  const [length, setLength] = useState(0);
-
-  // useEffect(() => {
-  //   if (result.fetching) return;
-  //   if (dappState !== DAPP_STATE.canvasSave) return;
-
-  //   reexecuteQuery({ requestPolicy: "network-only" });
-
-  //   setDappState(DAPP_STATE.canvasInit);
-  // }, [result.fetching, reexecuteQuery, dappState]);
+  const [mineDrawings, setMineDrawings] = useState<
+    DrawingInputExtended[] | null
+  >(null);
+  const [noticeDrawings, setNoticeDrawings] = useState<
+    DrawingInputExtended[] | null
+  >(null);
+  const [cursor, setCursor] = useState<string | null | undefined | null>(null);
+  const [result, reexecuteQuery] = useGetNoticesQuery({
+    variables: { cursor },
+    pause: true,
+  });
+  const { data, error } = result;
 
   useEffect(() => {
     if (result.fetching) return;
     // Set up to refetch in one second, if the query is idle
-    // and to be able to fetch the new notices
+    //Retrieve notices every 1000 ms
     const timerId = setTimeout(() => {
       reexecuteQuery({ requestPolicy: "network-only" });
-    }, 5000);
-
+    }, 1000);
+    const length = data?.notices?.edges?.length;
+    if (length) {
+      // Update cursor so that next GraphQL poll retrieves only newer data
+      setCursor(data.notices.pageInfo.endCursor);
+    }
     return () => clearTimeout(timerId);
   }, [result.fetching, reexecuteQuery]);
 
-  if (error) return <p className="error">Oh no... {error.message}</p>;
-
-  if (!data || !data.notices) return <p className="no-notices">No notices</p>;
-
-  const drawingsData = data.notices.edges.map(({ node }: DataNoticeEdge) => {
-    let payload = node?.payload;
-    let drawingData;
-
-    if (payload) {
+  useEffect(() => {
+    const newDrawings = data?.notices.edges.map(({ node }: DataNoticeEdge) => {
+      let payload = node?.payload;
+      let drawingData;
+      if (payload) {
+        try {
+          payload = ethers.utils.toUtf8String(payload);
+        } catch (e) {
+          payload = payload;
+        }
+      } else {
+        payload = "(empty)";
+      }
       try {
-        payload = ethers.utils.toUtf8String(payload);
+        drawingData = JSON.parse(payload);
+        return drawingData;
       } catch (e) {
-        payload = payload;
+        console.log(e);
       }
-    } else {
-      payload = "(empty)";
+    });
+    // Concat new drawings with previous ones
+    if (newDrawings && newDrawings.length) {
+      // Add new rendered drawings to stored data
+      const ret = noticeDrawings
+        ? noticeDrawings.concat(newDrawings)
+        : newDrawings;
+      if (!ret) return;
+      setNoticeDrawings(ret);
     }
-
-    try {
-      drawingData = JSON.parse(payload);
-      // sort by last_updated descending and check the drawing data
-      if (drawingData.owner?.toLowerCase() == account.toLowerCase()) {
-        mineDrawings.push(drawingData);
-      }
-      return drawingData;
-    } catch (e) {
-      console.log(e);
+    if (!newDrawings) return;
+    const newMineDrawings = newDrawings.filter(
+      (drawing) => drawing.owner.toLowerCase() == account.toLowerCase()
+    );
+    if (newMineDrawings && newMineDrawings.length) {
+      // Add new rendered drawings to stored data
+      const retMine = mineDrawings
+        ? mineDrawings.concat(newMineDrawings)
+        : newMineDrawings;
+      if (!retMine) return;
+      setMineDrawings(retMine);
     }
-  });
-  drawingsData.sort((a, b) => {
-    const res = moment(b.last_updated).isSameOrAfter(a.last_updated);
-    if (res) {
-      return 1;
-    }
-    return -1;
-  });
-  mineDrawings.sort((a, b) => {
-    const res = moment(b.last_updated).isSameOrAfter(a.last_updated);
-    if (res) {
-      return 1;
-    }
-    return -1;
-  });
+  }, [data]);
+  if (error) return <p className="error">Oh no... {error.message}</p>;
+  if (!data || !data.notices) return <p className="no-notices">No notices</p>;
 
   return (
     <div className="lists-container">
@@ -100,8 +100,8 @@ const ImagesListRollups = () => {
         </div>
         <div className="images-list">
           <div className="images-list-box">
-            {drawingsData.length > 0 ? (
-              drawingsData.map((drawing, idx) => {
+            {noticeDrawings && noticeDrawings.length > 0 ? (
+              noticeDrawings.map((drawing, idx) => {
                 try {
                   return (
                     <CanvasSnapshot
@@ -127,7 +127,7 @@ const ImagesListRollups = () => {
         </div>
         <div className="images-list">
           <div className="images-list-box">
-            {mineDrawings.length > 0 ? (
+            {mineDrawings && mineDrawings.length > 0 ? (
               mineDrawings.map((drawing, idx) => {
                 try {
                   return (
