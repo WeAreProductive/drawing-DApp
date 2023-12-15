@@ -2,8 +2,9 @@ import CanvasSnapshot from "./CanvasSnapshot";
 import { ethers } from "ethers";
 import { useGetNoticesQuery } from "../../generated/graphql";
 import { useWallets } from "@web3-onboard/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DrawingInputExtended } from "../../shared/types";
+import moment from "moment";
 type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;
   node: {
@@ -31,7 +32,22 @@ const ImagesListRollups = () => {
     pause: true,
   });
   const { data, error } = result;
-
+  const listRefAllDrawings = useRef(null);
+  const listRefMineDrawings = useRef(null);
+  useEffect(() => {
+    listRefAllDrawings.current?.lastElementChild?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest",
+    });
+  }, [noticeDrawings]);
+  useEffect(() => {
+    listRefMineDrawings.current?.lastElementChild?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+      inline: "nearest",
+    });
+  }, [noticeDrawings]);
   useEffect(() => {
     if (result.fetching) return;
     // Set up to refetch in one second, if the query is idle
@@ -99,7 +115,7 @@ const ImagesListRollups = () => {
           <h5>All Drawings</h5>
         </div>
         <div className="images-list">
-          <div className="images-list-box">
+          <div className="images-list-box" ref={listRefAllDrawings}>
             {noticeDrawings && noticeDrawings.length > 0 ? (
               noticeDrawings.map((drawing, idx) => {
                 try {
@@ -126,7 +142,7 @@ const ImagesListRollups = () => {
           <h5>Mine Drawings</h5>
         </div>
         <div className="images-list">
-          <div className="images-list-box">
+          <div className="images-list-box" ref={listRefMineDrawings}>
             {mineDrawings && mineDrawings.length > 0 ? (
               mineDrawings.map((drawing, idx) => {
                 try {
