@@ -2,6 +2,7 @@ import { fabric } from "fabric";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { DAPP_STATE } from "../../shared/constants";
 import { DrawingInputExtended } from "../../shared/types";
+import { sliceAccountStr } from "../../utils";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
@@ -19,13 +20,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
   };
-  const sliceAccount = (str: string) => {
-    if (!str) return;
-    const len = str.length;
-    const start = str.slice(0, 3);
-    const end = str.slice(len - 5, len - 1);
-    return `${start}...${end}`;
-  };
+
   return (
     <div className="drawing-wrapper">
       <div
@@ -34,7 +29,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         dangerouslySetInnerHTML={{ __html: drawing }}
       />
       <div className="canvas-meta">
-        <span className="owner">owner: {sliceAccount(owner)}</span>
+        <span className="owner">owner: {sliceAccountStr(owner)}</span>
       </div>
     </div>
   );

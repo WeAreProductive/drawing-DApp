@@ -25,12 +25,7 @@ export const DAPP_STATE = {
   canvasSave: "saving the canvas in a rollups notice",
   drawingUpdate: "updating existing drawing",
   voucherRequset: "requesting a voucher for minting an nft from the drawing", //
-};
-
-export const LOG_ACTIONS = {
-  update: "update",
-  voucherRequest: "voucher request",
-};
+}; 
 
 export const COMMANDS = {
   createAndStore: {

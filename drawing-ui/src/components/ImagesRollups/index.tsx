@@ -1,10 +1,10 @@
-import CanvasSnapshot from "./CanvasSnapshot";
 import { ethers } from "ethers";
 import { useGetNoticesQuery } from "../../generated/graphql";
 import { useWallets } from "@web3-onboard/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { DrawingInputExtended } from "../../shared/types";
-import moment from "moment";
+import DrawingsList from "./DrawingsList";
+
 type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;
   node: {
@@ -20,9 +20,9 @@ type DataNoticeEdge = {
 const ImagesListRollups = () => {
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
-  const [mineDrawings, setMineDrawings] = useState<
-    DrawingInputExtended[] | null
-  >(null);
+  const [myDrawings, setMyDrawings] = useState<DrawingInputExtended[] | null>(
+    null
+  );
   const [noticeDrawings, setNoticeDrawings] = useState<
     DrawingInputExtended[] | null
   >(null);
@@ -32,22 +32,7 @@ const ImagesListRollups = () => {
     pause: true,
   });
   const { data, error } = result;
-  const listRefAllDrawings = useRef(null);
-  const listRefMineDrawings = useRef(null);
-  useEffect(() => {
-    listRefAllDrawings.current?.lastElementChild?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
-  }, [noticeDrawings]);
-  useEffect(() => {
-    listRefMineDrawings.current?.lastElementChild?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
-  }, [noticeDrawings]);
+
   useEffect(() => {
     if (result.fetching) return;
     // Set up to refetch in one second, if the query is idle
@@ -93,77 +78,32 @@ const ImagesListRollups = () => {
       setNoticeDrawings(ret);
     }
     if (!newDrawings) return;
-    const newMineDrawings = newDrawings.filter(
+    const newMyDrawings = newDrawings.filter(
       (drawing) => drawing.owner.toLowerCase() == account.toLowerCase()
     );
-    if (newMineDrawings && newMineDrawings.length) {
+    if (newMyDrawings && newMyDrawings.length) {
       // Add new rendered drawings to stored data
-      const retMine = mineDrawings
-        ? mineDrawings.concat(newMineDrawings)
-        : newMineDrawings;
+      const retMine = myDrawings
+        ? myDrawings.concat(newMyDrawings)
+        : newMyDrawings;
       if (!retMine) return;
-      setMineDrawings(retMine);
+      setMyDrawings(retMine);
     }
   }, [data]);
+  // reset my drawings on account change
+  useEffect(() => {
+    if (!noticeDrawings) return;
+    const newMyDrawings = noticeDrawings.filter(
+      (drawing) => drawing.owner.toLowerCase() == account.toLowerCase()
+    );
+    setMyDrawings(newMyDrawings);
+  }, [account]);
   if (error) return <p className="error">Oh no... {error.message}</p>;
-  if (!data || !data.notices) return <p className="no-notices">No notices</p>;
 
   return (
     <div className="lists-container">
-      <div className="list-wrapper">
-        <div className="list-header">
-          <h5>All Drawings</h5>
-        </div>
-        <div className="images-list">
-          <div className="images-list-box" ref={listRefAllDrawings}>
-            {noticeDrawings && noticeDrawings.length > 0 ? (
-              noticeDrawings.map((drawing, idx) => {
-                try {
-                  return (
-                    <CanvasSnapshot
-                      key={`${drawing.id}-${idx}`}
-                      src={drawing}
-                    />
-                  );
-                } catch (e) {
-                  console.log(e);
-                }
-              })
-            ) : (
-              <div className="canvas-image">
-                Canvas shanpshots will appear here...
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-      <div className="list-wrapper">
-        <div className="list-header">
-          <h5>Mine Drawings</h5>
-        </div>
-        <div className="images-list">
-          <div className="images-list-box" ref={listRefMineDrawings}>
-            {mineDrawings && mineDrawings.length > 0 ? (
-              mineDrawings.map((drawing, idx) => {
-                try {
-                  return (
-                    <CanvasSnapshot
-                      key={`${drawing.id}-${idx}`}
-                      src={drawing}
-                    />
-                  );
-                } catch (e) {
-                  console.log(e);
-                }
-              })
-            ) : (
-              <div className="canvas-image">
-                Canvas shanpshots will appear here...
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      <DrawingsList title={"All Drawings"} drawings={noticeDrawings} />
+      <DrawingsList title={"My Drawings"} drawings={myDrawings} />
     </div>
   );
 };

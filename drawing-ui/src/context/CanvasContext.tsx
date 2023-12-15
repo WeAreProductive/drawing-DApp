@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../shared/constants";
 import {
   CanvasContextType,
@@ -40,7 +40,7 @@ export const useCanvasContext = () => {
 };
 
 export const CanvasContextProvider = ({ children }: Props) => {
-  const [canvas, setCanvas] = useState<Canvas | null>(null); 
+  const [canvas, setCanvas] = useState<Canvas | null>(null);
   const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
   const [dappState, setDappState] = useState<string>(DAPP_STATE.canvasInit);
   const [currentDrawingData, setCurrentDrawingData] =

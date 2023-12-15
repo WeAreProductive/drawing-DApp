@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { fabric } from "fabric"; // v5
 import { useCanvasContext } from "../context/CanvasContext";
 import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
@@ -30,11 +30,13 @@ const FabricJSCanvas = () => {
     }
   }, [canvas, canvasOptions.color, canvasOptions.lineWidth]);
   return (
-    <canvas
-      ref={canvasEl}
-      width={canvasOptions.canvasWidth}
-      height={canvasOptions.canvasHeight}
-    />
+    <div>
+      <canvas
+        ref={canvasEl}
+        width={canvasOptions.canvasWidth}
+        height={canvasOptions.canvasHeight}
+      />
+    </div>
   );
 };
 

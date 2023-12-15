@@ -19,7 +19,6 @@ import {
   MINT_SELECTOR,
   DAPP_ADDRESS,
   DAPP_STATE,
-  LOG_ACTIONS,
   COMMANDS,
 } from "../../shared/constants";
 import configFile from "../../config/config.json";

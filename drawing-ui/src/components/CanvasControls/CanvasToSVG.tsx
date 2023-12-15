@@ -4,7 +4,7 @@
  * to emit a notice with 
  * the current drawing data
  */ 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { useToast, Button } from "@chakra-ui/react";
 import { useSetChain, useWallets } from "@web3-onboard/react";
@@ -13,12 +13,7 @@ import moment from "moment";
 import { InputBox__factory } from "@cartesi/rollups";
 
 import { useCanvasContext } from "../../context/CanvasContext";
-import {
-  COMMANDS,
-  DAPP_ADDRESS,
-  DAPP_STATE,
-  LOG_ACTIONS,
-} from "../../shared/constants";
+import { COMMANDS, DAPP_ADDRESS, DAPP_STATE } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import {
   DrawingInput,

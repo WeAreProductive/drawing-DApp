@@ -8,9 +8,9 @@ body {
   margin-top: 20px;
   padding: 10px 30px;
   gap: 40px;
-  justify-content: center;
 } 
 .lists-container{
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 420px;
@@ -41,8 +41,8 @@ body {
 }
 .drawing-wrapper { 
   padding: 10px;
-  height: 220px;
-  width: 200px;
+  height: 220px; 
+  width: 142px
 }
 .canvas-image {
   width: 120px;
@@ -63,7 +63,6 @@ body {
   display: flex; 
   margin-top: 50px;
   margin-left: 25px;
-  /* justify-content: center; */
   width: 980px;
   height: 600px;
 }
@@ -79,7 +78,6 @@ body {
   display: flex;
   flex-direction: column; 
   background-color: #2c2b2b;
-  margin-left: 40px;
   box-shadow: 1px 1px 5px 5px #8f8d8d; 
   padding:30px;
   justify-content: center
@@ -212,9 +210,9 @@ button {
 .fetching, .error, .no-notices {
   position: absolute;
   z-index: 1000;
-  margin-top: 20vh;
-  margin-left: 35%;
+  top:20px;
   background: rgba(0,0,0,0.4);
   padding: 20px;
   color: #fff;
+  width: 100%;
 }
