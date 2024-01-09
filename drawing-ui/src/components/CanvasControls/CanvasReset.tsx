@@ -1,17 +1,16 @@
+import { Square } from "lucide-react";
 import { useCanvasContext } from "../../context/CanvasContext";
-import { DAPP_STATE } from "../../shared/constants";
-
+import { Button } from "../ui/button";
 const CanvasReset = () => {
-  const { canvas, setDappState } = useCanvasContext();
+  const { clearCanvas } = useCanvasContext();
   const handleCanvasClear = () => {
-    if (!canvas) return;
-    canvas.clear();
-    setDappState(DAPP_STATE.canvasClear);
+    clearCanvas();
   };
   return (
-    <button className="button canvas-reset" onClick={handleCanvasClear}>
-      Reset
-    </button>
+    <Button variant={"ghost"} onClick={handleCanvasClear}>
+      <Square size={18} className="mr-2" strokeWidth={1.5} />
+      Clear
+    </Button>
   );
 };
 

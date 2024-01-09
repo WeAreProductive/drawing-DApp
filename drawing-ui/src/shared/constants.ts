@@ -9,8 +9,8 @@ export const INITIAL_DRAWING_OPTIONS = {
   backgroundColor: "#ffffff",
   brushWidth: 10,
   minBrushWidth: 1,
-  canvasWidth: 600,
-  canvasHeight: 600,
+  canvasWidth: 280,
+  canvasHeight: 280,
 };
 //the nft smart contract
 export const ERC721_TO_MINT = "0x3F101a631Bce1374A7138c3ec02994344E350a89";
@@ -25,7 +25,7 @@ export const DAPP_STATE = {
   canvasSave: "saving the canvas in a rollups notice",
   drawingUpdate: "updating existing drawing",
   voucherRequset: "requesting a voucher for minting an nft from the drawing", //
-}; 
+};
 
 export const COMMANDS = {
   createAndStore: {

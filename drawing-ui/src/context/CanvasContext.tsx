@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../shared/constants";
 import {
   CanvasContextType,
@@ -16,6 +16,7 @@ const initialOptions = {
   lineWidth: INITIAL_DRAWING_OPTIONS.brushWidth,
   canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
   canvasHeight: INITIAL_DRAWING_OPTIONS.canvasHeight,
+  backgroundColor: INITIAL_DRAWING_OPTIONS.backgroundColor,
 };
 const initialCanvasContext = {
   canvas: null,
@@ -26,6 +27,7 @@ const initialCanvasContext = {
   setDappState: (dappState: string) => undefined,
   currentDrawingData: null,
   setCurrentDrawingData: (data: null | DrawingInput) => undefined,
+  clearCanvas: () => undefined,
 };
 const CanvasContext = createContext<CanvasContextType>(initialCanvasContext);
 
@@ -46,6 +48,16 @@ export const CanvasContextProvider = ({ children }: Props) => {
   const [currentDrawingData, setCurrentDrawingData] =
     useState<DrawingInput | null>(null);
 
+  const clearCanvas = useCallback(() => {
+    if (!canvas) return;
+    canvas.clear();
+    canvas.setBackgroundColor(
+      INITIAL_DRAWING_OPTIONS.backgroundColor,
+      canvas.renderAll.bind(canvas),
+    );
+    setDappState(DAPP_STATE.canvasClear);
+  }, [canvas]);
+
   const value = {
     canvas,
     setCanvas,
@@ -55,6 +67,7 @@ export const CanvasContextProvider = ({ children }: Props) => {
     setDappState,
     currentDrawingData,
     setCurrentDrawingData,
+    clearCanvas,
   };
   return (
     <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>

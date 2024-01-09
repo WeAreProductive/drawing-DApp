@@ -4,6 +4,8 @@ import { useWallets } from "@web3-onboard/react";
 import { useEffect, useState } from "react";
 import { DrawingInputExtended } from "../../shared/types";
 import DrawingsList from "./DrawingsList";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
+import { ScrollArea } from "../ui/scroll-area";
 
 type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;
@@ -21,7 +23,7 @@ const ImagesListRollups = () => {
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
   const [myDrawings, setMyDrawings] = useState<DrawingInputExtended[] | null>(
-    null
+    null,
   );
   const [noticeDrawings, setNoticeDrawings] = useState<
     DrawingInputExtended[] | null
@@ -79,7 +81,7 @@ const ImagesListRollups = () => {
     }
     if (!newDrawings) return;
     const newMyDrawings = newDrawings.filter(
-      (drawing) => drawing.owner.toLowerCase() == account.toLowerCase()
+      (drawing) => drawing.owner.toLowerCase() == account.toLowerCase(),
     );
     if (newMyDrawings && newMyDrawings.length) {
       // Add new rendered drawings to stored data
@@ -94,16 +96,30 @@ const ImagesListRollups = () => {
   useEffect(() => {
     if (!noticeDrawings) return;
     const newMyDrawings = noticeDrawings.filter(
-      (drawing) => drawing.owner.toLowerCase() == account.toLowerCase()
+      (drawing) => drawing.owner.toLowerCase() == account.toLowerCase(),
     );
     setMyDrawings(newMyDrawings);
   }, [account]);
   if (error) return <p className="error">Oh no... {error.message}</p>;
 
   return (
-    <div className="lists-container">
-      <DrawingsList title={"All Drawings"} drawings={noticeDrawings} />
-      <DrawingsList title={"My Drawings"} drawings={myDrawings} />
+    <div className="flex">
+      <Tabs defaultValue="account">
+        <TabsList>
+          <TabsTrigger value="account">My Drawings</TabsTrigger>
+          <TabsTrigger value="password">All Drawings</TabsTrigger>
+        </TabsList>
+        <TabsContent value="account" className="flex">
+          <ScrollArea className="max-h-[calc(100svh-var(--header-height)-120px)]">
+            <DrawingsList drawings={myDrawings} />
+          </ScrollArea>
+        </TabsContent>
+        <TabsContent value="password" className="flex">
+          <ScrollArea className="max-h-[calc(100svh-var(--header-height)-120px)]">
+            <DrawingsList drawings={noticeDrawings} />
+          </ScrollArea>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

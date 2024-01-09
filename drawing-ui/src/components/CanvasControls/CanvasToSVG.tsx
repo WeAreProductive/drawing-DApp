@@ -1,12 +1,12 @@
 /**
  * Converts Drawing to svg string
  * sends drawing data to rollups
- * to emit a notice with 
+ * to emit a notice with
  * the current drawing data
- */ 
+ */
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { useToast, Button } from "@chakra-ui/react";
+
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import moment from "moment";
 
@@ -20,14 +20,17 @@ import {
   DrawingInputExtended,
   Network,
 } from "../../shared/types";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { Cpu } from "lucide-react";
 const config: { [name: string]: Network } = configFile;
 
 const CanvasToSVG = () => {
   const [connectedWallet] = useWallets();
-  const { canvas, dappState, setDappState, currentDrawingData } =
+  const { canvas, dappState, setDappState, currentDrawingData, clearCanvas } =
     useCanvasContext();
   const [{ connectedChain }] = useSetChain();
-  const toast = useToast();
+
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
   useEffect(() => {
@@ -36,20 +39,24 @@ const CanvasToSVG = () => {
   }, [connectedChain]);
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
-    toast({
-      title: "Sending input to rollups...",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-      position: "top",
-    });
+    toast.info("Sending input to rollups...");
     setLoading(true);
+    console.log(canvas);
 
-    const canvasData = canvas.toSVG();
+    const canvasData = canvas.toSVG({
+      viewBox: {
+        x: 0,
+        y: 0,
+        width: canvas.width || 0,
+        height: canvas.height || 0,
+      },
+      width: canvas.width || 0,
+      height: canvas.height || 0,
+    });
     const sendInput = async (strInput: string) => {
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
-        connectedWallet.provider
+        connectedWallet.provider,
       );
       const signer = provider.getSigner();
       const now = moment().utc().format("YY-MM-DD hh:mm:s");
@@ -86,14 +93,7 @@ const CanvasToSVG = () => {
         : ethers.utils.toUtf8Bytes(str);
       // Send the transaction
       const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
-      toast({
-        title: "Transaction Sent",
-        description: "waiting for confirmation",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top-left",
-      });
+      toast.success("Transaction Sent");
 
       // Wait for confirmation
       console.log("waiting for confirmation...");
@@ -103,50 +103,31 @@ const CanvasToSVG = () => {
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setDappState(DAPP_STATE.canvasSave);
       setLoading(false);
-      let toastData = {};
       if (event?.args?.inputIndex) {
-        canvas.clear();
-        toastData = {
-          title: "Transaction Confirmed",
+        clearCanvas();
+        toast.success("Transaction Confirmed", {
           description: `Input added => index: ${event?.args?.inputIndex} `,
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-          position: "top-left",
-        };
+        });
       } else {
-        toastData = {
-          title: "Error",
+        toast.error("Transaction Error", {
           description: `Input not added => index: ${event?.args?.inputIndex} `,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top-left",
-        };
+        });
       }
-      toast(toastData);
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
     sendInput(canvasData);
   };
-  let buttonProps = { isLoading: false };
-  if (loading) {
-    buttonProps.isLoading = true;
-  }
 
-  return connectedChain ? (
+  return (
     <Button
-      {...buttonProps}
+      variant={"outline"}
       onClick={handleCanvasToSvg}
-      className="button canvas-store">
-      Save Canvas
-    </Button>
-  ) : (
-    <Button disabled className="button disabled">
-      Save Canvas
+      disabled={!connectedChain || loading}
+    >
+      <Cpu size={18} className="mr-2" strokeWidth={1.5} />
+      {loading ? "Saving..." : "Save"}
     </Button>
   );
 };
 
 export default CanvasToSVG;
-

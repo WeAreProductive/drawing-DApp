@@ -1,12 +1,16 @@
 import { Link } from "react-router-dom";
-import { init } from "@web3-onboard/react";
+import { init, useConnectWallet } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import Network from "../components/Network";
 import blocknativeIcon from "../icons/blocknative-icon"; //@TODO use app's own icon instead
+import { FileTerminal } from "lucide-react";
 
 import "../App.css";
 
 import configFile from "../config/config.json";
+import VouchersList from "../components/VouchersList";
+import Vouchers from "../components/Vouchers";
+import Header from "../components/Header";
 
 const config = configFile;
 
@@ -35,7 +39,7 @@ init({
     desktop: {
       position: "topRight",
       enabled: true,
-      minimal: false,
+      minimal: true,
     },
     mobile: {
       enabled: true,
@@ -47,22 +51,13 @@ type Props = {
 };
 
 export default function Page({ children }: Props) {
+  const [{ wallet }] = useConnectWallet();
   return (
-    <>
-      <nav>
-        <ul>
-          <li>
-            <Link to={`/`}>Draw</Link>
-          </li>
-          <li>
-            <Link to={`/vouchers`}>Vouchers</Link>
-          </li>
-          <li>
-            <Network />
-          </li>
-        </ul>
-      </nav>
-      <div className="page-content">{children}</div>
-    </>
+    <div className="flex h-svh flex-col overflow-auto bg-muted">
+      <Header />
+      <div className="container max-w-none">
+        {wallet ? children : <Network />}
+      </div>
+    </div>
   );
 }

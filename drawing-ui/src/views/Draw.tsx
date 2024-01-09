@@ -8,20 +8,30 @@ import { GraphQLProvider } from "../context/GraphQLContext";
 
 const Draw = () => {
   return (
-    <Page>
-      <GraphQLProvider>
-        <CanvasContextProvider>
-          <div className="canvas-wrapper">
-            <FabricJSCanvas />
-            <div className="controls-container">
-              <DrawingControls />
-              <CanvasControls />
+    <>
+      <Page>
+        <GraphQLProvider>
+          <CanvasContextProvider>
+            <div className="grid gap-4">
+              <div className="grid gap-4 xl:grid-cols-[1fr,var(--sidebar-width)]">
+                <div className="mx-auto">
+                  <div className="sticky top-4 inline-flex flex-col gap-4">
+                    <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
+                      <DrawingControls />
+                      <CanvasControls />
+                    </div>
+                    <FabricJSCanvas />
+                  </div>
+                </div>
+                <div className="rounded-xl bg-card p-6">
+                  <ImagesListRollups />
+                </div>
+              </div>
             </div>
-          </div>
-          <ImagesListRollups />
-        </CanvasContextProvider>
-      </GraphQLProvider>
-    </Page>
+          </CanvasContextProvider>
+        </GraphQLProvider>
+      </Page>
+    </>
   );
 };
 

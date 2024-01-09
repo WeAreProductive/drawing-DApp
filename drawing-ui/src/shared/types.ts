@@ -27,6 +27,7 @@ export type CanvasContextType = {
   setDappState: React.Dispatch<string>;
   currentDrawingData: null | DrawingInput;
   setCurrentDrawingData: React.Dispatch<null | DrawingInput>;
+  clearCanvas: () => void;
 };
 export type VoucherExtended = {
   id?: string;
@@ -38,7 +39,7 @@ export type VoucherExtended = {
   executed?: any;
   msg?: string;
 };
- 
+
 export interface DrawingInput {
   drawing: string; // svg's json string
 }
@@ -50,4 +51,4 @@ export interface DrawingInputExtended extends DrawingInput {
   update_log: { date_updated: string; painter: string; action: string }[];
   drawing: string; // svg's json string
   voucher_requested: boolean;
-};
+}

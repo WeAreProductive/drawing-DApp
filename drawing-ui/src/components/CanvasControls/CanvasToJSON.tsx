@@ -8,8 +8,8 @@
 import { useCanvasContext } from "../../context/CanvasContext";
 import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import { useToast, Button } from "@chakra-ui/react";
 import { useSetChain, useWallets } from "@web3-onboard/react";
+import { toast } from "sonner";
 
 import { InputBox__factory } from "@cartesi/rollups";
 
@@ -29,14 +29,15 @@ import {
 } from "../../shared/types";
 
 import moment from "moment";
+import { Button } from "../ui/button";
+import { Box } from "lucide-react";
 const config: { [name: string]: Network } = configFile;
 
 const CanvasToJSON = () => {
   const [connectedWallet] = useWallets();
-  const { canvas, dappState, currentDrawingData, setDappState } =
+  const { canvas, dappState, currentDrawingData, setDappState, clearCanvas } =
     useCanvasContext();
   const [{ connectedChain }] = useSetChain();
-  const toast = useToast();
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -47,19 +48,13 @@ const CanvasToJSON = () => {
 
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
-    toast({
-      title: "Sending input to rollups...",
-      status: "warning",
-      duration: 3000,
-      isClosable: true,
-      position: "top",
-    });
+    toast.info("Sending input to rollups...");
     setLoading(true);
 
     const sendInput = async (strInput: string, svg: string) => {
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
-        connectedWallet.provider
+        connectedWallet.provider,
       );
       const signer = provider.getSigner();
       // prepare drawing data notice input
@@ -102,14 +97,7 @@ const CanvasToJSON = () => {
 
       // Send the transaction
       const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
-      toast({
-        title: "Transaction Sent",
-        description: "waiting for confirmation",
-        status: "success",
-        duration: 9000,
-        isClosable: true,
-        position: "top-left",
-      });
+      toast.success("Transaction Sent");
 
       // Wait for confirmation
       console.log("waiting for confirmation...");
@@ -119,28 +107,16 @@ const CanvasToJSON = () => {
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setLoading(false);
       setDappState(DAPP_STATE.canvasSave);
-      let toastData = {};
       if (event?.args?.inputIndex) {
-        canvas.clear();
-        toastData = {
-          title: "Transaction Confirmed",
+        clearCanvas();
+        toast.success("Transaction Confirmed", {
           description: `Input added => index: ${event?.args?.inputIndex} `,
-          status: "success",
-          duration: 9000,
-          isClosable: true,
-          position: "top-left",
-        };
+        });
       } else {
-        toastData = {
-          title: "Error",
+        toast.error("Transaction Error", {
           description: `Input not added => index: ${event?.args?.inputIndex} `,
-          status: "error",
-          duration: 9000,
-          isClosable: true,
-          position: "top-left",
-        };
+        });
       }
-      toast(toastData);
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
     const canvasContent = canvas.toJSON();
@@ -148,17 +124,12 @@ const CanvasToJSON = () => {
     const base64str = await storeAsFiles(canvasContent.objects);
     sendInput(base64str, canvasSVG);
   };
-  let buttonProps = { isLoading: false };
-  if (loading) {
-    buttonProps.isLoading = true;
-  }
+
   // @TODO disable if no loaded / drawn image on the canvas
   return connectedChain ? (
-    <Button
-      {...buttonProps}
-      onClick={handleCanvasToSvg}
-      className="button canvas-mint">
-      Mint NFT
+    <Button variant={"outline"} onClick={handleCanvasToSvg} disabled={loading}>
+      <Box size={18} className="mr-2" strokeWidth={1.5} />
+      {loading ? " Minting..." : " Mint NFT"}
     </Button>
   ) : null;
 };

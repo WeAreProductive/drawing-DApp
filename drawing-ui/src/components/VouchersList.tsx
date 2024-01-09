@@ -4,7 +4,7 @@ import { useVouchersQuery, useVoucherQuery } from "../generated/graphql";
 import { useRollups } from "../hooks/useRollups";
 import { DAPP_ADDRESS } from "../shared/constants";
 import { VoucherExtended } from "../shared/types";
-import { Button, Spinner } from "@chakra-ui/react";
+import { Button } from "./ui/button";
 
 const VouchersList = () => {
   const [result, reexecuteQuery] = useVouchersQuery();
@@ -31,19 +31,19 @@ const VouchersList = () => {
         const tx = await rollups.dappContract.executeVoucher(
           voucher.destination,
           voucher.payload,
-          voucher.proof
+          voucher.proof,
         );
         const receipt = await tx.wait();
 
         newVoucherToExecute.msg = `voucher executed! (tx="${tx.hash}")`;
         if (receipt.events) {
           const event = receipt.events?.find(
-            (e) => e.event === "VoucherExecuted"
+            (e) => e.event === "VoucherExecuted",
           );
 
           if (!event) {
             throw new Error(
-              `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`
+              `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`,
             );
           }
           newVoucherToExecute.msg = `${
@@ -52,13 +52,13 @@ const VouchersList = () => {
           newVoucherToExecute.executed =
             await rollups.dappContract.wasVoucherExecuted(
               BigNumber.from(voucher.input.index),
-              BigNumber.from(voucher.index)
+              BigNumber.from(voucher.index),
             );
         }
         setLoading(false);
       } catch (e) {
         newVoucherToExecute.msg = `COULD NOT EXECUTE VOUCHER: ${JSON.stringify(
-          e
+          e,
         )}`;
         console.log(`COULD NOT EXECUTE VOUCHER: ${JSON.stringify(e)}`);
       }
@@ -71,7 +71,7 @@ const VouchersList = () => {
       if (rollups) {
         voucher.executed = await rollups.dappContract.wasVoucherExecuted(
           BigNumber.from(voucher.input.index),
-          BigNumber.from(voucher.index)
+          BigNumber.from(voucher.index),
         );
       }
       setVoucherToExecute(voucher);
@@ -169,7 +169,8 @@ const VouchersList = () => {
           </thead>
           <tbody>
             <tr
-              key={`${voucherToExecute.input.index}-${voucherToExecute.index}`}>
+              key={`${voucherToExecute.input.index}-${voucherToExecute.index}`}
+            >
               <td>{voucherToExecute.input.index}</td>
               <td>{voucherToExecute.index}</td>
               <td>{voucherToExecute.destination}</td>
@@ -187,13 +188,15 @@ const VouchersList = () => {
                 ) : (
                   <Button
                     onClick={() => executeVoucher(voucherToExecute)}
-                    className="voucher-action">
+                    className="voucher-action"
+                  >
                     Execute voucher
                   </Button>
                 )}
               </td>
               <td>{voucherToExecute.input.payload}</td>
-              <td>{loading ? <Spinner /> : voucherToExecute.msg}</td>
+              {/* TODO: loading */}
+              <td>{loading ? <span>...</span> : voucherToExecute.msg}</td>
             </tr>
           </tbody>
         </table>
