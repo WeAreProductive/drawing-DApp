@@ -1,8 +1,10 @@
 
-node_modules/
-canvas.json
-*.json
-public/canvas-images/  
-drawing-py/.venv
-drawing-api/public/canvas-images/*
-drawing-ui/dist/*
+node_modules/  
+.env
+drawing-api/public/
+TODO.md
+ 
+drawing-py/dapp/.venv
+drawing-py/deployments/
+drawing-py/.sunodo
+drawing-py/dapp/protobuf_models/__pycache__/
