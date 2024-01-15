@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "workspaces": [
+    "drawing-api",
+    "drawing-ui",
+    "smart-contracts"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "turbo": "^1.11.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
