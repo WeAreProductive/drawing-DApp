@@ -29,6 +29,7 @@ export type CanvasContextType = {
   setCurrentDrawingData: React.Dispatch<null | DrawingInput>;
   clearCanvas: () => void;
 };
+
 export type VoucherExtended = {
   id?: string;
   index: number;
@@ -43,6 +44,7 @@ export type VoucherExtended = {
 export interface DrawingInput {
   drawing: string; // svg's json string
 }
+
 export interface DrawingInputExtended extends DrawingInput {
   id: string; // creator's account - timestamp
   date_created: string; // date-time string

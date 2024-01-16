@@ -8,9 +8,11 @@ import { useMemo } from "react";
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
 };
+
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
   const { drawing, owner } = src;
+
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
@@ -26,8 +28,8 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
 
       canvas.add(obj).renderAll();
     });
-    setDappState(DAPP_STATE.drawingUpdate);
 
+    setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
   };
 

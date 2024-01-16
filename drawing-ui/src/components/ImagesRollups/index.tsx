@@ -19,6 +19,7 @@ type DataNoticeEdge = {
     };
   };
 };
+
 const ImagesListRollups = () => {
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
@@ -70,6 +71,7 @@ const ImagesListRollups = () => {
         console.log(e);
       }
     });
+    
     // Concat new drawings with previous ones
     if (newDrawings && newDrawings.length) {
       // Add new rendered drawings to stored data
@@ -79,10 +81,12 @@ const ImagesListRollups = () => {
       if (!ret) return;
       setNoticeDrawings(ret);
     }
+    
     if (!newDrawings) return;
     const newMyDrawings = newDrawings.filter(
       (drawing) => drawing.owner.toLowerCase() == account.toLowerCase(),
     );
+    
     if (newMyDrawings && newMyDrawings.length) {
       // Add new rendered drawings to stored data
       const retMine = myDrawings
@@ -92,6 +96,7 @@ const ImagesListRollups = () => {
       setMyDrawings(retMine);
     }
   }, [data]);
+  
   // reset my drawings on account change
   useEffect(() => {
     if (!noticeDrawings) return;
@@ -100,6 +105,7 @@ const ImagesListRollups = () => {
     );
     setMyDrawings(newMyDrawings);
   }, [account]);
+  
   if (error) return <p className="error">Oh no... {error.message}</p>;
 
   return (

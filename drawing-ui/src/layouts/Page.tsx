@@ -1,15 +1,11 @@
-import { Link } from "react-router-dom";
 import { init, useConnectWallet } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import Network from "../components/Network";
 import blocknativeIcon from "../icons/blocknative-icon"; //@TODO use app's own icon instead
-import { FileTerminal } from "lucide-react";
 
 import "../App.css";
 
 import configFile from "../config/config.json";
-import VouchersList from "../components/VouchersList";
-import Vouchers from "../components/Vouchers";
 import Header from "../components/Header";
 
 const config = configFile;

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { INITIAL_DRAWING_OPTIONS } from "../../shared/constants";
 import { Slider } from "../ui/slider";
+
 const LineWidthControl = () => {
   const { canvasOptions, setOptions } = useCanvasContext();
   const [lineWidth, setLineWidth] = useState(

@@ -8,7 +8,6 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 
 import { useSetChain, useWallets } from "@web3-onboard/react";
-import moment from "moment";
 
 import { InputBox__factory } from "@cartesi/rollups";
 
@@ -23,6 +22,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Cpu } from "lucide-react";
+
 const config: { [name: string]: Network } = configFile;
 
 const CanvasToSVG = () => {
@@ -33,16 +33,20 @@ const CanvasToSVG = () => {
 
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     if (!connectedChain) return;
     setInputBoxAddress(config[connectedChain.id].InputBoxAddress);
   }, [connectedChain]);
+
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
+    
     toast.info("Sending input to rollups...");
     setLoading(true);
     console.log(canvas);
 
+    // Gets current drawing data as SVG
     const canvasData = canvas.toSVG({
       viewBox: {
         x: 0,
@@ -53,18 +57,20 @@ const CanvasToSVG = () => {
       width: canvas.width || 0,
       height: canvas.height || 0,
     });
+    
     const sendInput = async (strInput: string) => {
+      
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
       );
+      
       const signer = provider.getSigner();
-      const now = moment().utc().format("YY-MM-DD hh:mm:s");
-      const timestamp = moment().unix();
 
       // prepare drawing data notice input
       let drawingNoticePayload: DrawingInput | DrawingInputExtended; // @TODO fix typing
       let str: string;
+
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
@@ -86,7 +92,6 @@ const CanvasToSVG = () => {
 
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
-
       // Encode the input
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
@@ -115,6 +120,7 @@ const CanvasToSVG = () => {
       }
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
+    
     sendInput(canvasData);
   };
 
