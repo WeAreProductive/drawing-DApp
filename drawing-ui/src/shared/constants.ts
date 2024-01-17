@@ -6,7 +6,7 @@ export const API_ENDPOINTS = {
 
 export const INITIAL_DRAWING_OPTIONS = {
   color: "#000000",
-  backgroundColor: "#ffffff",
+  backgroundColor: "transparent",
   brushWidth: 10,
   minBrushWidth: 1,
   canvasWidth: 280,
