@@ -36,6 +36,8 @@ export type VoucherExtended = {
   destination: string;
   input: any; //{index: number; epoch: {index: number; }
   payload: string;
+  erc721string?: null | string;
+  ownerAddress?: null | string;  
   proof?: any;
   executed?: any;
   msg?: string;

@@ -16,12 +16,12 @@ const Vouchers = () => {
         <SheetTrigger>
           <div className="flex items-center gap-2 text-sm font-semibold">
             <Menu strokeWidth={1.5} className="h-6 w-6" />
-            Vouchers
+            Your NFTs
           </div>
         </SheetTrigger>
-        <SheetContent side="left" className="sm:w-[640px] sm:max-w-full">
+        <SheetContent side="left" className="sm:w-[640px] sm:max-w-full overflow-y-auto">
           <SheetHeader>
-            <SheetTitle>Vouchers</SheetTitle>
+            <SheetTitle>Your NFTs</SheetTitle>
             <VouchersList />
           </SheetHeader>
         </SheetContent>

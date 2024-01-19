@@ -64,8 +64,9 @@ You may build the project's `smart contract` as follows.
 From the `project's root` directory execute:
 
 ```shell
+yarn
 cd smart-contracts
-yarn && yarn build
+yarn build
 ```
 
 ### Deploy the smart contract
@@ -103,7 +104,7 @@ From the project `root` directory run
 
 ```shell
 cd drawing-py
-cd sunodo run 
+sunodo run 
 ```
 
 ### Other useful commands and options 
@@ -114,7 +115,7 @@ By default the node closes an epoch `once a day`, but this can be controlled by 
 `--epoch-duration <seconds>` command option when executing the run dApp command.
 
 ```shell
-cd sunodo run --epoch-duration <seconds>
+sunodo run --epoch-duration <seconds>
 ```
 
 It's an important settings when it comes down to `voucher` execution. 
@@ -190,9 +191,13 @@ Check these links:
 
 ## Interacting with the application
 
-Use the frontend `drawing-ui` application to interact with the DApp. 
+To run the frontend application execute from the project `root directory`: 
+```shell
+yarn
+yarn dev
+```
 
-### Requirements 
+### Use the frontend `drawing-ui` application to interact with the DApp. 
 
 1. Vouchers cannot be executed when running the backend in `host mode`.
 2. You should have a wallet (MetaMask) installed in the browser and be able to connect to account in that wallet.
@@ -200,26 +205,12 @@ Use the frontend `drawing-ui` application to interact with the DApp.
 4. Be sure to have small amount of assets in the wallet account for the dApp interactions.
 5. If you restart the dApp, be sure to [redeploy](#building-the-smart-contract-and-deploying-manually) the dApp's smart contract if it's been deployed manually  
 
-### Running the frontend in development mode
 
-To run the frontend application execute from the project `root directory`: 
-```shell
-cd drawing-ui
-yarn dev
-```
-
-### drawing-api server
+### `drawing-api` server
 
 In order the frontend to work properly, you need to start a server that will convert the `canvas into a base64 string`.
 This string format is required for the backend to be able to prepare a suitable tokenURI for the NFT to be minted on voucher execution.
 
-To `start the server` execute the following commands from the project's `root directory` (refer to drawing-api/package.json scripts).
-
-```shell
-cd drawing-api
-yarn
-yarn dev
-```
 
 ## [Deploying the application](https://docs.sunodo.io/guide/deploying/deploying-application)
 

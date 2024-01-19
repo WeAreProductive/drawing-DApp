@@ -21,7 +21,7 @@ import {
 } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import { Cpu } from "lucide-react";
+import { Save } from "lucide-react";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -130,7 +130,7 @@ const CanvasToSVG = () => {
       onClick={handleCanvasToSvg}
       disabled={!connectedChain || loading}
     >
-      <Cpu size={18} className="mr-2" strokeWidth={1.5} />
+      <Save size={18} className="mr-2" strokeWidth={1.5} />
       {loading ? "Saving..." : "Save"}
     </Button>
   );

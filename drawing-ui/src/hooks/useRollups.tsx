@@ -21,7 +21,7 @@ const config: { [name: string]: Network } = configFile;
 export interface RollupsContracts {
   dappContract: CartesiDApp;
   signer: JsonRpcSigner;
-  realyContract: DAppAddressRelay;
+  relayContract: DAppAddressRelay;
   inputContract: InputBox;
   erc721PortalContract: ERC721Portal;
 }
@@ -69,7 +69,7 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
       // dapp contract
       const dappContract = CartesiDApp__factory.connect(dappAddress, signer);
       // relay contract
-      const realyContract = DAppAddressRelay__factory.connect(
+      const relayContract = DAppAddressRelay__factory.connect(
         dappRelayAddress,
         signer
       );
@@ -83,7 +83,7 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
       return {
         dappContract,
         signer,
-        realyContract,
+        relayContract,
         inputContract,
         erc721PortalContract,
       };

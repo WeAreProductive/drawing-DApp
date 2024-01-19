@@ -136,7 +136,7 @@ const CanvasToJSON = () => {
   return connectedChain ? (
     <Button variant={"outline"} onClick={handleCanvasToSvg} disabled={loading}>
       <Box size={18} className="mr-2" strokeWidth={1.5} />
-      {loading ? " Minting..." : " Mint NFT"}
+      {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
     </Button>
   ) : null;
 };
