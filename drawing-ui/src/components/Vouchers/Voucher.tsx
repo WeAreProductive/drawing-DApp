@@ -140,13 +140,13 @@ const Voucher = ({ voucherData }: VoucherProp) => {
         )}
       </div>
 
-      {voucherToExecute && (
+      {voucherToExecute && voucherToExecute.msg && (
         <div className="mt-3 text-sm">
           {loading ? (
             <span>Minting NFT, please wait...</span>
           ) : (
             <>
-              <p>{voucherToExecute.msg}</p>
+              {voucherToExecute.msg && <p>{voucherToExecute.msg}</p>}
               {voucherToExecute.events?.address && (
                 <>
                   <p className="mt-2">
