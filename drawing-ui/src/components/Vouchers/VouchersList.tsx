@@ -14,7 +14,7 @@ const VouchersList = () => {
     pause: true,
   });
   const [currentAccount, setCurrentAccount] = useState("");
-  const [myVouchers, setMyVouchers] = useState<VoucherExtended[] | null>(null);
+  const [myVouchers, setMyVouchers] = useState<VoucherExtended[]>([]);
   const { data, fetching, error } = result;
 
   const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
@@ -120,21 +120,12 @@ const VouchersList = () => {
         };
       })
       .filter((voucher) => voucher.ownerAddress === currentAccount)
-      .sort((b, a) => {
-        if (a.input.index === b.input.index) {
-          return b.index - a.index;
-        } else {
-          return b.input.index - a.input.index;
-        }
-      });
+      .sort(
+        (a, b) => parseInt(b.input.index) - parseInt(a.input.index),
+      ) as VoucherExtended[];
 
-    // Concat new vouchers with previous ones
-    if (newVouchers && newVouchers.length) {
-      // Add new rendered drawings to stored data
-      const ret = myVouchers ? myVouchers.concat(newVouchers) : newVouchers;
-      if (!ret) return;
-      setMyVouchers(ret);
-    }
+    if (newVouchers && newVouchers.length)
+      setMyVouchers([...newVouchers, ...myVouchers]);
 
     if (!newVouchers) return;
   }, [data]);
