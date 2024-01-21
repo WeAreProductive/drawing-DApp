@@ -19,18 +19,23 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "1mb" })); //@TODO - set here proper limit to allow canvas to be saved properly
 app.use(express.static("public")); //make the images accessible by the drawing-ui
 
+function toBase64(filePath) {
+  const img = fs.readFileSync(filePath);
+  return Buffer.from(img).toString('base64');
+}
+
 app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
   
   res.set("Content-Type", "application/json");
   
   if (req.body) {
-    const filename = "temp-canvas";
-    const fullPath = `public/canvas-images/${filename}.png`;
+    const fullPath = `public/canvas-images/`;
+    const filePath = fullPath + `${req.body.filename}.png`;
 
     try {
       //     //# create .png and save it on disk
       const canvas = new fabric.Canvas(null, { width: 600, height: 600 }); //sync width & height with FE
-      canvas.loadFromJSON(JSON.stringify({ objects: req.body }), function () {
+      canvas.loadFromJSON(JSON.stringify({ objects: req.body.image }), function () {
         // reset zoom so pan actions work as expected
         canvas.setZoom(1);
         //group all the objects
@@ -71,40 +76,35 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
         
         fs.promises
           .mkdir(
-            path.dirname(fullPath), //@TODO set temp name
+            path.dirname(fullPath),
             {
               recursive: true,
             }
           )
           .then((x) => {
-            const out = fs.createWriteStream(fullPath);
+            const out = fs.createWriteStream(filePath);
             const stream = canvas.createPNGStream();
             stream.pipe(out);
-            out.on("finish", () => console.log("The PNG file was created."));
+            out.on("finish", () => {
+              console.log("The PNG file was created.");
+              const base64String = toBase64(filePath);
+              res.send(
+                JSON.stringify({
+                  success: true,
+                  base64out: base64String,
+                })
+              );
+            });
           })
           .catch((error) => {
             console.log(error);
           });
       });
 
-      //     //@TODO - can return the newly created filename f.ex. also
     } catch (error) {
-      //@TODO handle error, return error response
       console.log(error);
     }
-    try {
-      const base64out = await imageToBase64(fullPath);
-      res.send(
-        JSON.stringify({
-          success: true, //@TODO return the base64 string
-          base64out: base64out,
-        })
-      );
-    } catch (e) {
-      console.log(e);
-      // @TODO return error response
-    }
-    // });
+
   } else {
     res.send(
       JSON.stringify({

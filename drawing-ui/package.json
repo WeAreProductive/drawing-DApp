@@ -21,6 +21,7 @@
     "@radix-ui/react-slider": "^1.1.2",
     "@radix-ui/react-slot": "^1.0.2",
     "@radix-ui/react-tabs": "^1.0.4",
+    "@types/uuid": "^9.0.7",
     "@web3-onboard/core": "^2.2.6",
     "@web3-onboard/injected-wallets": "^2.0.5",
     "@web3-onboard/react": "^2.1.5",
@@ -45,7 +46,7 @@
     "tailwind-merge": "^2.2.0",
     "tailwindcss-animate": "^1.0.7",
     "urql": "^2.2.0",
-    "uuid": "^9.0.0",
+    "uuid": "^9.0.1",
     "wagmi": "^0.12.12"
   },
   "devDependencies": {

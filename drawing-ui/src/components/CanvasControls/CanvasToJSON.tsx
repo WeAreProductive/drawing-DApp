@@ -15,6 +15,7 @@ import { Box } from "lucide-react";
 import { InputBox__factory } from "@cartesi/rollups";
 import configFile from "../../config/config.json";
 import { storeAsFiles } from "../../services/canvas";
+import { v4 as uuidv4 } from "uuid";
 
 import {
   ERC721_TO_MINT,
@@ -30,7 +31,6 @@ import {
   Network,
 } from "../../shared/types";
 
-
 const config: { [name: string]: Network } = configFile;
 
 const CanvasToJSON = () => {
@@ -40,6 +40,7 @@ const CanvasToJSON = () => {
   const [{ connectedChain }] = useSetChain();
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const uuid = uuidv4();
 
   useEffect(() => {
     if (!connectedChain) return;
@@ -48,23 +49,22 @@ const CanvasToJSON = () => {
 
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
-    
+
     toast.info("Sending input to rollups...");
     setLoading(true);
 
     const sendInput = async (strInput: string, svg: string) => {
-      
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
       );
-      
+
       const signer = provider.getSigner();
-      
+
       // prepare drawing data notice input
       let drawingNoticePayload: DrawingInput | DrawingInputExtended;
       let str: string;
-      
+
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
@@ -73,6 +73,7 @@ const CanvasToJSON = () => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           image: strInput,
+          uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
           cmd: COMMANDS.updateAndMint.cmd,
@@ -85,6 +86,7 @@ const CanvasToJSON = () => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           image: strInput,
+          uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
           cmd: COMMANDS.createAndMint.cmd,
@@ -111,7 +113,7 @@ const CanvasToJSON = () => {
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setLoading(false);
       setDappState(DAPP_STATE.canvasSave);
-      
+
       if (event?.args?.inputIndex) {
         clearCanvas();
         toast.success("Transaction Confirmed", {
@@ -125,10 +127,10 @@ const CanvasToJSON = () => {
 
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
-    
+
     const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    const base64str = await storeAsFiles(canvasContent.objects);
+    const base64str = await storeAsFiles(canvasContent.objects, uuid);
     sendInput(base64str, canvasSVG);
   };
 

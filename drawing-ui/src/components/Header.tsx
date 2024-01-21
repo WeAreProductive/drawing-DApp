@@ -1,5 +1,5 @@
 import React from "react";
-import Vouchers from "./Vouchers";
+import Vouchers from "./Vouchers/Vouchers";
 
 const Header = () => {
   return (

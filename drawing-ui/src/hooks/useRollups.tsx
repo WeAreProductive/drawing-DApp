@@ -34,7 +34,7 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
   useEffect(() => {
     const connect = async (chain: ConnectedChain) => {
       const provider = new ethers.providers.Web3Provider(
-        connectedWallet.provider
+        connectedWallet.provider,
       );
       const signer = provider.getSigner();
 
@@ -43,7 +43,7 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
         dappRelayAddress = config[chain.id].DAppRelayAddress;
       } else {
         console.error(
-          `No dapp relay address address defined for chain ${chain.id}`
+          `No dapp relay address address defined for chain ${chain.id}`,
         );
       }
 
@@ -52,7 +52,7 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
         inputBoxAddress = config[chain.id].InputBoxAddress;
       } else {
         console.error(
-          `No input box address address defined for chain ${chain.id}`
+          `No input box address address defined for chain ${chain.id}`,
         );
       }
 
@@ -61,7 +61,7 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
         erc721PortalAddress = config[chain.id].Erc721PortalAddress;
       } else {
         console.error(
-          `No erc721 portal address address defined for chain ${chain.id}`
+          `No erc721 portal address address defined for chain ${chain.id}`,
         );
         alert(`No box erc721 portal address defined for chain ${chain.id}`);
       }
@@ -71,13 +71,13 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
       // relay contract
       const relayContract = DAppAddressRelay__factory.connect(
         dappRelayAddress,
-        signer
+        signer,
       );
       // input contract
       const inputContract = InputBox__factory.connect(inputBoxAddress, signer);
       const erc721PortalContract = ERC721Portal__factory.connect(
         erc721PortalAddress,
-        signer
+        signer,
       );
 
       return {

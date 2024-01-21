@@ -13,7 +13,6 @@ import base64
 import base58
 from protobuf_models import unixfs_pb2, merkle_dag_pb2
 from datetime import datetime, timezone
-import uuid
 
 DAPP_RELAY_ADDRESS = "0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE".lower()
 ERC721_PORTAL_ADDRESS = "0x237F8DD094C0e47f4236f12b4Fa01d6Dae89fb87".lower()
@@ -101,6 +100,7 @@ def process_image(image):
 
 def mint_erc721_with_uri_from_image(
         msg_sender,
+        uuid,
         erc721_to_mint,
         mint_header,
         b64out, 
@@ -132,8 +132,10 @@ def mint_erc721_with_uri_from_image(
     multihash = base58.b58encode(bytes.fromhex(combined))
     # decode a string encoded in UTF-8 format
     tokenURI = multihash.decode('utf-8') # it is not the ipfs unixfs 'file' hash
+    # ToDo: Add uuid to tokenURI
     mint_erc721_with_string(
         msg_sender,
+        uuid,
         erc721_to_mint,
         mint_header,
         tokenURI,
@@ -143,6 +145,7 @@ def mint_erc721_with_uri_from_image(
  
 def mint_erc721_with_string(
         msg_sender,
+        uuid,
         erc721_to_mint,
         mint_header,
         string,
@@ -160,12 +163,14 @@ def mint_erc721_with_string(
     send_voucher(voucher)
     store_drawing_data(
         msg_sender,
+        uuid,
         drawing_input,
         cmd
     )
 
 def store_drawing_data(
         sender,
+        uuid,
         drawing_input, 
         cmd
     ):
@@ -173,12 +178,13 @@ def store_drawing_data(
     new_log_item = { 
         "date_updated": now,
         "painter": sender,
-        "action": cmd 
+        "action": cmd
     } 
     if cmd == 'cn' or cmd == 'cv':
         # set drawing id wneh new drawing
         unix_timestamp = str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
         drawing_input["id"]= f"{sender}-{unix_timestamp}"
+        drawing_input["uuid"]= uuid
         drawing_input["owner"] = sender
         drawing_input["date_created"]= now 
         drawing_input["last_updated"] = now
@@ -189,6 +195,7 @@ def store_drawing_data(
         else:
             drawing_input['voucher_requested'] = False
     elif cmd == 'un' or cmd == 'uv':
+        drawing_input["uuid"]= uuid
         drawing_input["owner"] = sender
         drawing_input["last_updated"] = now
         drawing_input["update_log"].append(new_log_item)
@@ -230,9 +237,11 @@ def handle_advance(data):
                             erc721_to_mint=json_data["erc721_to_mint"]
                             selector=json_data["selector"]
                             drawing_input=json_data["drawing_input"]
+                            uuid=json_data["uuid"]
                             cmd=json_data['cmd']
                             mint_erc721_with_uri_from_image(
-                                sender, 
+                                sender,
+                                uuid, 
                                 erc721_to_mint,
                                 selector,
                                 b64out, 
@@ -243,9 +252,11 @@ def handle_advance(data):
                     logger.info(f"COMMAND {json_data['cmd']}")
                     if json_data.get("drawing_input"): 
                         drawing_input=json_data["drawing_input"]
+                        uuid=json_data["uuid"]
                         cmd=json_data['cmd']
                         store_drawing_data(
                             sender,
+                            uuid,
                             drawing_input, 
                             cmd
                         )

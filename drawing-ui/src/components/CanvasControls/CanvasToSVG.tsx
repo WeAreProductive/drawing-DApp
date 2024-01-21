@@ -6,11 +6,8 @@
  */
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-
 import { useSetChain, useWallets } from "@web3-onboard/react";
-
 import { InputBox__factory } from "@cartesi/rollups";
-
 import { useCanvasContext } from "../../context/CanvasContext";
 import { COMMANDS, DAPP_ADDRESS, DAPP_STATE } from "../../shared/constants";
 import configFile from "../../config/config.json";
@@ -22,6 +19,7 @@ import {
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -33,6 +31,7 @@ const CanvasToSVG = () => {
 
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const uuid = uuidv4();
 
   useEffect(() => {
     if (!connectedChain) return;
@@ -41,7 +40,7 @@ const CanvasToSVG = () => {
 
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
-    
+
     toast.info("Sending input to rollups...");
     setLoading(true);
     console.log(canvas);
@@ -57,14 +56,13 @@ const CanvasToSVG = () => {
       width: canvas.width || 0,
       height: canvas.height || 0,
     });
-    
+
     const sendInput = async (strInput: string) => {
-      
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
       );
-      
+
       const signer = provider.getSigner();
 
       // prepare drawing data notice input
@@ -78,6 +76,7 @@ const CanvasToSVG = () => {
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload,
+          uuid: uuid,
           cmd: COMMANDS.updateAndStore.cmd, // BE will be notified to emit a notice
         });
       } else {
@@ -86,6 +85,7 @@ const CanvasToSVG = () => {
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, // data to save in a notice
+          uuid: uuid,
           cmd: COMMANDS.createAndStore.cmd, // BE will be notified to emit a notice
         });
       }
@@ -120,7 +120,7 @@ const CanvasToSVG = () => {
       }
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
-    
+
     sendInput(canvasData);
   };
 
