@@ -6,9 +6,9 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "../components/ui/sheet";
-import VouchersList from "../components/VouchersList";
-import { GraphQLProvider } from "../context/GraphQLContext";
+} from "../ui/sheet";
+import VouchersList from "./VouchersList";
+import { GraphQLProvider } from "../../context/GraphQLContext";
 const Vouchers = () => {
   return (
     <GraphQLProvider>
@@ -16,12 +16,15 @@ const Vouchers = () => {
         <SheetTrigger>
           <div className="flex items-center gap-2 text-sm font-semibold">
             <Menu strokeWidth={1.5} className="h-6 w-6" />
-            Vouchers
+            My NFTs
           </div>
         </SheetTrigger>
-        <SheetContent side="left" className="sm:w-[640px] sm:max-w-full">
+        <SheetContent
+          side="left"
+          className="overflow-y-auto sm:w-[640px] sm:max-w-full"
+        >
           <SheetHeader>
-            <SheetTitle>Vouchers</SheetTitle>
+            <SheetTitle>My NFTs</SheetTitle>
             <VouchersList />
           </SheetHeader>
         </SheetContent>

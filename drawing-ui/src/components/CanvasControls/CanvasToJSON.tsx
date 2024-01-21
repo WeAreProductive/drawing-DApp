@@ -10,10 +10,13 @@ import React, { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import { toast } from "sonner";
-
+import { Button } from "../ui/button";
+import { Box } from "lucide-react";
 import { InputBox__factory } from "@cartesi/rollups";
-
+import configFile from "../../config/config.json";
 import { storeAsFiles } from "../../services/canvas";
+import { v4 as uuidv4 } from "uuid";
+
 import {
   ERC721_TO_MINT,
   MINT_SELECTOR,
@@ -21,16 +24,13 @@ import {
   DAPP_STATE,
   COMMANDS,
 } from "../../shared/constants";
-import configFile from "../../config/config.json";
+
 import {
   DrawingInput,
   DrawingInputExtended,
   Network,
 } from "../../shared/types";
 
-import moment from "moment";
-import { Button } from "../ui/button";
-import { Box } from "lucide-react";
 const config: { [name: string]: Network } = configFile;
 
 const CanvasToJSON = () => {
@@ -40,6 +40,7 @@ const CanvasToJSON = () => {
   const [{ connectedChain }] = useSetChain();
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
+  const uuid = uuidv4();
 
   useEffect(() => {
     if (!connectedChain) return;
@@ -48,6 +49,7 @@ const CanvasToJSON = () => {
 
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
+
     toast.info("Sending input to rollups...");
     setLoading(true);
 
@@ -56,10 +58,13 @@ const CanvasToJSON = () => {
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
       );
+
       const signer = provider.getSigner();
+
       // prepare drawing data notice input
       let drawingNoticePayload: DrawingInput | DrawingInputExtended;
       let str: string;
+
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
@@ -68,19 +73,20 @@ const CanvasToJSON = () => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           image: strInput,
+          uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
           cmd: COMMANDS.updateAndMint.cmd,
         });
       } else {
         // new drawing is sent to rollups, and voucher is requested
-        const timestamp = moment().unix();
         drawingNoticePayload = {
           drawing: svg, // FE is responsible for the svg string only
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           image: strInput,
+          uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
           cmd: COMMANDS.createAndMint.cmd,
@@ -107,6 +113,7 @@ const CanvasToJSON = () => {
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setLoading(false);
       setDappState(DAPP_STATE.canvasSave);
+
       if (event?.args?.inputIndex) {
         clearCanvas();
         toast.success("Transaction Confirmed", {
@@ -117,11 +124,13 @@ const CanvasToJSON = () => {
           description: `Input not added => index: ${event?.args?.inputIndex} `,
         });
       }
+
       console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
+
     const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    const base64str = await storeAsFiles(canvasContent.objects);
+    const base64str = await storeAsFiles(canvasContent.objects, uuid);
     sendInput(base64str, canvasSVG);
   };
 
@@ -129,7 +138,7 @@ const CanvasToJSON = () => {
   return connectedChain ? (
     <Button variant={"outline"} onClick={handleCanvasToSvg} disabled={loading}>
       <Box size={18} className="mr-2" strokeWidth={1.5} />
-      {loading ? " Minting..." : " Mint NFT"}
+      {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
     </Button>
   ) : null;
 };

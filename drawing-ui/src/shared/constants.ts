@@ -6,18 +6,21 @@ export const API_ENDPOINTS = {
 
 export const INITIAL_DRAWING_OPTIONS = {
   color: "#000000",
-  backgroundColor: "#ffffff",
+  backgroundColor: "transparent",
   brushWidth: 10,
   minBrushWidth: 1,
   canvasWidth: 280,
   canvasHeight: 280,
 };
-//the nft smart contract
-export const ERC721_TO_MINT = "0x3F101a631Bce1374A7138c3ec02994344E350a89";
-export const MINT_SELECTOR = "0xd0def521";
 
 // OBS: change the DApp address as appropriate
 export const DAPP_ADDRESS = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C";
+
+//the nft smart contract. Update with the value provided during the contract deployment
+export const ERC721_TO_MINT = "0xa2887B3a8F75c1DE921eD2b1bA6A41b2692d961c";
+
+//mint method selector constant
+export const MINT_SELECTOR = "0xd0def521";
 
 export const DAPP_STATE = {
   canvasInit: "initialize a canvas",

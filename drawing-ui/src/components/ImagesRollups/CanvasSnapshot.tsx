@@ -8,9 +8,11 @@ import { useMemo } from "react";
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
 };
+
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
-  const { drawing, owner } = src;
+  const { drawing, owner, uuid } = src;
+
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
@@ -26,8 +28,8 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
 
       canvas.add(obj).renderAll();
     });
-    setDappState(DAPP_STATE.drawingUpdate);
 
+    setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
   };
 
@@ -40,7 +42,8 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   return (
     <div className="rounded-lg border bg-background p-2">
       <div onClick={loadCanvasFromImage}>{drawingPreview}</div>
-      <span className="text-xs">Owner: {sliceAccountStr(owner)}</span>
+      <span className="block text-xs">Owner: {sliceAccountStr(owner)}</span>
+      <span className="block text-xs">ID: {uuid}</span>
     </div>
   );
 };

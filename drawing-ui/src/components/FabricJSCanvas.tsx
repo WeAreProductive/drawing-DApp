@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { fabric } from "fabric"; // v5
 import { useCanvasContext } from "../context/CanvasContext";
 import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
+
 const FabricJSCanvas = () => {
   const canvasWrapperEl = useRef<HTMLDivElement>(null);
   const canvasEl = useRef(null);
