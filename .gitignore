@@ -1,6 +1,7 @@
 
 node_modules/  
 .env
+.turbo
 drawing-api/public/
 TODO.md
  

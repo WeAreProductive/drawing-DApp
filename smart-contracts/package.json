@@ -1,5 +1,5 @@
 {
-    "name": "@cartesi/example-contracts",
+    "name": "smart-contracts",
     "version": "0.0.1",
     "description": "Several contracts meant to be used for testing the DApps withing this repository",
     "scripts": {
