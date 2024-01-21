@@ -98,7 +98,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
   }, [voucherResult, rollups]);
 
   return (
-    <div className="my-4 border-b-2 pb-4">
+    <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
       {voucherData.drawing && (
         <div className="w-1/2 p-2">
           <CanvasSnapshotLight src={voucherData.drawing} />
