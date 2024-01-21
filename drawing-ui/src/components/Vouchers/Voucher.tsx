@@ -43,7 +43,8 @@ const Voucher = ({ voucherData }: VoucherProp) => {
         );
         const receipt = await tx.wait();
 
-        newVoucherToExecute.msg = `voucher executed! (tx="${tx.hash}")`;
+        newVoucherToExecute.msg = `Minting executed! (tx="${tx.hash}")`;
+
         if (receipt.events) {
           const event = receipt.events?.find(
             (e) => e.event === "VoucherExecuted",
@@ -54,9 +55,12 @@ const Voucher = ({ voucherData }: VoucherProp) => {
               `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`,
             );
           }
-          newVoucherToExecute.msg = `${
-            newVoucherToExecute.msg
-          } - resulting events: ${JSON.stringify(receipt.events)}`;
+
+          if (receipt.events.length > 2)
+            newVoucherToExecute.events = {
+              address: receipt.events[1].address,
+              nft_id: BigInt(receipt.events[1].data).toString(),
+            };
 
           newVoucherToExecute.executed =
             await rollups.dappContract.wasVoucherExecuted(
@@ -136,15 +140,31 @@ const Voucher = ({ voucherData }: VoucherProp) => {
         )}
       </div>
 
-      {voucherToExecute && voucherToExecute.input.payload && (
-        <dl className="mb-2">
-          <dt className="font-semibold">Payload</dt>
-          <dd>{voucherToExecute.input.payload}</dd>
-        </dl>
-      )}
-
       {voucherToExecute && (
-        <p>{loading ? <span>...</span> : voucherToExecute.msg}</p>
+        <div className="mt-3 text-sm">
+          {loading ? (
+            <span>Minting NFT, please wait...</span>
+          ) : (
+            <>
+              <p>{voucherToExecute.msg}</p>
+              {voucherToExecute.events?.address && (
+                <>
+                  <p className="mt-2">
+                    Use this data to import your NFT to MetaMask
+                  </p>
+                  <dl className="mt-2">
+                    <dt className="font-semibold">NFT Address</dt>
+                    <dd>{voucherToExecute.events.address}</dd>
+                  </dl>
+                  <dl className="mt-2">
+                    <dt className="font-semibold">NFT ID#</dt>
+                    <dd>{voucherToExecute.events.nft_id}</dd>
+                  </dl>
+                </>
+              )}
+            </>
+          )}
+        </div>
       )}
     </div>
   );

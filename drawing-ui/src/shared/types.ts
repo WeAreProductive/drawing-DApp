@@ -37,11 +37,12 @@ export type VoucherExtended = {
   input: any; //{index: number; epoch: {index: number; }
   payload: string;
   erc721string?: null | string;
-  ownerAddress?: null | string;  
+  ownerAddress?: null | string;
   proof?: any;
   executed?: any;
   msg?: string;
   drawing?: string;
+  events?: any;
 };
 
 export interface DrawingInput {
@@ -54,9 +55,9 @@ export interface DrawingInputExtended extends DrawingInput {
   date_created: string; // date-time string
   last_updated: null | string; // last update date-time string
   owner: string; //last painter's account
-  update_log: { 
-    date_updated: string; 
-    painter: string; 
+  update_log: {
+    date_updated: string;
+    painter: string;
     action: string;
   }[];
   drawing: string; // svg's json string
