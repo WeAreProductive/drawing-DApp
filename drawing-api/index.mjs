@@ -30,6 +30,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
   
   if (req.body) {
     const fullPath = `public/canvas-images/`;
+    const subDir = `canvas-images`;
     const filePath = fullPath + `${req.body.filename}.png`;
 
     try {
@@ -73,15 +74,11 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
         canvas.zoomToPoint({ x: canvas.width / 2, y: canvas.height / 2 }, zoom);
 
         canvas.renderAll();
-        
-        fs.promises
-          .mkdir(
-            path.dirname(fullPath),
-            {
-              recursive: true,
-            }
-          )
-          .then((x) => {
+        try {
+          if (!fs.existsSync(fullPath)){
+            fs.mkdirSync(fullPath, { recursive: true });
+            console.log(`Directory ${subDir} created successfully`); 
+          } 
             const out = fs.createWriteStream(filePath);
             const stream = canvas.createPNGStream();
             stream.pipe(out);
@@ -95,10 +92,9 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
                 })
               );
             });
-          })
-          .catch((error) => {
-            console.log(error);
-          });
+        } catch(error) {
+          console.log(error);
+        }
       });
 
     } catch (error) {
