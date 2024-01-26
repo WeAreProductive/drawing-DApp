@@ -1,5 +1,6 @@
 import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { useVoucherQuery } from "../../generated/graphql";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_ADDRESS } from "../../shared/constants";
@@ -69,11 +70,16 @@ const Voucher = ({ voucherData }: VoucherProp) => {
             );
         }
         setLoading(false);
-      } catch (e) {
-        newVoucherToExecute.msg = `COULD NOT EXECUTE VOUCHER: ${JSON.stringify(
+      } catch (e: any) {
+        const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
+        toast.error("Transaction Error", {
+          description: `Could not execute voucher => ${reason}`,
+        });
+        // full error info
+        newVoucherToExecute.msg = `Could not execute voucher: ${JSON.stringify(
           e,
         )}`;
-        console.log(`COULD NOT EXECUTE VOUCHER: ${JSON.stringify(e)}`);
+        console.log(`Could not execute voucher: ${JSON.stringify(e)}`);
       }
 
       setVoucherToExecute(newVoucherToExecute);

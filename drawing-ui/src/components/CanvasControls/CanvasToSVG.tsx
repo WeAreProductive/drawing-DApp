@@ -97,28 +97,36 @@ const CanvasToSVG = () => {
         ? str
         : ethers.utils.toUtf8Bytes(str);
       // Send the transaction
-      const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
-      toast.success("Transaction Sent");
+      try {
+        const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
+        toast.success("Transaction Sent");
 
-      // Wait for confirmation
-      console.log("waiting for confirmation...");
-      const receipt = await tx.wait(1);
+        // Wait for confirmation
+        console.log("waiting for confirmation...");
+        const receipt = await tx.wait(1);
 
-      // Search for the InputAdded event
-      const event = receipt.events?.find((e) => e.event === "InputAdded");
-      setDappState(DAPP_STATE.canvasSave);
-      setLoading(false);
-      if (event?.args?.inputIndex) {
-        clearCanvas();
-        toast.success("Transaction Confirmed", {
-          description: `Input added => index: ${event?.args?.inputIndex} `,
-        });
-      } else {
+        // Search for the InputAdded event
+        const event = receipt.events?.find((e) => e.event === "InputAdded");
+        setDappState(DAPP_STATE.canvasSave);
+        setLoading(false);
+        if (event?.args?.inputIndex) {
+          clearCanvas();
+          toast.success("Transaction Confirmed", {
+            description: `Input added => index: ${event?.args?.inputIndex} `,
+          });
+        } else {
+          toast.error("Transaction Error", {
+            description: `Input not added => index: ${event?.args?.inputIndex} `,
+          });
+        }
+        console.log(`Input added => index: ${event?.args?.inputIndex} `);
+      } catch (e: any) {
+        const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
         toast.error("Transaction Error", {
-          description: `Input not added => index: ${event?.args?.inputIndex} `,
+          description: `Input not added => ${reason}`,
         });
+        setLoading(false);
       }
-      console.log(`Input added => index: ${event?.args?.inputIndex} `);
     };
 
     sendInput(canvasData);
