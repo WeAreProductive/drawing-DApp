@@ -248,5 +248,10 @@ This string format is required for the backend to be able to prepare a suitable 
 
 ```shell
 cd drawing-py
-docker system prune
+docker system prune 
+```
+
+> To perform deep cleaning use -a option
+```shell 
+docker system prune -a
 ```
