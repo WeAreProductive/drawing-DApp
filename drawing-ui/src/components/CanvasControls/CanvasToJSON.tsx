@@ -53,7 +53,10 @@ const CanvasToJSON = () => {
     toast.info("Sending input to rollups...");
     setLoading(true);
 
-    const sendInput = async (strInput: string, svg: string) => {
+    const sendInput = async (
+      drawingMeta: { base64out: string; ipfsHash: string },
+      svg: string,
+    ) => {
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
@@ -72,7 +75,8 @@ const CanvasToJSON = () => {
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
-          image: strInput,
+          imageBase64: drawingMeta.base64out,
+          imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
@@ -85,7 +89,8 @@ const CanvasToJSON = () => {
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
-          image: strInput,
+          imageBase64: drawingMeta.base64out,
+          imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
@@ -138,8 +143,8 @@ const CanvasToJSON = () => {
 
     const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    const base64str = await storeAsFiles(canvasContent.objects, uuid);
-    sendInput(base64str, canvasSVG);
+    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
+    sendInput(drawingMeta, canvasSVG);
   };
 
   // @TODO disable if no loaded / drawn image on the canvas

@@ -2,16 +2,9 @@ from os import environ
 import sys
 import logging
 import requests
+from eth_abi import encode
 import traceback
 import json
-from eth_abi import encode
-# from shapely.geometry import shape, Point
-import numpy as np
-import cv2
-from Cryptodome.Hash import SHA256
-import base64
-import base58
-from protobuf_models import unixfs_pb2, merkle_dag_pb2
 from datetime import datetime, timezone
 
 DAPP_RELAY_ADDRESS = "0xF5DE34d6BbC0446E2a45719E718efEbaaE179daE".lower()
@@ -81,68 +74,7 @@ def send_post(endpoint,json_data):
     response = requests.post(rollup_server + f"/{endpoint}", json=json_data)
     logger.info(f"/{endpoint}: Received response status {response.status_code} body {response.content}")
 
-def process_image(image):
-    b64str = image
-    png = base64.decodebytes(b64str)
-    nparr = np.frombuffer(png,np.uint8)
-    img = cv2.imdecode(nparr,cv2.IMREAD_UNCHANGED)
-    (rows, cols) = img.shape[:2]
-    M = cv2.getRotationMatrix2D((cols / 2, rows / 2), 15, 1)
-    rotated = cv2.warpAffine(img, M, (cols, rows))
-    rotated_png = cv2.imencode('.png',rotated)
-    data_encode = np.array(rotated_png[1])
-    # gaussian = cv2.GaussianBlur(rotated, (9, 9), 0)
-    # gaussian_png = cv2.imencode('.png',gaussian)
-    # data_encode = np.array(gaussian_png[1])
-    byte_encode = data_encode.tobytes()
-    b64out = base64.b64encode(byte_encode)
-    return b64out
 
-def mint_erc721_with_uri_from_image(
-        msg_sender,
-        uuid,
-        erc721_to_mint,
-        mint_header,
-        b64out, 
-        drawing_input, 
-        cmd
-    ):
-    # b64out is the payload after string is processed
-    logger.info(f"MINTING AN NFT")
-    pngout = base64.decodebytes(b64out)# With the help of base64.decodebytes(s) method, we can decode the binary string with the help of base64 data into normal form.
-    unixf = unixfs_pb2.Data() # Allow to add IPFS Unixfs objects via a python protobuf interface, https://protobuf.dev/overview/
-    unixf.Type = 2 # file
-    unixf.Data = pngout
-    unixf.filesize = len(unixf.Data)
-    mdag = merkle_dag_pb2.MerkleNode()
-    mdag.Data = unixf.SerializeToString()
-    data = mdag.SerializeToString()
-    # SHA-256 belongs to the SHA-2 family of cryptographic hashes. It produces the 256 bit digest of a message.
-    # https://pycryptodome.readthedocs.io/en/latest/src/hash/sha256.html
-    h = SHA256.new()
-    h.update(data)# the image data
-    sha256_code = "12"
-    # Return the hexadecimal representation of an integer.
-    size = hex(h.digest_size)[2:]
-    # The sha256() returns a HASH object.
-    # So if you want to get the hash as a string, use the hexdigest().
-    digest = h.hexdigest()
-    combined = f"{sha256_code}{size}{digest}"
-    # convert string hex to bytes hex format before feeding it to b58encode to produce base58 str
-    multihash = base58.b58encode(bytes.fromhex(combined))
-    # decode a string encoded in UTF-8 format
-    tokenURI = multihash.decode('utf-8') # it is not the ipfs unixfs 'file' hash
-    # ToDo: Add uuid to tokenURI
-    mint_erc721_with_string(
-        msg_sender,
-        uuid,
-        erc721_to_mint,
-        mint_header,
-        tokenURI,
-        drawing_input, 
-        cmd
-    )
- 
 def mint_erc721_with_string(
         msg_sender,
         uuid,
@@ -152,6 +84,7 @@ def mint_erc721_with_string(
         drawing_input,
         cmd
     ):
+    logger.info(f"MINTING AN NFT")
     mint_header = clean_header(mint_header)
     data = encode(['address', 'string'], [msg_sender,string])
     payload = f"0x{(mint_header+data).hex()}"
@@ -230,35 +163,24 @@ def handle_advance(data):
             if json_data.get("cmd"):
                 if json_data['cmd']== 'cv' or json_data['cmd']== 'uv':
                     logger.info(f"COMMAND {json_data['cmd']}")
-                    if json_data.get('image'):
-                        b64out = process_image(json_data["image"].encode("utf-8"))
-                        payload = f"{b64out}"
-                        if json_data.get("erc721_to_mint") and json_data.get("selector"): 
-                            erc721_to_mint=json_data["erc721_to_mint"]
-                            selector=json_data["selector"]
-                            drawing_input=json_data["drawing_input"]
-                            uuid=json_data["uuid"]
-                            cmd=json_data['cmd']
-                            mint_erc721_with_uri_from_image(
-                                sender,
-                                uuid, 
-                                erc721_to_mint,
-                                selector,
-                                b64out, 
-                                drawing_input, 
-                                cmd
-                            )
+                    if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"): 
+                        mint_erc721_with_string(
+                            sender,
+                            json_data["uuid"], 
+                            json_data["erc721_to_mint"],
+                            json_data["selector"],
+                            json_data['imageIPFSMeta'], 
+                            json_data["drawing_input"], 
+                            json_data['cmd']
+                        )
                 elif json_data['cmd']== 'cn' or json_data['cmd']== 'un':
                     logger.info(f"COMMAND {json_data['cmd']}")
                     if json_data.get("drawing_input"): 
-                        drawing_input=json_data["drawing_input"]
-                        uuid=json_data["uuid"]
-                        cmd=json_data['cmd']
                         store_drawing_data(
                             sender,
-                            uuid,
-                            drawing_input, 
-                            cmd
+                            json_data["uuid"],
+                            json_data["drawing_input"], 
+                            json_data['cmd']
                         )
             else:
                 raise Exception('Not supported json operation')
