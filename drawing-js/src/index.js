@@ -2,7 +2,8 @@
 // it will be used by any DApp, so we are already including it here
 const { ethers } = require("ethers");
 
-const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL;
+// const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL;
+const rollup_server = "http://localhost:8080/host-runner"
 console.log("HTTP rollup_server url is " + rollup_server);
 
 async function handle_advance(data) {
