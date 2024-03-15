@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "JS DApp",
   "dependencies": {
-    "ethers": "^6.7.1"
+    "ethers": "^5.7.2"
   },
   "devDependencies": {
     "esbuild": "^0.19.2"
