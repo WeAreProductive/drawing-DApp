@@ -2,8 +2,8 @@
  * Converts Drawing
  * to svg string and json string
  * sends drawing data to rollups
- * to request a voucher for minting an NFT
- * and a notice with the current drawing data
+ * to request a VOUCHER for minting an NFT
+ * and a NOTICE with the current drawing data
  */
 import { useCanvasContext } from "../../context/CanvasContext";
 import React, { useState, useEffect } from "react";

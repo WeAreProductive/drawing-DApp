@@ -1,7 +1,7 @@
 /**
  * Converts Drawing to svg string
  * sends drawing data to rollups
- * to emit a notice with
+ * to emit a NOTICE with
  * the current drawing data
  */
 import { useState, useEffect } from "react";
