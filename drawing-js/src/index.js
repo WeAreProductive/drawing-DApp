@@ -29,7 +29,8 @@ const hex2str = (hexstr) => {
  * @param {String} hexstr 
  */
 const hex2binary = (hexstr) => {
-  return ethers.utils.hexlify(hexstr.slice(2))
+  return ethers.utils.hexlify(hexstr)
+  // return ethers.utils.hexlify(hexstr.slice(2))
 } 
 
 const send_voucher = (voucher) => {
@@ -58,7 +59,7 @@ const clean_header = (mintHeader) => {
   if (initSlice == "0x") {
     mintHeader = hex2binary(mintHeader);
   }
-  return mint_header
+  return mintHeader
 }
    
 
@@ -88,7 +89,7 @@ const send_post = async (endpoint,jsonData) => {
  */
 
 const mint_erc721_with_string = (
-  sender,
+  msg_sender,
   uuid, 
   erc721_to_mint,
   mint_header, // selector
@@ -97,6 +98,7 @@ const mint_erc721_with_string = (
   cmd
   ) => { 
     console.log("MINTING AN NFT")
+    console.log(imageIPFSMeta)
     const mintHeader = clean_header(mint_header)
     // @TODO translate
     // const data = encode(['address', 'string'], [msg_sender,string])

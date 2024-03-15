@@ -140,10 +140,11 @@ const CanvasToJSON = () => {
         setLoading(false);
       }
     };
-
+// @TODO --
     const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
+    const drawingMeta = await storeAsFiles(canvasSVG, uuid);
+    // const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
     sendInput(drawingMeta, canvasSVG);
   };
 
