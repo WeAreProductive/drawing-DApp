@@ -5,6 +5,7 @@ import fs from "fs";
 // import { fabric } from "fabric"; // v5
 import { TatumSDK, Network } from "@tatumio/tatum";
 import { API_ENDPOINTS, ORIGIN_BASE, TATUM_KEY } from "./config.mjs";
+import sharp from 'sharp'
 
 const port = 3000;
 const corsOptions = {
@@ -38,6 +39,10 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
     const fullPath = `public/canvas-images/`;
     const subDir = `canvas-images`;
     const filePath = fullPath + `${req.body.filename}.png`;
+    console.log(req.body.image)
+    // sharp(Buffer.from(svgstring))
+    //     .png()
+    //     .toFile('test.png');
 
     try {
       //     //# create .png and save it on disk
