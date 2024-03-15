@@ -71,7 +71,8 @@ const send_post = async (endpoint,jsonData) => {
     body: JSON.stringify(jsonData), // @TODO revise?
   });
 
-  console.log("Received finish status " + finish_req.status);
+  // console.log("Received finish status " + finish_req.status);
+  // @TODO fix the log line data
   console.log(`/${endpoint}: Received response status ${response.status_code} body ${response.content}`)
 }
     
