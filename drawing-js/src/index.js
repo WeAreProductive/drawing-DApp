@@ -56,10 +56,11 @@ const send_exception = (exception) => {
 // @TODO revise
 const clean_header = (mintHeader) => {
   const initSlice = mintHeader.slice(0, 2); 
-  if (initSlice == "0x") {
-    mintHeader = hex2binary(mintHeader);
-  }
-  return mintHeader
+  console.log(initSlice)
+  // if (initSlice == "0x") {
+  //   mintHeader = mintHeader.slice(2);
+  // } 
+  return hex2binary(mintHeader)  
 }
    
 
@@ -71,10 +72,9 @@ const send_post = async (endpoint,jsonData) => {
     },
     body: JSON.stringify(jsonData), // @TODO revise?
   });
-
   // console.log("Received finish status " + finish_req.status);
   // @TODO fix the log line data
-  console.log(`/${endpoint}: Received response status ${response.status_code} body ${response.content}`)
+  console.log(`/${endpoint}: Received response status ${response.status} body ${response.statusText}`)
 }
     
 /**
@@ -93,22 +93,30 @@ const mint_erc721_with_string = (
   uuid, 
   erc721_to_mint,
   mint_header, // selector
-  imageIPFSMeta, 
+  imageIPFSMeta, // string
   drawing_input, 
   cmd
   ) => { 
-    console.log("MINTING AN NFT")
-    console.log(imageIPFSMeta)
-    const mintHeader = clean_header(mint_header)
-    // @TODO translate
-    // const data = encode(['address', 'string'], [msg_sender,string])
+    console.log("MINTING AN NFT") 
+    const mintHeader = clean_header(mint_header) 
+    const abiCoder = new ethers.utils.AbiCoder();
+    // abiCoder.encode( types , values ) ⇒ string< DataHexString >
+    const data = abiCoder.encode(['address', 'string'], [msg_sender,imageIPFSMeta]) 
+    // Encode a binary as a hex string
     // payload = f"0x{(mint_header+data).hex()}"
-    // voucher = {
-    //     "destination": erc721_to_mint, 
-    //     "payload": payload
-    // }
-    // console.log(`Voucher ${voucher}`)
-    // send_voucher(voucher)
+    // "0x" + binary.hex()
+    // const str = `${mint_header}${data}`; 
+    const payloadStr = `${mintHeader}${data.slice(2)}`.toString();  //toString() is equal to py's hex() 
+    console.log(payloadStr)
+    const payload = `${payloadStr}`; 
+    // payload = str2hex(JSON.stringify(drawing_input))
+   
+    // const payload = `0x{(mint_header+data).hex()}`
+    voucher = {
+        destination: erc721_to_mint, 
+        payload: payload
+    }
+    send_voucher(voucher)
     store_drawing_data(
         msg_sender,
         uuid,
