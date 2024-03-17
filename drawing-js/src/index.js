@@ -109,6 +109,7 @@ const mint_erc721_with_string = (
     const payloadStr = `${mintHeader}${data.slice(2)}`.toString();  //toString() is equal to py's hex() 
     console.log(payloadStr)
     const payload = `${payloadStr}`; 
+    // const payload = '0xd0def521000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000002e516d5731323436556e6e4158585a6235547448415a675439736576336552694e384454324441634e656376385a62000000000000000000000000000000000000';
     // payload = str2hex(JSON.stringify(drawing_input))
    
     // const payload = `0x{(mint_header+data).hex()}`
@@ -170,7 +171,7 @@ const  store_drawing_data = ( sender, uuid, drawing_input, cmd ) => {
 async function handle_advance(data) {
   console.log("Received advance request");
   // console.log("Received advance request data " + JSON.stringify(data));
-  const status = "accept";
+  let status = "accept";
   let payload;
   const sender = data.metadata.msg_sender.toLowerCase(); 
   try {

@@ -56,10 +56,10 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
       .toFile(filePath)
       .then(async (info)=>{
         console.log({info})
-        const base64String = toBase64('public/canvas-images/31a39a1d-d67d-40f3-985e-cc24c1b9d6cf.png');
+        const base64String = toBase64(filePath);
     
      
-      const buffer = fs.readFileSync('public/canvas-images/31a39a1d-d67d-40f3-985e-cc24c1b9d6cf.png');
+      const buffer = fs.readFileSync(filePath);
       const imageIPFS = await tatumClient.ipfs.uploadFile({
         file: buffer,
       });
