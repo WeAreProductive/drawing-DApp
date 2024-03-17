@@ -20,14 +20,13 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "1mb" })); //@TODO - set here proper limit to allow canvas to be saved properly
 app.use(express.static("public")); //make the images accessible by the drawing-ui
 
-function toBase64(filePath) {
-  console.log({filePath})
+function toBase64(filePath) { 
   const img = fs.readFileSync(`${filePath}`);
   return Buffer.from(img).toString("base64");
 }
 
 const tatumClient = await TatumSDK.init({
-  network: Network.Polygon,
+  network: Network.POLYGON,
   verbose: true,
   apiKey: {
     v4: TATUM_KEY,
@@ -54,12 +53,12 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
       sharp(Buffer.from(req.body.image))
       .png()
       .toFile(filePath)
-      .then(async (info)=>{
-        console.log({info})
+      .then(async (info)=>{ 
         const base64String = toBase64(filePath);
     
      
-      const buffer = fs.readFileSync(filePath);
+        const buffer = fs.readFileSync(filePath); 
+      // returns the CID of the stored data
       const imageIPFS = await tatumClient.ipfs.uploadFile({
         file: buffer,
       });
@@ -70,9 +69,14 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           "Collaborative drawings powered by Cartesi Rollups and Sunodo.",
         image: "ipfs://" + imageIPFS.data.ipfsHash,
       });
+      console.log(`Check the uploaded image: https://ipfs.io/ipfs/${imageIPFS.data.ipfsHash}`)
+      console.log(`Check the uploaded image: https://gateway.pinata.cloud/ipfs/${imageIPFS.data.ipfsHash}`)
       const metaIPFS = await tatumClient.ipfs.uploadFile({
         file: metaData,
       });
+      console.log(`Check the uploaded file: https://ipfs.io/ipfs/${metaIPFS.data.ipfsHash}`)
+      console.log(`Check the uploaded file: https://gateway.pinata.cloud/ipfs/${metaIPFS.data.ipfsHash}`)
+
 
       res.send(
         JSON.stringify({
@@ -84,16 +88,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
 
       tatumClient.destroy();
       })
-      .catch(err => { console.log(err) });; // @TODO - update filapath and name
-    
-     
-    
-      //       });
-      //     } catch (error) {
-      //       console.log(error);
-      //     }
-      //   }
-      // );
+      .catch(err => { console.log(err) });; // @TODO - update filapath and name 
     } catch (error) {
       console.log(error);
     }
