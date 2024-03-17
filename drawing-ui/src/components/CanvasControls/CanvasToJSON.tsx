@@ -76,7 +76,8 @@ const CanvasToJSON = () => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           imageBase64: drawingMeta.base64out,
-          imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
+          imageIPFSMeta: "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
+          // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
@@ -90,7 +91,8 @@ const CanvasToJSON = () => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           imageBase64: drawingMeta.base64out,
-          imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
+          imageIPFSMeta: "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
+          // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,

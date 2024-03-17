@@ -26,7 +26,8 @@ function toBase64(filePath) {
 }
 
 const tatumClient = await TatumSDK.init({
-  network: Network.POLYGON,
+  network: Network.Polygon,
+  // network: Network.POLYGON,
   verbose: true,
   apiKey: {
     v4: TATUM_KEY,
@@ -67,7 +68,8 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
         name: "Cartesi Drawing Board NFT",
         description:
           "Collaborative drawings powered by Cartesi Rollups and Sunodo.",
-        image: "ipfs://" + imageIPFS.data.ipfsHash,
+        // image: "ipfs://" + imageIPFS.data.ipfsHash,
+        image: "https://gateway.pinata.cloud/ipfs/" + imageIPFS.data.ipfsHash
       });
       console.log(`Check the uploaded image: https://ipfs.io/ipfs/${imageIPFS.data.ipfsHash}`)
       console.log(`Check the uploaded image: https://gateway.pinata.cloud/ipfs/${imageIPFS.data.ipfsHash}`)
