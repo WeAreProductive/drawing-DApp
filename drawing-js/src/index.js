@@ -1,73 +1,12 @@
 // XXX even though ethers is not used in the code below, it's very likely
 // it will be used by any DApp, so we are already including it here
 const { ethers } = require("ethers"); 
-// @TODO convert all variable and func names to camelCase 
-// @TODO refractor and update docker build commands
+const { hex2binary, hex2str, str2hex, getCurrentDate, getCurrentTimestamp, clean_header } = require('./utility.js');
+const { send_notice, send_report, send_voucher } = require('./requests.js');
+
 const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL; 
 console.log("HTTP rollup_server url is " + rollup_server); 
 
-// utility functions
-/**
- * Encode a string as a hex string
- * @param {String} string 
- */
-const str2hex = (string) => {
-  return ethers.utils.hexlify(ethers.utils.toUtf8Bytes(string));
-}
-/**
- * Decodes a hex string into 
- * a regular string
- * @param {String} hexstr 
- */
-const hex2str = (hexstr) => {
-  return ethers.utils.toUtf8String(hexstr)
-}
-/**
- * Decodes a hex string into 
- * a regular byte string
- * 
- * @param {String} hexstr 
- */
-const hex2binary = (hexstr) => {
-  return ethers.utils.hexlify(hexstr)
-  // return ethers.utils.hexlify(hexstr.slice(2))
-} 
-
-const send_voucher = (voucher) => {
-  send_post("voucher",voucher)
-}
-/**
- * Sends rollups notice
- * @param {Object} notice 
- */
-const send_notice = (notice) => {
-  send_post("notice",notice)
-}
-   
-
-const send_report = (report) => {
-  send_post("report",report)
-}
-   
-
-const send_exception = (exception) => {
-  send_post("exception",exception)
-}
-
-const clean_header = (mintHeader) => { 
-  return hex2binary(mintHeader);
-}
-   
-const send_post = async (endpoint,jsonData) => {
-  const response = await fetch(rollup_server + `/${endpoint}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(jsonData), // @TODO revise?
-  });
-  console.log(`/${endpoint}: Received response status ${response.status} body ${response.statusText}`)
-}  
 /**
  * Prepare mint nft voucher's data
  * while saving a notice
@@ -109,7 +48,8 @@ const mint_erc721_with_string = (
     )
 }
 /**
- * 
+ * Emit a notice
+ * Save drawing data in a notice
  * @param {String} sender 
  * @param {String} uuid  
  * @param {Object} drawing_input // @TODO check type
@@ -152,32 +92,8 @@ const  store_drawing_data = ( sender, uuid, drawing_input, cmd ) => {
     payload = str2hex(JSON.stringify(drawing_input));
     notice = {payload: payload};
     send_notice(notice);
-  }
-/**
- * Get current datetime
- * formatted as 'yyyy-mm-dd'
- * @returns String
- */
-const getCurrentDate = () => {  
-  const now = new Date(); 
-  const year = now.getFullYear();
-  const month = ("0" + (now.getMonth() + 1)).slice(-2);
-  const day = ("0" + now.getDate()).slice(-2); 
+}
 
-  return `${year}-${month}-${day}`;
-}
-/**
- * Get current timestamp
- * @returns 
- */
-const getCurrentTimestamp = () => {
-  const now = new Date();
-  return now.getTime(); 
-}
-  
-/**
- * handlers
- */
 /**
  * Handle advance request
  * @param {Object} data 
@@ -236,7 +152,6 @@ async function handle_advance(data) {
   }
   return status;
 }
-
 
 /**
  * Handle inspect request
