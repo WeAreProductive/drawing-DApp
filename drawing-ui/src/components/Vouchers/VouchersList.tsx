@@ -39,8 +39,7 @@ const VouchersList = () => {
       setCursor(data.vouchers.pageInfo.endCursor);
     }
     return () => clearTimeout(timerId);
-  }, [result.fetching, reexecuteQuery]);
-console.log(data?.vouchers.edges)
+  }, [result.fetching, reexecuteQuery]); 
   useEffect(() => {
     const newVouchers = data?.vouchers.edges
       .map((node: { node: VoucherExtended }) => {

@@ -90,7 +90,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
 
       tatumClient.destroy();
       })
-      .catch(err => { console.log(err) });; // @TODO - update filapath and name 
+      .catch(err => { console.log(err) });
     } catch (error) {
       console.log(error);
     }

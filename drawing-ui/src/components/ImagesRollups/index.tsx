@@ -95,7 +95,7 @@ const ImagesListRollups = () => {
   }, [account]);
 
   if (error) return <p className="error">Oh no... {error.message}</p>;
-
+  console.log({myDrawings})
   return (
     <div className="flex">
       <Tabs defaultValue="account">

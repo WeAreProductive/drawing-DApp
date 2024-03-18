@@ -53,17 +53,11 @@ const send_report = (report) => {
 const send_exception = (exception) => {
   send_post("exception",exception)
 }
-// @TODO revise
-const clean_header = (mintHeader) => {
-  const initSlice = mintHeader.slice(0, 2); 
-  console.log(initSlice)
-  // if (initSlice == "0x") {
-  //   mintHeader = mintHeader.slice(2);
-  // } 
-  return hex2binary(mintHeader)  
+
+const clean_header = (mintHeader) => { 
+  return hex2binary(mintHeader);
 }
    
-
 const send_post = async (endpoint,jsonData) => {
   const response = await fetch(rollup_server + `/${endpoint}`, {
     method: "POST",
@@ -72,22 +66,20 @@ const send_post = async (endpoint,jsonData) => {
     },
     body: JSON.stringify(jsonData), // @TODO revise?
   });
-  // console.log("Received finish status " + finish_req.status);
-  // @TODO fix the log line data
   console.log(`/${endpoint}: Received response status ${response.status} body ${response.statusText}`)
-}
-    
+}  
 /**
- * 
- * @param {*} sender 
- * @param {*} uuid 
- * @param {*} erc721_to_mint 
- * @param {*} selector 
- * @param {*} imageIPFSMeta 
- * @param {*} drawing_input 
- * @param {*} cmd 
+ * Prepare mint nft voucher's data
+ * while saving a notice
+ * with nft's data
+ * @param {String} msg_sender 
+ * @param {String} uuid 
+ * @param {String} erc721_to_mint 
+ * @param {String} mint_header 
+ * @param {String} imageIPFSMeta 
+ * @param {String} drawing_input 
+ * @param {String} cmd 
  */
-
 const mint_erc721_with_string = (
   msg_sender,
   uuid, 
@@ -97,22 +89,13 @@ const mint_erc721_with_string = (
   drawing_input, 
   cmd
   ) => { 
-    console.log("MINTING AN NFT") 
+    console.log("Preparing a VOUCHER for MINTING AN NFT") 
     const mintHeader = clean_header(mint_header) 
     const abiCoder = new ethers.utils.AbiCoder();
     // abiCoder.encode( types , values ) ⇒ string< DataHexString >
     const data = abiCoder.encode(['address', 'string'], [msg_sender,imageIPFSMeta]) 
-    // Encode a binary as a hex string
-    // payload = f"0x{(mint_header+data).hex()}"
-    // "0x" + binary.hex()
-    // const str = `${mint_header}${data}`; 
-    const payloadStr = `${mintHeader}${data.slice(2)}`.toString();  //toString() is equal to py's hex() 
-    console.log(payloadStr)
-    const payload = `${payloadStr}`; 
-    // const payload = '0xd0def521000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000000000000000040000000000000000000000000000000000000000000000000000000000000002e516d5731323436556e6e4158585a6235547448415a675439736576336552694e384454324441634e656376385a62000000000000000000000000000000000000';
-    // payload = str2hex(JSON.stringify(drawing_input))
-   
-    // const payload = `0x{(mint_header+data).hex()}`
+    const payloadStr = `${mintHeader}${data.slice(2)}`.toString();  //toString() is equal to py's hex()  
+    const payload = `${payloadStr}`;
     voucher = {
         destination: erc721_to_mint, 
         payload: payload
@@ -125,10 +108,18 @@ const mint_erc721_with_string = (
         cmd
     )
 }
+/**
+ * 
+ * @param {String} sender 
+ * @param {String} uuid  
+ * @param {Object} drawing_input // @TODO check type
+ * @param {String} cmd 
+ */
 const  store_drawing_data = ( sender, uuid, drawing_input, cmd ) => { 
-  console.log('Store drawing data input')
-  // const now = 'str(datetime.now(timezone.utc))' // @TODO - dateTime object or moment.js?
-  const now = '2024-01-01' // @TODO - dateTime object or moment.js?
+  console.log('Store drawing data in a notice')
+  console.log(typeof drawing_input)
+  
+  const now = getCurrentDate(); // 'YYYY-MM-DD'
   const newLogItem = { 
     date_updated: now,
     painter: sender,
@@ -136,41 +127,65 @@ const  store_drawing_data = ( sender, uuid, drawing_input, cmd ) => {
   } 
     if (cmd == 'cn' || cmd == 'cv'){
       // set drawing id wneh new drawing
-      // unix_timestamp = 'str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())'; // @TODO
-      unix_timestamp = '1234567890'; // @TODO
+      unix_timestamp = getCurrentTimestamp(); 
       drawing_input.id = `${sender}-${unix_timestamp}`
-      drawing_input.uuid = uuid
-      drawing_input.owner = sender
-      drawing_input.date_created = now // @TODO  
-      drawing_input["last_updated"] = now // @TODO 
-      drawing_input.update_log = []
-      drawing_input.update_log.push(newLogItem) 
+      drawing_input.uuid = uuid;
+      drawing_input.owner = sender;
+      drawing_input.date_created = now;
+      drawing_input["last_updated"] = now;
+      drawing_input.update_log = [];
+      drawing_input.update_log.push(newLogItem); 
       if (cmd == 'cv') {
         drawing_input.voucher_requested = true;
       } else {
-        drawing_input.voucher_requested = false
+        drawing_input.voucher_requested = false;
       }
     }  else if (cmd == 'un' || cmd == 'uv'){
-      drawing_input.uuid = uuid
-      drawing_input.owner = sender
-      drawing_input.last_updated = now
-      drawing_input.update_log.push(newLogItem)
+      drawing_input.uuid = uuid;
+      drawing_input.owner = sender;
+      drawing_input.last_updated = now;
+      drawing_input.update_log.push(newLogItem);
       if (cmd == 'uv'){ 
-        drawing_input.voucher_requested = true
+        drawing_input.voucher_requested = true;
       }
     }
-   
-    payload = str2hex(JSON.stringify(drawing_input))
-    notice = {payload: payload}
-    send_notice(notice)
+    payload = str2hex(JSON.stringify(drawing_input));
+    notice = {payload: payload};
+    send_notice(notice);
   }
+/**
+ * Get current datetime
+ * formatted as 'yyyy-mm-dd'
+ * @returns String
+ */
+const getCurrentDate = () => {  
+  const now = new Date(); 
+  const year = now.getFullYear();
+  const month = ("0" + (now.getMonth() + 1)).slice(-2);
+  const day = ("0" + now.getDate()).slice(-2); 
+
+  return `${year}-${month}-${day}`;
+}
+/**
+ * Get current timestamp
+ * @returns 
+ */
+const getCurrentTimestamp = () => {
+  const now = new Date();
+  return now.getTime(); 
+}
   
 /**
  * handlers
  */
+/**
+ * Handle advance request
+ * @param {Object} data 
+ * @returns String status
+ */
 async function handle_advance(data) {
   console.log("Received advance request");
-  // console.log("Received advance request data " + JSON.stringify(data));
+
   let status = "accept";
   let payload;
   const sender = data.metadata.msg_sender.toLowerCase(); 
@@ -184,7 +199,7 @@ async function handle_advance(data) {
       const {cmd, imageIPFSMeta, erc721_to_mint, selector, uuid, drawing_input} = jsonData;
       if (cmd){
         if (cmd == 'cv' || cmd == 'uv'){
-          console.log(`COMMAND ${cmd}`)
+          console.log(`COMMAND: ${cmd}`)
           if (imageIPFSMeta && erc721_to_mint && selector){
             mint_erc721_with_string( 
               sender,
@@ -197,7 +212,7 @@ async function handle_advance(data) {
             );
           }
         } else if (cmd == 'cn' || cmd== 'un'){
-          console.log(`COMMAND ${cmd}`);
+          console.log(`COMMAND: ${cmd}`);
           if (drawing_input){
             store_drawing_data(
               sender,
@@ -215,20 +230,25 @@ async function handle_advance(data) {
     }
   } catch (error) {
     status = "reject"
-    msg = `Error: ${e}`
-    // traceback.print_exc()
+    msg = `Error: ${e}` 
     console.error(msg)
     send_report({"payload": str2hex(msg)})  
   }
   return status;
 }
 
+
+/**
+ * Handle inspect request
+ * 
+ * @param {Object} request 
+ * @returns 
+ */
 // @TODO revise
 async function handle_inspect(request) {
-  // console.log("Received inspect request data " + JSON.stringify(data));
   data = request.data 
-  console.log('Received inspect request data')
-  console.log('Adding report')
+  console.log('Received inspect request data.')
+  console.log('Adding report.')
   report = {"payload": data.payload}
   send_report(report)
   return "accept";

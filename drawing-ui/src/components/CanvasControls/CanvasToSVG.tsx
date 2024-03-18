@@ -43,7 +43,6 @@ const CanvasToSVG = () => {
 
     toast.info("Sending input to rollups...");
     setLoading(true);
-    console.log(canvas);
 
     // Gets current drawing data as SVG
     const canvasData = canvas.toSVG({
@@ -56,7 +55,6 @@ const CanvasToSVG = () => {
       width: canvas.width || 0,
       height: canvas.height || 0,
     });
-console.log(canvasData)
     const sendInput = async (strInput: string) => {
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
