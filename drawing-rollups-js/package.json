@@ -3,13 +3,10 @@
   "version": "0.1.0",
   "description": "JS DApp",
   "dependencies": {
-    "ethers": "^5.7.2"
-  },
-  "devDependencies": {
-    "esbuild": "^0.19.2"
+    "ethers": "^6.7.1",
+    "fabric": "^6.0.0-beta19"
   },
   "scripts": {
-    "build": "esbuild ./src/index.js --bundle --outfile=dist/index.js --platform=node --target=node20",
     "start": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\" node src/index.js"
   },
   "keywords": [
