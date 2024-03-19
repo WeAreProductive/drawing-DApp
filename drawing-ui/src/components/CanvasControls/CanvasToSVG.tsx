@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import { encode as base64_encode } from "base-64";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -45,7 +46,7 @@ const CanvasToSVG = () => {
     setLoading(true);
 
     // Gets current drawing data as SVG
-    const canvasData = canvas.toSVG({
+    const canvasSVG = canvas.toSVG({
       viewBox: {
         x: 0,
         y: 0,
@@ -127,6 +128,9 @@ const CanvasToSVG = () => {
       }
     };
 
+    const canvasData = JSON.stringify({
+      svg: base64_encode(canvasSVG),
+    });
     sendInput(canvasData);
   };
 

@@ -16,6 +16,7 @@ import { InputBox__factory } from "@cartesi/rollups";
 import configFile from "../../config/config.json";
 import { storeAsFiles } from "../../services/canvas";
 import { v4 as uuidv4 } from "uuid";
+import { encode as base64_encode } from "base-64";
 
 import {
   ERC721_TO_MINT,
@@ -55,7 +56,7 @@ const CanvasToJSON = () => {
 
     const sendInput = async (
       drawingMeta: { base64out: string; ipfsHash: string },
-      svg: string,
+      canvasData: string,
     ) => {
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
@@ -71,7 +72,7 @@ const CanvasToJSON = () => {
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
-          drawing: svg, // FE updates the svg string only
+          drawing: canvasData, // FE updates the svg string only
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
@@ -87,7 +88,7 @@ const CanvasToJSON = () => {
       } else {
         // new drawing is sent to rollups, and voucher is requested
         drawingNoticePayload = {
-          drawing: svg, // FE is responsible for the svg string only
+          drawing: canvasData, // FE is responsible for the svg string only
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
@@ -147,8 +148,12 @@ const CanvasToJSON = () => {
 
     const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
+    const canvasData = JSON.stringify({
+      svg: base64_encode(canvasSVG),
+      content: canvasContent.objects,
+    });
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
-    sendInput(drawingMeta, canvasSVG);
+    sendInput(drawingMeta, canvasData);
   };
 
   // @TODO disable if no loaded / drawn image on the canvas

@@ -4,6 +4,7 @@ import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../../shared/constants";
 import { DrawingInputExtended } from "../../shared/types";
 import { sliceAccountStr } from "../../utils";
 import { useMemo } from "react";
+import { decode as base64_decode } from "base-64";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
@@ -34,7 +35,9 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   };
 
   const drawingPreview = useMemo(() => {
-    const svg = new Blob([drawing], { type: "image/svg+xml" });
+    const svg = new Blob([base64_decode(JSON.parse(drawing).svg)], {
+      type: "image/svg+xml",
+    });
     const url = URL.createObjectURL(svg);
     return <img src={url} alt="drawing preview" />;
   }, [drawing]);
