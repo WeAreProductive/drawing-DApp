@@ -6,7 +6,7 @@ import { BASE_API_URL, API_ENDPOINTS } from "../shared/constants";
  * to base64 encoded string
  */
 //canvasObject shape is controlled by Fabric.js
-export const storeAsFiles = async (canvasObject: string, uuid: string) => {
+export const storeAsFiles = async (canvasObject: Object[], uuid: string) => {
   try {
     const response = await fetch(
       `${BASE_API_URL}/${API_ENDPOINTS.canvasesStore}`,

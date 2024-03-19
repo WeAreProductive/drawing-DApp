@@ -1,7 +1,5 @@
-// XXX even though ethers is not used in the code below, it's very likely
-// it will be used by any DApp, so we are already including it here
 import { ethers } from "ethers";
-import * as fabric from "fabric/node"; // v6
+import * as fabric from "fabric/node";
 import fs from "fs";
 
 const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL;
@@ -87,16 +85,20 @@ const send_exception = (exception) => {
 };
 
 const send_post = async (endpoint, jsonData) => {
-  const response = await fetch(rollup_server + `/${endpoint}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(jsonData), // @TODO revise?
-  });
-  console.log(
-    `/${endpoint}: Received response status ${response.status} body ${response.statusText}`
-  );
+  try {
+    const response = await fetch(rollup_server + `/${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(jsonData), // @TODO revise?
+    });
+    console.log(
+      `/${endpoint}: Received response status ${response.status} body ${response.statusText}`
+    );
+  } catch (error) {
+    console.error("Error:", error);
+  }
 };
 
 /**
@@ -104,7 +106,7 @@ const send_post = async (endpoint, jsonData) => {
  * @param {String} string
  */
 const str2hex = (string) => {
-  return ethers.utils.hexlify(ethers.utils.toUtf8Bytes(string));
+  return ethers.utils?.hexlify(ethers.utils?.toUtf8Bytes(string));
 };
 
 /**
@@ -113,7 +115,7 @@ const str2hex = (string) => {
  * @param {String} hexstr
  */
 const hex2str = (hexstr) => {
-  return ethers.utils.toUtf8String(hexstr);
+  return ethers.utils?.toUtf8String(hexstr);
 };
 
 /**
@@ -123,7 +125,7 @@ const hex2str = (hexstr) => {
  * @param {String} hexstr
  */
 const hex2binary = (hexstr) => {
-  return ethers.utils.hexlify(hexstr);
+  return ethers.utils?.hexlify(hexstr);
 };
 
 /**
@@ -184,7 +186,7 @@ const mint_erc721_with_string = (
   );
   const payloadStr = `${mintHeader}${data.slice(2)}`.toString(); //toString() is equal to py's hex()
   const payload = `${payloadStr}`;
-  voucher = {
+  const voucher = {
     destination: erc721_to_mint,
     payload: payload,
   };
@@ -211,7 +213,7 @@ const store_drawing_data = (sender, uuid, drawing_input, cmd) => {
   };
   if (cmd == "cn" || cmd == "cv") {
     // set drawing id wneh new drawing
-    unix_timestamp = getCurrentTimestamp();
+    const unix_timestamp = getCurrentTimestamp();
     drawing_input.id = `${sender}-${unix_timestamp}`;
     drawing_input.uuid = uuid;
     drawing_input.owner = sender;
@@ -233,8 +235,8 @@ const store_drawing_data = (sender, uuid, drawing_input, cmd) => {
       drawing_input.voucher_requested = true;
     }
   }
-  payload = str2hex(JSON.stringify(drawing_input));
-  notice = { payload: payload };
+  const payload = str2hex(JSON.stringify(drawing_input));
+  const notice = { payload: payload };
   send_notice(notice);
 };
 
@@ -293,7 +295,7 @@ async function handle_advance(data) {
     }
   } catch (error) {
     status = "reject";
-    msg = `Error: ${e}`;
+    let msg = `Error: ${error}`;
     console.error(msg);
     send_report({ payload: str2hex(msg) });
   }
@@ -311,7 +313,7 @@ async function handle_inspect(request) {
   data = request.data;
   console.log("Received inspect request data.");
   console.log("Adding report.");
-  report = { payload: data.payload };
+  const report = { payload: data.payload };
   send_report(report);
   return "accept";
 }
@@ -325,22 +327,26 @@ var finish = { status: "accept" };
 
 (async () => {
   while (true) {
-    const finish_req = await fetch(rollup_server + "/finish", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ status: "accept" }),
-    });
+    try {
+      const finish_req = await fetch(rollup_server + "/finish", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ status: "accept" }),
+      });
 
-    console.log("Received finish status " + finish_req.status);
+      console.log("Received finish status " + finish_req.status);
 
-    if (finish_req.status == 202) {
-      console.log("No pending rollup request, trying again");
-    } else {
-      const rollup_req = await finish_req.json();
-      var handler = handlers[rollup_req["request_type"]];
-      finish["status"] = await handler(rollup_req["data"]);
+      if (finish_req.status == 202) {
+        console.log("No pending rollup request, trying again");
+      } else {
+        const rollup_req = await finish_req.json();
+        var handler = handlers[rollup_req["request_type"]];
+        finish["status"] = await handler(rollup_req["data"]);
+      }
+    } catch (error) {
+      console.error("Error:", error);
     }
   }
 })();

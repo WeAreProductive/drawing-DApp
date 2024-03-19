@@ -2,9 +2,9 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import fs from "fs";
+import { fabric } from "fabric";
 import { TatumSDK, Network } from "@tatumio/tatum";
 import { API_ENDPOINTS, ORIGIN_BASE, TATUM_KEY } from "./config.mjs";
-import sharp from "sharp";
 
 const port = 3000;
 const corsOptions = {
@@ -19,7 +19,7 @@ app.use(bodyParser.json({ limit: "1mb" })); //@TODO - set here proper limit to a
 app.use(express.static("public")); //make the images accessible by the drawing-ui
 
 function toBase64(filePath) {
-  const img = fs.readFileSync(`${filePath}`);
+  const img = fs.readFileSync(filePath);
   return Buffer.from(img).toString("base64");
 }
 
@@ -38,65 +38,84 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
     const fullPath = `public/canvas-images/`;
     const subDir = `canvas-images`;
     const filePath = fullPath + `${req.body.filename}.png`;
-    // @TODO setup canvas metadata to be the same as when Save btn is clicked, drawing-ui
 
     try {
-      if (!fs.existsSync(fullPath)) {
-        fs.mkdirSync(fullPath, { recursive: true });
-        console.log(`Directory ${subDir} created successfully`);
-      }
+      const canvas = new fabric.Canvas(null, { width: 600, height: 600 });
+      canvas.loadFromJSON(
+        JSON.stringify({ objects: req.body.image }),
+        function () {
+          canvas.setZoom(1);
+          const group = new fabric.Group(canvas.getObjects());
+          const x = group.left + group.width / 2 - canvas.width / 2;
+          const y = group.top + group.height / 2 - canvas.height / 2;
+          canvas.absolutePan({ x: x, y: y });
+          const heightDist = canvas.getHeight() - group.height;
+          const widthDist = canvas.getWidth() - group.width;
+          let groupDimension = 0;
+          let canvasDimension = 0;
 
-      //# create .png and save it on disk
-      sharp(Buffer.from(req.body.image))
-        .png()
-        .toFile(filePath)
-        .then(async (info) => {
-          const base64String = toBase64(filePath);
+          if (heightDist < widthDist) {
+            groupDimension = group.height;
+            canvasDimension = canvas.getHeight();
+          } else {
+            groupDimension = group.width;
+            canvasDimension = canvas.getWidth();
+          }
 
-          const buffer = fs.readFileSync(filePath);
-          // returns the CID of the stored data
-          const imageIPFS = await tatumClient.ipfs.uploadFile({
-            file: buffer,
-          });
+          const zoom = (canvasDimension / groupDimension) * 0.8;
 
-          const metaData = JSON.stringify({
-            name: "Cartesi Drawing Board NFT",
-            description:
-              "Collaborative drawings powered by Cartesi Rollups and Sunodo.",
-            // image: "ipfs://" + imageIPFS.data.ipfsHash,
-            image:
-              "https://gateway.pinata.cloud/ipfs/" + imageIPFS.data.ipfsHash,
-          });
-          console.log(
-            `Check the uploaded image: https://ipfs.io/ipfs/${imageIPFS.data.ipfsHash}`
-          );
-          console.log(
-            `Check the uploaded image: https://gateway.pinata.cloud/ipfs/${imageIPFS.data.ipfsHash}`
+          canvas.zoomToPoint(
+            { x: canvas.width / 2, y: canvas.height / 2 },
+            zoom
           );
 
-          const metaIPFS = await tatumClient.ipfs.uploadFile({
-            file: metaData,
-          });
-          console.log(
-            `Check the uploaded meta: https://ipfs.io/ipfs/${metaIPFS.data.ipfsHash}`
-          );
-          console.log(
-            `Check the uploaded meta: https://gateway.pinata.cloud/ipfs/${metaIPFS.data.ipfsHash}`
-          );
+          canvas.renderAll();
 
-          res.send(
-            JSON.stringify({
-              success: true,
-              base64out: base64String,
-              ipfsHash: metaIPFS.data.ipfsHash,
-            })
-          );
+          try {
+            if (!fs.existsSync(fullPath)) {
+              fs.mkdirSync(fullPath, { recursive: true });
+              console.log(`Directory ${subDir} created successfully`);
+            }
+            const out = fs.createWriteStream(filePath);
+            const stream = canvas.createPNGStream();
+            stream.pipe(out);
+            out.on("finish", async () => {
+              console.log("The PNG file was created.");
 
-          tatumClient.destroy();
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+              const base64String = toBase64(filePath);
+
+              const buffer = fs.readFileSync(filePath);
+              const imageIPFS = await tatumClient.ipfs.uploadFile({
+                file: buffer,
+              });
+
+              const metaData = JSON.stringify({
+                name: "Cartesi Drawing Board NFT",
+                description:
+                  "Collaborative drawings powered by Cartesi Rollups and Sunodo.",
+                image:
+                  "https://gateway.pinata.cloud/ipfs/" +
+                  imageIPFS.data.ipfsHash,
+              });
+              const metaIPFS = await tatumClient.ipfs.uploadFile({
+                file: metaData,
+              });
+
+              res.send(
+                JSON.stringify({
+                  success: true,
+                  base64out: base64String,
+                  ipfsHash: metaIPFS.data.ipfsHash,
+                })
+              );
+
+              tatumClient.destroy();
+            });
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      );
     } catch (error) {
       console.log(error);
     }

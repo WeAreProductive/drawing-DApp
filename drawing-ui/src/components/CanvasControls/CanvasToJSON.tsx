@@ -76,7 +76,8 @@ const CanvasToJSON = () => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           imageBase64: drawingMeta.base64out,
-          imageIPFSMeta: "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
+          imageIPFSMeta:
+            "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
           // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
@@ -91,7 +92,8 @@ const CanvasToJSON = () => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           imageBase64: drawingMeta.base64out,
-          imageIPFSMeta: "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
+          imageIPFSMeta:
+            "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
           // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
@@ -142,11 +144,10 @@ const CanvasToJSON = () => {
         setLoading(false);
       }
     };
-// @TODO --
+
     const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    const drawingMeta = await storeAsFiles(canvasSVG, uuid);
-    // const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
+    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
     sendInput(drawingMeta, canvasSVG);
   };
 
