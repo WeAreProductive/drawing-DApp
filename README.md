@@ -153,25 +153,11 @@ To `start` the application, execute the following command from the project's roo
 sunodo run --no-backend
 ```
 
-This DApp's back-end is written in Python, so to run it in your machine you need to have `python3` installed.
-The backend uses hsapely library, so you should install libgeos-c on your host (refer to [geos](https://libgeos.org/usage/install/)).
-
 Then in order to start the back-end, run the following commands in a dedicated terminal:
 
 ```shell
-cd dapp
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -r requirements-host.txt
-ROLLUP_HTTP_SERVER_URL="http://localhost:8080/host-runner" python3 drawing.py
-```
-
-The final command will effectively run the back-end and send corresponding outputs to port `5004`.
-It can optionally be configured in an IDE to allow interactive debugging using features like breakpoints.
-You can also use a tool like [entr](https://eradman.com/entrproject/) to restart the back-end automatically when the code changes. For example:
-
-```shell
-ls *.py | ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" entr -r python3 drawing.py
+npm install
+npm run start
 ```
 
 After the back-end successfully starts, it should print an output like the following:
@@ -214,16 +200,6 @@ yarn dev
 
 In order the frontend to work properly, you need to start a server that will convert the `canvas into a base64 string`.
 This string format is required for the backend to be able to prepare a suitable tokenURI for the NFT to be minted on voucher execution.
-
-The API is using Sharp image processing library to convert SVG source to PNG file.
-https://sharp.pixelplumbing.com/install
-
-If you have troubles with Sharp on your local instance:
-
-```shell
-yarn workspace drawing-api remove sharp
-yarn workspace drawing-api add sharp --ignore-engines
-```
 
 ## [Deploying the application](https://docs.sunodo.io/guide/deploying/deploying-application)
 
