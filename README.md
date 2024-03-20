@@ -47,7 +47,7 @@ alias sunodo="npx @sunodo/cli"
 To build the application, run the following command from the project's root directory
 
 ```shell
-cd drawing-py
+cd drawing-rollups-js
 sunodo build
 ```
 
@@ -106,7 +106,7 @@ To `start` the application, execute the following command from the project's roo
 From the project `root` directory run
 
 ```shell
-cd drawing-py
+cd drawing-rollups-js
 sunodo run
 ```
 
@@ -153,25 +153,11 @@ To `start` the application, execute the following command from the project's roo
 sunodo run --no-backend
 ```
 
-This DApp's back-end is written in Python, so to run it in your machine you need to have `python3` installed.
-The backend uses hsapely library, so you should install libgeos-c on your host (refer to [geos](https://libgeos.org/usage/install/)).
-
 Then in order to start the back-end, run the following commands in a dedicated terminal:
 
 ```shell
-cd dapp
-python3 -m venv .venv
-. .venv/bin/activate
-pip install -r requirements-host.txt
-ROLLUP_HTTP_SERVER_URL="http://localhost:8080/host-runner" python3 drawing.py
-```
-
-The final command will effectively run the back-end and send corresponding outputs to port `5004`.
-It can optionally be configured in an IDE to allow interactive debugging using features like breakpoints.
-You can also use a tool like [entr](https://eradman.com/entrproject/) to restart the back-end automatically when the code changes. For example:
-
-```shell
-ls *.py | ROLLUP_HTTP_SERVER_URL="http://127.0.0.1:5004" entr -r python3 drawing.py
+npm install
+npm run start
 ```
 
 After the back-end successfully starts, it should print an output like the following:
@@ -227,7 +213,7 @@ This string format is required for the backend to be able to prepare a suitable 
 
      - processes the bas64 string to produce the NFT tokenURI;
 
-     For detailed string processing information refer to: drawing-py/drawing.py `mint_erc721_with_uri_from_image` method definition.
+     For detailed string processing information refer to: drawing-rollups-js
 
      - emits a voucher - containing
 
@@ -247,11 +233,12 @@ This string format is required for the backend to be able to prepare a suitable 
 > Note: To clean the docker builds and cache execute:
 
 ```shell
-cd drawing-py
-docker system prune 
+cd drawing-rollups-js
+docker system prune
 ```
 
 > To perform deep cleaning use -a option
-```shell 
+
+```shell
 docker system prune -a
 ```

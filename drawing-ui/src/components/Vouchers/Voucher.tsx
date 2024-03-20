@@ -7,6 +7,7 @@ import { DAPP_ADDRESS } from "../../shared/constants";
 import { VoucherExtended } from "../../shared/types";
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
+import { decode as base64_decode } from "base-64";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
@@ -107,7 +108,9 @@ const Voucher = ({ voucherData }: VoucherProp) => {
     <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
       {voucherData.drawing && (
         <div className="w-1/2 p-2">
-          <CanvasSnapshotLight src={voucherData.drawing} />
+          <CanvasSnapshotLight
+            src={base64_decode(JSON.parse(voucherData.drawing).svg)}
+          />
         </div>
       )}
 

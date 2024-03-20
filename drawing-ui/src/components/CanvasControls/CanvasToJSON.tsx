@@ -2,8 +2,8 @@
  * Converts Drawing
  * to svg string and json string
  * sends drawing data to rollups
- * to request a voucher for minting an NFT
- * and a notice with the current drawing data
+ * to request a VOUCHER for minting an NFT
+ * and a NOTICE with the current drawing data
  */
 import { useCanvasContext } from "../../context/CanvasContext";
 import React, { useState, useEffect } from "react";
@@ -16,6 +16,7 @@ import { InputBox__factory } from "@cartesi/rollups";
 import configFile from "../../config/config.json";
 import { storeAsFiles } from "../../services/canvas";
 import { v4 as uuidv4 } from "uuid";
+import { encode as base64_encode } from "base-64";
 
 import {
   ERC721_TO_MINT,
@@ -53,7 +54,10 @@ const CanvasToJSON = () => {
     toast.info("Sending input to rollups...");
     setLoading(true);
 
-    const sendInput = async (strInput: string, svg: string) => {
+    const sendInput = async (
+      drawingMeta: { base64out: string; ipfsHash: string },
+      canvasData: string,
+    ) => {
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
@@ -68,11 +72,14 @@ const CanvasToJSON = () => {
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
-          drawing: svg, // FE updates the svg string only
+          drawing: canvasData, // FE updates the svg string only
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
-          image: strInput,
+          imageBase64: drawingMeta.base64out,
+          imageIPFSMeta:
+            "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
+          // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
@@ -81,11 +88,14 @@ const CanvasToJSON = () => {
       } else {
         // new drawing is sent to rollups, and voucher is requested
         drawingNoticePayload = {
-          drawing: svg, // FE is responsible for the svg string only
+          drawing: canvasData, // FE is responsible for the svg string only
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
-          image: strInput,
+          imageBase64: drawingMeta.base64out,
+          imageIPFSMeta:
+            "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
+          // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
           erc721_to_mint: ERC721_TO_MINT,
           selector: MINT_SELECTOR,
@@ -138,8 +148,12 @@ const CanvasToJSON = () => {
 
     const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    const base64str = await storeAsFiles(canvasContent.objects, uuid);
-    sendInput(base64str, canvasSVG);
+    const canvasData = JSON.stringify({
+      svg: base64_encode(canvasSVG),
+      content: canvasContent.objects,
+    });
+    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
+    sendInput(drawingMeta, canvasData);
   };
 
   // @TODO disable if no loaded / drawn image on the canvas

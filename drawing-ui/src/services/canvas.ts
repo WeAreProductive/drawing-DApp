@@ -19,7 +19,7 @@ export const storeAsFiles = async (canvasObject: Object[], uuid: string) => {
       },
     );
     const data = await response.json();
-    return data.base64out;
+    return data;
   } catch (error) {
     console.log(error);
     return { error: "Something went wrong ..." };
