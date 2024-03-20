@@ -18,11 +18,6 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "1mb" })); //@TODO - set here proper limit to allow canvas to be saved properly
 app.use(express.static("public")); //make the images accessible by the drawing-ui
 
-function toBase64(filePath) {
-  const img = fs.readFileSync(filePath);
-  return Buffer.from(img).toString("base64");
-}
-
 const tatumClient = await TatumSDK.init({
   network: Network.Polygon,
   verbose: true,
@@ -39,10 +34,15 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
     const subDir = `canvas-images`;
     const filePath = fullPath + `${req.body.filename}.png`;
     try {
+      if (!fs.existsSync(fullPath)) {
+        fs.mkdirSync(fullPath, { recursive: true });
+        console.log(`Directory ${subDir} created successfully`);
+      }
+
       const canvas = new fabric.Canvas(null, { width: 600, height: 600 });
       canvas.loadFromJSON(
         JSON.stringify({ objects: req.body.image }),
-        function () {
+        async function () {
           canvas.setZoom(1);
           const group = new fabric.Group(canvas.getObjects());
           const x = group.left + group.width / 2 - canvas.width / 2;
@@ -70,47 +70,41 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
 
           canvas.renderAll();
 
-          try {
-            if (!fs.existsSync(fullPath)) {
-              fs.mkdirSync(fullPath, { recursive: true });
-              console.log(`Directory ${subDir} created successfully`);
-            }
-            const out = fs.createWriteStream(filePath);
-            const stream = canvas.createPNGStream();
-            stream.pipe(out);
-            out.on("finish", async () => {
-              console.log("The PNG file was created.");
-              const base64String = toBase64(filePath);
-              const buffer = fs.readFileSync(filePath);
-              const imageIPFS = await tatumClient.ipfs.uploadFile({
-                file: buffer,
-              });
+          const generatedBase64 = canvas
+            .toDataURL({ format: "png" })
+            .replace("data:image/png;base64,", "");
 
-              const metaData = JSON.stringify({
-                name: "Cartesi Drawing Board NFT",
-                description:
-                  "Collaborative drawings powered by Cartesi Rollups and Sunodo.",
-                image:
-                  "https://gateway.pinata.cloud/ipfs/" +
-                  imageIPFS.data.ipfsHash,
-              });
-              const metaIPFS = await tatumClient.ipfs.uploadFile({
-                file: metaData,
-              });
+          const buffer = Buffer.from(generatedBase64, "base64");
 
-              res.send(
-                JSON.stringify({
-                  success: true,
-                  base64out: base64String,
-                  ipfsHash: metaIPFS.data.ipfsHash,
-                })
-              );
+          const imageIPFS = await tatumClient.ipfs.uploadFile({
+            file: buffer,
+          });
 
-              tatumClient.destroy();
-            });
-          } catch (error) {
-            console.log(error);
-          }
+          console.log("IPFS IMG: ", imageIPFS.data.ipfsHash);
+
+          const metaData = JSON.stringify({
+            name: "Cartesi Drawing Board NFT",
+            description:
+              "Collaborative drawings powered by Cartesi Rollups and Sunodo.",
+            image:
+              "https://gateway.pinata.cloud/ipfs/" + imageIPFS.data.ipfsHash,
+          });
+
+          const metaIPFS = await tatumClient.ipfs.uploadFile({
+            file: metaData,
+          });
+
+          fs.writeFileSync(filePath, buffer);
+
+          res.send(
+            JSON.stringify({
+              success: true,
+              base64out: generatedBase64,
+              ipfsHash: metaIPFS.data.ipfsHash,
+            })
+          );
+
+          tatumClient.destroy();
         }
       );
     } catch (error) {

@@ -39,7 +39,11 @@ const mint_erc721_with_string = async (
   drawing_input,
   cmd
 ) => {
-  if (validateDrawing(JSON.parse(drawing_input.drawing).content, imageBase64)) {
+  const validBase64 = await validateDrawing(
+    JSON.parse(drawing_input.drawing).content,
+    imageBase64
+  );
+  if (validBase64 === true) {
     console.log("Preparing a VOUCHER for MINTING AN NFT");
     const mintHeader = clean_header(mint_header);
     const abiCoder = new ethers.utils.AbiCoder();
@@ -58,6 +62,7 @@ const mint_erc721_with_string = async (
     store_drawing_data(msg_sender, uuid, drawing_input, cmd);
   } else {
     let msg = `Error: Invalid INPUT PNG file.`;
+    console.log(msg);
     send_report({ payload: str2hex(msg) });
   }
 };

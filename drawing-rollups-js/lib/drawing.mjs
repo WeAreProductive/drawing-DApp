@@ -1,14 +1,11 @@
 import { fabric } from "fabric";
 
-export function validateDrawing(drawingContent, drawingBase64) {
+export async function validateDrawing(drawingContent, drawingBase64) {
   try {
     const canvas = new fabric.StaticCanvas(null, { width: 600, height: 600 });
-
     canvas.loadFromJSON(
       JSON.stringify({ objects: drawingContent }),
       function () {
-        console.log("Image Processing Started");
-
         canvas.setZoom(1);
         const group = new fabric.Group(canvas.getObjects());
         const x = group.left + group.width / 2 - canvas.width / 2;
@@ -29,20 +26,17 @@ export function validateDrawing(drawingContent, drawingBase64) {
 
         const zoom = (canvasDimension / groupDimension) * 0.8;
         canvas.zoomToPoint({ x: canvas.width / 2, y: canvas.height / 2 }, zoom);
-
         canvas.renderAll();
 
         const generatedBase64 = canvas
           .toDataURL({ format: "png" })
           .replace("data:image/png;base64,", "");
 
-        if (drawingBase64 !== generatedBase64) {
-          console.log("Invalid INPUT PNG Base64 string!");
-          return false;
-        } else {
-          console.log("Valid INPUT PNG Base64 string.");
-          return true;
-        }
+        console.log("Input: ", drawingBase64);
+        console.log("Generated: ", generatedBase64);
+
+        if (drawingBase64.trim() !== generatedBase64.trim()) return false;
+        else return true;
       }
     );
   } catch (error) {
