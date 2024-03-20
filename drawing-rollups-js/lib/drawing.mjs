@@ -1,6 +1,17 @@
 import { fabric } from "fabric";
+import base64 from "base-64";
+
+function stringUnification(str) {
+  return Buffer.from(str, "utf-8")
+    .toString()
+    .replace(/\n|\r|\s/g, "")
+    .trim()
+    .toLowerCase();
+}
 
 export async function validateDrawing(drawingContent, drawingBase64) {
+  var res = false;
+
   try {
     const canvas = new fabric.StaticCanvas(null, { width: 600, height: 600 });
     canvas.loadFromJSON(
@@ -28,18 +39,28 @@ export async function validateDrawing(drawingContent, drawingBase64) {
         canvas.zoomToPoint({ x: canvas.width / 2, y: canvas.height / 2 }, zoom);
         canvas.renderAll();
 
-        const generatedBase64 = canvas
-          .toDataURL({ format: "png" })
-          .replace("data:image/png;base64,", "");
+        const generatedSVG = stringUnification(
+          canvas.toSVG({
+            viewBox: {
+              x: 0,
+              y: 0,
+              width: canvas.width || 0,
+              height: canvas.height || 0,
+            },
+            width: canvas.width || 0,
+            height: canvas.height || 0,
+          })
+        );
+        const drawingSVG = stringUnification(base64.decode(drawingBase64));
 
-        console.log("Input: ", drawingBase64);
-        console.log("Generated: ", generatedBase64);
-
-        if (drawingBase64.trim() !== generatedBase64.trim()) return false;
-        else return true;
+        if (drawingSVG === generatedSVG) {
+          res = true;
+        }
       }
     );
   } catch (error) {
     console.log(error);
   }
+
+  return res;
 }

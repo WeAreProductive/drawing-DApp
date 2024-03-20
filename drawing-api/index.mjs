@@ -5,6 +5,7 @@ import fs from "fs";
 import { fabric } from "fabric";
 import { TatumSDK, Network } from "@tatumio/tatum";
 import { API_ENDPOINTS, ORIGIN_BASE, TATUM_KEY } from "./config.mjs";
+import base64 from "base-64";
 
 const port = 3000;
 const corsOptions = {
@@ -70,6 +71,17 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
 
           canvas.renderAll();
 
+          const generatedSVG = canvas.toSVG({
+            viewBox: {
+              x: 0,
+              y: 0,
+              width: canvas.width || 0,
+              height: canvas.height || 0,
+            },
+            width: canvas.width || 0,
+            height: canvas.height || 0,
+          });
+
           const generatedBase64 = canvas
             .toDataURL({ format: "png" })
             .replace("data:image/png;base64,", "");
@@ -99,7 +111,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           res.send(
             JSON.stringify({
               success: true,
-              base64out: generatedBase64,
+              base64out: base64.encode(generatedSVG),
               ipfsHash: metaIPFS.data.ipfsHash,
             })
           );
