@@ -38,7 +38,6 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
     const fullPath = `public/canvas-images/`;
     const subDir = `canvas-images`;
     const filePath = fullPath + `${req.body.filename}.png`;
-
     try {
       const canvas = new fabric.Canvas(null, { width: 600, height: 600 });
       canvas.loadFromJSON(
@@ -81,9 +80,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
             stream.pipe(out);
             out.on("finish", async () => {
               console.log("The PNG file was created.");
-
               const base64String = toBase64(filePath);
-
               const buffer = fs.readFileSync(filePath);
               const imageIPFS = await tatumClient.ipfs.uploadFile({
                 file: buffer,

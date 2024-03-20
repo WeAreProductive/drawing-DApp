@@ -4,7 +4,7 @@
   "description": "JS DApp",
   "dependencies": {
     "ethers": "^5.7.2",
-    "fabric": "^6.0.0-beta19"
+    "fabric": "^5.3.0"
   },
   "scripts": {
     "start": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\" node src/index.js"
