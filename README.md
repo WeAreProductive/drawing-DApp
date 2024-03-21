@@ -209,9 +209,7 @@ This string format is required for the backend to be able to prepare a suitable 
 2. Save the canvas
 
    - Behind the scenes the canvas is being converted to a base64 string. This string is sent as an input to the rollups.
-   - The backend retrieves the sent input and if sent with the proper heading and in correct format -
-
-     - processes the bas64 string to produce the NFT tokenURI;
+   - The backend retrieves the sent input and if sent with the proper heading and in correct format
 
      For detailed string processing information refer to: drawing-rollups-js
 
