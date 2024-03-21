@@ -198,28 +198,24 @@ yarn dev
 
 ### `drawing-api` server
 
-In order the frontend to work properly, you need to start a server that will convert the `canvas into a base64 string`.
-This string format is required for the backend to be able to prepare a suitable tokenURI for the NFT to be minted on voucher execution.
+In order the frontend to work properly, you need to start a server that will convert the `canvas into a base64 string` and will upload PNG snapshot of the drawing to IPFS.
 
 ## [Deploying the application](https://docs.sunodo.io/guide/deploying/deploying-application)
 
 ## Steps to mint a NFT from a drawing
 
 1. Draw a picture on canvas
-2. Save the canvas
+2. Save the canvas & Mint NFT
 
-   - Behind the scenes the canvas is being converted to a base64 string. This string is sent as an input to the rollups.
-   - The backend retrieves the sent input and if sent with the proper heading and in correct format
+   For detailed string processing information refer to: drawing-rollups-js
 
-     For detailed string processing information refer to: drawing-rollups-js
+   - emits a voucher - containing
 
-     - emits a voucher - containing
+     - destination: (the mint NFT smart contract address),
 
-       - destination: (the mint NFT smart contract address),
+     - payload: `the Mint Erc721 - tokenURI` and the `owner` of the picture to be minted as a NFT and the NFT itself
 
-       - payload: `the Mint Erc721 - tokenURI` and the `owner` of the picture to be minted as a NFT and the NFT itself
-
-     - emits a notice with information about the emited voucher `Emmited voucher to mint ERC721 {erc721 string to mint}`
+   - emits a notice with information about the emited voucher `Emmited voucher to mint ERC721 {erc721 string to mint}`
 
    - The new `voucher` is accessible at DrawingDapp `Vouchers` tab
 
