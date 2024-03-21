@@ -1,3 +1,5 @@
+![Diagram](CartesiDrawingDApp.png)
+
 ## Drawing DApp
 
 Drawing is a DApp written in JavaScript/ReactJS running on Cartesi Rollups with [Sunodo](https://docs.sunodo.io).
