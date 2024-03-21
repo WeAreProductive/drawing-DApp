@@ -156,7 +156,6 @@ const CanvasToJSON = () => {
     sendInput(drawingMeta, canvasData);
   };
 
-  // @TODO disable if no loaded / drawn image on the canvas
   return connectedChain ? (
     <Button variant={"outline"} onClick={handleCanvasToSvg} disabled={loading}>
       <Box size={18} className="mr-2" strokeWidth={1.5} />

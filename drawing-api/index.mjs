@@ -11,13 +11,13 @@ const port = 3000;
 const corsOptions = {
   origin: ORIGIN_BASE,
   credentials: true,
-  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+  optionsSuccessStatus: 200,
 };
 
 const app = express();
 app.use(cors(corsOptions));
-app.use(bodyParser.json({ limit: "1mb" })); //@TODO - set here proper limit to allow canvas to be saved properly
-app.use(express.static("public")); //make the images accessible by the drawing-ui
+app.use(bodyParser.json({ limit: "1mb" }));
+app.use(express.static("public"));
 
 const tatumClient = await TatumSDK.init({
   network: Network.Polygon,

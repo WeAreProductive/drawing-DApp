@@ -71,7 +71,7 @@ const mint_erc721_with_string = async (
  * Save drawing data in a notice
  * @param {String} sender
  * @param {String} uuid
- * @param {Object} drawing_input // @TODO check type
+ * @param {Object} drawing_input
  * @param {String} cmd
  */
 const store_drawing_data = (sender, uuid, drawing_input, cmd) => {
@@ -183,7 +183,6 @@ async function handle_advance(data) {
  * @param {Object} request
  * @returns
  */
-// @TODO revise
 async function handle_inspect(request) {
   data = request.data;
   console.log("Received inspect request data.");

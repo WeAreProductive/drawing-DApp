@@ -65,7 +65,7 @@ const CanvasToSVG = () => {
       const signer = provider.getSigner();
 
       // prepare drawing data notice input
-      let drawingNoticePayload: DrawingInput | DrawingInputExtended; // @TODO fix typing
+      let drawingNoticePayload: DrawingInput | DrawingInputExtended;
       let str: string;
 
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {

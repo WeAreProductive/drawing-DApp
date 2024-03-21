@@ -1,7 +1,7 @@
 import { init, useConnectWallet } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import Network from "../components/Network";
-import blocknativeIcon from "../icons/blocknative-icon"; //@TODO use app's own icon instead
+import blocknativeIcon from "../icons/blocknative-icon";
 
 import "../App.css";
 
