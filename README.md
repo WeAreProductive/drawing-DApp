@@ -1,6 +1,6 @@
 ## Drawing DApp
 
-Drawing is a DApp written in JavaScript/ReactJS running on [Sunodo](https://docs.sunodo.io).
+Drawing is a DApp written in JavaScript/ReactJS running on Cartesi Rollups with [Sunodo](https://docs.sunodo.io).
 
 ## Requirements
 
@@ -227,16 +227,3 @@ This string format is required for the backend to be able to prepare a suitable 
 
    - You can execute the `voucher` once the current epoch is closed.
    - The newly minted NFT can be imoprted in your wallet by using the `smart contract address` and the `id` of the minted NFT.
-
-> Note: To clean the docker builds and cache execute:
-
-```shell
-cd drawing-rollups-js
-docker system prune
-```
-
-> To perform deep cleaning use -a option
-
-```shell
-docker system prune -a
-```
