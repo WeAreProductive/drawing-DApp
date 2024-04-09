@@ -18,17 +18,20 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     if (!canvas) return;
     canvas.clear();
 
-    fabric.loadSVGFromString(drawing, function (objects, options) {
-      var obj = fabric.util.groupSVGElements(objects, options);
-      obj.set({
-        left: 0,
-        top: 0,
-        scaleX: canvas.width && obj.width ? canvas.width / obj.width : 1,
-        scaleY: canvas.height && obj.height ? canvas.height / obj.height : 1,
-      });
+    fabric.loadSVGFromString(
+      base64_decode(JSON.parse(drawing).svg),
+      function (objects, options) {
+        var obj = fabric.util.groupSVGElements(objects, options);
+        obj.set({
+          left: 0,
+          top: 0,
+          scaleX: canvas.width && obj.width ? canvas.width / obj.width : 1,
+          scaleY: canvas.height && obj.height ? canvas.height / obj.height : 1,
+        });
 
-      canvas.add(obj).renderAll();
-    });
+        canvas.add(obj).renderAll();
+      },
+    );
 
     setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
