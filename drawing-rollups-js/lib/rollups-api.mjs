@@ -1,21 +1,31 @@
+import axios from "axios";
+import http from "http";
+import pako from "pako";
+
 export const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL;
 console.log("HTTP rollup_server url is " + rollup_server);
 
-const send_post = async (endpoint, jsonData) => {
-  try {
-    const response = await fetch(rollup_server + `/${endpoint}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(jsonData),
+const send_post = (endpoint, jsonData) => {
+  axios.defaults.httpAgent = new http.Agent({ keepAlive: true });
+  axios
+    .post(
+      rollup_server + `/${endpoint}`,
+      pako.deflate(JSON.stringify(jsonData)),
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Encoding": "deflate",
+        },
+      }
+    )
+    .then(function (response) {
+      console.log(
+        `/${endpoint}: Received response status ${response.status} body ${response.statusText}`
+      );
+    })
+    .catch(function (error) {
+      console.error("Error:", error);
     });
-    console.log(
-      `/${endpoint}: Received response status ${response.status} body ${response.statusText}`
-    );
-  } catch (error) {
-    console.error("Error:", error);
-  }
 };
 
 export const send_voucher = (voucher) => {

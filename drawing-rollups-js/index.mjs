@@ -1,3 +1,4 @@
+import axios from "axios";
 import { ethers } from "ethers";
 import {
   rollup_server,
@@ -192,35 +193,33 @@ async function handle_inspect(request) {
   return "accept";
 }
 
-var handlers = {
-  advance_state: handle_advance,
-  inspect_state: handle_inspect,
-};
-
 var finish = { status: "accept" };
 
 (async () => {
   while (true) {
-    try {
-      const finish_req = await fetch(rollup_server + "/finish", {
-        method: "POST",
+    await axios
+      .post(rollup_server + "/finish", JSON.stringify({ status: "accept" }), {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ status: "accept" }),
+      })
+      .then(function (response) {
+        console.log("Received finish status " + response.status);
+        if (response.status == 202) {
+          console.log("No pending rollup request, trying again");
+        } else {
+          switch (response.data.request_type) {
+            case "advance_state":
+              finish["status"] = handle_advance(response.data.data);
+              break;
+            case "inspect_state":
+              finish["status"] = handle_inspect(response.data.data);
+              break;
+          }
+        }
+      })
+      .catch(function (error) {
+        console.error("Error:", error);
       });
-
-      console.log("Received finish status " + finish_req.status);
-
-      if (finish_req.status == 202) {
-        console.log("No pending rollup request, trying again");
-      } else {
-        const rollup_req = await finish_req.json();
-        var handler = handlers[rollup_req["request_type"]];
-        finish["status"] = await handler(rollup_req["data"]);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-    }
   }
 })();
