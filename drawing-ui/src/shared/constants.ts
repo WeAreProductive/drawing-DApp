@@ -14,7 +14,7 @@ export const INITIAL_DRAWING_OPTIONS = {
 };
 
 // OBS: change the DApp address as appropriate
-export const DAPP_ADDRESS = "0x70ac08179605AF2D9e75782b8DEcDD3c22aA4D0C";
+export const DAPP_ADDRESS = "0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e";
 
 //the nft smart contract. Update with the value provided during the contract deployment
 export const ERC721_TO_MINT = "0xa2887B3a8F75c1DE921eD2b1bA6A41b2692d961c";
