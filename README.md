@@ -160,6 +160,12 @@ npm install
 npm run start
 ```
 
+or if the above command results in error, run
+
+```shell
+ROLLUP_HTTP_SERVER_URL=http://localhost:8080/host-runner node index.mjs
+```
+
 After the back-end successfully starts, it should print an output like the following:
 
 ```log
