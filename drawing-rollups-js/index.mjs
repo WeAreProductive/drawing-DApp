@@ -59,12 +59,12 @@ const mint_erc721_with_string = async (
       destination: erc721_to_mint,
       payload: payload,
     };
-    send_voucher(voucher);
-    store_drawing_data(msg_sender, uuid, drawing_input, cmd);
+    await send_voucher(voucher);
+    await store_drawing_data(msg_sender, uuid, drawing_input, cmd);
   } else {
     let msg = `Error: Invalid INPUT PNG file.`;
     console.log(msg);
-    send_report({ payload: str2hex(msg) });
+    await send_report({ payload: str2hex(msg) });
   }
 };
 /**
@@ -75,7 +75,7 @@ const mint_erc721_with_string = async (
  * @param {Object} drawing_input
  * @param {String} cmd
  */
-const store_drawing_data = (sender, uuid, drawing_input, cmd) => {
+const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   console.log("Store drawing data in a notice");
   console.log(typeof drawing_input);
 
@@ -111,7 +111,7 @@ const store_drawing_data = (sender, uuid, drawing_input, cmd) => {
   }
   const payload = str2hex(JSON.stringify(drawing_input));
   const notice = { payload: payload };
-  send_notice(notice);
+  await send_notice(notice);
 };
 
 /**
@@ -145,7 +145,7 @@ async function handle_advance(data) {
         if (cmd == "cv" || cmd == "uv") {
           console.log(`COMMAND: ${cmd}`);
           if (imageIPFSMeta && erc721_to_mint && selector) {
-            mint_erc721_with_string(
+            await mint_erc721_with_string(
               sender,
               uuid,
               erc721_to_mint,
@@ -159,7 +159,7 @@ async function handle_advance(data) {
         } else if (cmd == "cn" || cmd == "un") {
           console.log(`COMMAND: ${cmd}`);
           if (drawing_input) {
-            store_drawing_data(sender, uuid, drawing_input, cmd);
+            await store_drawing_data(sender, uuid, drawing_input, cmd);
           }
         }
       } else {
@@ -197,29 +197,27 @@ var finish = { status: "accept" };
 
 (async () => {
   while (true) {
-    await axios
-      .post(rollup_server + "/finish", JSON.stringify({ status: "accept" }), {
+    const res = await axios.post(
+      rollup_server + "/finish",
+      JSON.stringify({ status: "accept" }),
+      {
         headers: {
           "Content-Type": "application/json",
         },
-      })
-      .then(function (response) {
-        console.log("Received finish status " + response.status);
-        if (response.status == 202) {
-          console.log("No pending rollup request, trying again");
-        } else {
-          switch (response.data.request_type) {
-            case "advance_state":
-              finish["status"] = handle_advance(response.data.data);
-              break;
-            case "inspect_state":
-              finish["status"] = handle_inspect(response.data.data);
-              break;
-          }
-        }
-      })
-      .catch(function (error) {
-        console.error("Error:", error);
-      });
+      }
+    );
+    console.log("Received finish status " + res.status);
+    if (res.status == 202) {
+      console.log("No pending rollup request, trying again");
+    } else {
+      switch (res.data.request_type) {
+        case "advance_state":
+          finish["status"] = await handle_advance(res.data.data);
+          break;
+        case "inspect_state":
+          finish["status"] = await handle_inspect(res.data.data);
+          break;
+      }
+    }
   }
 })();
