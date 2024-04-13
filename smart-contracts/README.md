@@ -1,6 +1,5 @@
 <!-- markdownlint-disable MD013 -->
 
-
 # Building
 
 You may build the `smart-contracts` project as follows:
@@ -18,7 +17,7 @@ Additionally, the project can be deployed manually on the local development netw
 
 ## The Contracts
 
-### DrawingNFT
+### DrawingCanvasNFT
 
 This is a simple contract to perform operations with NFTs.
 
@@ -26,7 +25,7 @@ To use it, you must first retrieve the contract address from the deployment data
 For the local development network, execute the following command:
 
 ```shell
-ERC_721=$(jq '.address' ./deployments/localhost/DrawingNFT.json | \
+ERC_721=$(jq '.address' ./deployments/localhost/DrawingCanvasNFT.json | \
     sed "s/[\",]//g")
 ```
 

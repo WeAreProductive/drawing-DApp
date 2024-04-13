@@ -17,11 +17,11 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 
 
 
-contract DrawingNFT is ERC721URIStorage {
+contract DrawingCanvasNFT is ERC721URIStorage {
   using Counters for Counters.Counter;
   Counters.Counter private _tokenIds;
 
-  constructor() ERC721("DrawingNFT", "NFT") {}
+  constructor() ERC721("DrawingCanvasNFT", "NFT") {}
 
   function mint(address recipient, string memory tokenURI) public returns (uint256) {
     _tokenIds.increment();

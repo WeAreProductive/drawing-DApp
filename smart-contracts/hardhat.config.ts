@@ -29,7 +29,7 @@ let mnemonic = process.env.MNEMONIC;
 const ppath = (packageName: string, pathname: string) => {
     return path.join(
         path.dirname(require.resolve(`${packageName}/package.json`)),
-        pathname
+        pathname,
     );
 };
 
@@ -93,7 +93,7 @@ const config: HardhatUserConfig = {
             };
         } else {
             console.warn(
-                `unsupported deterministic deployment for network ${network}`
+                `unsupported deterministic deployment for network ${network}`,
             );
             return undefined;
         }
@@ -111,7 +111,7 @@ const config: HardhatUserConfig = {
     },
     namedAccounts: {
         deployer: {
-            default: 0,
+            default: 0, //"privatekey://0x.............." to make it work
         },
     },
     gasReporter: {

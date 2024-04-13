@@ -88,7 +88,7 @@ To use the smart contract, you must first retrieve the contract address from the
 When deploying the contract manually its address is printed in CLI as follows:
 
 ```shell
-deploying "DrawingNFT" (tx: tx-hash)...: deployed at `smart-contract-address` with amount-of-gas-used gas
+deploying "DrawingCanvasNFT" (tx: tx-hash)...: deployed at `smart-contract-address` with amount-of-gas-used gas
 ```
 
 You can also check the address in

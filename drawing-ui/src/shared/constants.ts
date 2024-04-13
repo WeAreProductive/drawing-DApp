@@ -14,10 +14,10 @@ export const INITIAL_DRAWING_OPTIONS = {
 };
 
 // OBS: change the DApp address as appropriate
-export const DAPP_ADDRESS = "0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e";
+export const DAPP_ADDRESS = "0x25BdfbA9eAaF7B93a18636230eBb13CACd63F897"; // Use the configuration json
 
 //the nft smart contract. Update with the value provided during the contract deployment
-export const ERC721_TO_MINT = "0xa2887B3a8F75c1DE921eD2b1bA6A41b2692d961c";
+export const ERC721_TO_MINT = "0x4f3143568D076F171A21C571fE58143475DCCa2c"; // Sepolia Test Network make configurable by network
 
 //mint method selector constant
 export const MINT_SELECTOR = "0xd0def521";

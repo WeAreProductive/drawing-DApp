@@ -23,10 +23,10 @@ const func: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
         log: true,
     };
 
-    await deployments.deploy("DrawingNFT", {
+    await deployments.deploy("DrawingCanvasNFT", {
         ...opts,
     });
 };
 
 export default func;
-export const tags = ["DrawingNFT"];
+export const tags = ["DrawingCanvasNFT"];

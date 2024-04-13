@@ -1,3 +1,4 @@
 .sunodo
+fly.toml
 /dist
 /node_modules
