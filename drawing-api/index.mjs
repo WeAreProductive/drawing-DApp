@@ -95,7 +95,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           console.log("IPFS IMG: ", imageIPFS.data.ipfsHash);
 
           const metaData = JSON.stringify({
-            name: "Cartesi Drawing Board NFT",
+            name: "Cartesi Drawing Canvas NFT",
             description:
               "Collaborative drawings powered by Cartesi Rollups and Sunodo.",
             image:
