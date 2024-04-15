@@ -1,10 +1,11 @@
 import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useSetChain } from "@web3-onboard/react";
 import { useVoucherQuery } from "../../generated/graphql";
 import { useRollups } from "../../hooks/useRollups";
-import { DAPP_ADDRESS } from "../../shared/constants";
-import { VoucherExtended } from "../../shared/types";
+import configFile from "../../config/config.json";
+import { VoucherExtended, Network } from "../../shared/types";
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
 import { decode as base64_decode } from "base-64";
@@ -13,7 +14,10 @@ type VoucherProp = {
   voucherData: VoucherExtended;
 };
 
+const config: { [name: string]: Network } = configFile;
+
 const Voucher = ({ voucherData }: VoucherProp) => {
+  const [{ connectedChain }] = useSetChain();
   const [voucherToFetch, setVoucherToFetch] = useState([0, 0]);
   const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({
     variables: {
@@ -25,7 +29,9 @@ const Voucher = ({ voucherData }: VoucherProp) => {
   const [voucherToExecute, setVoucherToExecute] = useState<VoucherExtended>();
 
   const [loading, setLoading] = useState(false);
-  const rollups = useRollups(DAPP_ADDRESS);
+  // @TODO - check graphql client for connected chain
+  if (!connectedChain) return;
+  const rollups = useRollups(config[connectedChain.id].dappAddress);
 
   const getProof = async (voucher: VoucherExtended) => {
     setVoucherToFetch([voucher.index, voucher.input.index]);
@@ -105,7 +111,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
   }, [voucherResult, rollups]);
 
   return (
-    <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
+    <div className="flex flex-col gap-6 pb-4 my-4 border-b-2">
       {voucherData.drawing && (
         <div className="w-1/2 p-2">
           <CanvasSnapshotLight

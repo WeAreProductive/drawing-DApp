@@ -97,7 +97,7 @@ You can also check the address in
 smart-contracts/deploymets/<network-name>/<smart-contract-name>.json, { address: `smart-contract-address`, ...}.
 ```
 
-The smart `contract's address` is used in the frontend application - (see `drawing-ui/src/shared/constants.ts`) as `ERC721_TO_MINT`.
+The smart `contract's address` is used in the frontend application - (see `drawing-ui/src/config/config.json`) as `ercToMint` for each chain.
 
 To `start` the application, execute the following command from the project's root directory:
 

@@ -13,12 +13,6 @@ export const INITIAL_DRAWING_OPTIONS = {
   canvasHeight: 280,
 };
 
-// OBS: change the DApp address as appropriate
-export const DAPP_ADDRESS = "0x25BdfbA9eAaF7B93a18636230eBb13CACd63F897"; // Use the configuration json
-
-//the nft smart contract. Update with the value provided during the contract deployment
-export const ERC721_TO_MINT = "0x4f3143568D076F171A21C571fE58143475DCCa2c"; // Sepolia Test Network make configurable by network
-
 //mint method selector constant
 export const MINT_SELECTOR = "0xd0def521";
 
