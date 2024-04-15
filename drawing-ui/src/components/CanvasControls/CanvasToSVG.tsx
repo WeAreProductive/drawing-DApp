@@ -105,7 +105,6 @@ const CanvasToSVG = () => {
         toast.success("Transaction Sent");
 
         // Wait for confirmation
-        console.log("waiting for confirmation...");
         const receipt = await tx.wait(1);
 
         // Search for the InputAdded event
@@ -122,7 +121,6 @@ const CanvasToSVG = () => {
             description: `Input not added => index: ${event?.args?.inputIndex} `,
           });
         }
-        console.log(`Input added => index: ${event?.args?.inputIndex} `);
       } catch (e: any) {
         const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
         toast.error("Transaction Error", {
