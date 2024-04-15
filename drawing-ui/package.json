@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite codegen build",
+    "build": "vite build",
     "preview": "vite preview",
     "codegen": "run-p codegen:typechain codegen:graphql",
     "codegen:graphql": "graphql-codegen",
