@@ -1,4 +1,4 @@
-export const BASE_API_URL = "http://localhost:3000";
+export const BASE_API_URL = process.env.BASE_API_URL;
 
 export const API_ENDPOINTS = {
   canvasesStore: "canvases/store",
