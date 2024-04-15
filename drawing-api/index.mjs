@@ -129,7 +129,9 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
   }
 });
 app.listen(port, () => {
-  console.log(`Server is running on port: ${port}`);
+  console.log(
+    `Server is running on port: ${port} . Accepting requests from origin: ${ORIGIN_BASE}`
+  );
 });
 
 export const viteNodeApp = app;
