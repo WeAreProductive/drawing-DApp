@@ -29,9 +29,6 @@ const tatumClient = await TatumSDK.init({
 
 app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
   res.set("Content-Type", "application/json");
-
-  console.log("PATH:", import.meta.env.VITE_IMG_DIR);
-
   if (req.body) {
     const fullPath = import.meta.env.VITE_IMG_DIR;
     const filePath = fullPath + `${req.body.filename}.png`;
