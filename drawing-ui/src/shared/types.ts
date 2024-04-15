@@ -9,7 +9,6 @@ export type Network = {
   DAppRelayAddress: string;
   InputBoxAddress: string;
   Erc721PortalAddress: string;
-  dappAddress: string;
   ercToMint: string;
 };
 

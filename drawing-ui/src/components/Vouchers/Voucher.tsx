@@ -31,7 +31,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
   const [loading, setLoading] = useState(false);
   // @TODO - check graphql client for connected chain
   if (!connectedChain) return;
-  const rollups = useRollups(config[connectedChain.id].dappAddress);
+  const rollups = useRollups(config[connectedChain.id].DAppRelayAddress);
 
   const getProof = async (voucher: VoucherExtended) => {
     setVoucherToFetch([voucher.index, voucher.input.index]);

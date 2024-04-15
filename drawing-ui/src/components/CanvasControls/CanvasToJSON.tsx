@@ -110,7 +110,7 @@ const CanvasToJSON = () => {
       if (!connectedChain) return;
       try {
         const tx = await inputBox.addInput(
-          config[connectedChain.id].dappAddress,
+          config[connectedChain.id].DAppRelayAddress,
           inputBytes,
         );
         toast.success("Transaction Sent");
