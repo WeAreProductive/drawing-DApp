@@ -9,6 +9,7 @@ export type Network = {
   DAppRelayAddress: string;
   InputBoxAddress: string;
   Erc721PortalAddress: string;
+  ercToMint: string;
 };
 
 export type CanvasOptions = {

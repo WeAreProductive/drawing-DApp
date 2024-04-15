@@ -29,4 +29,4 @@ ERC_721=$(jq '.address' ./deployments/localhost/DrawingCanvasNFT.json | \
     sed "s/[\",]//g")
 ```
 
-refer the smart contract address in drawing-ui/src/config/constants.js ERC721_TO_MINT
+refer each chain's smart contract address in drawing-ui/src/config/config.json `ercToMint`

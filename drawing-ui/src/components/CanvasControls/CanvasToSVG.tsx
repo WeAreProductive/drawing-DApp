@@ -9,7 +9,7 @@ import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import { InputBox__factory } from "@cartesi/rollups";
 import { useCanvasContext } from "../../context/CanvasContext";
-import { COMMANDS, DAPP_ADDRESS, DAPP_STATE } from "../../shared/constants";
+import { COMMANDS, DAPP_STATE } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import {
   DrawingInput,
@@ -95,9 +95,13 @@ const CanvasToSVG = () => {
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
         : ethers.utils.toUtf8Bytes(str);
+      if (!connectedChain) return;
       // Send the transaction
       try {
-        const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
+        const tx = await inputBox.addInput(
+          config[connectedChain.id].DAppRelayAddress,
+          inputBytes,
+        );
         toast.success("Transaction Sent");
 
         // Wait for confirmation

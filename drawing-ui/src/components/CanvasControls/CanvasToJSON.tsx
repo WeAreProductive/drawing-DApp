@@ -18,13 +18,7 @@ import { storeAsFiles } from "../../services/canvas";
 import { v4 as uuidv4 } from "uuid";
 import { encode as base64_encode } from "base-64";
 
-import {
-  ERC721_TO_MINT,
-  MINT_SELECTOR,
-  DAPP_ADDRESS,
-  DAPP_STATE,
-  COMMANDS,
-} from "../../shared/constants";
+import { MINT_SELECTOR, DAPP_STATE, COMMANDS } from "../../shared/constants";
 
 import {
   DrawingInput,
@@ -58,6 +52,7 @@ const CanvasToJSON = () => {
       drawingMeta: { base64out: string; ipfsHash: string },
       canvasData: string,
     ) => {
+      if (!connectedChain) return;
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
@@ -81,7 +76,7 @@ const CanvasToJSON = () => {
             "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
           // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
-          erc721_to_mint: ERC721_TO_MINT,
+          erc721_to_mint: config[connectedChain.id].ercToMint,
           selector: MINT_SELECTOR,
           cmd: COMMANDS.updateAndMint.cmd,
         });
@@ -97,7 +92,7 @@ const CanvasToJSON = () => {
             "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
           // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
           uuid: uuid,
-          erc721_to_mint: ERC721_TO_MINT,
+          erc721_to_mint: config[connectedChain.id].ercToMint,
           selector: MINT_SELECTOR,
           cmd: COMMANDS.createAndMint.cmd,
         });
@@ -112,8 +107,12 @@ const CanvasToJSON = () => {
         : ethers.utils.toUtf8Bytes(str);
 
       // Send the transaction
+      if (!connectedChain) return;
       try {
-        const tx = await inputBox.addInput(DAPP_ADDRESS, inputBytes);
+        const tx = await inputBox.addInput(
+          config[connectedChain.id].DAppRelayAddress,
+          inputBytes,
+        );
         toast.success("Transaction Sent");
 
         // Wait for confirmation

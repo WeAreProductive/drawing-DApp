@@ -29,15 +29,13 @@ const tatumClient = await TatumSDK.init({
 
 app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
   res.set("Content-Type", "application/json");
-
   if (req.body) {
-    const fullPath = `public/canvas-images/`;
-    const subDir = `canvas-images`;
+    const fullPath = import.meta.env.VITE_IMG_DIR;
     const filePath = fullPath + `${req.body.filename}.png`;
     try {
       if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath, { recursive: true });
-        console.log(`Directory ${subDir} created successfully`);
+        console.log(`Directory created successfully`);
       }
 
       const canvas = new fabric.Canvas(null, { width: 600, height: 600 });
