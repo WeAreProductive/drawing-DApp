@@ -145,17 +145,23 @@ const CanvasToJSON = () => {
 
     const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    const canvasData = JSON.stringify({
+    // const canvasData = JSON.stringify({
+    //   svg: base64_encode(canvasSVG),
+    //   content: canvasContent.objects,
+    // });
+    const canvasData = {
       svg: base64_encode(canvasSVG),
       content: canvasContent.objects,
-    });
+    };
+
+    const compressed = pako.deflate(JSON.stringify(canvasData));
 
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
-    const compressed = pako.deflate(canvasData);
-    console.log(`compressed ${compressed.length}`);
-    console.log(`not compressed ${canvasData.length}`);
+    // const compressed = pako.deflate(canvasData);
+    // console.log(`compressed ${compressed.length}`);
+    // console.log(`not compressed ${canvasData.length}`);
+    // sendInput(drawingMeta, compressed);
     sendInput(drawingMeta, compressed);
-    // sendInput(drawingMeta, canvasData);
   };
 
   return connectedChain ? (
