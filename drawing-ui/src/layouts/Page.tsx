@@ -10,6 +10,7 @@ import Header from "../components/Header";
 import { Network } from "../shared/types";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import ToastErrorIcon from "../icons/ToastErrorIcon";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -55,6 +56,7 @@ export default function Page({ children }: Props) {
   const NetworkRow = (props: { label: string }) => {
     return <li> {props.label}</li>;
   };
+
   const check = () => {
     if (connectedChain) {
       if (!config[connectedChain?.id]) {
@@ -67,13 +69,18 @@ export default function Page({ children }: Props) {
         }
 
         toast(
-          <div>
-            <p>
+          <>
+            <div>
+              <ToastErrorIcon />
+            </div>
+            <div>
               <b>Unsupported network connected!</b>
-            </p>
-            <p>Please select from the list:</p>
-            <ul>{supportedNetworks}</ul>
-          </div>,
+              <br />
+              Please select from the list:
+              <ul>{supportedNetworks}</ul>
+            </div>
+          </>,
+          { duration: 5000 },
         );
       }
     }
