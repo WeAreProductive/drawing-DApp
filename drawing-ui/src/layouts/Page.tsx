@@ -63,9 +63,10 @@ export default function Page({ children }: Props) {
         const supportedNetworks = [];
 
         for (let ind in config) {
-          supportedNetworks.push(
-            <NetworkRow label={config[ind].label} key={ind} />,
-          );
+          if (ind !== "0x7a69")
+            supportedNetworks.push(
+              <NetworkRow label={config[ind].label} key={ind} />,
+            );
         }
 
         toast(

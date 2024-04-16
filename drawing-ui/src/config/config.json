@@ -1,4 +1,15 @@
 {
+  "0x7a69": {
+    "token": "ETH",
+    "label": "localhost",
+    "rpcUrl": "http://localhost:8545",
+    "graphqlAPIURL": "http://localhost:8080",
+    "inspectAPIURL": "http://localhost:5005",
+    "DAppRelayAddress": "0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e",
+    "InputBoxAddress": "0x59b22D57D4f067708AB0c00552767405926dc768",
+    "Erc721PortalAddress": "0x4CA354590EB934E6094Be762b38dE75d1Dd605a9",
+    "ercToMint": "0xa2887B3a8F75c1DE921eD2b1bA6A41b2692d961c"
+  },
   "0xaa36a7": {
     "token": "SepETH",
     "label": "Sepolia Test Network",
