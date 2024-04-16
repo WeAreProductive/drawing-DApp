@@ -52,17 +52,25 @@ type Props = {
 export default function Page({ children }: Props) {
   const [{ wallet }] = useConnectWallet();
   const [{ connectedChain }] = useSetChain();
-
+  const NetworkRow = (props: { label: string }) => {
+    return <li> {props.label}</li>;
+  };
   const check = () => {
     if (connectedChain) {
       if (!config[connectedChain?.id]) {
-        let networksList = "";
+        const supportedNetworks = [];
+
         for (let ind in config) {
-          networksList += ` ${config[ind].label}`;
+          supportedNetworks.push(<NetworkRow label={config[ind].label} />);
         }
-        toast.success("Unsupported network connected!", {
-          description: `Please select from the list: ${networksList}`,
-        });
+
+        toast(
+          <div>
+            <p>Unsupported network connected!</p>
+            <p>Please select from the list:</p>
+            <ul>{supportedNetworks}</ul>
+          </div>,
+        );
       }
     }
   };
