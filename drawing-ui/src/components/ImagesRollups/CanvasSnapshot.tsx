@@ -5,6 +5,7 @@ import { DrawingInputExtended } from "../../shared/types";
 import { sliceAccountStr } from "../../utils";
 import { useMemo } from "react";
 import { decode as base64_decode } from "base-64";
+import pako from "pako";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
@@ -14,12 +15,14 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
   const { drawing, owner, uuid } = src;
 
+  const decompressed = JSON.parse(pako.inflate(drawing, { to: "string" }));
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
 
     fabric.loadSVGFromString(
-      base64_decode(JSON.parse(drawing).svg),
+      // base64_decode(JSON.parse(drawing).svg),
+      base64_decode(decompressed.svg),
       function (objects, options) {
         var obj = fabric.util.groupSVGElements(objects, options);
         obj.set({
@@ -38,12 +41,13 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   };
 
   const drawingPreview = useMemo(() => {
-    const svg = new Blob([base64_decode(JSON.parse(drawing).svg)], {
+    // const svg = new Blob([base64_decode(JSON.parse(drawing).svg)], {
+    const svg = new Blob([base64_decode(decompressed.svg)], {
       type: "image/svg+xml",
     });
     const url = URL.createObjectURL(svg);
     return <img src={url} alt="drawing preview" />;
-  }, [drawing]);
+  }, [decompressed]);
 
   return (
     <div className="rounded-lg border bg-background p-2">

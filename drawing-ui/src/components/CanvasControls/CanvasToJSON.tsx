@@ -19,6 +19,7 @@ import { v4 as uuidv4 } from "uuid";
 import { encode as base64_encode } from "base-64";
 
 import { MINT_SELECTOR, DAPP_STATE, COMMANDS } from "../../shared/constants";
+import pako from "pako";
 
 import {
   DrawingInput,
@@ -105,7 +106,7 @@ const CanvasToJSON = () => {
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
         : ethers.utils.toUtf8Bytes(str);
-
+      console.log(`voucher request: ${inputBytes.length}`);
       // Send the transaction
       if (!connectedChain) return;
       try {
@@ -148,8 +149,13 @@ const CanvasToJSON = () => {
       svg: base64_encode(canvasSVG),
       content: canvasContent.objects,
     });
+
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
-    sendInput(drawingMeta, canvasData);
+    const compressed = pako.deflate(canvasData);
+    console.log(`compressed ${compressed.length}`);
+    console.log(`not compressed ${canvasData.length}`);
+    sendInput(drawingMeta, compressed);
+    // sendInput(drawingMeta, canvasData);
   };
 
   return connectedChain ? (

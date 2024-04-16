@@ -21,6 +21,7 @@ import { Button } from "../ui/button";
 import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { encode as base64_encode } from "base-64";
+import pako from "pako";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -92,9 +93,12 @@ const CanvasToSVG = () => {
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
       // Encode the input
+
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
         : ethers.utils.toUtf8Bytes(str);
+
+      console.log(`notice request compressed: ${inputBytes.length}`);
       if (!connectedChain) return;
       // Send the transaction
       try {
@@ -130,10 +134,21 @@ const CanvasToSVG = () => {
       }
     };
 
-    const canvasData = JSON.stringify({
+    // const canvasData = JSON.stringify({
+    //   svg: base64_encode(canvasSVG),
+    // });
+    // const compressed = pako.deflate(canvasData);
+    const canvasData = {
       svg: base64_encode(canvasSVG),
-    });
-    sendInput(canvasData);
+    };
+
+    const compressed = pako.deflate(JSON.stringify(canvasData));
+    // const restored = JSON.parse(pako.inflate(compressed, { to: "string" }));
+    // console.log(restored);
+    // console.log(`compressed ${compressed.length}`);
+    // console.log(`not compressed ${canvasData.length}`);
+    sendInput(compressed);
+    // sendInput(canvasData);
   };
 
   return (
