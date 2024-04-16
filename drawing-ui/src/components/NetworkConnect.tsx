@@ -5,7 +5,7 @@ import { useCanvasContext } from "../context/CanvasContext";
 import { Button } from "./ui/button";
 import NetworkWelcome from "./NetworkWelcome";
 
-const Network = () => {
+const NetworkConnect = () => {
   const [{ wallet, connecting }, connect, disconnect] = useConnectWallet();
   const { setDappState, setCurrentDrawingData } = useCanvasContext();
   const handleDisconnect = (wallet: WalletState) => {
@@ -25,4 +25,4 @@ const Network = () => {
   );
 };
 
-export default Network;
+export default NetworkConnect;
