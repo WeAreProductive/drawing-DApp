@@ -61,12 +61,16 @@ export default function Page({ children }: Props) {
         const supportedNetworks = [];
 
         for (let ind in config) {
-          supportedNetworks.push(<NetworkRow label={config[ind].label} />);
+          supportedNetworks.push(
+            <NetworkRow label={config[ind].label} key={ind} />,
+          );
         }
 
         toast(
           <div>
-            <p>Unsupported network connected!</p>
+            <p>
+              <b>Unsupported network connected!</b>
+            </p>
             <p>Please select from the list:</p>
             <ul>{supportedNetworks}</ul>
           </div>,
