@@ -12,7 +12,7 @@ import { useCanvasContext } from "../../context/CanvasContext";
 import {
   COMMANDS,
   DAPP_STATE,
-  NOTICE_CANVAS_DATA_LIMIT,
+  CANVAS_DATA_LIMIT,
 } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import {
@@ -156,7 +156,7 @@ const CanvasToSVG = () => {
     // validate canvas data after compression for the expected rollups input
     // won't exceed the set limit for notice input
 
-    if (inputBytesCompressed.length >= NOTICE_CANVAS_DATA_LIMIT) {
+    if (inputBytesCompressed.length >= CANVAS_DATA_LIMIT) {
       toast.error("Input limit exceeded!", {
         description: "Please, reduce the drawing size!",
       });

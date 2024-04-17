@@ -22,7 +22,7 @@ import {
   MINT_SELECTOR,
   DAPP_STATE,
   COMMANDS,
-  NOTICE_CANVAS_DATA_LIMIT,
+  CANVAS_DATA_LIMIT,
 } from "../../shared/constants";
 import pako from "pako";
 
@@ -162,7 +162,7 @@ const CanvasToJSON = () => {
       ? compressionTest
       : ethers.utils.toUtf8Bytes(compressionTest);
     console.log(`svg + json ${inputBytesCompressed.length}`);
-    if (inputBytesCompressed.length >= NOTICE_CANVAS_DATA_LIMIT) {
+    if (inputBytesCompressed.length >= CANVAS_DATA_LIMIT) {
       toast.error("Input limit exceeded!", {
         description: "Please, reduce the drawing size!",
       });

@@ -48,11 +48,12 @@ export const COMMANDS = {
 
 export const VOUCHER_INPUT_LMIT = 400000; // bytes
 const VIL_TO_IMAGE_DATA = 14; // ~ voucher request size / canvas data size in bytes
-export const VOUCHER_CANVAS_DATA_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_IMAGE_DATA; // 28571
+// export const VOUCHER_CANVAS_DATA_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_IMAGE_DATA; // 28571
 const VIL_TO_NIL = 2.5; // ~ voucher request size / notice request size with same image
 export const NOTICE_INPUT_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_NIL; // 160000
 const NIL_TO_IMAGE_DATA = 11.5; // ~ notice request size / canvas data size in bytes
 export const NOTICE_CANVAS_DATA_LIMIT = NOTICE_INPUT_LIMIT / NIL_TO_IMAGE_DATA; // canvas data limit in bytes - 13 913
+export const CANVAS_DATA_LIMIT = NOTICE_INPUT_LIMIT / NIL_TO_IMAGE_DATA; // canvas data limit in bytes - 13 913
 // svg string length svg / canvas data
 const CANVAS_SVG_STR_LEN_TO_NOTICE_CANVAS_DATA = 4;
 export const CANVAS_SVG_STR_LEN_LIMIT =
