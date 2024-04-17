@@ -9,7 +9,11 @@ import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import { InputBox__factory } from "@cartesi/rollups";
 import { useCanvasContext } from "../../context/CanvasContext";
-import { COMMANDS, DAPP_STATE } from "../../shared/constants";
+import {
+  COMMANDS,
+  DAPP_STATE,
+  NOTICE_CANVAS_DATA_LIMIT,
+} from "../../shared/constants";
 import configFile from "../../config/config.json";
 import {
   DrawingInput,
@@ -43,7 +47,6 @@ const CanvasToSVG = () => {
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
 
-    toast.info("Sending input to rollups...");
     setLoading(true);
 
     // Gets current drawing data as SVG
@@ -96,7 +99,6 @@ const CanvasToSVG = () => {
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
         : ethers.utils.toUtf8Bytes(str);
-
       console.log(`notice request compressed: ${inputBytes.length}`);
       if (!connectedChain) return;
       // Send the transaction
@@ -151,6 +153,16 @@ const CanvasToSVG = () => {
       ? compressed
       : ethers.utils.toUtf8Bytes(compressed);
     console.log(`svg ${inputBytesCompressed.length}`);
+    // validate canvas data after compression for the expected rollups input
+    // won't exceed the set limit for notice input
+
+    if (inputBytesCompressed.length >= NOTICE_CANVAS_DATA_LIMIT) {
+      toast.error("Input limit exceeded!", {
+        description: "Please, reduce the drawing size!",
+      });
+      setLoading(false);
+      return;
+    }
     sendInput(compressed);
     // sendInput(canvasData);
   };
