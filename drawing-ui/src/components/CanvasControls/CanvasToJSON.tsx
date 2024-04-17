@@ -18,12 +18,7 @@ import { storeAsFiles } from "../../services/canvas";
 import { v4 as uuidv4 } from "uuid";
 import { encode as base64_encode } from "base-64";
 
-import {
-  MINT_SELECTOR,
-  DAPP_STATE,
-  COMMANDS,
-  CANVAS_DATA_LIMIT,
-} from "../../shared/constants";
+import { MINT_SELECTOR, DAPP_STATE, COMMANDS } from "../../shared/constants";
 import pako from "pako";
 
 import {
@@ -31,6 +26,7 @@ import {
   DrawingInputExtended,
   Network,
 } from "../../shared/types";
+import { validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -147,41 +143,27 @@ const CanvasToJSON = () => {
         setLoading(false);
       }
     };
-
-    const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    // @TODO fix canvasData typing
-    let canvasData: any = {
-      svg: base64_encode(canvasSVG),
-    };
-
-    // validate - check notice and voucher canvas drawings are rejected at the same size
-    // @TODO check the test compression is ok
-    const compressionTest = pako.deflate(JSON.stringify(canvasData));
-    const inputBytesCompressed = ethers.utils.isBytesLike(compressionTest)
-      ? compressionTest
-      : ethers.utils.toUtf8Bytes(compressionTest);
-    console.log(`svg + json ${inputBytesCompressed.length}`);
-    if (inputBytesCompressed.length >= CANVAS_DATA_LIMIT) {
+    // validate before sending the tx
+    const isValidSizeInput = validateInputSize(canvasSVG);
+    if (!isValidSizeInput) {
       toast.error("Input limit exceeded!", {
         description: "Please, reduce the drawing size!",
       });
       setLoading(false);
       return;
     }
-    // const canvasData = JSON.stringify({
-    //   svg: base64_encode(canvasSVG),
-    //   content: canvasContent.objects,
-    // });
-    canvasData.content = canvasContent.objects;
+
+    // proceed after validation
+    const canvasContent = canvas.toJSON();
+    let canvasData = {
+      svg: base64_encode(canvasSVG),
+      content: canvasContent.objects,
+    };
 
     const compressed = pako.deflate(JSON.stringify(canvasData));
 
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
-    // const compressed = pako.deflate(canvasData);
-    // console.log(`compressed ${compressed.length}`);
-    // console.log(`not compressed ${canvasData.length}`);
-    // sendInput(drawingMeta, compressed);
     sendInput(drawingMeta, compressed);
   };
 

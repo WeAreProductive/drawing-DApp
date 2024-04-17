@@ -4,10 +4,7 @@ import CanvasToJSON from "./CanvasToJSON";
 import CanvasToSVG from "./CanvasToSVG";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { toast } from "sonner";
-import {
-  CANVAS_SVG_STR_LEN_LIMIT,
-  LIMIT_WARNING_AT,
-} from "../../shared/constants";
+import { validateInputSize } from "../../utils";
 
 const CanvasControls = () => {
   const { canvas } = useCanvasContext();
@@ -27,7 +24,8 @@ const CanvasControls = () => {
         height: canvas.height || 0,
       });
       setSvgStrLength(canvasSVG.length); // @TODO remove
-      if (canvasSVG.length >= CANVAS_SVG_STR_LEN_LIMIT * LIMIT_WARNING_AT) {
+      const isValidSize = validateInputSize(canvasSVG);
+      if (!isValidSize) {
         toast.error("You are approaching rollups input size limit!");
       }
     };

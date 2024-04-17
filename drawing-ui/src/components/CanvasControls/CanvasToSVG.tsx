@@ -9,11 +9,7 @@ import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import { InputBox__factory } from "@cartesi/rollups";
 import { useCanvasContext } from "../../context/CanvasContext";
-import {
-  COMMANDS,
-  DAPP_STATE,
-  CANVAS_DATA_LIMIT,
-} from "../../shared/constants";
+import { COMMANDS, DAPP_STATE } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import {
   DrawingInput,
@@ -26,6 +22,7 @@ import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { encode as base64_encode } from "base-64";
 import pako from "pako";
+import { validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -61,6 +58,7 @@ const CanvasToSVG = () => {
       height: canvas.height || 0,
     });
     const sendInput = async (strInput: string) => {
+      toast.info("Sending input to rollups...");
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
@@ -134,37 +132,21 @@ const CanvasToSVG = () => {
         setLoading(false);
       }
     };
-
-    // const canvasData = JSON.stringify({
-    //   svg: base64_encode(canvasSVG),
-    // });
-    // const compressed = pako.deflate(canvasData);
-    console.log(`Canvas svg length ${canvasSVG.length}`);
-    const canvasData = {
-      svg: base64_encode(canvasSVG),
-    };
-
-    const compressed = pako.deflate(JSON.stringify(canvasData));
-    // const restored = JSON.parse(pako.inflate(compressed, { to: "string" }));
-    // console.log(restored);
-    // console.log(`compressed ${compressed.length}`);
-    // console.log(`not compressed ${canvasData.length}`);
-    const inputBytesCompressed = ethers.utils.isBytesLike(compressed)
-      ? compressed
-      : ethers.utils.toUtf8Bytes(compressed);
-    console.log(`svg ${inputBytesCompressed.length}`);
-    // validate canvas data after compression for the expected rollups input
-    // won't exceed the set limit for notice input
-
-    if (inputBytesCompressed.length >= CANVAS_DATA_LIMIT) {
+    // validate before sending the tx
+    const isValidSizeInput = validateInputSize(canvasSVG);
+    if (!isValidSizeInput) {
       toast.error("Input limit exceeded!", {
         description: "Please, reduce the drawing size!",
       });
       setLoading(false);
       return;
     }
+    // proceed after validation
+    const canvasData = {
+      svg: base64_encode(canvasSVG),
+    };
+    const compressed = pako.deflate(JSON.stringify(canvasData));
     sendInput(compressed);
-    // sendInput(canvasData);
   };
 
   return (
