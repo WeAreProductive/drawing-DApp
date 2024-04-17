@@ -155,7 +155,10 @@ const CanvasToJSON = () => {
     };
 
     const compressed = pako.deflate(JSON.stringify(canvasData));
-
+    const inputBytesCompressed = ethers.utils.isBytesLike(compressed)
+      ? compressed
+      : ethers.utils.toUtf8Bytes(compressed);
+    console.log(`svg + json ${inputBytesCompressed.length}`);
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
     // const compressed = pako.deflate(canvasData);
     // console.log(`compressed ${compressed.length}`);

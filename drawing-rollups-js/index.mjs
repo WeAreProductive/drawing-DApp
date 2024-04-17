@@ -41,7 +41,7 @@ const mint_erc721_with_string = async (
   drawing_input,
   cmd
 ) => {
-  // drawing comes compressed
+  // the drawing is compressed
   const decompressed = JSON.parse(
     pako.inflate(drawing_input.drawing, { to: "string" })
   );

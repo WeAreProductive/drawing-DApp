@@ -93,7 +93,6 @@ const CanvasToSVG = () => {
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
       // Encode the input
-
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
         : ethers.utils.toUtf8Bytes(str);
@@ -138,6 +137,7 @@ const CanvasToSVG = () => {
     //   svg: base64_encode(canvasSVG),
     // });
     // const compressed = pako.deflate(canvasData);
+    console.log(`Canvas svg length ${canvasSVG.length}`);
     const canvasData = {
       svg: base64_encode(canvasSVG),
     };
@@ -147,6 +147,10 @@ const CanvasToSVG = () => {
     // console.log(restored);
     // console.log(`compressed ${compressed.length}`);
     // console.log(`not compressed ${canvasData.length}`);
+    const inputBytesCompressed = ethers.utils.isBytesLike(compressed)
+      ? compressed
+      : ethers.utils.toUtf8Bytes(compressed);
+    console.log(`svg ${inputBytesCompressed.length}`);
     sendInput(compressed);
     // sendInput(canvasData);
   };
