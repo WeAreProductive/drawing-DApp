@@ -68,7 +68,7 @@ const CanvasToJSON = () => {
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
-          drawing: canvasData, // FE updates the svg string only
+          drawing: canvasData, // FE updates the svg string only, compressed
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
