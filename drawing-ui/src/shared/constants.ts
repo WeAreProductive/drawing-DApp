@@ -45,3 +45,11 @@ export const COMMANDS = {
       "BE will emit a notice (with the data of the updated drawing) and a voucher to mint a NFT",
   },
 };
+
+export const VOUCHER_INPUT_LMIT = 120000; // bytes
+const VIL_TO_IMAGE_DATA = 14; // ~ voucher request size / canvas data size in bytes
+export const VOUCHER_CANVAS_DATA_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_IMAGE_DATA;
+const VIL_TO_NIL = 2.5; // ~ voucher request size / notice request size with same image
+export const NOTICE_INPUT_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_NIL;
+const NIL_TO_IMAGE_DATA = 12; // ~ notice request size / canvas data size in bytes
+export const NOTICE_CANVAS_DATA_LIMIT = NOTICE_INPUT_LIMIT / NIL_TO_IMAGE_DATA;
