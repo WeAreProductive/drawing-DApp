@@ -11,7 +11,7 @@ const ModeControl = () => {
       ? setBtnLabel("Enable selecton")
       : setBtnLabel("Disable selection");
   };
-  console.log(btnLabel);
+
   useEffect(() => {
     if (!canvas) return;
     canvas.isDrawingMode

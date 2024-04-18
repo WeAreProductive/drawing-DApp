@@ -36,6 +36,7 @@ const FabricJSCanvas = () => {
   useEffect(() => {
     if (canvas) {
       const brush = canvas.freeDrawingBrush;
+      // const brush = canvas.freeDrawingBrush;
       const brushSize =
         canvasOptions.lineWidth || INITIAL_DRAWING_OPTIONS.minBrushWidth;
       brush.color = canvasOptions.color;

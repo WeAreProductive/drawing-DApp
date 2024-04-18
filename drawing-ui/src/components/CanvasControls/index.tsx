@@ -29,8 +29,8 @@ const CanvasControls = () => {
         toast.error(result.info.message);
       }
     };
-    canvas.on("mouse:move", validateCanvasInputSize); // sometimes stops working ..
-    canvas.on("after:render", validateCanvasInputSize);
+    // canvas.on("mouse:move", validateCanvasInputSize); // sometimes stops working ..
+    // canvas.on("after:render", validateCanvasInputSize);
   }, [canvas]);
 
   return (
