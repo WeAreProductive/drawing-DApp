@@ -8,7 +8,6 @@ import { validateInputSize } from "../../utils";
 
 const CanvasControls = () => {
   const { canvas } = useCanvasContext();
-  const [svgStrLength, setSvgStrLength] = useState(0); // @TODO temp var, remove
   useEffect(() => {
     if (!canvas) return;
     const validateCanvasInputSize = () => {
@@ -23,10 +22,9 @@ const CanvasControls = () => {
         width: canvas.width || 0,
         height: canvas.height || 0,
       });
-      setSvgStrLength(canvasSVG.length); // @TODO remove
-      const isValidSize = validateInputSize(canvasSVG);
-      if (!isValidSize) {
-        toast.error("You are approaching rollups input size limit!");
+      const result = validateInputSize(canvasSVG, true);
+      if (!result.isValid) {
+        toast.error(result.info.message);
       }
     };
     // canvas.on("mouse:move", validateCanvasInputSize); not working ..
@@ -34,7 +32,6 @@ const CanvasControls = () => {
   }, [canvas]);
   return (
     <div className="flex gap-2">
-      <p>{svgStrLength}</p>
       <CanvasReset />
       <CanvasToSVG />
       <CanvasToJSON />

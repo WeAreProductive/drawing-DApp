@@ -47,8 +47,6 @@ export const COMMANDS = {
 };
 
 export const VOUCHER_INPUT_LMIT = 400000; // bytes
-const VIL_TO_IMAGE_DATA = 14; // ~ voucher request size / canvas data size in bytes
-// export const VOUCHER_CANVAS_DATA_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_IMAGE_DATA; // 28571
 const VIL_TO_NIL = 2.5; // ~ voucher request size / notice request size with same image
 export const NOTICE_INPUT_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_NIL; // 160000
 const NIL_TO_IMAGE_DATA = 11.5; // ~ notice request size / canvas data size in bytes
@@ -59,3 +57,14 @@ const CANVAS_SVG_STR_LEN_TO_NOTICE_CANVAS_DATA = 4;
 export const CANVAS_SVG_STR_LEN_LIMIT =
   NOTICE_CANVAS_DATA_LIMIT * CANVAS_SVG_STR_LEN_TO_NOTICE_CANVAS_DATA; // prevent canvas data will not exceed the max input size 55 652
 export const LIMIT_WARNING_AT = 0.9; // in %, at what size the warning will appear 50 086
+
+export const VALIDATE_INPUT_ERRORS = {
+  warning: {
+    message: "You are approaching rollups input size limit!",
+    description: "",
+  },
+  error: {
+    message: "Input limit exceeded!",
+    description: "Please, reduce the drawing size!",
+  },
+};

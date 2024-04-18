@@ -133,10 +133,10 @@ const CanvasToSVG = () => {
       }
     };
     // validate before sending the tx
-    const isValidSizeInput = validateInputSize(canvasSVG);
-    if (!isValidSizeInput) {
-      toast.error("Input limit exceeded!", {
-        description: "Please, reduce the drawing size!",
+    const result = validateInputSize(canvasSVG);
+    if (!result.isValid) {
+      toast.error(result.info.message, {
+        description: result.info.description,
       });
       setLoading(false);
       return;
