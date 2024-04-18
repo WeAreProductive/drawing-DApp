@@ -17,6 +17,7 @@ export type CanvasOptions = {
   lineWidth: number;
   canvasWidth: number;
   canvasHeight: number;
+  cursorType: string;
 };
 
 export type CanvasContextType = {
@@ -29,8 +30,6 @@ export type CanvasContextType = {
   currentDrawingData: null | DrawingInput;
   setCurrentDrawingData: React.Dispatch<null | DrawingInput>;
   clearCanvas: () => void;
-  // svgStrLength: number;
-  // setSvgStrLength: React.Dispatch<number>;
 };
 
 export type VoucherExtended = {

@@ -1,85 +1,60 @@
 import { useEffect, useState } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { fabric } from "fabric";
-import { INITIAL_DRAWING_OPTIONS } from "../../shared/constants";
+import {
+  CANVAS_CURSOR_TYPES,
+  INITIAL_DRAWING_OPTIONS,
+} from "../../shared/constants";
+import { getCursorSvg } from "../../utils";
 
 const BrushControl = () => {
-  const { canvas, canvasOptions } = useCanvasContext();
+  const { canvas, canvasOptions, setOptions } = useCanvasContext();
   const [btnLabel, setBtnLabel] = useState("Spray");
   const [sprayEnabled, setSprayEnabled] = useState(false);
 
   const handleBrush = () => {
     if (!canvas) return;
     if (!sprayEnabled) {
+      setOptions({ ...canvasOptions, cursorType: CANVAS_CURSOR_TYPES.spray }); // update in context
       canvas.freeDrawingBrush = new fabric["SprayBrush"](canvas);
       const brush = canvas.freeDrawingBrush;
-      // const brush = canvas.freeDrawingBrush;
       const brushSize =
         canvasOptions.lineWidth || INITIAL_DRAWING_OPTIONS.minBrushWidth;
       brush.color = canvasOptions.color;
       brush.width = brushSize;
 
-      const getDrawCursor = () => {
-        const circle = `
-          <svg
-            height="${brushSize}"
-            fill="${canvasOptions.color}"
-            viewBox="0 0 ${brushSize * 2} ${brushSize * 2}"
-            width="${brushSize}"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="50%"
-              cy="50%"
-              r="${brushSize}" 
-            />
-          </svg>
-        `;
-
-        return `data:image/svg+xml;base64,${window.btoa(circle)}`;
+      // get cursor by context cursor type
+      const getDrawCursor = (cursorType: string) => {
+        const cursor = getCursorSvg(brushSize, canvasOptions.color, cursorType);
+        if (!cursor) return;
+        return `data:image/svg+xml;base64,${window.btoa(cursor)}`;
       };
-
       // set custom cursor
-      const cursor = `url(${getDrawCursor()}) ${brushSize / 2} ${
+      const cursor = `url(${getDrawCursor(CANVAS_CURSOR_TYPES.spray)}) ${brushSize / 2} ${
         brushSize / 2
       }, crosshair`;
 
       canvas.freeDrawingCursor = cursor;
       canvas.setCursor(cursor);
-      setBtnLabel("Default");
+      setBtnLabel("Pencil");
       setSprayEnabled(true);
-      // @TODO change the cursor
     } else {
+      setOptions({ ...canvasOptions, cursorType: CANVAS_CURSOR_TYPES.circle }); // update in context
       canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
       const brush = canvas.freeDrawingBrush;
-      // const brush = canvas.freeDrawingBrush;
       const brushSize =
         canvasOptions.lineWidth || INITIAL_DRAWING_OPTIONS.minBrushWidth;
       brush.color = canvasOptions.color;
       brush.width = brushSize;
-      // @TODO get proper cursor image
-      const getDrawCursor = () => {
-        const circle = `
-          <svg
-            height="${brushSize}"
-            fill="${canvasOptions.color}"
-            viewBox="0 0 ${brushSize * 2} ${brushSize * 2}"
-            width="${brushSize}"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="50%"
-              cy="50%"
-              r="${brushSize}" 
-            />
-          </svg>
-        `;
-
-        return `data:image/svg+xml;base64,${window.btoa(circle)}`;
+      // get cursor by context cursor type
+      const getDrawCursor = (cursorType: string) => {
+        const cursor = getCursorSvg(brushSize, canvasOptions.color, cursorType);
+        if (!cursor) return;
+        return `data:image/svg+xml;base64,${window.btoa(cursor)}`;
       };
 
       // set custom cursor
-      const cursor = `url(${getDrawCursor()}) ${brushSize / 2} ${
+      const cursor = `url(${getDrawCursor(CANVAS_CURSOR_TYPES.circle)}) ${brushSize / 2} ${
         brushSize / 2
       }, crosshair`;
 
@@ -87,7 +62,6 @@ const BrushControl = () => {
       canvas.setCursor(cursor);
       setBtnLabel("Spray");
       setSprayEnabled(false);
-      // @TODO change the cursor
     }
   };
   useEffect(() => {
@@ -97,6 +71,7 @@ const BrushControl = () => {
       setBtnLabel("Spray");
     }
   }, [sprayEnabled]);
+
   return <button onClick={handleBrush}>{btnLabel}</button>;
 };
 

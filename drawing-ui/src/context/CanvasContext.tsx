@@ -17,6 +17,7 @@ const initialOptions = {
   canvasWidth: INITIAL_DRAWING_OPTIONS.canvasWidth,
   canvasHeight: INITIAL_DRAWING_OPTIONS.canvasHeight,
   backgroundColor: INITIAL_DRAWING_OPTIONS.backgroundColor,
+  cursorType: INITIAL_DRAWING_OPTIONS.cursorType,
 };
 const initialCanvasContext = {
   canvas: null,
