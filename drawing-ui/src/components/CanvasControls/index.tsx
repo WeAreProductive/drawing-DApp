@@ -8,8 +8,10 @@ import { validateInputSize } from "../../utils";
 
 const CanvasControls = () => {
   const { canvas } = useCanvasContext();
+  const [warning, setWarning] = useState(false);
   useEffect(() => {
     if (!canvas) return;
+
     const validateCanvasInputSize = () => {
       // Gets current drawing data as SVG
       const canvasSVG = canvas.toSVG({
@@ -27,9 +29,10 @@ const CanvasControls = () => {
         toast.error(result.info.message);
       }
     };
-    // canvas.on("mouse:move", validateCanvasInputSize); not working ..
+    canvas.on("mouse:move", validateCanvasInputSize); // sometimes stops working ..
     canvas.on("after:render", validateCanvasInputSize);
   }, [canvas]);
+
   return (
     <div className="flex gap-2">
       <CanvasReset />
