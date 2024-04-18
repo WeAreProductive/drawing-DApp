@@ -12,8 +12,16 @@ const FabricJSCanvas = () => {
     const options = {
       isDrawingMode: true,
       backgroundColor: INITIAL_DRAWING_OPTIONS.backgroundColor,
-      selectionColor: canvasOptions.color,
-      selectionLineWidth: canvasOptions.lineWidth,
+      // @TODO define as constants
+      selectionLineWidth: 2,
+      perPixelTargetFind: false,
+      preserveObjectStacking: false,
+      selection: true,
+      selectionBorderColor: "#9f9c9c",
+      selectionColor: "transparent",
+      selectionFullyContained: true,
+      // hoverCursor
+      interactive: true,
     };
     const canvas = new fabric.Canvas(canvasEl.current, options);
 

@@ -5,6 +5,7 @@ import FabricJSCanvas from "../components/FabricJSCanvas";
 import CanvasControls from "../components/CanvasControls";
 import ImagesListRollups from "../components/ImagesRollups";
 import { GraphQLProvider } from "../context/GraphQLContext";
+import CanvasObjectsControl from "../components/CanvasObjectsControl.tsx";
 
 const Draw = () => {
   return (
@@ -19,6 +20,8 @@ const Draw = () => {
                     <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
                       <DrawingControls />
                       <CanvasControls />
+                      <br></br>
+                      <CanvasObjectsControl />
                     </div>
                     <FabricJSCanvas />
                   </div>
