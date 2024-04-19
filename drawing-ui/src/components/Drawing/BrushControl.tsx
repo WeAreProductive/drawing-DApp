@@ -9,6 +9,7 @@ import { getCursorSvg } from "../../utils";
 import Spray from "../ui/icons/spray";
 import { Button } from "../ui/button";
 import Pencil from "../ui/icons/pencil";
+import { toast } from "sonner";
 
 const BrushControl = () => {
   const { canvas, canvasOptions, setOptions } = useCanvasContext();
@@ -17,6 +18,9 @@ const BrushControl = () => {
   const toggleBrush = () => {
     if (!canvas) return;
     if (!sprayEnabled) {
+      toast.error(
+        "The Spray will dramatically increase the drawing/input size!",
+      );
       setOptions({ ...canvasOptions, cursorType: CANVAS_CURSOR_TYPES.spray }); // update in context
       canvas.freeDrawingBrush = new fabric["SprayBrush"](canvas);
       const brush = canvas.freeDrawingBrush;
