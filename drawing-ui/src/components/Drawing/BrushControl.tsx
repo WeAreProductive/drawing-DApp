@@ -6,13 +6,16 @@ import {
   INITIAL_DRAWING_OPTIONS,
 } from "../../shared/constants";
 import { getCursorSvg } from "../../utils";
+import Spray from "../ui/icons/spray";
+import { Button } from "../ui/button";
+import Pencil from "../ui/icons/pencil";
 
 const BrushControl = () => {
   const { canvas, canvasOptions, setOptions } = useCanvasContext();
   const [btnLabel, setBtnLabel] = useState("Spray");
   const [sprayEnabled, setSprayEnabled] = useState(false);
 
-  const handleBrush = () => {
+  const toggleBrush = () => {
     if (!canvas) return;
     if (!sprayEnabled) {
       setOptions({ ...canvasOptions, cursorType: CANVAS_CURSOR_TYPES.spray }); // update in context
@@ -72,7 +75,15 @@ const BrushControl = () => {
     }
   }, [sprayEnabled]);
 
-  return <button onClick={handleBrush}>{btnLabel}</button>;
+  return (
+    <Button variant={"outline"} onClick={toggleBrush}>
+      {canvasOptions.cursorType === CANVAS_CURSOR_TYPES.circle ? (
+        <Spray />
+      ) : (
+        <Pencil />
+      )}
+    </Button>
+  );
 };
 
 export default BrushControl;
