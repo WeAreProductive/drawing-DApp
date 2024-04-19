@@ -19,9 +19,8 @@ const Draw = () => {
                   <div className="sticky top-4 inline-flex flex-col gap-4">
                     <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
                       <DrawingControls />
-                      <CanvasControls />
-                      <br></br>
                       <CanvasObjectsControl />
+                      <CanvasControls />
                     </div>
                     <FabricJSCanvas />
                   </div>

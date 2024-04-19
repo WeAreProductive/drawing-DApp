@@ -1,23 +1,22 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
+import { Button } from "../ui/button";
+import Draw from "../ui/icons/draw";
+import Select from "../ui/icons/select";
 
 const ModeControl = () => {
   const { canvas } = useCanvasContext();
-  const [btnLabel, setBtnLabel] = useState("");
-  const handleDrawingMode = () => {
+  const [selectionEnabled, setSelectionEnabled] = useState(false);
+  const toggleDrawingMode = () => {
     if (!canvas) return;
     canvas.isDrawingMode = !canvas?.isDrawingMode;
-    canvas.isDrawingMode
-      ? setBtnLabel("Enable selecton")
-      : setBtnLabel("Disable selection");
+    setSelectionEnabled(!selectionEnabled);
   };
 
-  useEffect(() => {
-    if (!canvas) return;
-    canvas.isDrawingMode
-      ? setBtnLabel("Enable selecton")
-      : setBtnLabel("Disable selection");
-  }, [canvas?.isDrawingMode, btnLabel]);
-  return <button onClick={handleDrawingMode}>{btnLabel}</button>;
+  return (
+    <Button variant={"outline"} onClick={toggleDrawingMode}>
+      {selectionEnabled ? <Draw /> : <Select />}
+    </Button>
+  );
 };
 export default ModeControl;
