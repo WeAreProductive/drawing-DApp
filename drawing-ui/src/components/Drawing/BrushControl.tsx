@@ -12,7 +12,6 @@ import Pencil from "../ui/icons/pencil";
 
 const BrushControl = () => {
   const { canvas, canvasOptions, setOptions } = useCanvasContext();
-  const [btnLabel, setBtnLabel] = useState("Spray");
   const [sprayEnabled, setSprayEnabled] = useState(false);
 
   const toggleBrush = () => {
@@ -39,7 +38,6 @@ const BrushControl = () => {
 
       canvas.freeDrawingCursor = cursor;
       canvas.setCursor(cursor);
-      setBtnLabel("Pencil");
       setSprayEnabled(true);
     } else {
       setOptions({ ...canvasOptions, cursorType: CANVAS_CURSOR_TYPES.circle }); // update in context
@@ -63,17 +61,9 @@ const BrushControl = () => {
 
       canvas.freeDrawingCursor = cursor;
       canvas.setCursor(cursor);
-      setBtnLabel("Spray");
       setSprayEnabled(false);
     }
   };
-  useEffect(() => {
-    if (sprayEnabled) {
-      setBtnLabel("Default");
-    } else {
-      setBtnLabel("Spray");
-    }
-  }, [sprayEnabled]);
 
   return (
     <Button variant={"outline"} onClick={toggleBrush}>
