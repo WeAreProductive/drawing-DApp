@@ -16,6 +16,7 @@ import {
   getCurrentTimestamp,
   clean_header,
 } from "./lib/utils.mjs";
+import pako from "pako";
 
 /**
  * Prepare mint nft voucher's data
@@ -40,25 +41,35 @@ const mint_erc721_with_string = async (
   drawing_input,
   cmd
 ) => {
+  const decompressedDrawing = JSON.parse(
+    pako.inflate(drawing_input.drawing, { to: "string" })
+  ).content;
+
+  const decompressedImageBase64 = pako.inflate(imageBase64, { to: "string" });
+
   const validBase64 = await validateDrawing(
-    JSON.parse(drawing_input.drawing).content,
-    imageBase64
+    decompressedDrawing,
+    decompressedImageBase64
   );
+
   if (validBase64 === true) {
     console.log("Preparing a VOUCHER for MINTING AN NFT");
     const mintHeader = clean_header(mint_header);
     const abiCoder = new ethers.utils.AbiCoder();
+
     // abiCoder.encode( types , values ) ⇒ string< DataHexString >
     const data = abiCoder.encode(
       ["address", "string"],
       [msg_sender, imageIPFSMeta]
     );
+
     const payloadStr = `${mintHeader}${data.slice(2)}`.toString(); //toString() is equal to py's hex()
     const payload = `${payloadStr}`;
     const voucher = {
       destination: erc721_to_mint,
       payload: payload,
     };
+
     await send_voucher(voucher);
     await store_drawing_data(msg_sender, uuid, drawing_input, cmd);
   } else {

@@ -8,7 +8,7 @@
     "DAppRelayAddress": "0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e",
     "InputBoxAddress": "0x59b22D57D4f067708AB0c00552767405926dc768",
     "Erc721PortalAddress": "0x4CA354590EB934E6094Be762b38dE75d1Dd605a9",
-    "ercToMint": "0xa2887B3a8F75c1DE921eD2b1bA6A41b2692d961c"
+    "ercToMint": "0x4f3143568D076F171A21C571fE58143475DCCa2c"
   },
   "0xaa36a7": {
     "token": "SepETH",
@@ -16,7 +16,7 @@
     "rpcUrl": "https://eth-sepolia.g.alchemy.com/v2/QlPCEOfqQtb6VGovfHgOc6Ux8FnucSSz",
     "graphqlAPIURL": "https://drawingcanvas.fly.dev",
     "inspectAPIURL": "https://drawingcanvas.fly.dev:5005",
-    "DAppRelayAddress": "0x25BdfbA9eAaF7B93a18636230eBb13CACd63F897",
+    "DAppRelayAddress": "0x8b180f3006B69B26d15A5b8b740af94d1f9cE834",
     "InputBoxAddress": "0x59b22D57D4f067708AB0c00552767405926dc768",
     "Erc721PortalAddress": "0x4CA354590EB934E6094Be762b38dE75d1Dd605a9",
     "ercToMint": "0x4f3143568D076F171A21C571fE58143475DCCa2c"

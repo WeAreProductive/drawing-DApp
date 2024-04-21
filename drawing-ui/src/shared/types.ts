@@ -12,6 +12,16 @@ export type Network = {
   ercToMint: string;
 };
 
+export type CanvasLimitations = {
+  isValid: boolean;
+  info: {
+    message: string;
+    description: string;
+    size: string;
+    type: string;
+  };
+};
+
 export type CanvasOptions = {
   color: string;
   lineWidth: number;
@@ -29,6 +39,8 @@ export type CanvasContextType = {
   currentDrawingData: null | DrawingInput;
   setCurrentDrawingData: React.Dispatch<null | DrawingInput>;
   clearCanvas: () => void;
+  // svgStrLength: number;
+  // setSvgStrLength: React.Dispatch<number>;
 };
 
 export type VoucherExtended = {

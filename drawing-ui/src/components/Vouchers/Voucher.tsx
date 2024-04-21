@@ -29,7 +29,6 @@ const Voucher = ({ voucherData }: VoucherProp) => {
   const [voucherToExecute, setVoucherToExecute] = useState<VoucherExtended>();
 
   const [loading, setLoading] = useState(false);
-  // @TODO - check graphql client for connected chain
   if (!connectedChain) return;
   const rollups = useRollups(config[connectedChain.id].DAppRelayAddress);
 
@@ -111,11 +110,12 @@ const Voucher = ({ voucherData }: VoucherProp) => {
   }, [voucherResult, rollups]);
 
   return (
-    <div className="flex flex-col gap-6 pb-4 my-4 border-b-2">
+    <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
       {voucherData.drawing && (
         <div className="w-1/2 p-2">
           <CanvasSnapshotLight
-            src={base64_decode(JSON.parse(voucherData.drawing).svg)}
+            data={voucherData.drawing}
+            // src={base64_decode(JSON.parse(voucherData.drawing).svg)}
           />
         </div>
       )}

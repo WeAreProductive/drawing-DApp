@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { DrawingInputExtended } from "../../shared/types";
 import CanvasSnapshot from "./CanvasSnapshot";
-
 type DrawingsListProp = {
   drawings: DrawingInputExtended[] | null;
 };

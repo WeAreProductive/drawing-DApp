@@ -21,10 +21,15 @@ import { Button } from "../ui/button";
 import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { encode as base64_encode } from "base-64";
+import pako from "pako";
+import { validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
-const CanvasToSVG = () => {
+type CanvasToSVGProp = {
+  enabled: boolean;
+};
+const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
   const [connectedWallet] = useWallets();
   const { canvas, dappState, setDappState, currentDrawingData, clearCanvas } =
     useCanvasContext();
@@ -42,7 +47,6 @@ const CanvasToSVG = () => {
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
 
-    toast.info("Sending input to rollups...");
     setLoading(true);
 
     // Gets current drawing data as SVG
@@ -57,6 +61,7 @@ const CanvasToSVG = () => {
       height: canvas.height || 0,
     });
     const sendInput = async (strInput: string) => {
+      toast.info("Sending input to rollups...");
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
         connectedWallet.provider,
@@ -95,6 +100,7 @@ const CanvasToSVG = () => {
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
         : ethers.utils.toUtf8Bytes(str);
+
       if (!connectedChain) return;
       // Send the transaction
       try {
@@ -129,18 +135,28 @@ const CanvasToSVG = () => {
         setLoading(false);
       }
     };
-
-    const canvasData = JSON.stringify({
+    // validate before sending the tx
+    const result = validateInputSize(canvasSVG);
+    if (!result.isValid) {
+      toast.error(result.info.message, {
+        description: result.info.description,
+      });
+      setLoading(false);
+      return;
+    }
+    // proceed after validation
+    const canvasData = {
       svg: base64_encode(canvasSVG),
-    });
-    sendInput(canvasData);
+    };
+    const compressedCanvasData = pako.deflate(JSON.stringify(canvasData));
+    sendInput(compressedCanvasData);
   };
 
   return (
     <Button
       variant={"outline"}
       onClick={handleCanvasToSvg}
-      disabled={!connectedChain || loading}
+      disabled={!connectedChain || loading || !enabled}
     >
       <Save size={18} className="mr-2" strokeWidth={1.5} />
       {loading ? "Saving..." : "Save"}

@@ -19,16 +19,21 @@ import { v4 as uuidv4 } from "uuid";
 import { encode as base64_encode } from "base-64";
 
 import { MINT_SELECTOR, DAPP_STATE, COMMANDS } from "../../shared/constants";
+import pako from "pako";
 
 import {
   DrawingInput,
   DrawingInputExtended,
   Network,
 } from "../../shared/types";
+import { validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
-const CanvasToJSON = () => {
+type CanvasToJSONProp = {
+  enabled: boolean;
+};
+const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
   const [connectedWallet] = useWallets();
   const { canvas, dappState, currentDrawingData, setDappState, clearCanvas } =
     useCanvasContext();
@@ -44,14 +49,14 @@ const CanvasToJSON = () => {
 
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
-
-    toast.info("Sending input to rollups...");
     setLoading(true);
 
     const sendInput = async (
       drawingMeta: { base64out: string; ipfsHash: string },
       canvasData: string,
     ) => {
+      toast.info("Sending input to rollups...");
+
       if (!connectedChain) return;
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
@@ -67,7 +72,7 @@ const CanvasToJSON = () => {
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
-          drawing: canvasData, // FE updates the svg string only
+          drawing: canvasData, // FE updates the svg string only, compressedCanvasData
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
@@ -141,19 +146,36 @@ const CanvasToJSON = () => {
         setLoading(false);
       }
     };
-
-    const canvasContent = canvas.toJSON();
     const canvasSVG = canvas.toSVG();
-    const canvasData = JSON.stringify({
+    // validate before sending the tx
+    const result = validateInputSize(canvasSVG);
+    if (!result.isValid) {
+      toast.error(result.info.message, {
+        description: result.info.description,
+      });
+      setLoading(false);
+      return;
+    }
+
+    // proceed after validation
+    const canvasContent = canvas.toJSON();
+    let canvasData = {
       svg: base64_encode(canvasSVG),
       content: canvasContent.objects,
-    });
-    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
-    sendInput(drawingMeta, canvasData);
+    };
+
+    const compressedCanvasData = pako.deflate(JSON.stringify(canvasData));
+
+    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid); // drawingMeta contains compressed base64 image and IPFS hash
+    sendInput(drawingMeta, compressedCanvasData);
   };
 
   return connectedChain ? (
-    <Button variant={"outline"} onClick={handleCanvasToSvg} disabled={loading}>
+    <Button
+      variant={"outline"}
+      onClick={handleCanvasToSvg}
+      disabled={loading || !enabled}
+    >
       <Box size={18} className="mr-2" strokeWidth={1.5} />
       {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
     </Button>

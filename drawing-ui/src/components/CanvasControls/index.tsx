@@ -2,12 +2,15 @@ import CanvasReset from "./CanvasReset";
 import CanvasToJSON from "./CanvasToJSON";
 import CanvasToSVG from "./CanvasToSVG";
 
-const CanvasControls = () => {
+type CanvasControlsProp = {
+  enabled: boolean;
+};
+const CanvasControls = ({ enabled }: CanvasControlsProp) => {
   return (
     <div className="flex gap-2">
       <CanvasReset />
-      <CanvasToSVG />
-      <CanvasToJSON />
+      <CanvasToSVG enabled={enabled} />
+      <CanvasToJSON enabled={enabled} />
     </div>
   );
 };
