@@ -60,11 +60,11 @@ export const LIMIT_WARNING_AT = 0.9; // in %, at what size the warning will appe
 
 export const VALIDATE_INPUT_ERRORS = {
   warning: {
-    message: "You are approaching rollups input size limit!",
+    message: "You are approaching the allowed size limit!",
     description: "",
   },
   error: {
-    message: "Input limit exceeded!",
+    message: "Allowed size exceeded!",
     description: "Please, reduce the drawing size!",
   },
 };

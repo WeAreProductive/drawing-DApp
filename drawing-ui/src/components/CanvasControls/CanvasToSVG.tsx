@@ -26,7 +26,10 @@ import { validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
-const CanvasToSVG = () => {
+type CanvasToSVGProp = {
+  enabled: boolean;
+};
+const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
   const [connectedWallet] = useWallets();
   const { canvas, dappState, setDappState, currentDrawingData, clearCanvas } =
     useCanvasContext();
@@ -97,7 +100,7 @@ const CanvasToSVG = () => {
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
         : ethers.utils.toUtf8Bytes(str);
-      console.log(`notice request compressedCanvasData: ${inputBytes.length}`);
+
       if (!connectedChain) return;
       // Send the transaction
       try {
@@ -153,7 +156,7 @@ const CanvasToSVG = () => {
     <Button
       variant={"outline"}
       onClick={handleCanvasToSvg}
-      disabled={!connectedChain || loading}
+      disabled={!connectedChain || loading || !enabled}
     >
       <Save size={18} className="mr-2" strokeWidth={1.5} />
       {loading ? "Saving..." : "Save"}

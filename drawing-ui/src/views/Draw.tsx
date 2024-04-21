@@ -1,8 +1,7 @@
 import Page from "../layouts/Page";
 import { CanvasContextProvider } from "../context/CanvasContext";
-import DrawingControls from "../components/Drawing/DrawingControls";
 import FabricJSCanvas from "../components/FabricJSCanvas";
-import CanvasControls from "../components/CanvasControls";
+import Controls from "../components/Controls";
 import ImagesListRollups from "../components/ImagesRollups";
 import { GraphQLProvider } from "../context/GraphQLContext";
 
@@ -16,10 +15,7 @@ const Draw = () => {
               <div className="grid gap-4 xl:grid-cols-[1fr,var(--sidebar-width)]">
                 <div className="mx-auto">
                   <div className="sticky top-4 inline-flex flex-col gap-4">
-                    <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
-                      <DrawingControls />
-                      <CanvasControls />
-                    </div>
+                    <Controls />
                     <FabricJSCanvas />
                   </div>
                 </div>
