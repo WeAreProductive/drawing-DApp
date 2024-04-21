@@ -69,7 +69,7 @@ const CanvasToJSON = () => {
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
-          drawing: canvasData, // FE updates the svg string only, compressed
+          drawing: canvasData, // FE updates the svg string only, compressedCanvasData
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
@@ -161,10 +161,10 @@ const CanvasToJSON = () => {
       content: canvasContent.objects,
     };
 
-    const compressed = pako.deflate(JSON.stringify(canvasData));
+    const compressedCanvasData = pako.deflate(JSON.stringify(canvasData));
 
-    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
-    sendInput(drawingMeta, compressed);
+    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid); // drawingMeta contains compressed base64 image and IPFS hash
+    sendInput(drawingMeta, compressedCanvasData);
   };
 
   return connectedChain ? (

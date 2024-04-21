@@ -6,6 +6,7 @@ import { fabric } from "fabric";
 import { TatumSDK, Network } from "@tatumio/tatum";
 import { API_ENDPOINTS, ORIGIN_BASE, TATUM_KEY } from "./config.mjs";
 import base64 from "base-64";
+import pako from "pako";
 
 const port = 3000;
 const corsOptions = {
@@ -109,7 +110,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           res.send(
             JSON.stringify({
               success: true,
-              base64out: base64.encode(generatedSVG),
+              base64out: pako.deflate(base64.encode(generatedSVG)), // Encoded & Compressed image
               ipfsHash: metaIPFS.data.ipfsHash,
             })
           );

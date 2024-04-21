@@ -97,7 +97,7 @@ const CanvasToSVG = () => {
       const inputBytes = ethers.utils.isBytesLike(str)
         ? str
         : ethers.utils.toUtf8Bytes(str);
-      console.log(`notice request compressed: ${inputBytes.length}`);
+      console.log(`notice request compressedCanvasData: ${inputBytes.length}`);
       if (!connectedChain) return;
       // Send the transaction
       try {
@@ -145,8 +145,8 @@ const CanvasToSVG = () => {
     const canvasData = {
       svg: base64_encode(canvasSVG),
     };
-    const compressed = pako.deflate(JSON.stringify(canvasData));
-    sendInput(compressed);
+    const compressedCanvasData = pako.deflate(JSON.stringify(canvasData));
+    sendInput(compressedCanvasData);
   };
 
   return (
