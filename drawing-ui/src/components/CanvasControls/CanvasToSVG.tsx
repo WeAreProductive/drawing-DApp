@@ -103,7 +103,6 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
       const inputBytes = ethers.utils.isBytesLike(compressedStr)
         ? compressedStr
         : ethers.utils.toUtf8Bytes(compressedStr);
-      console.log(`Notice input size: ${inputBytes.length}`);
 
       if (!connectedChain) return;
       // Send the transaction

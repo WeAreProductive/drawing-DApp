@@ -7,7 +7,6 @@ type CanvasSnapshotLightProp = {
 
 const CanvasSnapshotLight = ({ data }: CanvasSnapshotLightProp) => {
   const drawingObj = JSON.parse(data);
-  if (!drawingObj.svg) return;
   const src = base64_decode(drawingObj.svg);
   const svg = new Blob([src], { type: "image/svg+xml" });
   const url = URL.createObjectURL(svg);

@@ -112,7 +112,6 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       const inputBytes = ethers.utils.isBytesLike(compressedStr)
         ? compressedStr
         : ethers.utils.toUtf8Bytes(compressedStr);
-      console.log(`Voucher input size: ${inputBytes.length}`);
 
       // Send the transaction
       if (!connectedChain) return;

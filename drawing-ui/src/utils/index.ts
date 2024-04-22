@@ -37,7 +37,7 @@ export const validateInputSize = (
   const inputBytesCompressed = ethers.utils.isBytesLike(compressed)
     ? compressed
     : ethers.utils.toUtf8Bytes(compressed);
-  console.log(`Validating svg ${inputBytesCompressed.length}`);
+
   const sizes =
     "Canvas " +
     prettyBytes(inputBytesCompressed.length) +

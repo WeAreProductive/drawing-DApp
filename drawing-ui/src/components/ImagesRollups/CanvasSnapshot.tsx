@@ -19,9 +19,8 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
-    if (!drawingObj.svg) return;
+
     fabric.loadSVGFromString(
-      // base64_decode(JSON.parse(drawing).svg),
       base64_decode(drawingObj.svg),
       function (objects, options) {
         var obj = fabric.util.groupSVGElements(objects, options);
@@ -39,8 +38,8 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
   };
+
   const drawingPreview = useMemo(() => {
-    if (!drawingObj.svg) return;
     const svg = new Blob([base64_decode(drawingObj.svg)], {
       type: "image/svg+xml",
     });
