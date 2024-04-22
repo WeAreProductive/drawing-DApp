@@ -7,7 +7,6 @@ import {
   send_report,
   send_exception,
 } from "./lib/rollups-api.mjs";
-import base64 from "base-64";
 import { validateDrawing } from "./lib/drawing.mjs";
 import {
   str2hex,
