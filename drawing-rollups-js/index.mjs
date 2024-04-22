@@ -63,12 +63,14 @@ const mint_erc721_with_string = async (
       destination: erc721_to_mint,
       payload: payload,
     };
-
+    drawing_input.drawing = JSON.stringify({
+      svg: base64.encode(validateBase64.svg),
+    });
     await send_voucher(voucher);
     await store_drawing_data(
       msg_sender,
       uuid,
-      { drawing: { svg: base64.encode(validateBase64.svg) } }, // notice drawing data needs the svg only
+      drawing_input, // notice drawing data needs the svg only
       cmd
     );
   } else {
@@ -87,6 +89,7 @@ const mint_erc721_with_string = async (
  */
 const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   console.log("Store drawing data in a notice");
+  console.log({ drawing_input });
   const now = getCurrentDate(); // 'YYYY-MM-DD'
   const newLogItem = {
     date_updated: now,

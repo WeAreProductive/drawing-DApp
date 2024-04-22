@@ -15,6 +15,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
   const { drawing, owner, uuid } = src;
   const drawingObj = JSON.parse(drawing);
+
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
@@ -44,7 +45,9 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     const svg = new Blob([base64_decode(drawingObj.svg)], {
       type: "image/svg+xml",
     });
+    console.log(svg);
     const url = URL.createObjectURL(svg);
+    console.log({ url });
     return <img src={url} alt="drawing preview" />;
   }, [drawing]);
 

@@ -54,7 +54,7 @@ export async function validateDrawing(drawingContent, drawingBase64) {
         const drawingSVG = stringUnification(base64.decode(drawingBase64));
 
         if (drawingSVG === generatedSVG) {
-          res = { isValid: true, svg: drawingSVG };
+          res = { isValid: true, svg: generatedSVG };
         }
       }
     );
