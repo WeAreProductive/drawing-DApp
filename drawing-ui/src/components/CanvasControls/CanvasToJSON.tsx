@@ -163,7 +163,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
     // proceed after validation
     const canvasContent = canvas.toJSON();
     let canvasData = {
-      svg: base64_encode(canvasSVG),
+      // svg: base64_encode(canvasSVG),
       content: canvasContent.objects,
     };
 

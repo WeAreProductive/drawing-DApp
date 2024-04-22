@@ -7,6 +7,7 @@ import {
   send_report,
   send_exception,
 } from "./lib/rollups-api.mjs";
+import base64 from "base-64";
 import { validateDrawing } from "./lib/drawing.mjs";
 import {
   str2hex,
@@ -40,12 +41,12 @@ const mint_erc721_with_string = async (
   drawing_input,
   cmd
 ) => {
-  const validBase64 = await validateDrawing(
+  const validateBase64 = await validateDrawing(
     JSON.parse(drawing_input.drawing).content,
     imageBase64
   );
 
-  if (validBase64 === true) {
+  if (validateBase64.isValid === true) {
     console.log("Preparing a VOUCHER for MINTING AN NFT");
     const mintHeader = clean_header(mint_header);
     const abiCoder = new ethers.utils.AbiCoder();
@@ -64,7 +65,12 @@ const mint_erc721_with_string = async (
     };
 
     await send_voucher(voucher);
-    await store_drawing_data(msg_sender, uuid, drawing_input, cmd);
+    await store_drawing_data(
+      msg_sender,
+      uuid,
+      { drawing: { svg: base64.encode(validateBase64.svg) } }, // notice drawing data needs the svg only
+      cmd
+    );
   } else {
     let msg = `Error: Invalid INPUT PNG file.`;
     console.log(msg);
@@ -81,7 +87,6 @@ const mint_erc721_with_string = async (
  */
 const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   console.log("Store drawing data in a notice");
-
   const now = getCurrentDate(); // 'YYYY-MM-DD'
   const newLogItem = {
     date_updated: now,
