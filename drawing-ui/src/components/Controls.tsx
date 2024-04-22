@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import CanvasControls from "../components/CanvasControls";
 import DrawingControls from "../components/Drawing/DrawingControls";
+import CanvasObjectsControl from "../components/CanvasObjectsControl.tsx";
 import { useCanvasContext } from "../context/CanvasContext";
 import { validateInputSize } from "../utils";
 import { CanvasLimitations } from "../shared/types";
@@ -46,6 +47,7 @@ const Controls = () => {
     <div className="flex flex-col">
       <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
         <DrawingControls />
+        <CanvasObjectsControl />
         <CanvasControls enabled={currentResult.isValid} />
       </div>
       <div
