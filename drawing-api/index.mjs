@@ -109,7 +109,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           res.send(
             JSON.stringify({
               success: true,
-              base64out: base64.encode(generatedSVG),
+              base64out: base64.encode(generatedSVG), // Encoded image
               ipfsHash: metaIPFS.data.ipfsHash,
             })
           );

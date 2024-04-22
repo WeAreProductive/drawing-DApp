@@ -9,6 +9,7 @@ import {
   LIMIT_WARNING_AT,
   VALIDATE_INPUT_ERRORS,
 } from "../shared/constants";
+import prettyBytes from "pretty-bytes";
 
 export const srcToJson = (src: string) => {
   return src.replace(".png", ".json");
@@ -30,26 +31,30 @@ export const validateInputSize = (
   svg: string,
   isActiveDrawing: boolean = false,
 ) => {
+  const canvasData = {
+    svg: base64_encode(svg),
+  };
+  const compressed = pako.deflate(JSON.stringify(canvasData));
+  const inputBytesCompressed = ethers.utils.isBytesLike(compressed)
+    ? compressed
+    : ethers.utils.toUtf8Bytes(compressed);
+
+  const sizes =
+    "Canvas " +
+    prettyBytes(inputBytesCompressed.length) +
+    " of " +
+    prettyBytes(CANVAS_DATA_LIMIT) +
+    " allowed.";
+
   const validationResult = {
     isValid: true,
     info: {
       message: "",
       description: "",
+      size: sizes,
+      type: "note",
     },
   };
-  const canvasData = {
-    svg: base64_encode(svg),
-  };
-  console.log(`Warning limit: ${CANVAS_DATA_LIMIT * LIMIT_WARNING_AT}`);
-  console.log(`Limit: ${CANVAS_DATA_LIMIT}`);
-
-  const compressed = pako.deflate(JSON.stringify(canvasData));
-  const inputBytesCompressed = ethers.utils.isBytesLike(compressed)
-    ? compressed
-    : ethers.utils.toUtf8Bytes(compressed);
-  console.log(
-    `Validating the compressed canvas data: ${inputBytesCompressed.length}`,
-  );
 
   if (!isActiveDrawing) {
     if (inputBytesCompressed.length >= CANVAS_DATA_LIMIT) {
@@ -57,6 +62,8 @@ export const validateInputSize = (
       validationResult.info = {
         message: VALIDATE_INPUT_ERRORS.error.message,
         description: VALIDATE_INPUT_ERRORS.error.description,
+        size: sizes,
+        type: "error",
       };
     }
   } else {
@@ -64,16 +71,20 @@ export const validateInputSize = (
       inputBytesCompressed.length >= CANVAS_DATA_LIMIT * LIMIT_WARNING_AT &&
       inputBytesCompressed.length < CANVAS_DATA_LIMIT
     ) {
-      validationResult.isValid = false;
+      validationResult.isValid = true;
       validationResult.info = {
         message: VALIDATE_INPUT_ERRORS.warning.message,
         description: VALIDATE_INPUT_ERRORS.warning.description,
+        size: sizes,
+        type: "warning",
       };
     } else if (inputBytesCompressed.length >= CANVAS_DATA_LIMIT) {
       validationResult.isValid = false;
       validationResult.info = {
         message: VALIDATE_INPUT_ERRORS.error.message,
         description: VALIDATE_INPUT_ERRORS.error.description,
+        size: sizes,
+        type: "error",
       };
     }
   }

@@ -30,7 +30,10 @@ import { validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
-const CanvasToJSON = () => {
+type CanvasToJSONProp = {
+  enabled: boolean;
+};
+const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
   const [connectedWallet] = useWallets();
   const { canvas, dappState, currentDrawingData, setDappState, clearCanvas } =
     useCanvasContext();
@@ -69,7 +72,7 @@ const CanvasToJSON = () => {
       if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
         drawingNoticePayload = {
           ...currentDrawingData,
-          drawing: canvasData, // FE updates the svg string only, compressed
+          drawing: canvasData, // FE updates the svg string only, compressedCanvasData
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
@@ -102,12 +105,14 @@ const CanvasToJSON = () => {
 
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
+      // compress before encoding the input
+      const compressedStr = pako.deflate(str);
 
       // Encode the input
-      const inputBytes = ethers.utils.isBytesLike(str)
-        ? str
-        : ethers.utils.toUtf8Bytes(str);
-      console.log(`voucher request: ${inputBytes.length}`);
+      const inputBytes = ethers.utils.isBytesLike(compressedStr)
+        ? compressedStr
+        : ethers.utils.toUtf8Bytes(compressedStr);
+
       // Send the transaction
       if (!connectedChain) return;
       try {
@@ -161,14 +166,16 @@ const CanvasToJSON = () => {
       content: canvasContent.objects,
     };
 
-    const compressed = pako.deflate(JSON.stringify(canvasData));
-
-    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid);
-    sendInput(drawingMeta, compressed);
+    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid); // drawingMeta contains compressed base64 image and IPFS hash
+    sendInput(drawingMeta, JSON.stringify(canvasData));
   };
 
   return connectedChain ? (
-    <Button variant={"outline"} onClick={handleCanvasToSvg} disabled={loading}>
+    <Button
+      variant={"outline"}
+      onClick={handleCanvasToSvg}
+      disabled={loading || !enabled}
+    >
       <Box size={18} className="mr-2" strokeWidth={1.5} />
       {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
     </Button>

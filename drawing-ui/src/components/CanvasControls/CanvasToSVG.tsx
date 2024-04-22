@@ -26,7 +26,10 @@ import { validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
-const CanvasToSVG = () => {
+type CanvasToSVGProp = {
+  enabled: boolean;
+};
+const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
   const [connectedWallet] = useWallets();
   const { canvas, dappState, setDappState, currentDrawingData, clearCanvas } =
     useCanvasContext();
@@ -93,11 +96,14 @@ const CanvasToSVG = () => {
 
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
+      // proceed after validation
+
+      const compressedStr = pako.deflate(str);
       // Encode the input
-      const inputBytes = ethers.utils.isBytesLike(str)
-        ? str
-        : ethers.utils.toUtf8Bytes(str);
-      console.log(`notice request compressed: ${inputBytes.length}`);
+      const inputBytes = ethers.utils.isBytesLike(compressedStr)
+        ? compressedStr
+        : ethers.utils.toUtf8Bytes(compressedStr);
+
       if (!connectedChain) return;
       // Send the transaction
       try {
@@ -141,19 +147,18 @@ const CanvasToSVG = () => {
       setLoading(false);
       return;
     }
-    // proceed after validation
+
     const canvasData = {
       svg: base64_encode(canvasSVG),
     };
-    const compressed = pako.deflate(JSON.stringify(canvasData));
-    sendInput(compressed);
+    sendInput(JSON.stringify(canvasData));
   };
 
   return (
     <Button
       variant={"outline"}
       onClick={handleCanvasToSvg}
-      disabled={!connectedChain || loading}
+      disabled={!connectedChain || loading || !enabled}
     >
       <Save size={18} className="mr-2" strokeWidth={1.5} />
       {loading ? "Saving..." : "Save"}

@@ -47,24 +47,34 @@ export const COMMANDS = {
   },
 };
 
-export const VOUCHER_INPUT_LMIT = 800000; // bytes
-const VIL_TO_NIL = 2.5; // ~ voucher request size / notice request size with same image
-export const NOTICE_INPUT_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_NIL; //
-const NIL_TO_IMAGE_DATA = 11.5; // ~ notice request size / canvas data size in bytes
-export const CANVAS_DATA_LIMIT = NOTICE_INPUT_LIMIT / NIL_TO_IMAGE_DATA; // canvas data limit in bytes
-// svg string length svg / canvas data
+export const VOUCHER_INPUT_LMIT = 128000; // bytes
+// ~ voucher request size / notice request size with same image
+const VIL_TO_NIL = 2.5;
+// voucher input limit / how many times the voucher input is bigger than the notice input in bytes
+export const NOTICE_INPUT_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_NIL; // 160000
+// ~ notice request size / canvas(svg) data size in bytes
+const NIL_TO_IMAGE_DATA = 1.2;
+// canvas(svg) data limit in bytes - 13 913
+export const NOTICE_CANVAS_DATA_LIMIT = NOTICE_INPUT_LIMIT / NIL_TO_IMAGE_DATA;
+// canvas(svg) data limit in bytes - 13 913
+export const CANVAS_DATA_LIMIT = NOTICE_INPUT_LIMIT / NIL_TO_IMAGE_DATA;
+
+// ~ svg string length svg / canvas data
 const CANVAS_SVG_STR_LEN_TO_NOTICE_CANVAS_DATA = 4;
+// ~ allowed svg string length
 export const CANVAS_SVG_STR_LEN_LIMIT =
-  CANVAS_DATA_LIMIT * CANVAS_SVG_STR_LEN_TO_NOTICE_CANVAS_DATA; // prevent canvas data will not exceed the max input size
-export const LIMIT_WARNING_AT = 0.9; // in %, at what size the warning will appear
+  NOTICE_CANVAS_DATA_LIMIT * CANVAS_SVG_STR_LEN_TO_NOTICE_CANVAS_DATA;
+
+// in %, at what size the warning will appear
+export const LIMIT_WARNING_AT = 0.9;
 
 export const VALIDATE_INPUT_ERRORS = {
   warning: {
-    message: "You are approaching rollups input size limit!",
+    message: "You are approaching the allowed size limit!",
     description: "",
   },
   error: {
-    message: "Input limit exceeded!",
+    message: "Allowed size exceeded!",
     description: "Please, reduce the drawing size!",
   },
 };

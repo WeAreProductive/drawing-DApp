@@ -16,6 +16,15 @@ export const str2hex = (string) => {
 export const hex2str = (hexstr) => {
   return ethers.utils?.toUtf8String(hexstr);
 };
+/**
+ * Convert a hexstring to a Uint8Array
+ * @param {String} hexstr
+ * @returns array
+ */
+export const hex2arr = (hexstr) => {
+  return ethers.utils?.arrayify(hexstr);
+  // "0x1234" => Uint8Array [ 18, 52 ]
+};
 
 /**
  * Decodes a hex string into
