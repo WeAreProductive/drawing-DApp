@@ -14,15 +14,14 @@ type CanvasSnapshotProp = {
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
   const { drawing, owner, uuid } = src;
-
-  const decompressed = JSON.parse(pako.inflate(drawing, { to: "string" }));
+  const drawingObj = JSON.parse(drawing);
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
-
+    if (!drawingObj.svg) return;
     fabric.loadSVGFromString(
       // base64_decode(JSON.parse(drawing).svg),
-      base64_decode(decompressed.svg),
+      base64_decode(drawingObj.svg),
       function (objects, options) {
         var obj = fabric.util.groupSVGElements(objects, options);
         obj.set({
@@ -41,13 +40,13 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   };
 
   const drawingPreview = useMemo(() => {
-    // const svg = new Blob([base64_decode(JSON.parse(drawing).svg)], {
-    const svg = new Blob([base64_decode(decompressed.svg)], {
+    if (!drawingObj.svg) return;
+    const svg = new Blob([base64_decode(drawingObj.svg)], {
       type: "image/svg+xml",
     });
     const url = URL.createObjectURL(svg);
     return <img src={url} alt="drawing preview" />;
-  }, [decompressed]);
+  }, [drawing]);
 
   return (
     <div className="rounded-lg border bg-background p-2">

@@ -33,7 +33,6 @@ const Controls = () => {
         width: canvas.width || 0,
         height: canvas.height || 0,
       });
-
       const result = validateInputSize(canvasSVG, true);
 
       setCurrentResult(result);

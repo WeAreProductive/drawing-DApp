@@ -10,8 +10,7 @@ import {
 import { validateDrawing } from "./lib/drawing.mjs";
 import {
   str2hex,
-  hex2str,
-  hex2binary,
+  hex2arr,
   getCurrentDate,
   getCurrentTimestamp,
   clean_header,
@@ -41,15 +40,9 @@ const mint_erc721_with_string = async (
   drawing_input,
   cmd
 ) => {
-  const decompressedDrawing = JSON.parse(
-    pako.inflate(drawing_input.drawing, { to: "string" })
-  ).content;
-
-  const decompressedImageBase64 = pako.inflate(imageBase64, { to: "string" });
-
   const validBase64 = await validateDrawing(
-    decompressedDrawing,
-    decompressedImageBase64
+    JSON.parse(drawing_input.drawing).content,
+    imageBase64
   );
 
   if (validBase64 === true) {
@@ -88,7 +81,6 @@ const mint_erc721_with_string = async (
  */
 const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   console.log("Store drawing data in a notice");
-  console.log(typeof drawing_input);
 
   const now = getCurrentDate(); // 'YYYY-MM-DD'
   const newLogItem = {
@@ -132,17 +124,19 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
  */
 async function handle_advance(data) {
   console.log("Received advance request");
-
   let status = "accept";
   let payload;
   const sender = data.metadata.msg_sender.toLowerCase();
   try {
     payload = data.payload;
-    payload = hex2str(payload); // Decodes a hex string into a regular string.
+    payload = hex2arr(payload); // Decodes a hex string into a Uint8Array.
     try {
+      const decompressedPayload = pako.inflate(payload, {
+        to: "string",
+      });
       console.log("Trying to decode json");
       // try json data
-      const jsonData = JSON.parse(payload);
+      const jsonData = JSON.parse(decompressedPayload);
       const {
         cmd,
         imageIPFSMeta,
