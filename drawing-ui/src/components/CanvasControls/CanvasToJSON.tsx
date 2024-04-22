@@ -105,11 +105,14 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
 
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
+      // compress before encoding the input
+      const compressedStr = pako.deflate(str);
 
       // Encode the input
-      const inputBytes = ethers.utils.isBytesLike(str)
-        ? str
-        : ethers.utils.toUtf8Bytes(str);
+      const inputBytes = ethers.utils.isBytesLike(compressedStr)
+        ? compressedStr
+        : ethers.utils.toUtf8Bytes(compressedStr);
+      console.log(`Voucher input size: ${inputBytes.length}`);
 
       // Send the transaction
       if (!connectedChain) return;
@@ -164,10 +167,8 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       content: canvasContent.objects,
     };
 
-    const compressedCanvasData = pako.deflate(JSON.stringify(canvasData));
-
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid); // drawingMeta contains compressed base64 image and IPFS hash
-    sendInput(drawingMeta, compressedCanvasData);
+    sendInput(drawingMeta, JSON.stringify(canvasData));
   };
 
   return connectedChain ? (

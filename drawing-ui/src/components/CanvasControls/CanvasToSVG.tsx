@@ -96,10 +96,14 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
 
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
+      // proceed after validation
+
+      const compressedStr = pako.deflate(str);
       // Encode the input
-      const inputBytes = ethers.utils.isBytesLike(str)
-        ? str
-        : ethers.utils.toUtf8Bytes(str);
+      const inputBytes = ethers.utils.isBytesLike(compressedStr)
+        ? compressedStr
+        : ethers.utils.toUtf8Bytes(compressedStr);
+      console.log(`Notice input size: ${inputBytes.length}`);
 
       if (!connectedChain) return;
       // Send the transaction
@@ -144,12 +148,11 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
       setLoading(false);
       return;
     }
-    // proceed after validation
+
     const canvasData = {
       svg: base64_encode(canvasSVG),
     };
-    const compressedCanvasData = pako.deflate(JSON.stringify(canvasData));
-    sendInput(compressedCanvasData);
+    sendInput(JSON.stringify(canvasData));
   };
 
   return (
