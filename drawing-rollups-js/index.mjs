@@ -10,8 +10,7 @@ import {
 import { validateDrawing } from "./lib/drawing.mjs";
 import {
   str2hex,
-  hex2str,
-  hex2binary,
+  hex2arr,
   getCurrentDate,
   getCurrentTimestamp,
   clean_header,
@@ -41,18 +40,12 @@ const mint_erc721_with_string = async (
   drawing_input,
   cmd
 ) => {
-  const decompressedDrawing = JSON.parse(
-    pako.inflate(drawing_input.drawing, { to: "string" })
-  ).content;
-
-  const decompressedImageBase64 = pako.inflate(imageBase64, { to: "string" });
-
-  const validBase64 = await validateDrawing(
-    decompressedDrawing,
-    decompressedImageBase64
+  const validateBase64 = await validateDrawing(
+    JSON.parse(drawing_input.drawing).content,
+    imageBase64
   );
 
-  if (validBase64 === true) {
+  if (validateBase64 === true) {
     console.log("Preparing a VOUCHER for MINTING AN NFT");
     const mintHeader = clean_header(mint_header);
     const abiCoder = new ethers.utils.AbiCoder();
@@ -69,9 +62,13 @@ const mint_erc721_with_string = async (
       destination: erc721_to_mint,
       payload: payload,
     };
-
     await send_voucher(voucher);
-    await store_drawing_data(msg_sender, uuid, drawing_input, cmd);
+    await store_drawing_data(
+      msg_sender,
+      uuid,
+      drawing_input, // notice drawing data needs the svg only
+      cmd
+    );
   } else {
     let msg = `Error: Invalid INPUT PNG file.`;
     console.log(msg);
@@ -88,8 +85,6 @@ const mint_erc721_with_string = async (
  */
 const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   console.log("Store drawing data in a notice");
-  console.log(typeof drawing_input);
-
   const now = getCurrentDate(); // 'YYYY-MM-DD'
   const newLogItem = {
     date_updated: now,
@@ -132,17 +127,19 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
  */
 async function handle_advance(data) {
   console.log("Received advance request");
-
   let status = "accept";
   let payload;
   const sender = data.metadata.msg_sender.toLowerCase();
   try {
     payload = data.payload;
-    payload = hex2str(payload); // Decodes a hex string into a regular string.
+    payload = hex2arr(payload); // Decodes a hex string into a Uint8Array.
     try {
+      const decompressedPayload = pako.inflate(payload, {
+        to: "string",
+      });
       console.log("Trying to decode json");
       // try json data
-      const jsonData = JSON.parse(payload);
+      const jsonData = JSON.parse(decompressedPayload);
       const {
         cmd,
         imageIPFSMeta,
