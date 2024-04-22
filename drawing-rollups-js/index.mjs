@@ -46,7 +46,7 @@ const mint_erc721_with_string = async (
     imageBase64
   );
 
-  if (validateBase64.isValid === true) {
+  if (validateBase64 === true) {
     console.log("Preparing a VOUCHER for MINTING AN NFT");
     const mintHeader = clean_header(mint_header);
     const abiCoder = new ethers.utils.AbiCoder();
@@ -63,9 +63,6 @@ const mint_erc721_with_string = async (
       destination: erc721_to_mint,
       payload: payload,
     };
-    drawing_input.drawing = JSON.stringify({
-      svg: base64.encode(validateBase64.svg),
-    });
     await send_voucher(voucher);
     await store_drawing_data(
       msg_sender,
@@ -89,7 +86,6 @@ const mint_erc721_with_string = async (
  */
 const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   console.log("Store drawing data in a notice");
-  console.log({ drawing_input });
   const now = getCurrentDate(); // 'YYYY-MM-DD'
   const newLogItem = {
     date_updated: now,

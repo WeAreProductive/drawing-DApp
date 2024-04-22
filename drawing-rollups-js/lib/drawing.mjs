@@ -10,7 +10,7 @@ function stringUnification(str) {
 }
 
 export async function validateDrawing(drawingContent, drawingBase64) {
-  var res = { isValid: false };
+  var res = false;
 
   try {
     const canvas = new fabric.StaticCanvas(null, { width: 600, height: 600 });
@@ -52,9 +52,8 @@ export async function validateDrawing(drawingContent, drawingBase64) {
           })
         );
         const drawingSVG = stringUnification(base64.decode(drawingBase64));
-
         if (drawingSVG === generatedSVG) {
-          res = { isValid: true, svg: generatedSVG };
+          res = true;
         }
       }
     );

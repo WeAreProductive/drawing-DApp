@@ -48,7 +48,7 @@ export const COMMANDS = {
 
 export const VOUCHER_INPUT_LMIT = 128000; // bytes
 // ~ voucher request size / notice request size with same image
-const VIL_TO_NIL = 1.8;
+const VIL_TO_NIL = 2.5;
 // voucher input limit / how many times the voucher input is bigger than the notice input in bytes
 export const NOTICE_INPUT_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_NIL; // 160000
 // ~ notice request size / canvas(svg) data size in bytes

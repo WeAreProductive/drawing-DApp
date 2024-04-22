@@ -39,15 +39,12 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
   };
-
   const drawingPreview = useMemo(() => {
     if (!drawingObj.svg) return;
     const svg = new Blob([base64_decode(drawingObj.svg)], {
       type: "image/svg+xml",
     });
-    console.log(svg);
     const url = URL.createObjectURL(svg);
-    console.log({ url });
     return <img src={url} alt="drawing preview" />;
   }, [drawing]);
 
