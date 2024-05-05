@@ -2,11 +2,11 @@
 
 ## Drawing DApp
 
-Drawing is a DApp written in JavaScript/ReactJS running on Cartesi Rollups with [Sunodo](https://docs.sunodo.io).
+Drawing is a DApp written in JavaScript/ReactJS running on Cartesi Rollups with [Cartesi CLI](https://docs.cartesi.io).
 
 ## Requirements
 
-Please refer to [system requirements](https://docs.sunodo.io/guide/introduction/installing#system-requirements) before start building a dApp with Sunodo.
+Please refer to [system requirements](https://docs.cartesi.io/cartesi-rollups/1.3/development/installation/) before start building a dApp with Cartesi CLI.
 
 ## Epoch
 
@@ -17,10 +17,10 @@ It's an important settings when it comes down to `voucher` execution.
 
 ## Follow these steps to run the DApp
 
-1. [Install Sunodo (if not available)](#install-sunodo)
-2. [Run `sunodo build`](#build-the-application)
-3. [Run `sunodo run`](#run-the-dapp)
-   - [`sunodo run` options](#sunodo-run-command-options)
+1. [Install Cartesi CLI (if not available)](#install-cartesi-cli)
+2. [Run `cartesi build`](#build-the-application)
+3. [Run `cartesi run`](#run-the-dapp)
+   - [`cartesi run` options](#cartesi-run-command-options)
 4. [Build Smart contracts](#build-the-smart-contract)
 5. [Deploy Smart contracts](#deploy-the-smart-contract)
 6. [Interacting with the application](#interacting-with-the-application)
@@ -28,13 +28,12 @@ It's an important settings when it comes down to `voucher` execution.
 
 ## Building
 
-### Install Sunodo
+### Install Cartesi CLI
 
-This project works with [Sunodo](https://docs.sunodo.io), so to run it you should first install sunodo.
+This project works with [Cartesi CLI](https://docs.cartesi.io), so to run it you should first install Cartesi CLI.
 
 ```shell
-npm install -g @sunodo/cli
-alias sunodo="npx @sunodo/cli"
+npm install -g @cartesi/cli
 ```
 
 ### Build the application
@@ -43,7 +42,7 @@ To build the application, run the following command from the project's root dire
 
 ```shell
 cd drawing-rollups-js
-sunodo build
+cartesi build
 ```
 
 ## Running
@@ -54,7 +53,7 @@ From the project `root` directory run
 
 ```shell
 cd drawing-rollups-js
-sunodo run
+cartesi run
 ```
 
 ### Other useful commands and options
@@ -65,7 +64,7 @@ By default the node closes an epoch `once a day`, but this can be controlled by 
 `--epoch-duration <seconds>` command option when executing the run dApp command.
 
 ```shell
-sunodo run --epoch-duration <seconds>
+cartesi run --epoch-duration <seconds>
 ```
 
 It's an important settings when it comes down to `voucher` execution.
@@ -75,7 +74,7 @@ It's an important settings when it comes down to `voucher` execution.
 To get a more `detailed running log` run:
 
 ```shell
-sunodo run --verbose
+cartesi run --verbose
 ```
 
 #### Check system status
@@ -83,7 +82,7 @@ sunodo run --verbose
 To check the `system status` on error run:
 
 ```shell
-sunodo doctor
+cartesi doctor
 ```
 
 ### Shut down
@@ -92,45 +91,7 @@ The application can afterwards be shut down with `CTRL+C`
 
 ### Running the back-end in host mode
 
-When developing an application, it is often important to easily test and debug it.
-
-To `start` the application, execute the following command from the project's root directory:
-
-```shell
-sunodo run --no-backend
-```
-
-Then in order to start the back-end, run the following commands in a dedicated terminal:
-
-```shell
-npm install
-npm run start
-```
-
-or if the above command results in error, run
-
-```shell
-ROLLUP_HTTP_SERVER_URL=http://localhost:8080/host-runner node index.mjs
-```
-
-After the back-end successfully starts, it should print an output like the following:
-
-```log
-INFO:__main__:HTTP rollup_server url is http://127.0.0.1:5004
-INFO:__main__:Sending finish
-```
-
-After that, you can interact with the application normally [as explained below](#interacting-with-the-application).
-
-Keep in mind that vouchers cannot be executed when the dApp is running in a development mode.
-
-### For more information on how to work with Sunodo
-
-Check these links:
-
-- https://github.com/sunodo/sunodo
-- https://docs.sunodo.io/guide/running/running-application?fbclid=IwAR3OW0tUEVeB42FBnh-cjkYIOgdPDrG262HRT5bObXyaNXX-9fqQtZ0TSog
-- https://docs.sunodo.io
+When developing an application, it is often important to easily test and debug it. More details on running the application in development mode here: https://docs.cartesi.io/cartesi-rollups/1.3/development/running-the-application/
 
 ### Smart contracts. Building & Deploying.
 
@@ -199,7 +160,7 @@ yarn dev
 
 In order the frontend to work properly, you need to start a server that will convert the `canvas into a base64 string` and will upload PNG snapshot of the drawing to IPFS.
 
-## [Deploying the application](https://docs.sunodo.io/guide/deploying/deploying-application)
+## [Deploying the application](https://docs.cartesi.io/cartesi-rollups/1.3/deployment/introduction/)
 
 ## Steps to mint a NFT from a drawing
 
