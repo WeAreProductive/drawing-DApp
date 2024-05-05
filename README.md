@@ -19,17 +19,12 @@ It's an important settings when it comes down to `voucher` execution.
 
 1. [Install Sunodo (if not available)](#install-sunodo)
 2. [Run `sunodo build`](#build-the-application)
-3. [Build Smart contracts](#build-the-smart-contract)
-4. [Deploy Smart contracts](#deploy-the-smart-contract)
-5. [Run `sunodo run`](#run-the-dapp)
+3. [Run `sunodo run`](#run-the-dapp)
    - [`sunodo run` options](#sunodo-run-command-options)
-6. [Install API](#drawing-api-server)
-7. [Run API](#drawing-api-server)
-8. [Install the frontend application](#running-the-frontend-in-development-mode)
-9. [Run the frontend application](#running-the-frontend-in-development-mode)
-10. [Interact with the Drawing DApp](#interacting-with-the-application)
-    - [Requirement](#requirements)
-    - [Steps to mint a NFT from a drawing](#steps-to-mint-a-nft-from-a-drawing)
+4. [Build Smart contracts](#build-the-smart-contract)
+5. [Deploy Smart contracts](#deploy-the-smart-contract)
+6. [Interacting with the application](#interacting-with-the-application)
+   - [Steps to mint a NFT from a drawing](#steps-to-mint-a-nft-from-a-drawing)
 
 ## Building
 
@@ -52,54 +47,6 @@ sunodo build
 ```
 
 ## Running
-
-### Smart contracts. Building & Deploying.
-
-This dApp needs a smart contract to be able to mint NSTs from canvas drawings.
-
-> Before starting the dApp you have to build and deploy the smart contract.
-
-### Build the smart contract
-
-This is a simple contract to perform operations with NFTs (minting a nft).
-You may build the project's `smart contract` as follows.
-From the `project's root` directory execute:
-
-```shell
-yarn
-cd smart-contracts
-yarn build
-```
-
-### Deploy the smart contract
-
-To deploy the smart contract on localhost from the `project's root` directory execute:
-
-```shell
-cd smart-contracts
-yarn deploy
-```
-
-Manual deployment to other supported testnets can be done by executing `yarn deploy:<network>`.
-
-### Use the smart contract
-
-To use the smart contract, you must first retrieve the contract address from the deployment data.
-When deploying the contract manually its address is printed in CLI as follows:
-
-```shell
-deploying "DrawingCanvasNFT" (tx: tx-hash)...: deployed at `smart-contract-address` with amount-of-gas-used gas
-```
-
-You can also check the address in
-
-```shell
-smart-contracts/deploymets/<network-name>/<smart-contract-name>.json, { address: `smart-contract-address`, ...}.
-```
-
-The smart `contract's address` is used in the frontend application - (see `drawing-ui/src/config/config.json`) as `ercToMint` for each chain.
-
-To `start` the application, execute the following command from the project's root directory:
 
 ### Run the dApp
 
@@ -184,6 +131,52 @@ Check these links:
 - https://github.com/sunodo/sunodo
 - https://docs.sunodo.io/guide/running/running-application?fbclid=IwAR3OW0tUEVeB42FBnh-cjkYIOgdPDrG262HRT5bObXyaNXX-9fqQtZ0TSog
 - https://docs.sunodo.io
+
+### Smart contracts. Building & Deploying.
+
+This dApp needs a smart contract to be able to mint NSTs from canvas drawings.
+
+> Before starting the dApp you have to build and deploy the smart contract.
+
+### Build the smart contract
+
+This is a simple contract to perform operations with NFTs (minting a nft).
+You may build the project's `smart contract` as follows.
+From the `project's root` directory execute:
+
+```shell
+yarn
+cd smart-contracts
+yarn build
+```
+
+### Deploy the smart contract
+
+To deploy the smart contract on localhost from the `project's root` directory execute:
+
+```shell
+cd smart-contracts
+yarn deploy
+```
+
+Manual deployment to other supported testnets can be done by executing `yarn deploy:<network>`.
+
+### Use the smart contract
+
+To use the smart contract, you must first retrieve the contract address from the deployment data.
+When deploying the contract manually its address is printed in CLI as follows:
+
+```shell
+deploying "DrawingCanvasNFT" (tx: tx-hash)...: deployed at `smart-contract-address` with amount-of-gas-used gas
+```
+
+You can also check the address in
+
+```shell
+smart-contracts/deploymets/<network-name>/<smart-contract-name>.json, { address: `smart-contract-address`, ...}.
+```
+
+The smart `contract's address` is used in the frontend application - (see `drawing-ui/src/config/config.json`) as `ercToMint` for each chain.
 
 ## Interacting with the application
 
