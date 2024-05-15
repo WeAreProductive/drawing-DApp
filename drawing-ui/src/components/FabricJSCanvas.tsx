@@ -84,7 +84,10 @@ const FabricJSCanvas = () => {
 
       const availableHeight = wHeight - top - PADDING;
 
-      const size = Math.min(availableWidth, availableHeight);
+      var size = Math.min(availableWidth, availableHeight);
+
+      if (size > INITIAL_DRAWING_OPTIONS.canvasWidth)
+        size = INITIAL_DRAWING_OPTIONS.canvasWidth;
 
       canvas.setDimensions({
         width: size,

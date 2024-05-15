@@ -9,8 +9,8 @@ export const INITIAL_DRAWING_OPTIONS = {
   backgroundColor: "transparent",
   brushWidth: 10,
   minBrushWidth: 1,
-  canvasWidth: 280,
-  canvasHeight: 280,
+  canvasWidth: 800,
+  canvasHeight: 800,
 };
 
 //mint method selector constant
