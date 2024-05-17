@@ -89,3 +89,60 @@ export const validateInputSize = (
   }
   return validationResult;
 };
+
+// const canvasObj = canvas.toObject();
+// console.log(objOne.objects);
+// console.log(objTwo.objects);
+// const serializedOne = objOne.objects.map((element) => {
+//   return JSON.stringify(element);
+// });
+// const serializedTwo = objTwo.objects.map((element) => {
+//   return JSON.stringify(element);
+// });
+// // console.log(serializedOne);
+// // console.log(serializedTwo);
+// const filteredArray = serializedTwo.filter(
+//   (value) => !serializedOne.includes(value),
+// );
+// console.log({ filteredArray });
+
+/**
+ * Converts each object in Fabrics/Canvas
+ * objects array
+ * in order to compare and extract
+ * the newly created objects
+ *
+ * @param arr of canvas/drawing objects
+ * @returns arr of JSON Stringified objects
+ */
+export const serializeArrElements = (arr: []) => {
+  const serialized = arr.map((element) => {
+    return JSON.stringify(element);
+  });
+  return serialized;
+};
+/**
+ * Extracts the JSON STRINGIFIED drawing objects
+ * at current drawing session.
+ *
+ * @param arrObjFull drawing objects at drawing finish
+ * @param arrObjInitial drawing objects at canvas load
+ * @returns drawing objects at current drawing session
+ */
+export const latestDrawingObjects = (arrObjFull: [], arrObjInitial: []) => {
+  const latest = arrObjFull.filter((value) => !arrObjInitial.includes(value));
+  return latest;
+};
+/**
+ * Restores the initial shape
+ * of Fabrics canvas/drawing objects array
+ *
+ * @param arr of JSON STRINGIFIED drawing objects
+ * @returns arr of JSON parsed drawing OBJECTS
+ */
+export const deserializeArrElements = (arr: []) => {
+  const deserialized = arr.map((element) => {
+    return JSON.parse(element);
+  });
+  return deserialized;
+};
