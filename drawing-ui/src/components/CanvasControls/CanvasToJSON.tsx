@@ -46,7 +46,6 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
     if (!connectedChain) return;
     setInputBoxAddress(config[connectedChain.id].InputBoxAddress);
   }, [connectedChain]);
-
   const handleCanvasToSvg = async () => {
     if (!canvas) return;
     setLoading(true);
@@ -160,10 +159,10 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
     }
 
     // proceed after validation
-    const canvasContent = canvas.toJSON();
+    const canvasContent = canvas.toJSON(); // or canvas.toObject()
     let canvasData = {
       svg: base64_encode(canvasSVG),
-      content: canvasContent.objects,
+      content: canvasContent.objects, // @TODO send only current drawing session's objects, validate!!!!!
     };
 
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid); // drawingMeta contains compressed base64 image and IPFS hash

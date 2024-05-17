@@ -2,6 +2,7 @@ import axios from "axios";
 import http from "http";
 import pako from "pako";
 
+// export const rollup_server = "http://127.0.0.1:8080";
 export const rollup_server = process.env.ROLLUP_HTTP_SERVER_URL;
 console.log("HTTP rollup_server url is " + rollup_server);
 

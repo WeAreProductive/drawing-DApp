@@ -26,7 +26,7 @@ const initialCanvasContext = {
   dappState: DAPP_STATE.canvasInit,
   setDappState: (dappState: string) => undefined,
   currentDrawingData: null,
-  setCurrentDrawingData: (data: null | DrawingInput) => undefined,
+  setCurrentDrawingData: (data: any) => undefined, // @TODO fix typing
   clearCanvas: () => undefined,
 };
 const CanvasContext = createContext<CanvasContextType>(initialCanvasContext);
@@ -45,8 +45,7 @@ export const CanvasContextProvider = ({ children }: Props) => {
   const [canvas, setCanvas] = useState<Canvas | null>(null);
   const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
   const [dappState, setDappState] = useState<string>(DAPP_STATE.canvasInit);
-  const [currentDrawingData, setCurrentDrawingData] =
-    useState<DrawingInput | null>(null);
+  const [currentDrawingData, setCurrentDrawingData] = useState<any>(null); // @TODO fix typing
 
   const clearCanvas = useCallback(() => {
     if (!canvas) return;

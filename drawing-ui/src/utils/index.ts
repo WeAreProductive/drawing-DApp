@@ -146,3 +146,29 @@ export const deserializeArrElements = (arr: []) => {
   });
   return deserialized;
 };
+// @TODO fix typing
+export const prepareDrawingObjectsArrays = (
+  logData: any,
+  currentDrawingObjects: [],
+) => {
+  const currentDrawingObj: any = []; // array of objects
+  if (logData) {
+    // extract object array
+    if (logData.update_log) {
+      // array of objects for each drawing session
+      console.log(logData.update_log);
+      logData.update_log.forEach((element: { drawing_objects: any }) => {
+        console.log(element.drawing_objects);
+        currentDrawingObj.push(element.drawing_objects);
+      });
+      console.log(currentDrawingObj);
+      // get all drawing_objects arrays and merge to one
+    }
+  }
+
+  // if log data array has length
+  // merge to one array
+  // extract the current drawing session arr of object by compairint with `currentDrawingObjects`
+  // return the current drawing session arr of objects
+  return currentDrawingObj;
+};

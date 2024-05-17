@@ -22,7 +22,7 @@ import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { encode as base64_encode } from "base-64";
 import pako from "pako";
-import { validateInputSize } from "../../utils";
+import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -68,7 +68,6 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
       );
 
       const signer = provider.getSigner();
-
       // prepare drawing data notice input
       let drawingNoticePayload: DrawingInput | DrawingInputExtended;
       let str: string;
@@ -112,7 +111,7 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
           inputBytes,
         );
         toast.success("Transaction Sent");
-
+        console.log(tx);
         // Wait for confirmation
         const receipt = await tx.wait(1);
 
@@ -126,7 +125,7 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
             description: `Input added => index: ${event?.args?.inputIndex} `,
           });
         } else {
-          toast.error("Transaction Error", {
+          toast.error("Transaction Error 1", {
             description: `Input not added => index: ${event?.args?.inputIndex} `,
           });
         }
@@ -147,11 +146,17 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
       setLoading(false);
       return;
     }
-
-    const canvasData = {
+    const canvasContent = canvas.toJSON(); // or canvas.toObject()
+    // @TODO - fix typing
+    const drawingObjectsArrays = prepareDrawingObjectsArrays(
+      currentDrawingData,
+      canvasContent.objects,
+    ); // extracts the currents session drawing objects using the old and current drawing data
+    let canvasData = {
       svg: base64_encode(canvasSVG),
+      content: drawingObjectsArrays.currentDrawingObj, // @TODO send only the array containing the current drawing session's objects, validate!!!!! fix the log in BE
     };
-    sendInput(JSON.stringify(canvasData));
+    // sendInput(JSON.stringify(canvasData));
   };
 
   return (
