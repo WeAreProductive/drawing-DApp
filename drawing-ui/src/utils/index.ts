@@ -123,6 +123,19 @@ export const serializeArrElements = (arr: []) => {
   return serialized;
 };
 /**
+ * Restores the initial shape
+ * of Fabrics canvas/drawing objects array
+ *
+ * @param arr of JSON STRINGIFIED drawing objects
+ * @returns arr of JSON parsed drawing OBJECTS
+ */
+export const deserializeArrElements = (arr: string[]) => {
+  const deserialized = arr.map((element) => {
+    return JSON.parse(element);
+  });
+  return deserialized;
+};
+/**
  * Extracts the JSON STRINGIFIED drawing objects
  * at current drawing session.
  *
@@ -131,21 +144,15 @@ export const serializeArrElements = (arr: []) => {
  * @returns drawing objects at current drawing session
  */
 export const latestDrawingObjects = (arrObjFull: [], arrObjInitial: []) => {
-  const latest = arrObjFull.filter((value) => !arrObjInitial.includes(value));
-  return latest;
-};
-/**
- * Restores the initial shape
- * of Fabrics canvas/drawing objects array
- *
- * @param arr of JSON STRINGIFIED drawing objects
- * @returns arr of JSON parsed drawing OBJECTS
- */
-export const deserializeArrElements = (arr: []) => {
-  const deserialized = arr.map((element) => {
-    return JSON.parse(element);
-  });
-  return deserialized;
+  // use arrays of serializes objects to compare them as strings for equality!
+  const serializedFull = serializeArrElements(arrObjFull);
+  const serializedInitial = serializeArrElements(arrObjInitial);
+  const latest = serializedFull.filter(
+    (value) => !serializedInitial.includes(value),
+  );
+  // restore object elements from json stringified elements
+  const deserializedLatest = deserializeArrElements(latest);
+  return deserializedLatest;
 };
 
 export const prepareDrawingObjectsArrays = (
@@ -162,14 +169,16 @@ export const prepareDrawingObjectsArrays = (
         console.log({ element });
         storedDrawingObj.push(element.drawing_objects);
       });
-      console.log(storedDrawingObj);
+      console.log({ storedDrawingObj });
       // get all drawing_objects arrays and merge to one
     }
+    // flatten stored drawing array
     // extract the current drawing session arr of objects
     const currentDrawingObj = latestDrawingObjects(
       currentDrawingObjects,
-      storedDrawingObj,
+      storedDrawingObj.flat(),
     );
+    console.log({ currentDrawingObj });
     return currentDrawingObj;
   }
   return currentDrawingObjects;

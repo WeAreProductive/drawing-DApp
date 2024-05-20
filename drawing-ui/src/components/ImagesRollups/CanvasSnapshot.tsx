@@ -6,6 +6,9 @@ import { sliceAccountStr, snapShotJsonfromLog } from "../../utils";
 import { useMemo } from "react";
 import { decode as base64_decode } from "base-64";
 import pako from "pako";
+import { storedDrawingObj } from "../CanvasControls/dev_data/currentDrawingLayer1";
+import { currentDrawingObj2 } from "../CanvasControls/dev_data/currentDrawingLayer2";
+import { currentDrawingObj3 } from "../CanvasControls/dev_data/currentDrawingLayer3";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
@@ -21,9 +24,10 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     if (!canvas) return;
     canvas.clear();
     const snapShotJson = snapShotJsonfromLog(update_log);
-    console.log({ snapShotJson });
+    console.log(storedDrawingObj);
     //fabricjs.com/fabric-intro-part-3#serialization
     canvas.loadFromJSON(snapShotJson);
+    // canvas.loadFromJSON(JSON.stringify({ objects: currentDrawingObj2 }));
     // fabric.loadSVGFromString(
     //   base64_decode(drawingObj.svg),
     //   function (objects, options) {
