@@ -72,6 +72,7 @@ export interface DrawingInputExtended extends DrawingInput {
     date_updated: string;
     painter: string;
     action: string;
+    drawing_objects: any;
   }[];
   drawing: string; // svg's json string
   voucher_requested: boolean;

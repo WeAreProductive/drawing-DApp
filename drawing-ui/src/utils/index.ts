@@ -9,6 +9,7 @@ import {
   VALIDATE_INPUT_ERRORS,
 } from "../shared/constants";
 import prettyBytes from "pretty-bytes";
+import { DrawingInput, DrawingInputExtended } from "../shared/types";
 
 export const srcToJson = (src: string) => {
   return src.replace(".png", ".json");
@@ -148,13 +149,12 @@ export const deserializeArrElements = (arr: []) => {
 };
 // @TODO fix typing
 export const prepareDrawingObjectsArrays = (
-  rollupsDrawingData: any,
+  rollupsDrawingData: DrawingInputExtended | null,
   currentDrawingObjects: any,
 ) => {
   const storedDrawingObj: any = []; // array of objects
   if (rollupsDrawingData) {
     const { update_log } = rollupsDrawingData;
-    console.log({ update_log });
     // extract object array
     if (update_log.length) {
       // array of objects for each drawing session
@@ -165,11 +165,12 @@ export const prepareDrawingObjectsArrays = (
       console.log(storedDrawingObj);
       // get all drawing_objects arrays and merge to one
     }
+    // extract the current drawing session arr of objects
+    const currentDrawingObj = latestDrawingObjects(
+      currentDrawingObjects,
+      storedDrawingObj,
+    );
+    return currentDrawingObj;
   }
-  // extract the current drawing session arr of objects
-  const currentDrawingObj = latestDrawingObjects(
-    currentDrawingObjects,
-    storedDrawingObj,
-  );
-  return currentDrawingObj;
+  return currentDrawingObjects;
 };
