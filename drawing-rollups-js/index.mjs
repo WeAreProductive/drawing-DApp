@@ -95,6 +95,7 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
     action: cmd,
     drawing_objects: content,
   };
+  console.log({ newLogItem });
   if (cmd == "cn" || cmd == "cv") {
     // set drawing id wneh new drawing
     const unix_timestamp = getCurrentTimestamp();
@@ -104,7 +105,7 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
     drawing_input.date_created = now;
     drawing_input["last_updated"] = now;
     drawing_input.update_log = [];
-    drawing_input.update_log.push(newLogItem);
+    drawing_input.update_log.push(newLogItem); // every calls adds a new log item
     if (cmd == "cv") {
       drawing_input.voucher_requested = true;
     } else {

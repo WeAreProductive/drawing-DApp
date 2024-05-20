@@ -148,27 +148,28 @@ export const deserializeArrElements = (arr: []) => {
 };
 // @TODO fix typing
 export const prepareDrawingObjectsArrays = (
-  logData: any,
-  currentDrawingObjects: [],
+  rollupsDrawingData: any,
+  currentDrawingObjects: any,
 ) => {
-  const currentDrawingObj: any = []; // array of objects
-  if (logData) {
+  const storedDrawingObj: any = []; // array of objects
+  if (rollupsDrawingData) {
+    const { update_log } = rollupsDrawingData;
+    console.log({ update_log });
     // extract object array
-    if (logData.update_log) {
+    if (update_log.length) {
       // array of objects for each drawing session
-      console.log(logData.update_log);
-      logData.update_log.forEach((element: { drawing_objects: any }) => {
-        console.log(element.drawing_objects);
-        currentDrawingObj.push(element.drawing_objects);
+      update_log.forEach((element: { drawing_objects: any }) => {
+        console.log({ element });
+        storedDrawingObj.push(element.drawing_objects);
       });
-      console.log(currentDrawingObj);
+      console.log(storedDrawingObj);
       // get all drawing_objects arrays and merge to one
     }
   }
-
-  // if log data array has length
-  // merge to one array
-  // extract the current drawing session arr of object by compairint with `currentDrawingObjects`
-  // return the current drawing session arr of objects
+  // extract the current drawing session arr of objects
+  const currentDrawingObj = latestDrawingObjects(
+    currentDrawingObjects,
+    storedDrawingObj,
+  );
   return currentDrawingObj;
 };

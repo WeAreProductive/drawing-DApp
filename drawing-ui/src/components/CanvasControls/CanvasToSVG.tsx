@@ -148,15 +148,16 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
     }
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
     // @TODO - fix typing
-    const drawingObjectsArrays = prepareDrawingObjectsArrays(
+    const currentDrawingLayer = prepareDrawingObjectsArrays(
       currentDrawingData,
       canvasContent.objects,
     ); // extracts the currents session drawing objects using the old and current drawing data
+    console.log({ currentDrawingLayer });
     let canvasData = {
       svg: base64_encode(canvasSVG),
-      content: drawingObjectsArrays.currentDrawingObj, // @TODO send only the array containing the current drawing session's objects, validate!!!!! fix the log in BE
+      content: currentDrawingLayer, // send only the array containing the current drawing session's objects, validate!!!!!
     };
-    // sendInput(JSON.stringify(canvasData));
+    sendInput(JSON.stringify(canvasData));
   };
 
   return (
