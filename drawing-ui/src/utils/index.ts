@@ -147,7 +147,7 @@ export const deserializeArrElements = (arr: []) => {
   });
   return deserialized;
 };
-// @TODO fix typing
+
 export const prepareDrawingObjectsArrays = (
   rollupsDrawingData: DrawingInputExtended | null,
   currentDrawingObjects: any,
@@ -173,4 +173,13 @@ export const prepareDrawingObjectsArrays = (
     return currentDrawingObj;
   }
   return currentDrawingObjects;
+};
+// @TODO fix typing
+export const snapShotJsonfromLog = (update_log: any): string => {
+  const drawingObjectsArr: any = [];
+  update_log.forEach((element: any) => {
+    drawingObjectsArr.push(element.drawing_objects);
+  });
+  const snapShot = drawingObjectsArr.flat();
+  return JSON.stringify({ objects: snapShot });
 };
