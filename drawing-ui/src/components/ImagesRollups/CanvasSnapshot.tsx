@@ -1,10 +1,9 @@
 import { fabric } from "fabric";
 import { useCanvasContext } from "../../context/CanvasContext";
-import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../../shared/constants";
+import { DAPP_STATE } from "../../shared/constants";
 import { DrawingInputExtended } from "../../shared/types";
 import { sliceAccountStr, snapShotJsonfromLog } from "../../utils";
 import { useMemo } from "react";
-import { decode as base64_decode } from "base-64";
 import pako from "pako";
 
 type CanvasSnapshotProp = {
@@ -13,13 +12,11 @@ type CanvasSnapshotProp = {
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
-  const { drawing, owner, uuid, update_log } = src;
-  const drawingObj = JSON.parse(drawing);
+  const { owner, uuid, update_log, dimensions } = src;
   const snapShotJson = useMemo(
     () => snapShotJsonfromLog(update_log),
     [update_log],
   );
-  // console.log({ update_log });
   const loadCanvasFromImage = async () => {
     if (!canvas) return;
     canvas.clear();
@@ -30,7 +27,10 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   };
   // @TODO get actual width and height, add to CanvasSnapshotlight
   const drawingPreview = useMemo(() => {
-    const canvas = new fabric.StaticCanvas(null, { width: 600, height: 600 });
+    const canvas = new fabric.Canvas(null, {
+      width: dimensions.width,
+      height: dimensions.height,
+    });
     canvas.loadFromJSON(snapShotJson, function () {
       canvas.setZoom(1);
       const group = new fabric.Group(canvas.getObjects());
@@ -54,16 +54,17 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       canvas.zoomToPoint({ x: canvas.width / 2, y: canvas.height / 2 }, zoom);
       canvas.renderAll();
     });
-
+    const offsetX = (canvas.width * 1.05) / 2 || 0;
+    const offsetY = (canvas.height * 1.05) / 2 || 0;
     const generatedSVG = canvas.toSVG({
       viewBox: {
-        x: -300,
-        y: -300,
-        width: 600 || 0,
-        height: 600 || 0,
+        x: -offsetX,
+        y: -offsetY,
+        width: canvas.width * 1.05 || 0,
+        height: canvas.height * 1.05 || 0,
       },
-      width: 600 || 0,
-      height: 600 || 0,
+      width: canvas.width * 1.05 || 0,
+      height: canvas.height * 1.05 || 0,
     });
 
     const svg = new Blob([generatedSVG], {
