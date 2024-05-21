@@ -31,40 +31,49 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       width: dimensions.width,
       height: dimensions.height,
     });
+    const canvasWidth = canvas.width || 0;
+    const canvasHeight = canvas.height || 0;
     canvas.loadFromJSON(snapShotJson, function () {
       canvas.setZoom(1);
+
       const group = new fabric.Group(canvas.getObjects());
-      const x = group.left + group.width / 2 - canvas.width / 2;
-      const y = group.top + group.height / 2 - canvas.height / 2;
+      const groupLeft = group.left || 0;
+      const groupWidth = group.width || 0;
+      const groupTop = group.top || 0;
+      const groupHeight = group.height || 0;
+
+      const x = groupLeft + groupWidth / 2 - canvasWidth / 2;
+      const y = groupTop + groupHeight / 2 - canvasHeight / 2;
       canvas.absolutePan({ x: x, y: y });
-      const heightDist = canvas.getHeight() - group.height;
-      const widthDist = canvas.getWidth() - group.width;
+      const heightDist = canvas.getHeight() - groupHeight;
+      const widthDist = canvas.getWidth() - groupWidth;
       let groupDimension = 0;
       let canvasDimension = 0;
 
       if (heightDist < widthDist) {
-        groupDimension = group.height;
+        groupDimension = groupHeight;
         canvasDimension = canvas.getHeight();
       } else {
-        groupDimension = group.width;
+        groupDimension = groupWidth;
         canvasDimension = canvas.getWidth();
       }
 
       const zoom = (canvasDimension / groupDimension) * 0.8;
-      canvas.zoomToPoint({ x: canvas.width / 2, y: canvas.height / 2 }, zoom);
+      canvas.zoomToPoint({ x: canvasWidth / 2, y: canvasHeight / 2 }, zoom);
       canvas.renderAll();
     });
-    const offsetX = (canvas.width * 1.05) / 2 || 0;
-    const offsetY = (canvas.height * 1.05) / 2 || 0;
+
+    const offsetX = (canvasWidth * 1.05) / 2 || 0;
+    const offsetY = (canvasHeight * 1.05) / 2 || 0;
     const generatedSVG = canvas.toSVG({
       viewBox: {
         x: -offsetX,
         y: -offsetY,
-        width: canvas.width * 1.05 || 0,
-        height: canvas.height * 1.05 || 0,
+        width: canvasWidth * 1.05 || 0,
+        height: canvasHeight * 1.05 || 0,
       },
-      width: canvas.width * 1.05 || 0,
-      height: canvas.height * 1.05 || 0,
+      width: canvasWidth * 1.05 || 0,
+      height: canvasHeight * 1.05 || 0,
     });
 
     const svg = new Blob([generatedSVG], {

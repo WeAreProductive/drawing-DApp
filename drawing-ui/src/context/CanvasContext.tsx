@@ -3,7 +3,6 @@ import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../shared/constants";
 import {
   CanvasContextType,
   CanvasOptions,
-  DrawingInput,
   DrawingInputExtended,
 } from "../shared/types";
 import { Canvas } from "fabric/fabric-impl";

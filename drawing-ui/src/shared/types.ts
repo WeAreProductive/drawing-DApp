@@ -39,8 +39,6 @@ export type CanvasContextType = {
   currentDrawingData: null | DrawingInputExtended;
   setCurrentDrawingData: React.Dispatch<null | DrawingInputExtended>;
   clearCanvas: () => void;
-  // svgStrLength: number;
-  // setSvgStrLength: React.Dispatch<number>;
 };
 
 export type VoucherExtended = {
@@ -60,6 +58,7 @@ export type VoucherExtended = {
 
 export interface DrawingInput {
   drawing: string; // svg's json string
+  dimensions: { width: number; height: number };
 }
 
 export interface DrawingInputExtended extends DrawingInput {
@@ -74,7 +73,6 @@ export interface DrawingInputExtended extends DrawingInput {
     action: string;
     drawing_objects: any;
   }[];
-  drawing: string; // svg's json string
   voucher_requested: boolean;
 }
 
