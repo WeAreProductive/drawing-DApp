@@ -170,7 +170,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       canvasContent.objects,
     ); // extracts the currents session drawing objects using the old and current drawing data
     let canvasData = {
-      svg: base64_encode(canvasSVG),
+      svg: base64_encode(canvasSVG), // for validation before minting
       content: currentDrawingLayer,
     };
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid, {

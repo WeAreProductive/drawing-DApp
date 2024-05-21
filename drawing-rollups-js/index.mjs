@@ -37,6 +37,7 @@ const mint_erc721_with_string = async (
   mint_header, // selector
   imageIPFSMeta, // string
   imageBase64,
+  canvasDimensions,
   drawing_input,
   cmd
 ) => {
@@ -63,7 +64,6 @@ const mint_erc721_with_string = async (
       destination: erc721_to_mint,
       payload: payload,
     };
-    drawing_input.drawing = JSON.stringify({ svg: imageBase64 });
     await send_voucher(voucher);
     await store_drawing_data(
       msg_sender,

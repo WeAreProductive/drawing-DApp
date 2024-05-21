@@ -47,6 +47,9 @@ export async function validateDrawing(
         canvas.zoomToPoint({ x: canvas.width / 2, y: canvas.height / 2 }, zoom);
         canvas.renderAll();
 
+        const offsetX = (canvas.width * 1.05) / 2 || 0;
+        const offsetY = (canvas.height * 1.05) / 2 || 0;
+
         const generatedSVG = stringUnification(
           canvas.toSVG({
             viewBox: {
