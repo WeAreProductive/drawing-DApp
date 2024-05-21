@@ -4,6 +4,7 @@ import {
   CanvasContextType,
   CanvasOptions,
   DrawingInput,
+  DrawingInputExtended,
 } from "../shared/types";
 import { Canvas } from "fabric/fabric-impl";
 
@@ -26,7 +27,7 @@ const initialCanvasContext = {
   dappState: DAPP_STATE.canvasInit,
   setDappState: (dappState: string) => undefined,
   currentDrawingData: null,
-  setCurrentDrawingData: (data: any) => undefined, // @TODO fix typing
+  setCurrentDrawingData: (data: any) => undefined,
   clearCanvas: () => undefined,
 };
 const CanvasContext = createContext<CanvasContextType>(initialCanvasContext);
@@ -45,7 +46,8 @@ export const CanvasContextProvider = ({ children }: Props) => {
   const [canvas, setCanvas] = useState<Canvas | null>(null);
   const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
   const [dappState, setDappState] = useState<string>(DAPP_STATE.canvasInit);
-  const [currentDrawingData, setCurrentDrawingData] = useState<any>(null); // @TODO fix typing
+  const [currentDrawingData, setCurrentDrawingData] =
+    useState<DrawingInputExtended | null>(null);
 
   const clearCanvas = useCallback(() => {
     if (!canvas) return;

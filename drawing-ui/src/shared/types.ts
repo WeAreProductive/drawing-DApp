@@ -36,8 +36,8 @@ export type CanvasContextType = {
   setOptions: React.Dispatch<CanvasOptions>;
   dappState: string;
   setDappState: React.Dispatch<string>;
-  currentDrawingData: null | DrawingInput;
-  setCurrentDrawingData: React.Dispatch<null | DrawingInput>;
+  currentDrawingData: null | DrawingInputExtended;
+  setCurrentDrawingData: React.Dispatch<null | DrawingInputExtended>;
   clearCanvas: () => void;
   // svgStrLength: number;
   // setSvgStrLength: React.Dispatch<number>;
