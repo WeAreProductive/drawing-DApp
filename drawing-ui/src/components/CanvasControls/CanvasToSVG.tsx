@@ -152,10 +152,9 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
       currentDrawingData,
       canvasContent.objects,
     ); // extracts the currents session drawing objects using the old and current drawing data
-    console.log({ currentDrawingLayer });
     let canvasData = {
       svg: base64_encode(canvasSVG),
-      content: currentDrawingLayer, // send only the array containing the current drawing session's objects, validate!!!!!
+      content: currentDrawingLayer,
     };
     sendInput(JSON.stringify(canvasData));
   };

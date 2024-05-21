@@ -26,7 +26,7 @@ import {
   DrawingInputExtended,
   Network,
 } from "../../shared/types";
-import { validateInputSize } from "../../utils";
+import { prepareDrawingObjectsArrays, validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -111,7 +111,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       const inputBytes = ethers.utils.isBytesLike(compressedStr)
         ? compressedStr
         : ethers.utils.toUtf8Bytes(compressedStr);
-
+      console.log(`Input bytes when minting ${inputBytes.length}`); // 10845, 34059
       // Send the transaction
       if (!connectedChain) return;
       try {
@@ -160,11 +160,14 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
 
     // proceed after validation
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
+    const currentDrawingLayer = prepareDrawingObjectsArrays(
+      currentDrawingData,
+      canvasContent.objects,
+    ); // extracts the currents session drawing objects using the old and current drawing data
     let canvasData = {
       svg: base64_encode(canvasSVG),
-      content: canvasContent.objects, // @TODO send only current drawing session's objects, validate!!!!!
+      content: currentDrawingLayer,
     };
-
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid); // drawingMeta contains compressed base64 image and IPFS hash
     sendInput(drawingMeta, JSON.stringify(canvasData));
   };
