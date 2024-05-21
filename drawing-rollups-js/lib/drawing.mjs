@@ -9,7 +9,9 @@ function stringUnification(str) {
     .toLowerCase();
 }
 
-export async function validateDrawing(drawingContent, drawingBase64) {
+export async function validateDrawing(drawingInput, drawingBase64) {
+  const drawingContent = getDrawingContent(drawingInput);
+  console.log({ drawingContent });
   var res = false;
 
   try {
@@ -64,3 +66,16 @@ export async function validateDrawing(drawingContent, drawingBase64) {
 
   return res;
 }
+
+const getDrawingContent = (drawingInput) => {
+  const drawingLayers = [];
+  const lastDrawingLayer = JSON.parse(drawingInput.drawing).content;
+  const { update_log } = drawingInput;
+  if (update_log.length) {
+    update_log.forEach((element) => {
+      drawingLayers.push(element.drawing_objects);
+    });
+  }
+  drawingLayers.push(lastDrawingLayer);
+  return drawingLayers.flat();
+};

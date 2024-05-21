@@ -166,7 +166,6 @@ export const prepareDrawingObjectsArrays = (
     if (update_log.length) {
       // array of objects for each drawing session
       update_log.forEach((element: { drawing_objects: any }) => {
-        console.log({ element });
         storedDrawingObj.push(element.drawing_objects);
       });
       console.log({ storedDrawingObj });

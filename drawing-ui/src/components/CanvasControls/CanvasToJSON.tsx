@@ -111,7 +111,6 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       const inputBytes = ethers.utils.isBytesLike(compressedStr)
         ? compressedStr
         : ethers.utils.toUtf8Bytes(compressedStr);
-      console.log(`Input bytes when minting ${inputBytes.length}`); // 10845, 34059
       // Send the transaction
       if (!connectedChain) return;
       try {

@@ -40,10 +40,7 @@ const mint_erc721_with_string = async (
   drawing_input,
   cmd
 ) => {
-  const validateBase64 = await validateDrawing(
-    JSON.parse(drawing_input.drawing).content,
-    imageBase64
-  );
+  const validateBase64 = await validateDrawing(drawing_input, imageBase64);
 
   if (validateBase64 === true) {
     console.log("Preparing a VOUCHER for MINTING AN NFT");
@@ -85,7 +82,7 @@ const mint_erc721_with_string = async (
  */
 const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   // @TODO the drawing input is kept as is for now - it contains both the svg and and the canvas objects
-  console.log(JSON.parse(drawing_input.drawing));
+
   console.log("Store drawing data in a notice");
   const { content } = JSON.parse(drawing_input.drawing); // current session drawing objects
   const now = getCurrentDate(); // 'YYYY-MM-DD'
@@ -95,7 +92,6 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
     action: cmd,
     drawing_objects: content,
   };
-  console.log({ newLogItem });
   if (cmd == "cn" || cmd == "cv") {
     // set drawing id wneh new drawing
     const unix_timestamp = getCurrentTimestamp();
