@@ -51,7 +51,11 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
     setLoading(true);
 
     const sendInput = async (
-      drawingMeta: { base64out: string; ipfsHash: string },
+      drawingMeta: {
+        base64out: string;
+        ipfsHash: string;
+        canvasDimensions: { width: number; height: number };
+      },
       canvasData: string,
     ) => {
       toast.info("Sending input to rollups...");
@@ -76,6 +80,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           imageBase64: drawingMeta.base64out,
+          canvasDimensions: drawingMeta.canvasDimensions,
           imageIPFSMeta:
             "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
           // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
@@ -92,6 +97,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           imageBase64: drawingMeta.base64out,
+          canvasDimensions: drawingMeta.canvasDimensions,
           imageIPFSMeta:
             "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
           // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
@@ -167,7 +173,10 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       svg: base64_encode(canvasSVG),
       content: currentDrawingLayer,
     };
-    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid); // drawingMeta contains compressed base64 image and IPFS hash
+    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid, {
+      width: canvas.width || 0,
+      height: canvas.height || 0,
+    }); // drawingMeta contains compressed base64 image and IPFS hash
     sendInput(drawingMeta, JSON.stringify(canvasData));
   };
 
