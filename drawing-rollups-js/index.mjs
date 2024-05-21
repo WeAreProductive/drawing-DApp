@@ -40,7 +40,11 @@ const mint_erc721_with_string = async (
   drawing_input,
   cmd
 ) => {
-  const validateBase64 = await validateDrawing(drawing_input, imageBase64);
+  const validateBase64 = await validateDrawing(
+    drawing_input,
+    imageBase64,
+    canvasDimensions
+  );
 
   if (validateBase64 === true) {
     console.log("Preparing a VOUCHER for MINTING AN NFT");
@@ -59,6 +63,7 @@ const mint_erc721_with_string = async (
       destination: erc721_to_mint,
       payload: payload,
     };
+    drawing_input.drawing = JSON.stringify({ svg: imageBase64 });
     await send_voucher(voucher);
     await store_drawing_data(
       msg_sender,
@@ -148,6 +153,7 @@ async function handle_advance(data) {
         selector,
         uuid,
         imageBase64,
+        canvasDimensions,
         drawing_input,
       } = jsonData;
       if (cmd) {
@@ -161,6 +167,7 @@ async function handle_advance(data) {
               selector,
               imageIPFSMeta,
               imageBase64,
+              canvasDimensions,
               drawing_input,
               cmd
             );

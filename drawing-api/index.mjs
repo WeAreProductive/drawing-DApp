@@ -74,8 +74,8 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
             viewBox: {
               x: -offsetX,
               y: -offsetY,
-              width: canvas.width || 0,
-              height: canvas.height || 0,
+              width: canvas.width * 1.05 || 0,
+              height: canvas.height * 1.05 || 0,
             },
             width: canvas.width * 1.05 || 0,
             height: canvas.height * 1.05 || 0,

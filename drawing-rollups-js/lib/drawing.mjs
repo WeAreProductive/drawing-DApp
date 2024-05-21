@@ -9,13 +9,19 @@ function stringUnification(str) {
     .toLowerCase();
 }
 
-export async function validateDrawing(drawingInput, drawingBase64) {
+export async function validateDrawing(
+  drawingInput,
+  drawingBase64,
+  inputCanvasDimensions
+) {
   const drawingContent = getDrawingContent(drawingInput);
-  console.log({ drawingContent });
   var res = false;
-
+  const { width, height } = inputCanvasDimensions;
   try {
-    const canvas = new fabric.StaticCanvas(null, { width: 600, height: 600 });
+    const canvas = new fabric.StaticCanvas(null, {
+      width: width,
+      height: height,
+    });
     canvas.loadFromJSON(
       JSON.stringify({ objects: drawingContent }),
       function () {
@@ -44,13 +50,13 @@ export async function validateDrawing(drawingInput, drawingBase64) {
         const generatedSVG = stringUnification(
           canvas.toSVG({
             viewBox: {
-              x: 0,
-              y: 0,
-              width: canvas.width || 0,
-              height: canvas.height || 0,
+              x: -offsetX,
+              y: -offsetY,
+              width: canvas.width * 1.05 || 0,
+              height: canvas.height * 1.05 || 0,
             },
-            width: canvas.width || 0,
-            height: canvas.height || 0,
+            width: canvas.width * 1.05 || 0,
+            height: canvas.height * 1.05 || 0,
           })
         );
         const drawingSVG = stringUnification(base64.decode(drawingBase64));
