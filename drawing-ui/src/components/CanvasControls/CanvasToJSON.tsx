@@ -41,7 +41,6 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
   const uuid = uuidv4();
-
   useEffect(() => {
     if (!connectedChain) return;
     setInputBoxAddress(config[connectedChain.id].InputBoxAddress);
@@ -76,11 +75,11 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
         drawingNoticePayload = {
           ...currentDrawingData,
           drawing: canvasData, // FE updates the svg string only, compressedCanvasData
+          dimensions: drawingMeta.canvasDimensions,
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
           imageBase64: drawingMeta.base64out,
-          canvasDimensions: drawingMeta.canvasDimensions,
           imageIPFSMeta:
             "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
           // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
@@ -93,6 +92,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
         // new drawing is sent to rollups, and voucher is requested
         drawingNoticePayload = {
           drawing: canvasData, // FE is responsible for the svg string only
+          dimensions: drawingMeta.canvasDimensions,
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
@@ -107,7 +107,6 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
           cmd: COMMANDS.createAndMint.cmd,
         });
       }
-
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
       // compress before encoding the input
@@ -177,6 +176,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       width: canvas.width || 0,
       height: canvas.height || 0,
     }); // drawingMeta contains compressed base64 image and IPFS hash
+    console.log(drawingMeta);
     sendInput(drawingMeta, JSON.stringify(canvasData));
   };
 

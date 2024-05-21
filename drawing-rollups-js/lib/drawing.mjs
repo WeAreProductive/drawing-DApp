@@ -9,14 +9,10 @@ function stringUnification(str) {
     .toLowerCase();
 }
 
-export async function validateDrawing(
-  drawingInput,
-  drawingBase64,
-  inputCanvasDimensions
-) {
+export async function validateDrawing(drawingInput, drawingBase64) {
   const drawingContent = getDrawingContent(drawingInput);
   var res = false;
-  const { width, height } = inputCanvasDimensions;
+  const { width, height } = drawingInput.dimensions;
   try {
     const canvas = new fabric.StaticCanvas(null, {
       width: width,
@@ -77,13 +73,17 @@ export async function validateDrawing(
 }
 
 const getDrawingContent = (drawingInput) => {
+  console.log(JSON.parse(drawingInput.drawing));
   const drawingLayers = [];
   const lastDrawingLayer = JSON.parse(drawingInput.drawing).content;
   const { update_log } = drawingInput;
-  if (update_log.length) {
-    update_log.forEach((element) => {
-      drawingLayers.push(element.drawing_objects);
-    });
+
+  if (update_log) {
+    if (update_log.length) {
+      update_log.forEach((element) => {
+        drawingLayers.push(element.drawing_objects);
+      });
+    }
   }
   drawingLayers.push(lastDrawingLayer);
   return drawingLayers.flat();
