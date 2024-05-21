@@ -37,8 +37,8 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
         fs.mkdirSync(fullPath, { recursive: true });
         console.log(`Directory created successfully`);
       }
-
-      const canvas = new fabric.Canvas(null, { width: 600, height: 600 });
+      const { width, height } = req.body.canvasDimensions;
+      const canvas = new fabric.Canvas(null, { width: width, height: height });
       canvas.loadFromJSON(
         JSON.stringify({ objects: req.body.image }),
         async function () {
@@ -68,16 +68,17 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           );
 
           canvas.renderAll();
-
+          const offsetX = (canvas.width * 1.05) / 2 || 0;
+          const offsetY = (canvas.height * 1.05) / 2 || 0;
           const generatedSVG = canvas.toSVG({
             viewBox: {
-              x: 0,
-              y: 0,
+              x: -offsetX,
+              y: -offsetY,
               width: canvas.width || 0,
               height: canvas.height || 0,
             },
-            width: canvas.width || 0,
-            height: canvas.height || 0,
+            width: canvas.width * 1.05 || 0,
+            height: canvas.height * 1.05 || 0,
           });
 
           const generatedBase64 = canvas
@@ -111,6 +112,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
               success: true,
               base64out: base64.encode(generatedSVG), // Encoded image
               ipfsHash: metaIPFS.data.ipfsHash,
+              canvasDimensions: { width: width, height: height },
             })
           );
 
