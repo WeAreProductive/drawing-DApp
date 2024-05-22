@@ -49,18 +49,15 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
 
     setLoading(true);
 
-    // Gets current drawing data as SVG
-    const canvasSVG = canvas.toSVG({
-      viewBox: {
-        x: 0,
-        y: 0,
-        width: canvas.width || 0,
-        height: canvas.height || 0,
+    const sendInput = async (
+      drawingMeta: {
+        canvasDimensions: {
+          width: number;
+          height: number;
+        };
       },
-      width: canvas.width || 0,
-      height: canvas.height || 0,
-    });
-    const sendInput = async (strInput: string) => {
+      strInput: string,
+    ) => {
       toast.info("Sending input to rollups...");
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
@@ -76,6 +73,7 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
         drawingNoticePayload = {
           ...currentDrawingData,
           drawing: strInput, // FE updates the svg string
+          dimensions: drawingMeta.canvasDimensions,
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload,
@@ -85,6 +83,7 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
       } else {
         drawingNoticePayload = {
           drawing: strInput, // FE is responsible for the svg string only
+          dimensions: drawingMeta.canvasDimensions,
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, // data to save in a notice
@@ -137,6 +136,17 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
         setLoading(false);
       }
     };
+    // Gets current drawing data as SVG
+    const canvasSVG = canvas.toSVG({
+      viewBox: {
+        x: 0,
+        y: 0,
+        width: canvas.width || 0,
+        height: canvas.height || 0,
+      },
+      width: canvas.width || 0,
+      height: canvas.height || 0,
+    });
     // validate before sending the tx
     const result = validateInputSize(canvasSVG);
     if (!result.isValid) {
@@ -147,7 +157,6 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
       return;
     }
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
-    // @TODO - fix typing
     const currentDrawingLayer = prepareDrawingObjectsArrays(
       currentDrawingData,
       canvasContent.objects,
@@ -156,7 +165,15 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
       svg: base64_encode(canvasSVG),
       content: currentDrawingLayer,
     };
-    sendInput(JSON.stringify(canvasData));
+    sendInput(
+      {
+        canvasDimensions: {
+          width: canvas.width || 0,
+          height: canvas.height || 0,
+        },
+      },
+      JSON.stringify(canvasData),
+    );
   };
 
   return (

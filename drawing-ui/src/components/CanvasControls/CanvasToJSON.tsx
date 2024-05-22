@@ -161,7 +161,6 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       setLoading(false);
       return;
     }
-
     // proceed after validation
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
     const currentDrawingLayer = prepareDrawingObjectsArrays(
@@ -175,8 +174,14 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
     const drawingMeta = await storeAsFiles(canvasContent.objects, uuid, {
       width: canvas.width || 0,
       height: canvas.height || 0,
-    }); // drawingMeta contains compressed base64 image and IPFS hash
-    console.log(drawingMeta);
+    });
+
+    // drawingMeta contains
+    // success: true,
+    // base64out: base64.encode(generatedSVG), // Encoded image
+    // ipfsHash: metaIPFS.data.ipfsHash,
+    // canvasDimensions: { width: width, height: height }
+
     sendInput(drawingMeta, JSON.stringify(canvasData));
   };
 
