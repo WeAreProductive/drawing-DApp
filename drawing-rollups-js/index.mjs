@@ -81,7 +81,6 @@ const mint_erc721_with_string = async (
  * @param {String} cmd
  */
 const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
-  // @TODO the drawing input is kept as is for now - it contains both the svg and and the canvas objects
   console.log("Store drawing data in a notice");
   const { content } = JSON.parse(drawing_input.drawing); // current session drawing objects
   const now = getCurrentDate(); // 'YYYY-MM-DD'
@@ -89,7 +88,7 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
     date_updated: now,
     painter: sender,
     action: cmd,
-    drawing_objects: content,
+    drawing_objects: content, // tracks the drawing layers (the canvas drawing objects of each drawing session)
   };
   if (cmd == "cn" || cmd == "cv") {
     // set drawing id wneh new drawing
