@@ -108,7 +108,6 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
           inputBytes,
         );
         toast.success("Transaction Sent");
-        console.log(tx);
         // Wait for confirmation
         const receipt = await tx.wait(1);
 

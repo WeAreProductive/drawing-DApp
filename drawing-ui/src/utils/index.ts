@@ -159,7 +159,6 @@ export const prepareDrawingObjectsArrays = (
   rollupsDrawingData: DrawingInputExtended | null,
   currentDrawingObjects: DrawingObject[],
 ) => {
-  console.log({ currentDrawingObjects });
   const storedDrawingObj: DrawingObject[] = []; // array of objects
   if (rollupsDrawingData) {
     const { update_log } = rollupsDrawingData;
@@ -169,7 +168,6 @@ export const prepareDrawingObjectsArrays = (
       update_log.forEach((element) => {
         storedDrawingObj.push(element.drawing_objects);
       });
-      console.log({ storedDrawingObj });
       // get all drawing_objects arrays and merge to one
     }
     // flatten stored drawing array
@@ -178,7 +176,6 @@ export const prepareDrawingObjectsArrays = (
       currentDrawingObjects,
       storedDrawingObj.flat(),
     );
-    console.log({ currentDrawingObj });
     return currentDrawingObj;
   }
   return currentDrawingObjects;
