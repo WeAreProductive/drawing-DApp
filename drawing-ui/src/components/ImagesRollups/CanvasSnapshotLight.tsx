@@ -1,17 +1,19 @@
-import pako from "pako";
-import { decode as base64_decode } from "base-64";
+import { useMemo } from "react";
+import { snapShotJsonfromLog } from "../../utils";
+import { DrawingInputExtended } from "../../shared/types";
+import DrawingPreview from "./DrawingPreview";
 
 type CanvasSnapshotLightProp = {
-  data: string;
+  data: DrawingInputExtended;
 };
-
 const CanvasSnapshotLight = ({ data }: CanvasSnapshotLightProp) => {
-  const drawingObj = JSON.parse(data);
-  console.log({ data });
-  const src = base64_decode(drawingObj.svg);
-  const svg = new Blob([src], { type: "image/svg+xml" });
-  const url = URL.createObjectURL(svg);
-  return <img src={url} alt="drawing preview" />;
+  const { update_log, dimensions } = data;
+  const snapShotJson = useMemo(
+    () => snapShotJsonfromLog(update_log),
+    [update_log],
+  );
+
+  return <DrawingPreview dimensions={dimensions} snapShotJson={snapShotJson} />;
 };
 
 export default CanvasSnapshotLight;

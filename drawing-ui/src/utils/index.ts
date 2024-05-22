@@ -91,22 +91,6 @@ export const validateInputSize = (
   return validationResult;
 };
 
-// const canvasObj = canvas.toObject();
-// console.log(objOne.objects);
-// console.log(objTwo.objects);
-// const serializedOne = objOne.objects.map((element) => {
-//   return JSON.stringify(element);
-// });
-// const serializedTwo = objTwo.objects.map((element) => {
-//   return JSON.stringify(element);
-// });
-// // console.log(serializedOne);
-// // console.log(serializedTwo);
-// const filteredArray = serializedTwo.filter(
-//   (value) => !serializedOne.includes(value),
-// );
-// console.log({ filteredArray });
-
 /**
  * Converts each object in Fabrics/Canvas
  * objects array
@@ -136,12 +120,13 @@ export const deserializeArrElements = (arr: string[]) => {
   return deserialized;
 };
 /**
- * Extracts the JSON STRINGIFIED drawing objects
- * at current drawing session.
+ * Extracts the current drawing session's
+ * drawing objects by comparing after
+ * JSON stringifying each element
  *
  * @param arrObjFull drawing objects at drawing finish
  * @param arrObjInitial drawing objects at canvas load
- * @returns drawing objects at current drawing session
+ * @returns drawing objects ARRAY at current drawing session
  */
 export const latestDrawingObjects = (arrObjFull: [], arrObjInitial: []) => {
   // use arrays of serializes objects to compare them as strings for equality!
@@ -154,7 +139,14 @@ export const latestDrawingObjects = (arrObjFull: [], arrObjInitial: []) => {
   const deserializedLatest = deserializeArrElements(latest);
   return deserializedLatest;
 };
-
+/**
+ * Produces the drawing objects
+ * array from the current drawing session
+ *
+ * @param rollupsDrawingData
+ * @param currentDrawingObjects
+ * @returns
+ */
 export const prepareDrawingObjectsArrays = (
   rollupsDrawingData: DrawingInputExtended | null,
   currentDrawingObjects: any,

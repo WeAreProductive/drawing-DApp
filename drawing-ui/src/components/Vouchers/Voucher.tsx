@@ -113,10 +113,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
     <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
       {voucherData.drawing && (
         <div className="w-1/2 p-2">
-          <CanvasSnapshotLight
-            data={voucherData.drawing}
-            // src={base64_decode(JSON.parse(voucherData.drawing).svg)}
-          />
+          <CanvasSnapshotLight data={voucherData.drawing} />
         </div>
       )}
 
