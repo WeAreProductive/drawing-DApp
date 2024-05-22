@@ -12,6 +12,7 @@ import { useCanvasContext } from "../../context/CanvasContext";
 import { COMMANDS, DAPP_STATE } from "../../shared/constants";
 import configFile from "../../config/config.json";
 import {
+  CanvasDimensions,
   DrawingInput,
   DrawingInputExtended,
   Network,
@@ -51,10 +52,7 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
 
     const sendInput = async (
       drawingMeta: {
-        canvasDimensions: {
-          width: number;
-          height: number;
-        };
+        canvasDimensions: CanvasDimensions;
       },
       strInput: string,
     ) => {

@@ -22,6 +22,7 @@ import { MINT_SELECTOR, DAPP_STATE, COMMANDS } from "../../shared/constants";
 import pako from "pako";
 
 import {
+  CanvasDimensions,
   DrawingInput,
   DrawingInputExtended,
   Network,
@@ -53,7 +54,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
       drawingMeta: {
         base64out: string;
         ipfsHash: string;
-        canvasDimensions: { width: number; height: number };
+        canvasDimensions: CanvasDimensions;
       },
       canvasData: string,
     ) => {

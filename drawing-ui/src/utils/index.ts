@@ -9,7 +9,12 @@ import {
   VALIDATE_INPUT_ERRORS,
 } from "../shared/constants";
 import prettyBytes from "pretty-bytes";
-import { DrawingInput, DrawingInputExtended } from "../shared/types";
+import {
+  DrawingInputExtended,
+  DrawingObject,
+  UpdateLog,
+  UpdateLogItem,
+} from "../shared/types";
 
 export const srcToJson = (src: string) => {
   return src.replace(".png", ".json");
@@ -100,7 +105,7 @@ export const validateInputSize = (
  * @param arr of canvas/drawing objects
  * @returns arr of JSON Stringified objects
  */
-export const serializeArrElements = (arr: []) => {
+export const serializeArrElements = (arr: DrawingObject[]) => {
   const serialized = arr.map((element) => {
     return JSON.stringify(element);
   });
@@ -128,7 +133,10 @@ export const deserializeArrElements = (arr: string[]) => {
  * @param arrObjInitial drawing objects at canvas load
  * @returns drawing objects ARRAY at current drawing session
  */
-export const latestDrawingObjects = (arrObjFull: [], arrObjInitial: []) => {
+export const latestDrawingObjects = (
+  arrObjFull: DrawingObject[],
+  arrObjInitial: DrawingObject[],
+) => {
   // use arrays of serializes objects to compare them as strings for equality!
   const serializedFull = serializeArrElements(arrObjFull);
   const serializedInitial = serializeArrElements(arrObjInitial);
@@ -149,15 +157,16 @@ export const latestDrawingObjects = (arrObjFull: [], arrObjInitial: []) => {
  */
 export const prepareDrawingObjectsArrays = (
   rollupsDrawingData: DrawingInputExtended | null,
-  currentDrawingObjects: any,
+  currentDrawingObjects: DrawingObject[],
 ) => {
-  const storedDrawingObj: any = []; // array of objects
+  console.log({ currentDrawingObjects });
+  const storedDrawingObj: DrawingObject[] = []; // array of objects
   if (rollupsDrawingData) {
     const { update_log } = rollupsDrawingData;
     // extract object array
     if (update_log.length) {
       // array of objects for each drawing session
-      update_log.forEach((element: { drawing_objects: any }) => {
+      update_log.forEach((element) => {
         storedDrawingObj.push(element.drawing_objects);
       });
       console.log({ storedDrawingObj });
@@ -174,10 +183,9 @@ export const prepareDrawingObjectsArrays = (
   }
   return currentDrawingObjects;
 };
-// @TODO fix typing
-export const snapShotJsonfromLog = (update_log: any): string => {
-  const drawingObjectsArr: any = [];
-  update_log.forEach((element: any) => {
+export const snapShotJsonfromLog = (update_log: UpdateLog): string => {
+  const drawingObjectsArr: DrawingObject[] = [];
+  update_log.forEach((element: UpdateLogItem) => {
     drawingObjectsArr.push(element.drawing_objects);
   });
   const snapShot = drawingObjectsArr.flat();

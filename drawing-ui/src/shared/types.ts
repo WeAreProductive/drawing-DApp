@@ -60,19 +60,21 @@ export interface DrawingInput {
   drawing: string; // svg's json string
   dimensions: { width: number; height: number };
 }
-
+export type DrawingObject = { [key: string]: any };
+export type UpdateLogItem = {
+  date_updated: string;
+  painter: string;
+  action: string;
+  drawing_objects: DrawingObject[];
+};
+export type UpdateLog = UpdateLogItem[];
 export interface DrawingInputExtended extends DrawingInput {
   id: string; // creator's account - timestamp
   uuid: string;
   date_created: string; // date-time string
   last_updated: null | string; // last update date-time string
   owner: string; //last painter's account
-  update_log: {
-    date_updated: string;
-    painter: string;
-    action: string;
-    drawing_objects: any;
-  }[];
+  update_log: UpdateLog;
   voucher_requested: boolean;
 }
 
@@ -88,3 +90,4 @@ export type DataNoticeEdge = {
     };
   };
 };
+export type CanvasDimensions = { width: number; height: number };

@@ -1,7 +1,14 @@
 import { fabric } from "fabric";
 import { useState, useEffect } from "react";
+import { CanvasDimensions } from "../../shared/types";
 
-const DrawingPreview = ({ dimensions, snapShotJson }: any) => {
+const DrawingPreview = ({
+  dimensions,
+  snapShotJson,
+}: {
+  dimensions: CanvasDimensions;
+  snapShotJson: string;
+}) => {
   const [url, setUrl] = useState("");
 
   useEffect(() => {

@@ -1,4 +1,5 @@
 import { BASE_API_URL, API_ENDPOINTS } from "../shared/constants";
+import { CanvasDimensions } from "../shared/types";
 
 /**
  *
@@ -9,7 +10,7 @@ import { BASE_API_URL, API_ENDPOINTS } from "../shared/constants";
 export const storeAsFiles = async (
   canvasObject: Object[],
   uuid: string,
-  canvasDimensions: { width: number; height: number },
+  canvasDimensions: CanvasDimensions,
 ) => {
   try {
     const response = await fetch(

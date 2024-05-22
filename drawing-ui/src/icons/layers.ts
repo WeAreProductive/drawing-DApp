@@ -1,1 +1,0 @@
-export default `<a href="https://iconscout.com/icons/layers" class="text-underline font-size-sm" target="_blank">layers</a> by <a href="https://iconscout.com/contributors/iconscout" class="text-underline font-size-sm" target="_blank">IconScout Store</a>`;

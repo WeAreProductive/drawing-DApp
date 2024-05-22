@@ -36,11 +36,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   return (
     <div className="rounded-lg border bg-background p-2">
       <div onClick={loadCanvasFromImage}>
-        <DrawingPreview
-          dimensions={dimensions}
-          snapShotJson={snapShotJson}
-          log={update_log}
-        />
+        <DrawingPreview dimensions={dimensions} snapShotJson={snapShotJson} />
       </div>
       <span className="block text-xs">Owner: {sliceAccountStr(owner)}</span>
       <span className="block text-xs">ID: {uuid}</span>
