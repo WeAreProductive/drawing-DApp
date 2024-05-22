@@ -10,7 +10,7 @@ const DrawingStepsPreview = ({ updateLog, dimensions }: any) => {
             objects: element.drawing_objects,
           });
           return (
-            <div key={idx} className="step-preview">
+            <div key={idx} className="m-1 border">
               <DrawingPreview
                 dimensions={dimensions}
                 snapShotJson={snapShotJson}
