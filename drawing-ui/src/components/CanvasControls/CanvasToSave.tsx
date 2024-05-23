@@ -24,11 +24,9 @@ type CanvasToSaveProp = {
 const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const { canvas, currentDrawingData } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
+  const { sendInput, loading, setLoading } = useRollupsInteraction();
   const { getNoticeInput } = useDrawing();
   const uuid = uuidv4();
-  if (!connectedChain) return;
-  const { sendInput, loading, setLoading } = useRollupsInteraction();
-
   const handleCanvasToSave = async () => {
     if (!canvas) return;
 
