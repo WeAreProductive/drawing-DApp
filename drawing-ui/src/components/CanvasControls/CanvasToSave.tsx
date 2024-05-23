@@ -27,10 +27,10 @@ import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
-type CanvasToSVGProp = {
+type CanvasToSaveProp = {
   enabled: boolean;
 };
-const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
+const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const [connectedWallet] = useWallets();
   const { canvas, dappState, setDappState, currentDrawingData, clearCanvas } =
     useCanvasContext();
@@ -45,7 +45,7 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
     setInputBoxAddress(config[connectedChain.id].InputBoxAddress);
   }, [connectedChain]);
 
-  const handleCanvasToSvg = async () => {
+  const handleCanvasToSave = async () => {
     if (!canvas) return;
 
     setLoading(true);
@@ -133,7 +133,7 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
         setLoading(false);
       }
     };
-    // Gets current drawing data as SVG
+    // Gets current drawing data as SVG, @TODO - change the validation
     const canvasSVG = canvas.toSVG({
       viewBox: {
         x: 0,
@@ -175,7 +175,7 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
   return (
     <Button
       variant={"outline"}
-      onClick={handleCanvasToSvg}
+      onClick={handleCanvasToSave}
       disabled={!connectedChain || loading || !enabled}
     >
       <Save size={18} className="mr-2" strokeWidth={1.5} />
@@ -184,4 +184,4 @@ const CanvasToSVG = ({ enabled }: CanvasToSVGProp) => {
   );
 };
 
-export default CanvasToSVG;
+export default CanvasToSave;

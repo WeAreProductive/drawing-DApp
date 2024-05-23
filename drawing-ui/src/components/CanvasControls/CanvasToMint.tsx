@@ -31,10 +31,10 @@ import { prepareDrawingObjectsArrays, validateInputSize } from "../../utils";
 
 const config: { [name: string]: Network } = configFile;
 
-type CanvasToJSONProp = {
+type CanvasToMintProp = {
   enabled: boolean;
 };
-const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
+const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
   const [connectedWallet] = useWallets();
   const { canvas, dappState, currentDrawingData, setDappState, clearCanvas } =
     useCanvasContext();
@@ -46,7 +46,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
     if (!connectedChain) return;
     setInputBoxAddress(config[connectedChain.id].InputBoxAddress);
   }, [connectedChain]);
-  const handleCanvasToSvg = async () => {
+  const handleCanvasToMint = async () => {
     if (!canvas) return;
     setLoading(true);
 
@@ -189,7 +189,7 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
   return connectedChain ? (
     <Button
       variant={"outline"}
-      onClick={handleCanvasToSvg}
+      onClick={handleCanvasToMint}
       disabled={loading || !enabled}
     >
       <Box size={18} className="mr-2" strokeWidth={1.5} />
@@ -198,4 +198,4 @@ const CanvasToJSON = ({ enabled }: CanvasToJSONProp) => {
   ) : null;
 };
 
-export default CanvasToJSON;
+export default CanvasToMint;
