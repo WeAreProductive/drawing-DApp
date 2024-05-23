@@ -52,7 +52,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
 
     const sendInput = async (
       drawingMeta: {
-        base64out: string;
+        // base64out: string; @TODO new BE validation
         ipfsHash: string;
         canvasDimensions: CanvasDimensions;
       },
@@ -80,7 +80,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
-          imageBase64: drawingMeta.base64out,
+          // imageBase64: drawingMeta.base64out, @TODO new BE validation
           imageIPFSMeta:
             "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
           // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
@@ -97,7 +97,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
         };
         str = JSON.stringify({
           drawing_input: drawingNoticePayload, //data to save in a notice
-          imageBase64: drawingMeta.base64out,
+          // imageBase64: drawingMeta.base64out, @TODO new BE validation
           canvasDimensions: drawingMeta.canvasDimensions,
           imageIPFSMeta:
             "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
@@ -179,7 +179,6 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
 
     // drawingMeta contains
     // success: true,
-    // base64out: base64.encode(generatedSVG), // Encoded image
     // ipfsHash: metaIPFS.data.ipfsHash,
     // canvasDimensions: { width: width, height: height }
 

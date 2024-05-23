@@ -36,41 +36,41 @@ const mint_erc721_with_string = async (
   erc721_to_mint,
   mint_header, // selector
   imageIPFSMeta, // string
-  imageBase64,
+  // imageBase64, @TODO new BE validation
   drawing_input,
   cmd
 ) => {
-  const validateBase64 = await validateDrawing(drawing_input, imageBase64);
+  // const validateBase64 = await validateDrawing(drawing_input, imageBase64); @TODO new BE validation
 
-  if (validateBase64 === true) {
-    console.log("Preparing a VOUCHER for MINTING AN NFT");
-    const mintHeader = clean_header(mint_header);
-    const abiCoder = new ethers.utils.AbiCoder();
+  // if (validateBase64 === true) { @TODO new BE validation
+  console.log("Preparing a VOUCHER for MINTING AN NFT");
+  const mintHeader = clean_header(mint_header);
+  const abiCoder = new ethers.utils.AbiCoder();
 
-    // abiCoder.encode( types , values ) ⇒ string< DataHexString >
-    const data = abiCoder.encode(
-      ["address", "string"],
-      [msg_sender, imageIPFSMeta]
-    );
+  // abiCoder.encode( types , values ) ⇒ string< DataHexString >
+  const data = abiCoder.encode(
+    ["address", "string"],
+    [msg_sender, imageIPFSMeta]
+  );
 
-    const payloadStr = `${mintHeader}${data.slice(2)}`.toString(); //toString() is equal to py's hex()
-    const payload = `${payloadStr}`;
-    const voucher = {
-      destination: erc721_to_mint,
-      payload: payload,
-    };
-    await send_voucher(voucher);
-    await store_drawing_data(
-      msg_sender,
-      uuid,
-      drawing_input, // notice drawing data needs the svg only
-      cmd
-    );
-  } else {
-    let msg = `Error: Invalid INPUT PNG file.`;
-    console.log(msg);
-    await send_report({ payload: str2hex(msg) });
-  }
+  const payloadStr = `${mintHeader}${data.slice(2)}`.toString(); //toString() is equal to py's hex()
+  const payload = `${payloadStr}`;
+  const voucher = {
+    destination: erc721_to_mint,
+    payload: payload,
+  };
+  await send_voucher(voucher);
+  await store_drawing_data(
+    msg_sender,
+    uuid,
+    drawing_input, // notice drawing data needs the svg only
+    cmd
+  );
+  // } else {
+  //   let msg = `Error: Invalid INPUT PNG file.`;
+  //   console.log(msg);
+  //   await send_report({ payload: str2hex(msg) });
+  // } @TODO new BE validation
 };
 /**
  * Emit a notice
@@ -158,7 +158,7 @@ async function handle_advance(data) {
               erc721_to_mint,
               selector,
               imageIPFSMeta,
-              imageBase64,
+              // imageBase64, @TODO new BE validation
               drawing_input,
               cmd
             );

@@ -68,18 +68,18 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           );
 
           canvas.renderAll();
-          const offsetX = (canvas.width * 1.05) / 2 || 0;
-          const offsetY = (canvas.height * 1.05) / 2 || 0;
-          const generatedSVG = canvas.toSVG({
-            viewBox: {
-              x: -offsetX,
-              y: -offsetY,
-              width: canvas.width * 1.05 || 0,
-              height: canvas.height * 1.05 || 0,
-            },
-            width: canvas.width * 1.05 || 0,
-            height: canvas.height * 1.05 || 0,
-          });
+          // const offsetX = (canvas.width * 1.05) / 2 || 0;
+          // const offsetY = (canvas.height * 1.05) / 2 || 0;
+          // const generatedSVG = canvas.toSVG({
+          //   viewBox: {
+          //     x: -offsetX,
+          //     y: -offsetY,
+          //     width: canvas.width * 1.05 || 0,
+          //     height: canvas.height * 1.05 || 0,
+          //   },
+          //   width: canvas.width * 1.05 || 0,
+          //   height: canvas.height * 1.05 || 0,
+          // });
 
           const generatedBase64 = canvas
             .toDataURL({ format: "png" })
@@ -110,7 +110,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           res.send(
             JSON.stringify({
               success: true,
-              base64out: base64.encode(generatedSVG), // Encoded image
+              // base64out: base64.encode(generatedSVG), // Encoded image
               ipfsHash: metaIPFS.data.ipfsHash,
               canvasDimensions: { width: width, height: height },
             })
