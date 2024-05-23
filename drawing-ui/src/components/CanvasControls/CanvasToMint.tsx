@@ -25,6 +25,7 @@ import {
   CanvasDimensions,
   DrawingInput,
   DrawingInputExtended,
+  DrawingMeta,
   Network,
 } from "../../shared/types";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../../utils";
@@ -112,11 +113,19 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
       // compress before encoding the input
       const compressedStr = pako.deflate(str);
-
+      const compressedPayload = pako.deflate(
+        JSON.stringify(drawingNoticePayload),
+      );
       // Encode the input
       const inputBytes = ethers.utils.isBytesLike(compressedStr)
         ? compressedStr
         : ethers.utils.toUtf8Bytes(compressedStr);
+      const inputBytesPayload = ethers.utils.isBytesLike(compressedPayload)
+        ? compressedPayload
+        : ethers.utils.toUtf8Bytes(compressedPayload);
+      console.log(`Canvas to Mint ${inputBytes.length} Bytes`);
+      console.log(`Canvas to Mint ${inputBytesPayload.length} Bytes`);
+
       // Send the transaction
       if (!connectedChain) return;
       try {
@@ -152,9 +161,22 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
         setLoading(false);
       }
     };
-    const canvasSVG = canvas.toSVG();
+    // @TODO refractor
+    const canvasContent = canvas.toJSON(); // or canvas.toObject()
+    const currentDrawingLayer = prepareDrawingObjectsArrays(
+      currentDrawingData,
+      canvasContent.objects,
+    ); // extracts the currents session drawing objects using the old and current drawing data
+    let canvasData = {
+      // svg: base64_encode(canvasSVG), // for validation before minting
+      content: currentDrawingLayer,
+    };
     // validate before sending the tx
-    const result = validateInputSize(canvasSVG);
+    const result = validateInputSize(
+      currentDrawingData,
+      JSON.stringify(canvasData),
+    );
+
     if (!result.isValid) {
       toast.error(result.info.message, {
         description: result.info.description,
@@ -162,25 +184,15 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
       setLoading(false);
       return;
     }
-    // proceed after validation
-    const canvasContent = canvas.toJSON(); // or canvas.toObject()
-    const currentDrawingLayer = prepareDrawingObjectsArrays(
-      currentDrawingData,
-      canvasContent.objects,
-    ); // extracts the currents session drawing objects using the old and current drawing data
-    let canvasData = {
-      svg: base64_encode(canvasSVG), // for validation before minting
-      content: currentDrawingLayer,
-    };
-    const drawingMeta = await storeAsFiles(canvasContent.objects, uuid, {
-      width: canvas.width || 0,
-      height: canvas.height || 0,
-    });
 
-    // drawingMeta contains
-    // success: true,
-    // ipfsHash: metaIPFS.data.ipfsHash,
-    // canvasDimensions: { width: width, height: height }
+    const drawingMeta: DrawingMeta = await storeAsFiles(
+      canvasContent.objects,
+      uuid,
+      {
+        width: canvas.width || 0,
+        height: canvas.height || 0,
+      },
+    );
 
     sendInput(drawingMeta, JSON.stringify(canvasData));
   };

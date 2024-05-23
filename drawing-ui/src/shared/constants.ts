@@ -46,24 +46,20 @@ export const COMMANDS = {
   },
 };
 
-export const VOUCHER_INPUT_LMIT = 128000; // bytes
-// ~ voucher request size / notice request size with same image
-const VIL_TO_NIL = 2.5;
-// voucher input limit / how many times the voucher input is bigger than the notice input in bytes
-export const NOTICE_INPUT_LIMIT = VOUCHER_INPUT_LMIT / VIL_TO_NIL; // 160000
-// ~ notice request size / canvas(svg) data size in bytes
-const NIL_TO_IMAGE_DATA = 1.2;
-// canvas(svg) data limit in bytes - 13 913
-export const NOTICE_CANVAS_DATA_LIMIT = NOTICE_INPUT_LIMIT / NIL_TO_IMAGE_DATA;
-// canvas(svg) data limit in bytes - 13 913
-export const CANVAS_DATA_LIMIT = NOTICE_INPUT_LIMIT / NIL_TO_IMAGE_DATA;
-
-// ~ svg string length svg / canvas data
-const CANVAS_SVG_STR_LEN_TO_NOTICE_CANVAS_DATA = 4;
-// ~ allowed svg string length
-export const CANVAS_SVG_STR_LEN_LIMIT =
-  NOTICE_CANVAS_DATA_LIMIT * CANVAS_SVG_STR_LEN_TO_NOTICE_CANVAS_DATA;
-
+export const INPUT_LIMIT = 128000;
+// =========================================================
+// bytes of Cartesi's JSON payload limit (2097152 bytes)
+// =========================================================
+// Metamsk tx limit is 131072
+// =========================================================
+// ~ voucher request size is almost equal to the notice request size with same image
+// =========================================================
+// notice input: currentDrawingData + last DrawingLayer's data = 99,6% of the input's size
+// =========================================================
+// voucher input: = currentDrawingData + last DrawingLayer's data 98.6% of the input's size
+// =========================================================
+// drawing input limit (currentDrawingData + last DrawingLayer)
+export const DRAwING_INPUT_LIMIT = (INPUT_LIMIT * 97) / 100;
 // in %, at what size the warning will appear
 export const LIMIT_WARNING_AT = 0.9;
 

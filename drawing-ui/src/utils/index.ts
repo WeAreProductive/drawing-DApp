@@ -1,10 +1,9 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { encode as base64_encode } from "base-64";
 import pako from "pako";
 import { ethers } from "ethers";
 import {
-  CANVAS_DATA_LIMIT,
+  DRAwING_INPUT_LIMIT,
   LIMIT_WARNING_AT,
   VALIDATE_INPUT_ERRORS,
 } from "../shared/constants";
@@ -33,13 +32,15 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const validateInputSize = (
-  svg: string,
+  currentDrawingData: DrawingInputExtended | null,
+  strInput: string,
   isActiveDrawing: boolean = false,
 ) => {
-  const canvasData = {
-    svg: base64_encode(svg),
+  const drawingNoticePayload = {
+    ...currentDrawingData,
+    drawing: strInput, // FE updates the svg string
   };
-  const compressed = pako.deflate(JSON.stringify(canvasData));
+  const compressed = pako.deflate(JSON.stringify(drawingNoticePayload));
   const inputBytesCompressed = ethers.utils.isBytesLike(compressed)
     ? compressed
     : ethers.utils.toUtf8Bytes(compressed);
@@ -48,7 +49,7 @@ export const validateInputSize = (
     "Canvas " +
     prettyBytes(inputBytesCompressed.length) +
     " of " +
-    prettyBytes(CANVAS_DATA_LIMIT) +
+    prettyBytes(DRAwING_INPUT_LIMIT) +
     " allowed.";
 
   const validationResult = {
@@ -62,7 +63,7 @@ export const validateInputSize = (
   };
 
   if (!isActiveDrawing) {
-    if (inputBytesCompressed.length >= CANVAS_DATA_LIMIT) {
+    if (inputBytesCompressed.length >= DRAwING_INPUT_LIMIT) {
       validationResult.isValid = false;
       validationResult.info = {
         message: VALIDATE_INPUT_ERRORS.error.message,
@@ -73,8 +74,8 @@ export const validateInputSize = (
     }
   } else {
     if (
-      inputBytesCompressed.length >= CANVAS_DATA_LIMIT * LIMIT_WARNING_AT &&
-      inputBytesCompressed.length < CANVAS_DATA_LIMIT
+      inputBytesCompressed.length >= DRAwING_INPUT_LIMIT * LIMIT_WARNING_AT &&
+      inputBytesCompressed.length < DRAwING_INPUT_LIMIT
     ) {
       validationResult.isValid = true;
       validationResult.info = {
@@ -83,7 +84,7 @@ export const validateInputSize = (
         size: sizes,
         type: "warning",
       };
-    } else if (inputBytesCompressed.length >= CANVAS_DATA_LIMIT) {
+    } else if (inputBytesCompressed.length >= DRAwING_INPUT_LIMIT) {
       validationResult.isValid = false;
       validationResult.info = {
         message: VALIDATE_INPUT_ERRORS.error.message,

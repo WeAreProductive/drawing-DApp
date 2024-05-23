@@ -91,3 +91,8 @@ export type DataNoticeEdge = {
   };
 };
 export type CanvasDimensions = { width: number; height: number };
+export type DrawingMeta = {
+  success: boolean;
+  ipfsHash: string;
+  canvasDimensions: CanvasDimensions;
+};

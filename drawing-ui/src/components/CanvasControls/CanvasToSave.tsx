@@ -95,6 +95,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       // proceed after validation
 
       const compressedStr = pako.deflate(str);
+
       // Encode the input
       const inputBytes = ethers.utils.isBytesLike(compressedStr)
         ? compressedStr
@@ -133,26 +134,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
         setLoading(false);
       }
     };
-    // Gets current drawing data as SVG, @TODO - change the validation
-    const canvasSVG = canvas.toSVG({
-      viewBox: {
-        x: 0,
-        y: 0,
-        width: canvas.width || 0,
-        height: canvas.height || 0,
-      },
-      width: canvas.width || 0,
-      height: canvas.height || 0,
-    });
-    // validate before sending the tx
-    const result = validateInputSize(canvasSVG);
-    if (!result.isValid) {
-      toast.error(result.info.message, {
-        description: result.info.description,
-      });
-      setLoading(false);
-      return;
-    }
+
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
     const currentDrawingLayer = prepareDrawingObjectsArrays(
       currentDrawingData,
@@ -161,6 +143,18 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     let canvasData = {
       content: currentDrawingLayer,
     };
+    // validate before sending the tx
+    const result = validateInputSize(
+      currentDrawingData,
+      JSON.stringify(canvasData),
+    );
+    if (!result.isValid) {
+      toast.error(result.info.message, {
+        description: result.info.description,
+      });
+      setLoading(false);
+      return;
+    }
     sendInput(
       {
         canvasDimensions: {
