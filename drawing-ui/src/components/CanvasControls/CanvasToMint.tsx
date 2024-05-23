@@ -1,7 +1,7 @@
 /**
  * Converts Drawing
- * to svg string and json string
- * sends drawing data to rollups
+ * to json string
+ * sends last drawing layer's data to rollups
  * to request a VOUCHER for minting an NFT
  * and a NOTICE with the current drawing data
  */
@@ -16,19 +16,13 @@ import { InputBox__factory } from "@cartesi/rollups";
 import configFile from "../../config/config.json";
 import { storeAsFiles } from "../../services/canvas";
 import { v4 as uuidv4 } from "uuid";
-import { encode as base64_encode } from "base-64";
 
-import { MINT_SELECTOR, DAPP_STATE, COMMANDS } from "../../shared/constants";
+import { DAPP_STATE } from "../../shared/constants";
 import pako from "pako";
 
-import {
-  CanvasDimensions,
-  DrawingInput,
-  DrawingInputExtended,
-  DrawingMeta,
-  Network,
-} from "../../shared/types";
+import { DrawingMeta, Network } from "../../shared/types";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../../utils";
+import { useDrawing } from "../../hooks/useDrawing";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -37,8 +31,9 @@ type CanvasToMintProp = {
 };
 const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
   const [connectedWallet] = useWallets();
-  const { canvas, dappState, currentDrawingData, setDappState, clearCanvas } =
+  const { canvas, currentDrawingData, setDappState, clearCanvas } =
     useCanvasContext();
+  const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
@@ -51,14 +46,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
     if (!canvas) return;
     setLoading(true);
 
-    const sendInput = async (
-      drawingMeta: {
-        // base64out: string; @TODO new BE validation
-        ipfsHash: string;
-        canvasDimensions: CanvasDimensions;
-      },
-      canvasData: string,
-    ) => {
+    const sendInput = async (strInput: string) => {
       toast.info("Sending input to rollups...");
 
       if (!connectedChain) return;
@@ -69,62 +57,15 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
 
       const signer = provider.getSigner();
 
-      // prepare drawing data notice input
-      let drawingNoticePayload: DrawingInput | DrawingInputExtended;
-      let str: string;
-
-      if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
-        drawingNoticePayload = {
-          ...currentDrawingData,
-          drawing: canvasData, // FE updates the svg string only, compressedCanvasData
-          dimensions: drawingMeta.canvasDimensions,
-        };
-        str = JSON.stringify({
-          drawing_input: drawingNoticePayload, //data to save in a notice
-          // imageBase64: drawingMeta.base64out, @TODO new BE validation
-          imageIPFSMeta:
-            "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
-          // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
-          uuid: uuid,
-          erc721_to_mint: config[connectedChain.id].ercToMint,
-          selector: MINT_SELECTOR,
-          cmd: COMMANDS.updateAndMint.cmd,
-        });
-      } else {
-        // new drawing is sent to rollups, and voucher is requested
-        drawingNoticePayload = {
-          drawing: canvasData, // FE is responsible for the svg string only
-          dimensions: drawingMeta.canvasDimensions,
-        };
-        str = JSON.stringify({
-          drawing_input: drawingNoticePayload, //data to save in a notice
-          // imageBase64: drawingMeta.base64out, @TODO new BE validation
-          canvasDimensions: drawingMeta.canvasDimensions,
-          imageIPFSMeta:
-            "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
-          // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
-          uuid: uuid,
-          erc721_to_mint: config[connectedChain.id].ercToMint,
-          selector: MINT_SELECTOR,
-          cmd: COMMANDS.createAndMint.cmd,
-        });
-      }
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
       // compress before encoding the input
-      const compressedStr = pako.deflate(str);
-      const compressedPayload = pako.deflate(
-        JSON.stringify(drawingNoticePayload),
-      );
+      const compressedStr = pako.deflate(strInput);
       // Encode the input
       const inputBytes = ethers.utils.isBytesLike(compressedStr)
         ? compressedStr
         : ethers.utils.toUtf8Bytes(compressedStr);
-      const inputBytesPayload = ethers.utils.isBytesLike(compressedPayload)
-        ? compressedPayload
-        : ethers.utils.toUtf8Bytes(compressedPayload);
       console.log(`Canvas to Mint ${inputBytes.length} Bytes`);
-      console.log(`Canvas to Mint ${inputBytesPayload.length} Bytes`);
 
       // Send the transaction
       if (!connectedChain) return;
@@ -193,8 +134,15 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
         height: canvas.height || 0,
       },
     );
-
-    sendInput(drawingMeta, JSON.stringify(canvasData));
+    if (!connectedChain) return;
+    // sendInput(drawingMeta, JSON.stringify(canvasData));
+    const strInput = getVoucherInput(
+      canvasData,
+      uuid,
+      drawingMeta,
+      config[connectedChain.id].ercToMint,
+    );
+    sendInput(strInput);
   };
 
   return connectedChain ? (

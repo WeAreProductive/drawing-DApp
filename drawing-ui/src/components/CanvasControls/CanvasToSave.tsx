@@ -1,6 +1,6 @@
 /**
- * Converts Drawing to svg string
- * sends drawing data to rollups
+ * Converts Drawing to json string
+ * sends last drawing layer's data
  * to emit a NOTICE with
  * the current drawing data
  */
@@ -9,21 +9,16 @@ import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import { InputBox__factory } from "@cartesi/rollups";
 import { useCanvasContext } from "../../context/CanvasContext";
-import { COMMANDS, DAPP_STATE } from "../../shared/constants";
+import { DAPP_STATE } from "../../shared/constants";
 import configFile from "../../config/config.json";
-import {
-  CanvasDimensions,
-  DrawingInput,
-  DrawingInputExtended,
-  Network,
-} from "../../shared/types";
+import { Network } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import { encode as base64_encode } from "base-64";
 import pako from "pako";
 import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
+import { useDrawing } from "../../hooks/useDrawing";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -35,6 +30,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const { canvas, dappState, setDappState, currentDrawingData, clearCanvas } =
     useCanvasContext();
   const [{ connectedChain }] = useSetChain();
+  const { getNoticeInput } = useDrawing();
 
   const [inputBoxAddress, setInputBoxAddress] = useState("");
   const [loading, setLoading] = useState(false);
@@ -50,12 +46,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
 
     setLoading(true);
 
-    const sendInput = async (
-      drawingMeta: {
-        canvasDimensions: CanvasDimensions;
-      },
-      strInput: string,
-    ) => {
+    const sendInput = async (strInput: string) => {
       toast.info("Sending input to rollups...");
       // Start a connection
       const provider = new ethers.providers.Web3Provider(
@@ -63,38 +54,12 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       );
 
       const signer = provider.getSigner();
-      // prepare drawing data notice input
-      let drawingNoticePayload: DrawingInput | DrawingInputExtended;
-      let str: string;
-
-      if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
-        drawingNoticePayload = {
-          ...currentDrawingData,
-          drawing: strInput, // FE updates the svg string
-          dimensions: drawingMeta.canvasDimensions,
-        };
-        str = JSON.stringify({
-          drawing_input: drawingNoticePayload,
-          uuid: uuid,
-          cmd: COMMANDS.updateAndStore.cmd, // BE will be notified to emit a notice
-        });
-      } else {
-        drawingNoticePayload = {
-          drawing: strInput, // FE is responsible for the svg string only
-          dimensions: drawingMeta.canvasDimensions,
-        };
-        str = JSON.stringify({
-          drawing_input: drawingNoticePayload, // data to save in a notice
-          uuid: uuid,
-          cmd: COMMANDS.createAndStore.cmd, // BE will be notified to emit a notice
-        });
-      }
 
       // Instantiate the InputBox contract
       const inputBox = InputBox__factory.connect(inputBoxAddress, signer);
       // proceed after validation
 
-      const compressedStr = pako.deflate(str);
+      const compressedStr = pako.deflate(strInput);
 
       // Encode the input
       const inputBytes = ethers.utils.isBytesLike(compressedStr)
@@ -155,15 +120,8 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       setLoading(false);
       return;
     }
-    sendInput(
-      {
-        canvasDimensions: {
-          width: canvas.width || 0,
-          height: canvas.height || 0,
-        },
-      },
-      JSON.stringify(canvasData),
-    );
+    const strInput = getNoticeInput(canvasData, uuid);
+    sendInput(strInput);
   };
 
   return (
