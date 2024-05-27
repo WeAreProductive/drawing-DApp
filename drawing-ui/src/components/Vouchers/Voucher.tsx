@@ -30,7 +30,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
 
   const [loading, setLoading] = useState(false);
   if (!connectedChain) return;
-  const rollups = useRollups(config[connectedChain.id].DAppRelayAddress);
+  const { contracts } = useRollups(config[connectedChain.id].DAppRelayAddress);
 
   const getProof = async (voucher: VoucherExtended) => {
     setVoucherToFetch([voucher.index, voucher.input.index]);
@@ -38,12 +38,12 @@ const Voucher = ({ voucherData }: VoucherProp) => {
   };
 
   const executeVoucher = async (voucher: VoucherExtended) => {
-    if (rollups && !!voucher.proof) {
+    if (contracts && !!voucher.proof) {
       setLoading(true);
       const newVoucherToExecute = { ...voucher };
 
       try {
-        const tx = await rollups.dappContract.executeVoucher(
+        const tx = await contracts.dappContract.executeVoucher(
           voucher.destination,
           voucher.payload,
           voucher.proof,
@@ -70,7 +70,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
             };
 
           newVoucherToExecute.executed =
-            await rollups.dappContract.wasVoucherExecuted(
+            await contracts.dappContract.wasVoucherExecuted(
               BigNumber.from(voucher.input.index),
               BigNumber.from(voucher.index),
             );
@@ -95,8 +95,8 @@ const Voucher = ({ voucherData }: VoucherProp) => {
 
   useEffect(() => {
     const setVoucher = async (voucher: VoucherExtended) => {
-      if (rollups) {
-        voucher.executed = await rollups.dappContract.wasVoucherExecuted(
+      if (contracts) {
+        voucher.executed = await contracts.dappContract.wasVoucherExecuted(
           BigNumber.from(voucher.input.index),
           BigNumber.from(voucher.index),
         );
@@ -107,7 +107,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
     if (!voucherResult.fetching && voucherResult.data) {
       setVoucher(voucherResult.data.voucher);
     }
-  }, [voucherResult, rollups]);
+  }, [voucherResult, contracts]);
 
   return (
     <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">

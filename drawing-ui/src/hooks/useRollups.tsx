@@ -1,36 +1,36 @@
 import { useEffect, useState } from "react";
 import { ethers } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
-import { JsonRpcSigner } from "@ethersproject/providers";
 import { ConnectedChain } from "@web3-onboard/core";
-import { Network } from "../shared/types";
+
 import {
   InputBox__factory,
-  InputBox,
   DAppAddressRelay__factory,
-  DAppAddressRelay,
   CartesiDApp__factory,
-  CartesiDApp,
   ERC721Portal__factory,
-  ERC721Portal,
 } from "@cartesi/rollups";
 
+import { toast } from "sonner";
+import pako from "pako";
+import {
+  Network,
+  RollupsContracts,
+  RollupsInteractions,
+} from "../shared/types";
+import { useCanvasContext } from "../context/CanvasContext";
+
 import configFile from "../config/config.json";
+import { DAPP_STATE } from "../shared/constants";
+
 const config: { [name: string]: Network } = configFile;
 
-export interface RollupsContracts {
-  dappContract: CartesiDApp;
-  signer: JsonRpcSigner;
-  relayContract: DAppAddressRelay;
-  inputContract: InputBox;
-  erc721PortalContract: ERC721Portal;
-}
-
-export const useRollups = (dAddress: string): RollupsContracts | undefined => {
+export const useRollups = (dAddress: string): RollupsInteractions => {
   const [contracts, setContracts] = useState<RollupsContracts | undefined>();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
   const [dappAddress] = useState<string>(dAddress);
+  const [loading, setLoading] = useState(false);
+  const { setDappState, clearCanvas } = useCanvasContext();
   useEffect(() => {
     const connect = async (chain: ConnectedChain) => {
       const provider = new ethers.providers.Web3Provider(
@@ -96,5 +96,49 @@ export const useRollups = (dAddress: string): RollupsContracts | undefined => {
       }
     }
   }, [connectedWallet, connectedChain, dappAddress]);
-  return contracts;
+  const sendInput = async (strInput: string) => {
+    if (!contracts) return;
+    toast.info("Sending input to rollups...");
+
+    const compressedStr = pako.deflate(strInput);
+
+    // Encode the input
+    const inputBytes = ethers.utils.isBytesLike(compressedStr)
+      ? compressedStr
+      : ethers.utils.toUtf8Bytes(compressedStr);
+
+    if (!connectedChain) return;
+    // Send the transaction
+    try {
+      const tx = await contracts.inputContract.addInput(
+        config[connectedChain.id].DAppRelayAddress,
+        inputBytes,
+      );
+      toast.success("Transaction Sent");
+      // Wait for confirmation
+      const receipt = await tx.wait(1);
+
+      // Search for the InputAdded event
+      const event = receipt.events?.find((e) => e.event === "InputAdded");
+      setDappState(DAPP_STATE.canvasSave);
+      setLoading(false);
+      if (event?.args?.inputIndex) {
+        clearCanvas();
+        toast.success("Transaction Confirmed", {
+          description: `Input added => index: ${event?.args?.inputIndex} `,
+        });
+      } else {
+        toast.error("Transaction Error 1", {
+          description: `Input not added => index: ${event?.args?.inputIndex} `,
+        });
+      }
+    } catch (e: any) {
+      const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
+      toast.error("Transaction Error", {
+        description: `Input not added => ${reason}`,
+      });
+      setLoading(false);
+    }
+  };
+  return { contracts, sendInput, setLoading, loading };
 };

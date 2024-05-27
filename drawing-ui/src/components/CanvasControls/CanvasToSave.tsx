@@ -14,7 +14,7 @@ import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
-import { useRollupsInteraction } from "../../hooks/useRollupsInteraction";
+import { useRollups } from "../../hooks/useRollups";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -24,7 +24,10 @@ type CanvasToSaveProp = {
 const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const { canvas, currentDrawingData } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
-  const { sendInput, loading, setLoading } = useRollupsInteraction();
+  if (!connectedChain) return;
+  const { sendInput, setLoading, loading } = useRollups(
+    config[connectedChain.id].DAppRelayAddress,
+  );
   const { getNoticeInput } = useDrawing();
   const uuid = uuidv4();
   const handleCanvasToSave = async () => {
@@ -52,6 +55,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       return;
     }
     const strInput = getNoticeInput(canvasData, uuid);
+
     sendInput(strInput);
   };
 

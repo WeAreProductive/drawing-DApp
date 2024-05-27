@@ -1,4 +1,12 @@
 import { Canvas } from "fabric/fabric-impl";
+import { JsonRpcSigner } from "@ethersproject/providers";
+import {
+  InputBox,
+  DAppAddressRelay,
+  CartesiDApp,
+  ERC721Portal,
+} from "@cartesi/rollups";
+import { Dispatch, SetStateAction } from "react";
 
 export type Network = {
   token: string;
@@ -95,4 +103,18 @@ export type DrawingMeta = {
   success: boolean;
   ipfsHash: string;
   canvasDimensions: CanvasDimensions;
+};
+export type RollupsContracts = {
+  dappContract: CartesiDApp;
+  signer: JsonRpcSigner;
+  relayContract: DAppAddressRelay;
+  inputContract: InputBox;
+  erc721PortalContract: ERC721Portal;
+};
+
+export type RollupsInteractions = {
+  contracts?: RollupsContracts;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  sendInput: (strInput: string) => void;
 };

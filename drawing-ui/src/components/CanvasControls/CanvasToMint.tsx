@@ -1,7 +1,7 @@
 /**
  * Converts Drawing
  * to json string
- * sends last drawing layer's data to rollups
+ * Sends last drawing layer's data to rollups
  * to request a VOUCHER for minting an NFT
  * and a NOTICE with the current drawing data
  */
@@ -16,7 +16,7 @@ import { v4 as uuidv4 } from "uuid";
 import { DrawingMeta, Network } from "../../shared/types";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
-import { useRollupsInteraction } from "../../hooks/useRollupsInteraction";
+import { useRollups } from "../../hooks/useRollups";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -27,8 +27,10 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
   const { canvas, currentDrawingData } = useCanvasContext();
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
-
-  const { sendInput, loading, setLoading } = useRollupsInteraction();
+  if (!connectedChain) return;
+  const { sendInput, setLoading, loading } = useRollups(
+    config[connectedChain.id].DAppRelayAddress,
+  );
 
   const uuid = uuidv4();
 
