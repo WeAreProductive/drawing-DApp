@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ethers } from "ethers";
+import { ethers, BigNumber } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import { ConnectedChain } from "@web3-onboard/core";
 
@@ -16,6 +16,7 @@ import {
   Network,
   RollupsContracts,
   RollupsInteractions,
+  VoucherExtended,
 } from "../shared/types";
 import { useCanvasContext } from "../context/CanvasContext";
 
@@ -140,5 +141,57 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       setLoading(false);
     }
   };
-  return { contracts, sendInput, setLoading, loading };
+  const executeVoucher = async (voucher: VoucherExtended) => {
+    if (contracts && !!voucher.proof) {
+      const newVoucherToExecute = { ...voucher };
+
+      try {
+        const tx = await contracts.dappContract.executeVoucher(
+          voucher.destination,
+          voucher.payload,
+          voucher.proof,
+        );
+        const receipt = await tx.wait();
+
+        newVoucherToExecute.msg = `Minting executed! (tx="${tx.hash}")`;
+
+        if (receipt.events) {
+          const event = receipt.events?.find(
+            (e) => e.event === "VoucherExecuted",
+          );
+
+          if (!event) {
+            throw new Error(
+              `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`,
+            );
+          }
+
+          if (receipt.events.length > 2)
+            newVoucherToExecute.events = {
+              address: receipt.events[1].address,
+              nft_id: BigInt(receipt.events[1].data).toString(),
+            };
+
+          newVoucherToExecute.executed =
+            await contracts.dappContract.wasVoucherExecuted(
+              BigNumber.from(voucher.input.index),
+              BigNumber.from(voucher.index),
+            );
+        }
+        setLoading(false);
+      } catch (e: any) {
+        const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
+        toast.error("Transaction Error", {
+          description: `Could not execute voucher => ${reason}`,
+        });
+        // full error info
+        newVoucherToExecute.msg = `Could not execute voucher: ${JSON.stringify(
+          e,
+        )}`;
+        console.log(`Could not execute voucher: ${JSON.stringify(e)}`);
+      }
+      return newVoucherToExecute;
+    }
+  };
+  return { contracts, setLoading, loading, sendInput, executeVoucher };
 };

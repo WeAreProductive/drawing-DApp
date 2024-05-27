@@ -117,4 +117,7 @@ export type RollupsInteractions = {
   loading: boolean;
   setLoading: Dispatch<SetStateAction<boolean>>;
   sendInput: (strInput: string) => void;
+  executeVoucher: (
+    voucher: VoucherExtended,
+  ) => Promise<VoucherExtended | undefined>;
 };
