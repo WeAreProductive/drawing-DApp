@@ -11,8 +11,11 @@ const Controls = () => {
     currentDrawingData,
     currentDrawingLayer,
     setCurrentDrawingLayer,
+    redoObjectsArr,
+    setRedoObjectsArr,
   } = useCanvasContext();
   const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
 
   const [currentResult, setCurrentResult] = useState<CanvasLimitations>({
     isValid: true,
@@ -46,18 +49,31 @@ const Controls = () => {
       );
       setCurrentResult(result);
     };
+    const resetRedoObjectsArr = () => {
+      setRedoObjectsArr([]);
+    };
     canvas.on("mouse:move", validateCanvasInputSize); // sometimes stops working ..
     canvas.on("after:render", validateCanvasInputSize);
+    canvas.on("path:created", resetRedoObjectsArr);
   }, [canvas]);
   useEffect(() => {
     if (!currentDrawingLayer) return;
     currentDrawingLayer.length < 1 ? setCanUndo(false) : setCanUndo(true); // enable only if current drawing layer is not empty
   }, [currentDrawingLayer]);
+  useEffect(() => {
+    if (!redoObjectsArr) return;
+    redoObjectsArr.length < 1 ? setCanRedo(false) : setCanRedo(true);
+  }, [redoObjectsArr]);
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
         <DrawingControls />
-        <CanvasControls enabled={currentResult.isValid} canUndo={canUndo} />
+        <CanvasControls
+          enabled={currentResult.isValid}
+          canUndo={canUndo}
+          canRedo={canRedo}
+        />
       </div>
       <div
         className={`mt-3 text-center text-sm ${currentResult.info.type === "warning" ? "text-orange-500" : currentResult.info.type === "error" ? "font-semibold text-red-500" : ""}`}

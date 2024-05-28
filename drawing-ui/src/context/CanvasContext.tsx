@@ -31,6 +31,8 @@ const initialCanvasContext = {
   clearCanvas: () => undefined,
   currentDrawingLayer: null,
   setCurrentDrawingLayer: (data: DrawingObject[]) => undefined,
+  redoObjectsArr: [],
+  setRedoObjectsArr: (data: DrawingObject[]) => undefined,
 };
 const CanvasContext = createContext<CanvasContextType>(initialCanvasContext);
 
@@ -50,9 +52,12 @@ export const CanvasContextProvider = ({ children }: Props) => {
   const [dappState, setDappState] = useState<string>(DAPP_STATE.canvasInit);
   const [currentDrawingData, setCurrentDrawingData] =
     useState<DrawingInputExtended | null>(null);
+  // array of objects belonging to the last drawing layer
   const [currentDrawingLayer, setCurrentDrawingLayer] = useState<
     DrawingObject[] | null
   >(null);
+  // array of objects popped from the current drawing layer with UNDO feat
+  const [redoObjectsArr, setRedoObjectsArr] = useState<DrawingObject[]>([]);
   const clearCanvas = useCallback(() => {
     if (!canvas) return;
     canvas.clear();
@@ -75,6 +80,8 @@ export const CanvasContextProvider = ({ children }: Props) => {
     clearCanvas,
     currentDrawingLayer,
     setCurrentDrawingLayer,
+    redoObjectsArr,
+    setRedoObjectsArr,
   };
   return (
     <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>

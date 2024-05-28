@@ -48,7 +48,9 @@ export type CanvasContextType = {
   setCurrentDrawingData: React.Dispatch<null | DrawingInputExtended>;
   clearCanvas: () => void;
   currentDrawingLayer: null | DrawingObject[];
-  setCurrentDrawingLayer: (data: DrawingObject[]) => undefined;
+  setCurrentDrawingLayer: React.Dispatch<DrawingObject[]>;
+  redoObjectsArr: DrawingObject[];
+  setRedoObjectsArr: React.Dispatch<DrawingObject[]>;
 };
 
 export type VoucherExtended = {
