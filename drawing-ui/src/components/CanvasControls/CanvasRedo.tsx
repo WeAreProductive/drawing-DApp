@@ -18,9 +18,13 @@ const CanvasRedo = ({ canRedo }: CanvasRedoProp) => {
     canvas.loadFromJSON(JSON.stringify({ objects: canvas._objects }), () => {});
   };
   return (
-    <Button variant={"ghost"} onClick={handleCanvasUndo} disabled={!canRedo}>
-      <Redo size={18} className="mr-2" strokeWidth={1.5} />
-      Redo
+    <Button
+      variant={"ghost"}
+      onClick={handleCanvasUndo}
+      disabled={!canRedo}
+      title="Redo"
+    >
+      <Redo size={18} strokeWidth={1.5} />
     </Button>
   );
 };

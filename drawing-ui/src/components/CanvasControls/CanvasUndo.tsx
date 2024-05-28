@@ -21,9 +21,13 @@ const CanvasUndo = ({ canUndo }: CanvasUndoProp) => {
     canvas.loadFromJSON(JSON.stringify({ objects: canvas._objects }), () => {});
   };
   return (
-    <Button variant={"ghost"} onClick={handleCanvasUndo} disabled={!canUndo}>
-      <Undo size={18} className="mr-2" strokeWidth={1.5} />
-      Undo
+    <Button
+      variant={"ghost"}
+      onClick={handleCanvasUndo}
+      disabled={!canUndo}
+      title="Undo"
+    >
+      <Undo size={18} strokeWidth={1.5} />
     </Button>
   );
 };
