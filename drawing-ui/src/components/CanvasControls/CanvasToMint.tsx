@@ -24,7 +24,8 @@ type CanvasToMintProp = {
   enabled: boolean;
 };
 const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
-  const { canvas, currentDrawingData } = useCanvasContext();
+  const { canvas, currentDrawingData, currentDrawingLayer } =
+    useCanvasContext();
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
@@ -36,15 +37,17 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
 
   const handleCanvasToMint = async () => {
     if (!canvas) return;
+    if (!currentDrawingLayer) return;
+    if (currentDrawingLayer.length < 1) return;
     setLoading(true);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
-    const currentDrawingLayer = prepareDrawingObjectsArrays(
+    const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
       canvasContent.objects,
     ); // extracts the currents session drawing objects using the old and current drawing data
     let canvasData = {
       // svg: base64_encode(canvasSVG), // for validation before minting
-      content: currentDrawingLayer,
+      content: currentDrawingLayerObjects,
     };
     // validate before sending the tx
     const result = validateInputSize(

@@ -22,7 +22,8 @@ type CanvasToSaveProp = {
   enabled: boolean;
 };
 const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
-  const { canvas, currentDrawingData } = useCanvasContext();
+  const { canvas, currentDrawingData, currentDrawingLayer } =
+    useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
   const { sendInput, setLoading, loading } = useRollups(
@@ -32,15 +33,16 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const uuid = uuidv4();
   const handleCanvasToSave = async () => {
     if (!canvas) return;
-
+    if (!currentDrawingLayer) return;
+    if (currentDrawingLayer.length < 1) return;
     setLoading(true);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
-    const currentDrawingLayer = prepareDrawingObjectsArrays(
+    const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
       canvasContent.objects,
     ); // extracts the currents session drawing objects using the old and current drawing data
     let canvasData = {
-      content: currentDrawingLayer,
+      content: currentDrawingLayerObjects,
     };
     // validate before sending the tx
     const result = validateInputSize(
