@@ -6,7 +6,8 @@ import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
 const FabricJSCanvas = () => {
   const canvasWrapperEl = useRef<HTMLDivElement>(null);
   const canvasEl = useRef(null);
-  const { canvas, setCanvas, canvasOptions } = useCanvasContext();
+  const { canvas, setCanvas, canvasOptions, currentDrawingData } =
+    useCanvasContext();
 
   useEffect(() => {
     const options = {
@@ -16,14 +17,13 @@ const FabricJSCanvas = () => {
       selectionLineWidth: canvasOptions.lineWidth,
     };
     const canvas = new fabric.Canvas(canvasEl.current, options);
-
     // make the fabric.Canvas instance available to your app
     setCanvas(canvas);
     return () => {
       setCanvas(null);
       canvas.dispose();
     };
-  }, []);
+  }, [currentDrawingData]);
 
   useEffect(() => {
     if (canvas) {
