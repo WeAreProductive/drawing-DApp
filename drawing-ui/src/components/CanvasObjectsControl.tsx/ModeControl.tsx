@@ -22,7 +22,9 @@ const ModeControl = () => {
   useEffect(() => {
     if (!canvas) return;
     canvas.on("mouse:dblclick", () => {
-      console.log("Mouse down");
+      canvas.discardActiveObject();
+      canvas.renderAll();
+
       canvas.isDrawingMode = !canvas.isDrawingMode;
       const brushSize =
         canvasOptions.lineWidth || INITIAL_DRAWING_OPTIONS.minBrushWidth;
