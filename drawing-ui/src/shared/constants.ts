@@ -11,6 +11,9 @@ export const INITIAL_DRAWING_OPTIONS = {
   minBrushWidth: 1,
   canvasWidth: 800,
   canvasHeight: 800,
+  // canvasWidth: 280,
+  // canvasHeight: 280,
+  cursorType: "circle",
 };
 
 //mint method selector constant
@@ -72,4 +75,9 @@ export const VALIDATE_INPUT_ERRORS = {
     message: "Allowed size exceeded!",
     description: "Please, reduce the drawing size!",
   },
+};
+
+export const CANVAS_CURSOR_TYPES = {
+  circle: "circle",
+  spray: "spray",
 };

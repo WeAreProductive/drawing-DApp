@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import CanvasControls from "../components/CanvasControls";
 import DrawingControls from "../components/Drawing/DrawingControls";
+import CanvasObjectsControl from "../components/CanvasObjectsControl.tsx";
 import { useCanvasContext } from "../context/CanvasContext";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../utils";
 import { CanvasLimitations } from "../shared/types";
@@ -74,6 +75,7 @@ const Controls = () => {
           canUndo={canUndo}
           canRedo={canRedo}
         />
+        <CanvasObjectsControl />
       </div>
       <div
         className={`mt-3 text-center text-sm ${currentResult.info.type === "warning" ? "text-orange-500" : currentResult.info.type === "error" ? "font-semibold text-red-500" : ""}`}

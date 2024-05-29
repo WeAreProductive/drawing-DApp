@@ -35,6 +35,7 @@ export type CanvasOptions = {
   lineWidth: number;
   canvasWidth: number;
   canvasHeight: number;
+  cursorType: string;
 };
 
 export type CanvasContextType = {
