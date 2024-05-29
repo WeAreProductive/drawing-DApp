@@ -31,6 +31,7 @@ const Controls = () => {
   useEffect(() => {
     if (!canvas) return;
     const validateCanvasInputSize = () => {
+      console.log("validate input size ...");
       // Gets current drawing data
       const canvasContent = canvas.toJSON(); // or canvas.toObject()
       const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
@@ -40,7 +41,7 @@ const Controls = () => {
       setCurrentDrawingLayer(currentDrawingLayerObjects); // enable only if current drawing layer is not empty
       let canvasData = {
         // svg: base64_encode(canvasSVG), // for validation before minting
-        content: currentDrawingLayer,
+        content: currentDrawingLayerObjects,
       };
       // validate before sending the tx
       const result = validateInputSize(
