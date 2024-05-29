@@ -15,13 +15,15 @@ const FabricJSCanvas = () => {
       isDrawingMode: true,
       backgroundColor: INITIAL_DRAWING_OPTIONS.backgroundColor,
       // @TODO define as constants
-      selectionLineWidth: 2,
+      selectionLineWidth: 1,
       perPixelTargetFind: false,
       preserveObjectStacking: false,
       selection: true,
       selectionBorderColor: "#9f9c9c",
-      selectionColor: "transparent",
+      selectionColor: "#9f9c9c",
       selectionFullyContained: true,
+      borderScaleFactor: 6,
+      // fireRightClick: true, //indicates if the canvas can fire right click events
       // hoverCursor
       interactive: true,
     };

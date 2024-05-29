@@ -31,7 +31,6 @@ const Controls = () => {
   useEffect(() => {
     if (!canvas) return;
     const validateCanvasInputSize = () => {
-      console.log("validate input size ...");
       // Gets current drawing data
       const canvasContent = canvas.toJSON(); // or canvas.toObject()
       const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
@@ -54,9 +53,13 @@ const Controls = () => {
     const resetRedoObjectsArr = () => {
       setRedoObjectsArr([]);
     };
+
     canvas.on("mouse:move", validateCanvasInputSize); // sometimes stops working ..
     canvas.on("after:render", validateCanvasInputSize);
     canvas.on("path:created", resetRedoObjectsArr);
+    return () => {
+      canvas.removeListeners();
+    };
   }, [canvas]);
   useEffect(() => {
     if (!currentDrawingLayer) return;
