@@ -23,8 +23,8 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   );
   const loadCanvasFromImage = () => {
     console.log("load from image");
-    // if (!canvas) return;
-    // canvas?.clear();
+    if (!canvas) return;
+    canvas?.clear();
     //fabricjs.com/fabric-intro-part-3#serialization
     canvas.loadFromJSON(snapShotJson);
     setDappState(DAPP_STATE.drawingUpdate);

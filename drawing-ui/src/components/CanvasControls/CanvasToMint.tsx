@@ -17,6 +17,7 @@ import { DrawingMeta, Network } from "../../shared/types";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
+import { DAPP_STATE } from "../../shared/constants";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -29,7 +30,8 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
     currentDrawingData,
     currentDrawingLayer,
     setLoading,
-    loading,
+    dappState,
+    setDappState,
   } = useCanvasContext();
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
@@ -45,6 +47,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
     if (currentDrawingLayer.length < 1) return;
 
     setLoading(true);
+    setDappState(DAPP_STATE.voucherRequest);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
     const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
@@ -94,7 +97,9 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
       disabled={!enabled}
     >
       <Box size={18} className="mr-2" strokeWidth={1.5} />
-      {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
+      {dappState == DAPP_STATE.voucherRequest
+        ? " Queuing NFT for minting..."
+        : " Save & Mint NFT"}
     </Button>
   ) : null;
 };

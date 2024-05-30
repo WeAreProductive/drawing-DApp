@@ -31,7 +31,8 @@ export const DAPP_STATE = {
   canvasClear: "canvas clear",
   canvasSave: "saving the canvas in a rollups notice",
   drawingUpdate: "updating existing drawing",
-  voucherRequset: "requesting a voucher for minting an nft from the drawing", //
+  voucherRequest: "requesting a voucher for minting an nft from the drawing", //
+  txFail: "transaction failed",
 };
 
 export const COMMANDS = {

@@ -121,10 +121,9 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
 
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
-      setDappState(DAPP_STATE.canvasSave);
       setLoading(false);
       if (event?.args?.inputIndex) {
-        clearCanvas();
+        clearCanvas(); // manages the dApp state
         toast.success("Transaction Confirmed", {
           description: `Input added => index: ${event?.args?.inputIndex} `,
         });
@@ -144,6 +143,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       toast.error("Transaction Error", {
         description: `Input not added => ${reason}`,
       });
+      setDappState(DAPP_STATE.txFail);
       setLoading(false);
     }
   };

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { fabric } from "fabric";
 import {

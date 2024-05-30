@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
+import { DAPP_STATE } from "../../shared/constants";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -27,7 +28,8 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     currentDrawingData,
     currentDrawingLayer,
     setLoading,
-    loading,
+    dappState,
+    setDappState,
   } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
@@ -42,6 +44,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     if (!currentDrawingLayer) return;
     if (currentDrawingLayer.length < 1) return;
     setLoading(true);
+    setDappState(DAPP_STATE.canvasSave);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
     const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
@@ -74,7 +77,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       disabled={!connectedChain || !enabled}
     >
       <Save size={18} className="mr-2" strokeWidth={1.5} />
-      {loading ? "Saving..." : "Save"}
+      {dappState == DAPP_STATE.canvasSave ? "Saving..." : "Save"}
     </Button>
   );
 };
