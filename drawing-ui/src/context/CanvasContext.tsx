@@ -34,6 +34,8 @@ const initialCanvasContext = {
   setCurrentDrawingLayer: (data: DrawingObject[]) => undefined,
   redoObjectsArr: [],
   setRedoObjectsArr: (data: DrawingObject[]) => undefined,
+  loading: false,
+  setLoading: () => undefined,
 };
 const CanvasContext = createContext<CanvasContextType>(initialCanvasContext);
 
@@ -59,6 +61,7 @@ export const CanvasContextProvider = ({ children }: Props) => {
   >(null);
   // array of objects popped from the current drawing layer with UNDO feat
   const [redoObjectsArr, setRedoObjectsArr] = useState<DrawingObject[]>([]);
+  const [loading, setLoading] = useState(false);
   const clearCanvas = useCallback(() => {
     if (!canvas) return;
     canvas.clear();
@@ -83,6 +86,8 @@ export const CanvasContextProvider = ({ children }: Props) => {
     setCurrentDrawingLayer,
     redoObjectsArr,
     setRedoObjectsArr,
+    loading,
+    setLoading,
   };
   return (
     <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>

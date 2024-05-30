@@ -30,8 +30,8 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
   const [dappAddress] = useState<string>(dAddress);
-  const [loading, setLoading] = useState(false);
-  const { setDappState, clearCanvas } = useCanvasContext();
+
+  const { setDappState, clearCanvas, canvas, setLoading } = useCanvasContext();
   useEffect(() => {
     const connect = async (chain: ConnectedChain) => {
       const provider = new ethers.providers.Web3Provider(
@@ -133,6 +133,12 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
           description: `Input not added => index: ${event?.args?.inputIndex} `,
         });
       }
+      if (!canvas) return;
+      if (!canvas.isDrawingMode) {
+        canvas.isDrawingMode = true;
+        canvas.discardActiveObject();
+        canvas.renderAll();
+      }
     } catch (e: any) {
       const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
       toast.error("Transaction Error", {
@@ -193,5 +199,5 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       return newVoucherToExecute;
     }
   };
-  return { contracts, setLoading, loading, sendInput, executeVoucher };
+  return { contracts, sendInput, executeVoucher };
 };

@@ -14,6 +14,7 @@ const Controls = () => {
     setCurrentDrawingLayer,
     redoObjectsArr,
     setRedoObjectsArr,
+    loading,
   } = useCanvasContext();
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
@@ -75,7 +76,9 @@ const Controls = () => {
       <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
         <DrawingControls />
         <CanvasControls
-          enabled={currentResult.isValid && !!currentDrawingLayer?.length}
+          enabled={
+            currentResult.isValid && !!currentDrawingLayer?.length && !loading
+          }
           canUndo={canUndo}
           canRedo={canRedo}
         />

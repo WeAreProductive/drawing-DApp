@@ -22,17 +22,23 @@ type CanvasToSaveProp = {
   enabled: boolean;
 };
 const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
-  const { canvas, currentDrawingData, currentDrawingLayer } =
-    useCanvasContext();
+  const {
+    canvas,
+    currentDrawingData,
+    currentDrawingLayer,
+    setLoading,
+    loading,
+  } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
-  const { sendInput, setLoading, loading } = useRollups(
-    config[connectedChain.id].DAppRelayAddress,
-  );
+  const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
   const { getNoticeInput } = useDrawing();
   const uuid = uuidv4();
   const handleCanvasToSave = async () => {
     if (!canvas) return;
+    if (!canvas.isDrawingMode) {
+      canvas.isDrawingMode = true;
+    }
     if (!currentDrawingLayer) return;
     if (currentDrawingLayer.length < 1) return;
     setLoading(true);
@@ -65,7 +71,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     <Button
       variant={"outline"}
       onClick={handleCanvasToSave}
-      disabled={!connectedChain || loading || !enabled}
+      disabled={!connectedChain || !enabled}
     >
       <Save size={18} className="mr-2" strokeWidth={1.5} />
       {loading ? "Saving..." : "Save"}

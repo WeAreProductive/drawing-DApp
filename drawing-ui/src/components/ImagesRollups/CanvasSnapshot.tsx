@@ -21,14 +21,16 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     () => snapShotJsonfromLog(update_log),
     [update_log],
   );
-  const loadCanvasFromImage = async () => {
-    if (!canvas) return;
-    canvas.clear();
-    setRedoObjectsArr([]);
+  const loadCanvasFromImage = () => {
+    console.log("load from image");
+    // if (!canvas) return;
+    // canvas?.clear();
     //fabricjs.com/fabric-intro-part-3#serialization
-    canvas.loadFromJSON(snapShotJson, function () {});
+    canvas.loadFromJSON(snapShotJson);
     setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
+
+    setRedoObjectsArr([]);
   };
   const handleShowSteps = () => {
     setShowSteps(!showSteps);

@@ -5,6 +5,7 @@ export const API_ENDPOINTS = {
 };
 
 export const INITIAL_DRAWING_OPTIONS = {
+  isDrawingMode: true,
   color: "#000000",
   backgroundColor: "transparent",
   brushWidth: 10,
@@ -14,6 +15,12 @@ export const INITIAL_DRAWING_OPTIONS = {
   // canvasWidth: 280,
   // canvasHeight: 280,
   cursorType: "circle",
+  selectionLineWidth: 1,
+  perPixelTargetFind: false,
+  preserveObjectStacking: true,
+  selection: true,
+  selectionFullyContained: true,
+  interactive: true,
 };
 
 //mint method selector constant

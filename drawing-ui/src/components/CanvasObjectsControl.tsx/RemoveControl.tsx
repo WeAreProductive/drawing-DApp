@@ -1,7 +1,7 @@
 import { useCanvasContext } from "../../context/CanvasContext";
 import { Button } from "../ui/button";
 import Remove from "../ui/icons/remove";
-
+// https://github.com/fabricjs/fabric.js/discussions/6990
 const RemoveControl = () => {
   const { canvas } = useCanvasContext();
   const removeActiveObject = () => {

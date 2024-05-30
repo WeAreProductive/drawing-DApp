@@ -2,8 +2,12 @@ import { Trash2 } from "lucide-react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { Button } from "../ui/button";
 const CanvasReset = () => {
-  const { clearCanvas, setRedoObjectsArr } = useCanvasContext();
+  const { clearCanvas, setRedoObjectsArr, canvas } = useCanvasContext();
   const handleCanvasClear = () => {
+    if (!canvas) return;
+    if (!canvas.isDrawingMode) {
+      canvas.isDrawingMode = true;
+    }
     clearCanvas();
     setRedoObjectsArr([]);
   };

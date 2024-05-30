@@ -11,23 +11,7 @@ const FabricJSCanvas = () => {
     useCanvasContext();
 
   useEffect(() => {
-    const options = {
-      isDrawingMode: true,
-      backgroundColor: INITIAL_DRAWING_OPTIONS.backgroundColor,
-      // @TODO define as constants
-      selectionLineWidth: 1,
-      perPixelTargetFind: false,
-      preserveObjectStacking: false,
-      selection: true,
-      selectionBorderColor: "#9f9c9c",
-      selectionColor: "#9f9c9c",
-      selectionFullyContained: true,
-      borderScaleFactor: 6,
-      // fireRightClick: true, //indicates if the canvas can fire right click events
-      // hoverCursor
-      interactive: true,
-    };
-    const canvas = new fabric.Canvas(canvasEl.current, options);
+    const canvas = new fabric.Canvas(canvasEl.current, INITIAL_DRAWING_OPTIONS);
     // make the fabric.Canvas instance available to your app
     setCanvas(canvas);
     return () => {

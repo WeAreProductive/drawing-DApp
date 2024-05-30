@@ -24,21 +24,26 @@ type CanvasToMintProp = {
   enabled: boolean;
 };
 const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
-  const { canvas, currentDrawingData, currentDrawingLayer } =
-    useCanvasContext();
+  const {
+    canvas,
+    currentDrawingData,
+    currentDrawingLayer,
+    setLoading,
+    loading,
+  } = useCanvasContext();
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
-  const { sendInput, setLoading, loading } = useRollups(
-    config[connectedChain.id].DAppRelayAddress,
-  );
+  const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
 
   const uuid = uuidv4();
 
   const handleCanvasToMint = async () => {
     if (!canvas) return;
+
     if (!currentDrawingLayer) return;
     if (currentDrawingLayer.length < 1) return;
+
     setLoading(true);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
     const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
@@ -86,7 +91,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
     <Button
       variant={"outline"}
       onClick={handleCanvasToMint}
-      disabled={loading || !enabled}
+      disabled={!enabled}
     >
       <Box size={18} className="mr-2" strokeWidth={1.5} />
       {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
