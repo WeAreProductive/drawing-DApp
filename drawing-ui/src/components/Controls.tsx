@@ -29,39 +29,38 @@ const Controls = () => {
     },
   });
 
-  useEffect(() => {
+  const validateCanvasInputSize = (currentDrawingData: any) => {
     if (!canvas) return;
-    const validateCanvasInputSize = () => {
-      // Gets current drawing data
-      const canvasContent = canvas.toJSON(); // or canvas.toObject()
-      const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
-        currentDrawingData,
-        canvasContent.objects,
-      ); // extracts the currents session drawing objects using the old and current drawing data
-      setCurrentDrawingLayer(currentDrawingLayerObjects); // enable only if current drawing layer is not empty
-      let canvasData = {
-        // svg: base64_encode(canvasSVG), // for validation before minting
-        content: currentDrawingLayerObjects,
-      };
-      // validate before sending the tx
-      const result = validateInputSize(
-        currentDrawingData,
-        JSON.stringify(canvasData),
-        true,
-      );
-      setCurrentResult(result);
+    // Gets current drawing data
+    const canvasContent = canvas.toJSON(); // or canvas.toObject()
+    const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
+      currentDrawingData,
+      canvasContent.objects,
+    ); // extracts the currents session drawing objects using the old and current drawing data
+    setCurrentDrawingLayer(currentDrawingLayerObjects); // enable only if current drawing layer is not empty
+    let canvasData = {
+      // svg: base64_encode(canvasSVG), // for validation before minting
+      content: currentDrawingLayerObjects,
     };
-    const resetRedoObjectsArr = () => {
-      setRedoObjectsArr([]);
-    };
+    // validate before sending the tx
+    const result = validateInputSize(
+      currentDrawingData,
+      JSON.stringify(canvasData),
+      true,
+    );
+    setCurrentResult(result);
+  };
+  const resetRedoObjectsArr = () => {
+    setRedoObjectsArr([]);
+  };
+  useEffect(() => {
+    canvas?.on("mouse:move", () => validateCanvasInputSize(currentDrawingData)); // sometimes stops working ..
+    canvas?.on("after:render", () =>
+      validateCanvasInputSize(currentDrawingData),
+    );
+    canvas?.on("path:created", resetRedoObjectsArr);
+  }, [currentDrawingData, canvas]);
 
-    canvas.on("mouse:move", validateCanvasInputSize); // sometimes stops working ..
-    canvas.on("after:render", validateCanvasInputSize);
-    canvas.on("path:created", resetRedoObjectsArr);
-    return () => {
-      canvas.removeListeners();
-    };
-  }, [canvas]);
   useEffect(() => {
     if (!currentDrawingLayer) return;
     currentDrawingLayer.length < 1 ? setCanUndo(false) : setCanUndo(true); // enable only if current drawing layer is not empty

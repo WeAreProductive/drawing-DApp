@@ -12,8 +12,13 @@ type CanvasSnapshotProp = {
 };
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
-  const { canvas, setDappState, setCurrentDrawingData, setRedoObjectsArr } =
-    useCanvasContext();
+  const {
+    canvas,
+    setDappState,
+    setCurrentDrawingData,
+    setRedoObjectsArr,
+    setCurrentDrawingLayer,
+  } = useCanvasContext();
   const { owner, uuid, update_log, dimensions } = src;
   const [showSteps, setShowSteps] = useState(false);
   const [showLabel, setShowLabel] = useState(true);
@@ -21,17 +26,14 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     () => snapShotJsonfromLog(update_log),
     [update_log],
   );
-  console.log({ src });
   const loadCanvasFromImage = () => {
-    console.log("load from image");
     if (!canvas) return;
-    canvas?.clear();
     //fabricjs.com/fabric-intro-part-3#serialization
     canvas.loadFromJSON(snapShotJson);
     setDappState(DAPP_STATE.drawingUpdate);
     setCurrentDrawingData(src);
-
     setRedoObjectsArr([]);
+    setCurrentDrawingLayer([]);
   };
   const handleShowSteps = () => {
     setShowSteps(!showSteps);

@@ -163,14 +163,17 @@ export const prepareDrawingObjectsArrays = (
   const storedDrawingObj: DrawingObject[] = []; // array of objects
   if (rollupsDrawingData) {
     const { update_log } = rollupsDrawingData;
-    // extract object array
-    if (update_log.length) {
-      // array of objects for each drawing session
-      update_log.forEach((element) => {
-        storedDrawingObj.push(element.drawing_objects);
-      });
-      // get all drawing_objects arrays and merge to one
+    if (update_log) {
+      // extract object array
+      if (update_log.length) {
+        // array of objects for each drawing session
+        update_log.forEach((element) => {
+          storedDrawingObj.push(element.drawing_objects);
+        });
+        // get all drawing_objects arrays and merge to one
+      }
     }
+
     // flatten stored drawing array
     // extract the current drawing session arr of objects
     const currentDrawingObj = latestDrawingObjects(

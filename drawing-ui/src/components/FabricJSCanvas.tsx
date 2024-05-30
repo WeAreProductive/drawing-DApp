@@ -18,7 +18,7 @@ const FabricJSCanvas = () => {
       setCanvas(null);
       canvas.dispose();
     };
-  }, [currentDrawingData]);
+  }, []);
 
   useEffect(() => {
     if (canvas) {
