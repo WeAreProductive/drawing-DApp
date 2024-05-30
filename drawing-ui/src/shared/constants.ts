@@ -57,7 +57,8 @@ export const COMMANDS = {
   },
 };
 
-export const INPUT_LIMIT = 128000;
+// export const INPUT_LIMIT = 128000;
+export const INPUT_LIMIT = 64000;
 // =========================================================
 // bytes of Cartesi's JSON payload limit (2097152 bytes)
 // =========================================================

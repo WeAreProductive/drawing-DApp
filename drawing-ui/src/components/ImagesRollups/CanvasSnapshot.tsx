@@ -21,6 +21,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     () => snapShotJsonfromLog(update_log),
     [update_log],
   );
+  console.log({ src });
   const loadCanvasFromImage = () => {
     console.log("load from image");
     if (!canvas) return;

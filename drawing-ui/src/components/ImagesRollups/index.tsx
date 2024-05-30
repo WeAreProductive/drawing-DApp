@@ -6,6 +6,7 @@ import { DrawingInputExtended, DataNoticeEdge } from "../../shared/types";
 import DrawingsList from "./DrawingsList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { ScrollArea } from "../ui/scroll-area";
+import pako from "pako";
 
 const ImagesListRollups = () => {
   const [connectedWallet] = useWallets();
@@ -52,8 +53,11 @@ const ImagesListRollups = () => {
         payload = "(empty)";
       }
       try {
-        drawingData = JSON.parse(payload);
-        return drawingData;
+        const parsedPayload = JSON.parse(payload);
+        const drawingData = pako.inflate(parsedPayload, {
+          to: "string",
+        });
+        return JSON.parse(drawingData);
       } catch (e) {
         console.log(e);
       }
