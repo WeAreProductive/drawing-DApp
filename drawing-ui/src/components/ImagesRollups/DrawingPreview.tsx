@@ -10,7 +10,6 @@ const DrawingPreview = ({
   snapShotJson: string;
 }) => {
   const [url, setUrl] = useState("");
-  console.log(dimensions);
   useEffect(() => {
     const canvas = new fabric.Canvas(null, {
       width: dimensions?.width | 600,
