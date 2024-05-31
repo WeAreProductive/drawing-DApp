@@ -89,5 +89,9 @@ export const VALIDATE_INPUT_ERRORS = {
 export const CANVAS_CURSOR_TYPES = {
   circle: "circle",
   spray: "spray",
-  select: "select",
+};
+
+export const CANVAS_DOWNLOAD_FILETYPES = {
+  png: "png",
+  svg: "svg",
 };
