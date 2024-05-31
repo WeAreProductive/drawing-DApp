@@ -80,6 +80,7 @@ const Controls = () => {
           }
           canUndo={canUndo}
           canRedo={canRedo}
+          canDownload={!!currentDrawingLayer?.length}
         />
         <CanvasObjectsControl />
       </div>
