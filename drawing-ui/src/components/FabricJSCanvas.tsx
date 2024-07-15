@@ -92,14 +92,12 @@ const FabricJSCanvas = () => {
   }, [canvasWrapperEl.current, canvas]);
 
   return (
-    <div
-      ref={canvasWrapperEl}
-      className="flex justify-center bg-card shadow-sm"
-    >
+    <div ref={canvasWrapperEl} className="flex justify-center">
       <canvas
         ref={canvasEl}
         width={canvasOptions.canvasWidth}
         height={canvasOptions.canvasHeight}
+        className="bg-card shadow-sm"
       />
     </div>
   );
