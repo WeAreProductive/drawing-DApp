@@ -35,6 +35,7 @@ export type CanvasOptions = {
   lineWidth: number;
   canvasWidth: number;
   canvasHeight: number;
+  cursorType: string;
 };
 
 export type CanvasContextType = {
@@ -47,6 +48,12 @@ export type CanvasContextType = {
   currentDrawingData: null | DrawingInputExtended;
   setCurrentDrawingData: React.Dispatch<null | DrawingInputExtended>;
   clearCanvas: () => void;
+  currentDrawingLayer: null | DrawingObject[];
+  setCurrentDrawingLayer: React.Dispatch<DrawingObject[]>;
+  redoObjectsArr: DrawingObject[];
+  setRedoObjectsArr: React.Dispatch<DrawingObject[]>;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export type VoucherExtended = {
@@ -114,8 +121,6 @@ export type RollupsContracts = {
 
 export type RollupsInteractions = {
   contracts?: RollupsContracts;
-  loading: boolean;
-  setLoading: Dispatch<SetStateAction<boolean>>;
   sendInput: (strInput: string) => void;
   executeVoucher: (
     voucher: VoucherExtended,

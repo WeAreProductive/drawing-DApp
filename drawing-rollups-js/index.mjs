@@ -114,7 +114,15 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
       drawing_input.voucher_requested = true;
     }
   }
-  const payload = str2hex(JSON.stringify(drawing_input));
+  const compressedStr = pako.deflate(JSON.stringify(drawing_input));
+
+  // Encode the input
+  const inputBytes = ethers.utils.isBytesLike(compressedStr)
+    ? compressedStr
+    : ethers.utils.toUtf8Bytes(compressedStr);
+  console.log(`Input bites fro notice ${inputBytes.length}`);
+
+  const payload = str2hex(JSON.stringify(inputBytes));
   const notice = { payload: payload };
   await send_notice(notice);
 };

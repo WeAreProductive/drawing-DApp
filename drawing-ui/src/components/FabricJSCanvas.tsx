@@ -2,21 +2,16 @@ import { useEffect, useRef } from "react";
 import { fabric } from "fabric"; // v5
 import { useCanvasContext } from "../context/CanvasContext";
 import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
+import { getCursorSvg } from "../utils";
 
 const FabricJSCanvas = () => {
   const canvasWrapperEl = useRef<HTMLDivElement>(null);
   const canvasEl = useRef(null);
-  const { canvas, setCanvas, canvasOptions } = useCanvasContext();
+  const { canvas, setCanvas, canvasOptions, currentDrawingData } =
+    useCanvasContext();
 
   useEffect(() => {
-    const options = {
-      isDrawingMode: true,
-      backgroundColor: INITIAL_DRAWING_OPTIONS.backgroundColor,
-      selectionColor: canvasOptions.color,
-      selectionLineWidth: canvasOptions.lineWidth,
-    };
-    const canvas = new fabric.Canvas(canvasEl.current, options);
-
+    const canvas = new fabric.Canvas(canvasEl.current, INITIAL_DRAWING_OPTIONS);
     // make the fabric.Canvas instance available to your app
     setCanvas(canvas);
     return () => {
@@ -28,33 +23,20 @@ const FabricJSCanvas = () => {
   useEffect(() => {
     if (canvas) {
       const brush = canvas.freeDrawingBrush;
+      // const brush = canvas.freeDrawingBrush;
       const brushSize =
         canvasOptions.lineWidth || INITIAL_DRAWING_OPTIONS.minBrushWidth;
       brush.color = canvasOptions.color;
       brush.width = brushSize;
-
-      const getDrawCursor = () => {
-        const circle = `
-          <svg
-            height="${brushSize}"
-            fill="${canvasOptions.color}"
-            viewBox="0 0 ${brushSize * 2} ${brushSize * 2}"
-            width="${brushSize}"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="50%"
-              cy="50%"
-              r="${brushSize}" 
-            />
-          </svg>
-        `;
-
-        return `data:image/svg+xml;base64,${window.btoa(circle)}`;
+      // get cursor by context cursor type
+      const getDrawCursor = (cursorType: string) => {
+        const cursor = getCursorSvg(brushSize, canvasOptions.color, cursorType);
+        if (!cursor) return;
+        return `data:image/svg+xml;base64,${window.btoa(cursor)}`;
       };
 
       // set custom cursor
-      const cursor = `url(${getDrawCursor()}) ${brushSize / 2} ${
+      const cursor = `url(${getDrawCursor(canvasOptions.cursorType)}) ${brushSize / 2} ${
         brushSize / 2
       }, crosshair`;
 

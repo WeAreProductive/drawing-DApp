@@ -1,6 +1,5 @@
 import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { useSetChain } from "@web3-onboard/react";
 import { useVoucherQuery } from "../../generated/graphql";
 import { useRollups } from "../../hooks/useRollups";

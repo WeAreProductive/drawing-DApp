@@ -5,12 +5,22 @@ export const API_ENDPOINTS = {
 };
 
 export const INITIAL_DRAWING_OPTIONS = {
+  isDrawingMode: true,
   color: "#000000",
   backgroundColor: "transparent",
   brushWidth: 10,
   minBrushWidth: 1,
   canvasWidth: 800,
   canvasHeight: 800,
+  // canvasWidth: 280,
+  // canvasHeight: 280,
+  cursorType: "circle",
+  selectionLineWidth: 1,
+  perPixelTargetFind: false,
+  preserveObjectStacking: true,
+  selection: true,
+  selectionFullyContained: true,
+  interactive: true,
 };
 
 //mint method selector constant
@@ -21,7 +31,8 @@ export const DAPP_STATE = {
   canvasClear: "canvas clear",
   canvasSave: "saving the canvas in a rollups notice",
   drawingUpdate: "updating existing drawing",
-  voucherRequset: "requesting a voucher for minting an nft from the drawing", //
+  voucherRequest: "requesting a voucher for minting an nft from the drawing", //
+  txFail: "transaction failed",
 };
 
 export const COMMANDS = {
@@ -46,7 +57,8 @@ export const COMMANDS = {
   },
 };
 
-export const INPUT_LIMIT = 128000;
+// export const INPUT_LIMIT = 128000;
+export const INPUT_LIMIT = 64000;
 // =========================================================
 // bytes of Cartesi's JSON payload limit (2097152 bytes)
 // =========================================================
@@ -72,4 +84,10 @@ export const VALIDATE_INPUT_ERRORS = {
     message: "Allowed size exceeded!",
     description: "Please, reduce the drawing size!",
   },
+};
+
+export const CANVAS_CURSOR_TYPES = {
+  circle: "circle",
+  spray: "spray",
+  select: "select",
 };

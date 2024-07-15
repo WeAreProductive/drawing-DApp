@@ -10,11 +10,11 @@ const send_post = async (endpoint, jsonData) => {
   axios.defaults.httpAgent = new http.Agent({ keepAlive: true });
   const res = await axios.post(
     rollup_server + `/${endpoint}`,
-    pako.deflate(JSON.stringify(jsonData)),
+    JSON.stringify(jsonData),
     {
       headers: {
         "Content-Type": "application/json",
-        "Content-Encoding": "deflate",
+        // "Content-Encoding": "deflate",
       },
     }
   );

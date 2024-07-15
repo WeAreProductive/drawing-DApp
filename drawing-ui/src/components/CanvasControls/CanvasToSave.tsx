@@ -15,6 +15,7 @@ import { v4 as uuidv4 } from "uuid";
 import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
+import { DAPP_STATE } from "../../shared/constants";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -22,25 +23,35 @@ type CanvasToSaveProp = {
   enabled: boolean;
 };
 const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
-  const { canvas, currentDrawingData } = useCanvasContext();
+  const {
+    canvas,
+    currentDrawingData,
+    currentDrawingLayer,
+    setLoading,
+    dappState,
+    setDappState,
+  } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
-  const { sendInput, setLoading, loading } = useRollups(
-    config[connectedChain.id].DAppRelayAddress,
-  );
+  const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
   const { getNoticeInput } = useDrawing();
   const uuid = uuidv4();
   const handleCanvasToSave = async () => {
     if (!canvas) return;
-
+    if (!canvas.isDrawingMode) {
+      canvas.isDrawingMode = true;
+    }
+    if (!currentDrawingLayer) return;
+    if (currentDrawingLayer.length < 1) return;
     setLoading(true);
+    setDappState(DAPP_STATE.canvasSave);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
-    const currentDrawingLayer = prepareDrawingObjectsArrays(
+    const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
       canvasContent.objects,
     ); // extracts the currents session drawing objects using the old and current drawing data
     let canvasData = {
-      content: currentDrawingLayer,
+      content: currentDrawingLayerObjects,
     };
     // validate before sending the tx
     const result = validateInputSize(
@@ -63,10 +74,10 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     <Button
       variant={"outline"}
       onClick={handleCanvasToSave}
-      disabled={!connectedChain || loading || !enabled}
+      disabled={!connectedChain || !enabled}
     >
       <Save size={18} className="mr-2" strokeWidth={1.5} />
-      {loading ? "Saving..." : "Save"}
+      {dappState == DAPP_STATE.canvasSave ? "Saving..." : "Save"}
     </Button>
   );
 };

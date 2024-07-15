@@ -17,6 +17,7 @@ import { DrawingMeta, Network } from "../../shared/types";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
+import { DAPP_STATE } from "../../shared/constants";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -24,27 +25,37 @@ type CanvasToMintProp = {
   enabled: boolean;
 };
 const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
-  const { canvas, currentDrawingData } = useCanvasContext();
+  const {
+    canvas,
+    currentDrawingData,
+    currentDrawingLayer,
+    setLoading,
+    dappState,
+    setDappState,
+  } = useCanvasContext();
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
-  const { sendInput, setLoading, loading } = useRollups(
-    config[connectedChain.id].DAppRelayAddress,
-  );
+  const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
 
   const uuid = uuidv4();
 
   const handleCanvasToMint = async () => {
     if (!canvas) return;
+
+    if (!currentDrawingLayer) return;
+    if (currentDrawingLayer.length < 1) return;
+
     setLoading(true);
+    setDappState(DAPP_STATE.voucherRequest);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
-    const currentDrawingLayer = prepareDrawingObjectsArrays(
+    const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
       canvasContent.objects,
     ); // extracts the currents session drawing objects using the old and current drawing data
     let canvasData = {
       // svg: base64_encode(canvasSVG), // for validation before minting
-      content: currentDrawingLayer,
+      content: currentDrawingLayerObjects,
     };
     // validate before sending the tx
     const result = validateInputSize(
@@ -83,10 +94,12 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
     <Button
       variant={"outline"}
       onClick={handleCanvasToMint}
-      disabled={loading || !enabled}
+      disabled={!enabled}
     >
       <Box size={18} className="mr-2" strokeWidth={1.5} />
-      {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
+      {dappState == DAPP_STATE.voucherRequest
+        ? " Queuing NFT for minting..."
+        : " Save & Mint NFT"}
     </Button>
   ) : null;
 };

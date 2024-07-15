@@ -10,11 +10,10 @@ const DrawingPreview = ({
   snapShotJson: string;
 }) => {
   const [url, setUrl] = useState("");
-
   useEffect(() => {
     const canvas = new fabric.Canvas(null, {
-      width: dimensions.width,
-      height: dimensions.height,
+      width: dimensions?.width | 600,
+      height: dimensions?.height | 600,
     });
     canvas.loadFromJSON(snapShotJson, function () {});
 
