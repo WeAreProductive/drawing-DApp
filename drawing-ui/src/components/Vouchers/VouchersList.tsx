@@ -39,7 +39,7 @@ const VouchersList = () => {
       setCursor(data.vouchers.pageInfo.endCursor);
     }
     return () => clearTimeout(timerId);
-  }, [result.fetching, reexecuteQuery]); 
+  }, [result.fetching, reexecuteQuery]);
   useEffect(() => {
     const newVouchers = data?.vouchers.edges
       .map((node: { node: VoucherExtended }) => {
@@ -113,7 +113,7 @@ const VouchersList = () => {
           input: n ? { index: n.input.index, payload: inputPayload } : {},
           erc721string: erc721string,
           ownerAddress: ownerAddress,
-          drawing: drawings[0] ? drawings[0].drawing : '' ,
+          drawing: drawings[0] ? drawings[0] : "",
           proof: null,
           executed: null,
         };

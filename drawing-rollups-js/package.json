@@ -11,7 +11,7 @@
     "pako": "^2.1.0"
   },
   "scripts": {
-    "start": "ROLLUP_HTTP_SERVER_URL=\"http://127.0.0.1:5004\" node index.mjs"
+    "start": "ROLLUP_HTTP_SERVER_URL=\"http://localhost:8080/host-runner\" node index.mjs"
   },
   "keywords": [
     "cartesi"

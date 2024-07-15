@@ -1,4 +1,12 @@
 import { Canvas } from "fabric/fabric-impl";
+import { JsonRpcSigner } from "@ethersproject/providers";
+import {
+  InputBox,
+  DAppAddressRelay,
+  CartesiDApp,
+  ERC721Portal,
+} from "@cartesi/rollups";
+import { Dispatch, SetStateAction } from "react";
 
 export type Network = {
   token: string;
@@ -36,11 +44,9 @@ export type CanvasContextType = {
   setOptions: React.Dispatch<CanvasOptions>;
   dappState: string;
   setDappState: React.Dispatch<string>;
-  currentDrawingData: null | DrawingInput;
-  setCurrentDrawingData: React.Dispatch<null | DrawingInput>;
+  currentDrawingData: null | DrawingInputExtended;
+  setCurrentDrawingData: React.Dispatch<null | DrawingInputExtended>;
   clearCanvas: () => void;
-  // svgStrLength: number;
-  // setSvgStrLength: React.Dispatch<number>;
 };
 
 export type VoucherExtended = {
@@ -60,20 +66,23 @@ export type VoucherExtended = {
 
 export interface DrawingInput {
   drawing: string; // svg's json string
+  dimensions: { width: number; height: number };
 }
-
+export type DrawingObject = { [key: string]: any };
+export type UpdateLogItem = {
+  date_updated: string;
+  painter: string;
+  action: string;
+  drawing_objects: DrawingObject[];
+};
+export type UpdateLog = UpdateLogItem[];
 export interface DrawingInputExtended extends DrawingInput {
   id: string; // creator's account - timestamp
   uuid: string;
   date_created: string; // date-time string
   last_updated: null | string; // last update date-time string
   owner: string; //last painter's account
-  update_log: {
-    date_updated: string;
-    painter: string;
-    action: string;
-  }[];
-  drawing: string; // svg's json string
+  update_log: UpdateLog;
   voucher_requested: boolean;
 }
 
@@ -88,4 +97,27 @@ export type DataNoticeEdge = {
       index: number;
     };
   };
+};
+export type CanvasDimensions = { width: number; height: number };
+export type DrawingMeta = {
+  success: boolean;
+  ipfsHash: string;
+  canvasDimensions: CanvasDimensions;
+};
+export type RollupsContracts = {
+  dappContract: CartesiDApp;
+  signer: JsonRpcSigner;
+  relayContract: DAppAddressRelay;
+  inputContract: InputBox;
+  erc721PortalContract: ERC721Portal;
+};
+
+export type RollupsInteractions = {
+  contracts?: RollupsContracts;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
+  sendInput: (strInput: string) => void;
+  executeVoucher: (
+    voucher: VoucherExtended,
+  ) => Promise<VoucherExtended | undefined>;
 };

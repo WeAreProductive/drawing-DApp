@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import CanvasControls from "../components/CanvasControls";
 import DrawingControls from "../components/Drawing/DrawingControls";
 import { useCanvasContext } from "../context/CanvasContext";
-import { validateInputSize } from "../utils";
+import { prepareDrawingObjectsArrays, validateInputSize } from "../utils";
 import { CanvasLimitations } from "../shared/types";
 
 const Controls = () => {
-  const { canvas } = useCanvasContext();
+  const { canvas, currentDrawingData } = useCanvasContext();
 
   const [currentResult, setCurrentResult] = useState<CanvasLimitations>({
     isValid: true,
@@ -20,21 +20,23 @@ const Controls = () => {
 
   useEffect(() => {
     if (!canvas) return;
-
     const validateCanvasInputSize = () => {
-      // Gets current drawing data as SVG
-      const canvasSVG = canvas.toSVG({
-        viewBox: {
-          x: 0,
-          y: 0,
-          width: canvas.width || 0,
-          height: canvas.height || 0,
-        },
-        width: canvas.width || 0,
-        height: canvas.height || 0,
-      });
-
-      const result = validateInputSize(canvasSVG, true);
+      // Gets current drawing data
+      const canvasContent = canvas.toJSON(); // or canvas.toObject()
+      const currentDrawingLayer = prepareDrawingObjectsArrays(
+        currentDrawingData,
+        canvasContent.objects,
+      ); // extracts the currents session drawing objects using the old and current drawing data
+      let canvasData = {
+        // svg: base64_encode(canvasSVG), // for validation before minting
+        content: currentDrawingLayer,
+      };
+      // validate before sending the tx
+      const result = validateInputSize(
+        currentDrawingData,
+        JSON.stringify(canvasData),
+        true,
+      );
 
       setCurrentResult(result);
     };

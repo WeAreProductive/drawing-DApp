@@ -8,7 +8,6 @@ import configFile from "../../config/config.json";
 import { VoucherExtended, Network } from "../../shared/types";
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
-import { decode as base64_decode } from "base-64";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
@@ -30,73 +29,27 @@ const Voucher = ({ voucherData }: VoucherProp) => {
 
   const [loading, setLoading] = useState(false);
   if (!connectedChain) return;
-  const rollups = useRollups(config[connectedChain.id].DAppRelayAddress);
+  const { contracts, executeVoucher } = useRollups(
+    config[connectedChain.id].DAppRelayAddress,
+  );
 
   const getProof = async (voucher: VoucherExtended) => {
     setVoucherToFetch([voucher.index, voucher.input.index]);
     reexecuteVoucherQuery({ requestPolicy: "network-only" });
   };
 
-  const executeVoucher = async (voucher: VoucherExtended) => {
-    if (rollups && !!voucher.proof) {
-      setLoading(true);
-      const newVoucherToExecute = { ...voucher };
+  const handleExecuteVoucher = async (voucher: VoucherExtended) => {
+    setLoading(true);
+    const newVoucherToExecute = await executeVoucher(voucher);
 
-      try {
-        const tx = await rollups.dappContract.executeVoucher(
-          voucher.destination,
-          voucher.payload,
-          voucher.proof,
-        );
-        const receipt = await tx.wait();
-
-        newVoucherToExecute.msg = `Minting executed! (tx="${tx.hash}")`;
-
-        if (receipt.events) {
-          const event = receipt.events?.find(
-            (e) => e.event === "VoucherExecuted",
-          );
-
-          if (!event) {
-            throw new Error(
-              `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`,
-            );
-          }
-
-          if (receipt.events.length > 2)
-            newVoucherToExecute.events = {
-              address: receipt.events[1].address,
-              nft_id: BigInt(receipt.events[1].data).toString(),
-            };
-
-          newVoucherToExecute.executed =
-            await rollups.dappContract.wasVoucherExecuted(
-              BigNumber.from(voucher.input.index),
-              BigNumber.from(voucher.index),
-            );
-        }
-        setLoading(false);
-      } catch (e: any) {
-        const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
-        toast.error("Transaction Error", {
-          description: `Could not execute voucher => ${reason}`,
-        });
-        // full error info
-        newVoucherToExecute.msg = `Could not execute voucher: ${JSON.stringify(
-          e,
-        )}`;
-        console.log(`Could not execute voucher: ${JSON.stringify(e)}`);
-      }
-
-      setVoucherToExecute(newVoucherToExecute);
-      setLoading(false);
-    }
+    setVoucherToExecute(newVoucherToExecute);
+    setLoading(false);
   };
 
   useEffect(() => {
     const setVoucher = async (voucher: VoucherExtended) => {
-      if (rollups) {
-        voucher.executed = await rollups.dappContract.wasVoucherExecuted(
+      if (contracts) {
+        voucher.executed = await contracts.dappContract.wasVoucherExecuted(
           BigNumber.from(voucher.input.index),
           BigNumber.from(voucher.index),
         );
@@ -107,16 +60,13 @@ const Voucher = ({ voucherData }: VoucherProp) => {
     if (!voucherResult.fetching && voucherResult.data) {
       setVoucher(voucherResult.data.voucher);
     }
-  }, [voucherResult, rollups]);
+  }, [voucherResult, contracts]);
 
   return (
     <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
       {voucherData.drawing && (
         <div className="w-1/2 p-2">
-          <CanvasSnapshotLight
-            data={voucherData.drawing}
-            // src={base64_decode(JSON.parse(voucherData.drawing).svg)}
-          />
+          <CanvasSnapshotLight data={voucherData.drawing} />
         </div>
       )}
 
@@ -145,7 +95,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
               </Button>
             ) : (
               <Button
-                onClick={() => executeVoucher(voucherToExecute)}
+                onClick={() => handleExecuteVoucher(voucherToExecute)}
                 className="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
               >
                 Mint NFT

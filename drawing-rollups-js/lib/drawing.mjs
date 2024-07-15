@@ -9,11 +9,15 @@ function stringUnification(str) {
     .toLowerCase();
 }
 
-export async function validateDrawing(drawingContent, drawingBase64) {
+export async function validateDrawing(drawingInput, drawingBase64) {
+  const drawingContent = getDrawingContent(drawingInput);
   var res = false;
-
+  const { width, height } = drawingInput.dimensions;
   try {
-    const canvas = new fabric.StaticCanvas(null, { width: 600, height: 600 });
+    const canvas = new fabric.StaticCanvas(null, {
+      width: width,
+      height: height,
+    });
     canvas.loadFromJSON(
       JSON.stringify({ objects: drawingContent }),
       function () {
@@ -39,16 +43,19 @@ export async function validateDrawing(drawingContent, drawingBase64) {
         canvas.zoomToPoint({ x: canvas.width / 2, y: canvas.height / 2 }, zoom);
         canvas.renderAll();
 
+        const offsetX = (canvas.width * 1.05) / 2 || 0;
+        const offsetY = (canvas.height * 1.05) / 2 || 0;
+
         const generatedSVG = stringUnification(
           canvas.toSVG({
             viewBox: {
-              x: 0,
-              y: 0,
-              width: canvas.width || 0,
-              height: canvas.height || 0,
+              x: -offsetX,
+              y: -offsetY,
+              width: canvas.width * 1.05 || 0,
+              height: canvas.height * 1.05 || 0,
             },
-            width: canvas.width || 0,
-            height: canvas.height || 0,
+            width: canvas.width * 1.05 || 0,
+            height: canvas.height * 1.05 || 0,
           })
         );
         const drawingSVG = stringUnification(base64.decode(drawingBase64));
@@ -64,3 +71,20 @@ export async function validateDrawing(drawingContent, drawingBase64) {
 
   return res;
 }
+
+const getDrawingContent = (drawingInput) => {
+  console.log(JSON.parse(drawingInput.drawing));
+  const drawingLayers = [];
+  const lastDrawingLayer = JSON.parse(drawingInput.drawing).content;
+  const { update_log } = drawingInput;
+
+  if (update_log) {
+    if (update_log.length) {
+      update_log.forEach((element) => {
+        drawingLayers.push(element.drawing_objects);
+      });
+    }
+  }
+  drawingLayers.push(lastDrawingLayer);
+  return drawingLayers.flat();
+};
