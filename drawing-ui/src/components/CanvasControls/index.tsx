@@ -3,13 +3,20 @@ import CanvasToMint from "./CanvasToMint";
 import CanvasToSave from "./CanvasToSave";
 import CanvasUndo from "./CanvasUndo";
 import CanvasRedo from "./CanvasRedo";
+import CanvasDownload from "./CanvasDownload";
 
 type CanvasControlsProp = {
   enabled: boolean;
   canUndo: boolean;
   canRedo: boolean;
+  canDownload: boolean;
 };
-const CanvasControls = ({ enabled, canUndo, canRedo }: CanvasControlsProp) => {
+const CanvasControls = ({
+  enabled,
+  canUndo,
+  canRedo,
+  canDownload,
+}: CanvasControlsProp) => {
   return (
     <div className="flex gap-2">
       <CanvasUndo canUndo={canUndo} />
@@ -17,6 +24,7 @@ const CanvasControls = ({ enabled, canUndo, canRedo }: CanvasControlsProp) => {
       <CanvasReset />
       <CanvasToSave enabled={enabled} />
       <CanvasToMint enabled={enabled} />
+      <CanvasDownload canDownload={canDownload} />
     </div>
   );
 };
