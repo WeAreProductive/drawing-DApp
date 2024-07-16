@@ -97,7 +97,7 @@ const FabricJSCanvas = () => {
         ref={canvasEl}
         width={canvasOptions.canvasWidth}
         height={canvasOptions.canvasHeight}
-        className="bg-card shadow-sm"
+        // className="shadow-sm bg-card"
       />
     </div>
   );
