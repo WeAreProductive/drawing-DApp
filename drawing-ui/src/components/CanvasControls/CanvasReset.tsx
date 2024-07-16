@@ -14,7 +14,7 @@ const CanvasReset = () => {
   return (
     <Button variant={"ghost"} onClick={handleCanvasClear}>
       <Trash2 size={18} className="mr-2" strokeWidth={1.5} />
-      Clear
+      Clear All
     </Button>
   );
 };

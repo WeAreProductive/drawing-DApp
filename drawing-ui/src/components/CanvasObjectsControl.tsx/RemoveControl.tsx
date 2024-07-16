@@ -1,6 +1,6 @@
 import { useCanvasContext } from "../../context/CanvasContext";
 import { Button } from "../ui/button";
-import Remove from "../ui/icons/remove";
+import { Eraser } from "lucide-react";
 // https://github.com/fabricjs/fabric.js/discussions/6990
 
 type RemoveControlProp = {
@@ -8,6 +8,9 @@ type RemoveControlProp = {
 };
 const RemoveControl = ({ enabled }: RemoveControlProp) => {
   const { canvas } = useCanvasContext();
+
+  if (canvas && !canvas.getActiveObject()) enabled = false;
+
   const removeActiveObject = () => {
     if (!canvas) return;
     const active = canvas.getActiveObject();
@@ -21,7 +24,8 @@ const RemoveControl = ({ enabled }: RemoveControlProp) => {
       onClick={removeActiveObject}
       disabled={!enabled}
     >
-      <Remove />
+      <Eraser size={18} className="mr-1" strokeWidth={1.5} />
+      Remove Selected
     </Button>
   );
 };

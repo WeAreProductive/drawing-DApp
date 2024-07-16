@@ -74,6 +74,11 @@ const Controls = () => {
     <div className="flex flex-col">
       <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
         <DrawingControls />
+        <CanvasObjectsControl
+          enabled={
+            currentResult.isValid && !!currentDrawingLayer?.length && !loading
+          }
+        />
         <CanvasControls
           enabled={
             currentResult.isValid && !!currentDrawingLayer?.length && !loading
@@ -81,11 +86,6 @@ const Controls = () => {
           canUndo={canUndo}
           canRedo={canRedo}
           canDownload={!!currentDrawingLayer?.length}
-        />
-        <CanvasObjectsControl
-          enabled={
-            currentResult.isValid && !!currentDrawingLayer?.length && !loading
-          }
         />
       </div>
       <div

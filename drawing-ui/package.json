@@ -36,7 +36,7 @@
     "form-data": "^4.0.0",
     "framer-motion": "^10.12.7",
     "graphql": "^16.6.0",
-    "lucide-react": "^0.303.0",
+    "lucide-react": "^0.408.0",
     "moment": "^2.29.4",
     "next-themes": "^0.2.1",
     "pako": "^2.1.0",

@@ -40,7 +40,7 @@ const CanvasDownload = ({ canDownload }: CanvasDownloadProp) => {
         disabled={!canDownload}
         title="Redo"
       >
-        <Download size={18} strokeWidth={1.5} />
+        <Download size={18} className="mr-1" strokeWidth={1.5} />
         {CANVAS_DOWNLOAD_FILETYPES.svg.toLocaleUpperCase()}
       </Button>
       <Button
@@ -49,7 +49,7 @@ const CanvasDownload = ({ canDownload }: CanvasDownloadProp) => {
         disabled={!canDownload}
         title="Redo"
       >
-        <Download size={18} strokeWidth={1.5} />
+        <Download size={18} className="mr-1" strokeWidth={1.5} />
         {CANVAS_DOWNLOAD_FILETYPES.png.toUpperCase()}
       </Button>
     </>

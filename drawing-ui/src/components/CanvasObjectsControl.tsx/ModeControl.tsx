@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { Button } from "../ui/button";
-import Draw from "../ui/icons/draw";
-import Select from "../ui/icons/select";
+import { SquareDashedMousePointer, SquarePen } from "lucide-react";
 
 type ModeControlProp = {
   enabled: boolean;
@@ -46,7 +45,21 @@ const ModeControl = ({ enabled }: ModeControlProp) => {
 
   return (
     <Button variant={"outline"} onClick={toggleDrawingMode} disabled={!enabled}>
-      {selectionEnabled ? <Draw /> : <Select />}
+      {selectionEnabled ? (
+        <>
+          <SquarePen size={18} className="mr-1" strokeWidth={1.5} />
+          Draw
+        </>
+      ) : (
+        <>
+          <SquareDashedMousePointer
+            size={18}
+            className="mr-1"
+            strokeWidth={1.5}
+          />
+          Select
+        </>
+      )}
     </Button>
   );
 };

@@ -6,9 +6,8 @@ import {
   INITIAL_DRAWING_OPTIONS,
 } from "../../shared/constants";
 import { getCursorSvg } from "../../utils";
-import Spray from "../ui/icons/spray";
 import { Button } from "../ui/button";
-import Pencil from "../ui/icons/pencil";
+import { Pencil, SprayCan } from "lucide-react";
 import { toast } from "sonner";
 
 const BrushControl = () => {
@@ -72,9 +71,13 @@ const BrushControl = () => {
   return (
     <Button variant={"outline"} onClick={toggleBrush}>
       {canvasOptions.cursorType === CANVAS_CURSOR_TYPES.circle ? (
-        <Spray />
+        <>
+          <SprayCan size={18} className="mr-1" strokeWidth={1.5} /> Spray
+        </>
       ) : (
-        <Pencil />
+        <>
+          <Pencil size={18} className="mr-1" strokeWidth={1.5} /> Pencil
+        </>
       )}
     </Button>
   );
