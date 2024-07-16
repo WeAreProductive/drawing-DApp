@@ -4,7 +4,10 @@ import { Button } from "../ui/button";
 import Draw from "../ui/icons/draw";
 import Select from "../ui/icons/select";
 
-const ModeControl = () => {
+type ModeControlProp = {
+  enabled: boolean;
+};
+const ModeControl = ({ enabled }: ModeControlProp) => {
   const { canvas } = useCanvasContext();
   const [selectionEnabled, setSelectionEnabled] = useState(false);
   const toggleDrawingMode = () => {
@@ -38,8 +41,11 @@ const ModeControl = () => {
     if (!canvas) return;
     setSelectionEnabled(!canvas.isDrawingMode);
   }, [canvas, canvas?.isDrawingMode]);
+
+  if (!enabled && canvas) canvas.isDrawingMode = true;
+
   return (
-    <Button variant={"outline"} onClick={toggleDrawingMode}>
+    <Button variant={"outline"} onClick={toggleDrawingMode} disabled={!enabled}>
       {selectionEnabled ? <Draw /> : <Select />}
     </Button>
   );

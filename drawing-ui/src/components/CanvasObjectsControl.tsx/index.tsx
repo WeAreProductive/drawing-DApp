@@ -1,11 +1,14 @@
 import ModeControl from "./ModeControl";
 import RemoveControl from "./RemoveControl";
 
-const CanvasObjectsControl = () => {
+type CanvasObjectsControlProp = {
+  enabled: boolean;
+};
+const CanvasObjectsControl = ({ enabled }: CanvasObjectsControlProp) => {
   return (
     <div className="flex gap-2">
-      <ModeControl />
-      <RemoveControl />
+      <ModeControl enabled={enabled} />
+      <RemoveControl enabled={enabled} />
     </div>
   );
 };

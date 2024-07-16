@@ -82,7 +82,11 @@ const Controls = () => {
           canRedo={canRedo}
           canDownload={!!currentDrawingLayer?.length}
         />
-        <CanvasObjectsControl />
+        <CanvasObjectsControl
+          enabled={
+            currentResult.isValid && !!currentDrawingLayer?.length && !loading
+          }
+        />
       </div>
       <div
         className={`mt-3 text-center text-sm ${currentResult.info.type === "warning" ? "text-orange-500" : currentResult.info.type === "error" ? "font-semibold text-red-500" : ""}`}
