@@ -12,8 +12,6 @@ export const INITIAL_DRAWING_OPTIONS = {
   minBrushWidth: 1,
   canvasWidth: 800,
   canvasHeight: 800,
-  // canvasWidth: 280,
-  // canvasHeight: 280,
   cursorType: "circle",
   selectionLineWidth: 1,
   perPixelTargetFind: false,
