@@ -7,7 +7,7 @@ import {
   send_report,
   send_exception,
 } from "./lib/rollups-api.mjs";
-import { db } from "./sqlite/db.mjs";
+import { insertDrawing } from "./sqlite/api.mjs";
 import { validateDrawing } from "./lib/drawing.mjs";
 import {
   str2hex,
@@ -126,6 +126,16 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   const payload = str2hex(JSON.stringify(inputBytes));
   const notice = { payload: payload };
   await send_notice(notice);
+  const data = {
+    uuid: "uuid",
+    dimensions: "dimensions",
+    date_created: "date_created",
+    owner: "owner",
+    action: "action",
+    drawing_objects: "drawing_objects",
+  };
+  const sqliteResult = insertDrawing(data);
+  console.log(sqliteResult);
 };
 
 /**
@@ -138,59 +148,69 @@ async function handle_advance(data) {
   let status = "accept";
   let payload;
   const sender = data.metadata.msg_sender.toLowerCase();
-  try {
-    payload = data.payload;
-    payload = hex2arr(payload); // Decodes a hex string into a Uint8Array.
-    try {
-      const decompressedPayload = pako.inflate(payload, {
-        to: "string",
-      });
-      console.log("Trying to decode json");
-      // try json data
-      const jsonData = JSON.parse(decompressedPayload);
-      const {
-        cmd,
-        imageIPFSMeta,
-        erc721_to_mint,
-        selector,
-        uuid,
-        imageBase64,
-        drawing_input,
-      } = jsonData;
-      if (cmd) {
-        if (cmd == "cv" || cmd == "uv") {
-          console.log(`COMMAND: ${cmd}`);
-          if (imageIPFSMeta && erc721_to_mint && selector) {
-            await mint_erc721_with_string(
-              sender,
-              uuid,
-              erc721_to_mint,
-              selector,
-              imageIPFSMeta,
-              // imageBase64, @TODO new BE validation
-              drawing_input,
-              cmd
-            );
-          }
-        } else if (cmd == "cn" || cmd == "un") {
-          console.log(`COMMAND: ${cmd}`);
-          if (drawing_input) {
-            await store_drawing_data(sender, uuid, drawing_input, cmd);
-          }
-        }
-      } else {
-        // no cmd provided
-        throw Error("Not supported json operation");
-      }
-    } catch (error) {
-      console.log({ error });
-    }
-  } catch (error) {
-    status = "reject";
-    let msg = `Error: ${error}`;
-    console.error(msg);
-    send_report({ payload: str2hex(msg) });
-  }
+  const sqlData = {
+    uuid: "uuid",
+    dimensions: "dimensions",
+    date_created: "date_created",
+    owner: "owner",
+    action: "action",
+    drawing_objects: "drawing_objects",
+  };
+  const sqliteResult = insertDrawing(sqlData);
+  console.log(sqliteResult);
+  // try {
+  //   payload = data.payload;
+  //   payload = hex2arr(payload); // Decodes a hex string into a Uint8Array.
+  //   try {
+  //     const decompressedPayload = pako.inflate(payload, {
+  //       to: "string",
+  //     });
+  //     console.log("Trying to decode json");
+  //     // try json data
+  //     const jsonData = JSON.parse(decompressedPayload);
+  //     const {
+  //       cmd,
+  //       imageIPFSMeta,
+  //       erc721_to_mint,
+  //       selector,
+  //       uuid,
+  //       imageBase64,
+  //       drawing_input,
+  //     } = jsonData;
+  //     if (cmd) {
+  //       if (cmd == "cv" || cmd == "uv") {
+  //         console.log(`COMMAND: ${cmd}`);
+  //         if (imageIPFSMeta && erc721_to_mint && selector) {
+  //           await mint_erc721_with_string(
+  //             sender,
+  //             uuid,
+  //             erc721_to_mint,
+  //             selector,
+  //             imageIPFSMeta,
+  //             // imageBase64, @TODO new BE validation
+  //             drawing_input,
+  //             cmd
+  //           );
+  //         }
+  //       } else if (cmd == "cn" || cmd == "un") {
+  //         console.log(`COMMAND: ${cmd}`);
+  //         if (drawing_input) {
+  //           await store_drawing_data(sender, uuid, drawing_input, cmd);
+  //         }
+  //       }
+  //     } else {
+  //       // no cmd provided
+  //       throw Error("Not supported json operation");
+  //     }
+  //   } catch (error) {
+  //     console.log({ error });
+  //   }
+  // } catch (error) {
+  //   status = "reject";
+  //   let msg = `Error: ${error}`;
+  //   console.error(msg);
+  //   send_report({ payload: str2hex(msg) });
+  // }
   return status;
 }
 
