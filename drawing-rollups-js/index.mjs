@@ -7,6 +7,7 @@ import {
   send_report,
   send_exception,
 } from "./lib/rollups-api.mjs";
+import { db } from "./sqlite/db.mjs";
 import { validateDrawing } from "./lib/drawing.mjs";
 import {
   str2hex,
