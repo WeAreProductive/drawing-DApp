@@ -194,16 +194,11 @@ def store_drawing_data(
         drawing_input["update_log"].append(new_log_item)
         if cmd == 'uv':
             drawing_input['voucher_requested'] = True 
-    # const compressedStr = pako.deflate(JSON.stringify(drawing_input));
-    # data = json.dumps(drawing_input)
-    # compressed = zlib.compress(data)
     
-    compressed = base64.b64encode(zlib.compress(bytes(json.dumps(drawing_input), "utf-8"))).decode("ascii")
+    compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8"))
     logger.info(f"Compressed payload {compressed}") 
     # uint8array to hex
-   
-    payload = str2hex(compressed)
-    # payload = binary2hex(compressed)
+    payload = binary2hex(compressed)
     logger.info(f"Hexed {payload}") 
 
     notice = {"payload": payload}
