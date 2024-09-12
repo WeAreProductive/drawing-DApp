@@ -71,7 +71,7 @@ def decompress(hexstr):
     """
     bytearray_data = bytearray.fromhex(hexstr[2:])
     decompressed = zlib.decompress(bytearray_data)
-    
+
     return decompressed
 
 def clean_header(mint_header):
@@ -158,16 +158,21 @@ def store_drawing_data(
         drawing_input, 
         cmd
     ):
-    now = str(datetime.now(timezone.utc))
-    parsed_input = json.dumps(drawing_input.drawing)
-    content = parsed_input.content
-    logger.info(f"Preparing a VOUCHER for MINTING AN NFT {content}")
-    # new_log_item = { 
-    #     "date_updated": now,
-    #     "painter": sender,
-    #     "action": cmd,
-    #     "drawing_objects": content
-    # } 
+    now = str(datetime.now(timezone.utc)) 
+    logger.info(f"Preparing notice payload")
+    drawing = drawing_input['drawing']
+    
+   
+    parsed_drawing = json.loads(drawing)
+    content = parsed_drawing['content']
+   
+    new_log_item = { 
+        "date_updated": now,
+        "painter": sender,
+        "action": cmd,
+        "drawing_objects": content
+    } 
+
     # if cmd == 'cn' or cmd == 'cv':
     #     # set drawing id wneh new drawing
     #     unix_timestamp = str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
@@ -200,19 +205,10 @@ def handle_advance(data):
     logger.info(f"Received advance request") 
     status = "accept"
     payload = None
-    sender = data["metadata"]["msg_sender"].lower()
-    logger.info(f"Sender {sender}") 
+    sender = data["metadata"]["msg_sender"].lower() 
     try:
         payload = data["payload"]
         decompressed_payload = decompress(payload)
-       
-        logger.info(f"Decompressed Payload {decompressed_payload}")  
-        # @TOD decompress
-        # payload_to_uint8array = np.fromstring(payload, dtype=int, sep=',')
-        # logger.info(f"UINT8Array {payload_to_uint8array}") 
-        # byte_array_to_string = bytearray(payload_to_uint8array)
-        # decoded = byte_array_to_string.decode()
-        # logger.info(f"UINT8Array {decoded}") 
         try:
             logger.info(f"Trying to decode json ")
             # try json data
