@@ -1,3 +1,4 @@
+import base64
 from os import environ
 import sys
 import logging
@@ -162,41 +163,51 @@ def store_drawing_data(
     logger.info(f"Preparing notice payload")
     drawing = drawing_input['drawing']
     
-   
     parsed_drawing = json.loads(drawing)
     content = parsed_drawing['content']
    
     new_log_item = { 
         "date_updated": now,
-        "painter": sender,
+        "painter": sender, # @TODO use owner
         "action": cmd,
-        "drawing_objects": content
+        "drawing_objects": content # tracks the drawing layers (the canvas drawing objects of each drawing session)
     } 
 
-    # if cmd == 'cn' or cmd == 'cv':
-    #     # set drawing id wneh new drawing
-    #     unix_timestamp = str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
-    #     drawing_input["id"]= f"{sender}-{unix_timestamp}"
-    #     drawing_input["uuid"]= uuid
-    #     drawing_input["owner"] = sender
-    #     drawing_input["date_created"]= now 
-    #     drawing_input["last_updated"] = now
-    #     drawing_input["update_log"] = []
-    #     drawing_input["update_log"].append(new_log_item) 
-    #     if cmd == 'cv':
-    #         drawing_input['voucher_requested'] = True
-    #     else:
-    #         drawing_input['voucher_requested'] = False
-    # elif cmd == 'un' or cmd == 'uv':
-    #     drawing_input["uuid"]= uuid
-    #     drawing_input["owner"] = sender
-    #     drawing_input["last_updated"] = now
-    #     drawing_input["update_log"].append(new_log_item)
-    #     if cmd == 'uv':
-    #         drawing_input['voucher_requested'] = True
-    # payload = str2hex(json.dumps(drawing_input))
-    # notice = {"payload": payload}
-    # send_notice(notice)
+    if cmd == 'cn' or cmd == 'cv':
+        # set drawing id wneh new drawing
+        # unix_timestamp = str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
+        # drawing_input["id"]= f"{sender}-{unix_timestamp}"
+        drawing_input["uuid"]= uuid
+        drawing_input["owner"] = sender
+        drawing_input["date_created"]= now 
+        drawing_input["last_updated"] = now
+        drawing_input["update_log"] = []
+        drawing_input["update_log"].append(new_log_item) 
+        if cmd == 'cv':
+            drawing_input['voucher_requested'] = True
+        else:
+            drawing_input['voucher_requested'] = False
+    elif cmd == 'un' or cmd == 'uv':
+        drawing_input["uuid"]= uuid
+        drawing_input["owner"] = sender
+        drawing_input["last_updated"] = now
+        drawing_input["update_log"].append(new_log_item)
+        if cmd == 'uv':
+            drawing_input['voucher_requested'] = True 
+    # const compressedStr = pako.deflate(JSON.stringify(drawing_input));
+    # data = json.dumps(drawing_input)
+    # compressed = zlib.compress(data)
+    
+    compressed = base64.b64encode(zlib.compress(bytes(json.dumps(drawing_input), "utf-8"))).decode("ascii")
+    logger.info(f"Compressed payload {compressed}") 
+    # uint8array to hex
+   
+    payload = str2hex(compressed)
+    # payload = binary2hex(compressed)
+    logger.info(f"Hexed {payload}") 
+
+    notice = {"payload": payload}
+    send_notice(notice)
 
 ###
 # handlers
