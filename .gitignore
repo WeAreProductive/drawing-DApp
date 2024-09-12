@@ -5,7 +5,5 @@ node_modules/
 drawing-api/public/
 TODO.md
  
-drawing-py/dapp/.venv
-drawing-py/deployments/
-drawing-py/.sunodo
-drawing-py/dapp/protobuf_models/__pycache__/
+
+drawing-rollups-py/dapp/.venv
