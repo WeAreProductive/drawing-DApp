@@ -1,4 +1,3 @@
-import sys
 from os import environ
 import logging
 import zlib
@@ -8,16 +7,13 @@ import traceback
 import json
 import sqlite3
 from datetime import datetime, timezone 
-from lib.utils import clean_header, binary2hex, decompress, str2hex
-from lib.sqlite import init_sqlite_database
+from lib.utils import clean_header, binary2hex, decompress, str2hex 
 
 
 # @TODO move helper functions in utils file/folder
 # document functions in python
 # @TODO move api - post, get request functions in rollups-api file/folder
 # @TODO revise and remove obsolete variables and function declarations
-
-print(sys.path)
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -26,8 +22,8 @@ rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
 logger.info(f"HTTP rollup_server url is {rollup_server}")
 
 # connects to internal database
-con = sqlite3.connect("../drawing.db")
-init_sqlite_database('../drawing.db')
+con = sqlite3.connect("drawing.db")
+
 ## 
 # Api functions
 

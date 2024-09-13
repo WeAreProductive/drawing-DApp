@@ -1,10 +1,12 @@
 import sqlite3 
 
-def init_sqlite_database(filename):
+db_filename = 'drawing.db'
+
+def init_sqlite_database():
     """ create a database connection to an SQLite database """
     conn = None
     try:
-        conn = sqlite3.connect(filename)
+        conn = sqlite3.connect(db_filename)
         cursor = conn.cursor()
 
         cursor.execute(
@@ -25,6 +27,5 @@ def init_sqlite_database(filename):
         if conn:
             conn.close()
 
-
-# if __name__ == '__main__':
-#     init_sqlite_database("drawing.db") 
+if __name__ == "__main__":
+    init_sqlite_database()
