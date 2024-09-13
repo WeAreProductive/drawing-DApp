@@ -60,7 +60,7 @@ const Voucher = ({ voucherData }: VoucherProp) => {
       setVoucher(voucherResult.data.voucher);
     }
   }, [voucherResult, contracts]);
-
+  console.log(voucherToExecute?.events);
   return (
     <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
       {voucherData.drawing && (

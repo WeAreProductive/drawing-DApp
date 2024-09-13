@@ -1,19 +1,15 @@
-import base64
 from os import environ
-import sys
 import logging
 import zlib
 import requests
 from eth_abi import encode
 import traceback
 import json
-from datetime import datetime, timezone
-import numpy as np
+from datetime import datetime, timezone 
 
 # # @TODO
 # 1 - check the dApp is bulding
 # 2 - check is working on host mode - 
-# ------- emits notices
 # ------- emits vouchers
 # 3 - check is working on prod mode - 
 # ------- emits notices

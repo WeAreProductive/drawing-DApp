@@ -5,6 +5,7 @@ import { useVouchersQuery } from "../../generated/graphql";
 import { MINT_SELECTOR } from "../../shared/constants";
 import { VoucherExtended, DataNoticeEdge } from "../../shared/types";
 import Voucher from "./Voucher";
+import pako from "pako";
 
 const VouchersList = () => {
   const [connectedWallet] = useWallets();
@@ -87,21 +88,28 @@ const VouchersList = () => {
 
         const drawings = notices.edges.map(({ node }: DataNoticeEdge) => {
           let payload = node?.payload;
+          let compressedData;
           let drawingData;
           if (payload) {
             try {
-              payload = ethers.utils.toUtf8String(payload);
+              compressedData = ethers.utils.arrayify(payload);
             } catch (e) {
               payload = payload;
             }
           } else {
             payload = "(empty)";
           }
-          try {
-            drawingData = JSON.parse(payload);
-            return drawingData;
-          } catch (e) {
-            console.log(e);
+          if (compressedData) {
+            try {
+              // drawingData = JSON.parse(payload);
+              // return drawingData;
+              const drawingData = pako.inflate(compressedData, {
+                to: "string",
+              });
+              return JSON.parse(drawingData);
+            } catch (e) {
+              console.log(e);
+            }
           }
         });
 
