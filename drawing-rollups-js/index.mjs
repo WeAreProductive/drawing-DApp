@@ -138,6 +138,8 @@ const store_drawing_data = async (sender, uuid, drawing_input, cmd) => {
   console.log(sqliteResult);
 };
 
+// @TODO - move sqlite in lib
+// validate data is in the required shape
 /**
  * Handle advance request
  * @param {Object} data
@@ -156,7 +158,7 @@ async function handle_advance(data) {
     action: "action",
     drawing_objects: "drawing_objects",
   };
-  const sqliteResult = insertDrawing(sqlData);
+  const sqliteResult = await insertDrawing(sqlData);
   console.log(sqliteResult);
   // try {
   //   payload = data.payload;
