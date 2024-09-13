@@ -13,10 +13,13 @@ This DApp's back-end is written in Python, so to run it in your machine you need
 Then in order to start the back-end, run the following commands in a dedicated terminal:
 
 ```shell
+
+python3 ./sqlite.py
+
 cd dapp
 python3 -m venv .venv
 . .venv/bin/activate
-pip install -r requirements-host.txt
+pip install -r requirements.txt
 ROLLUP_HTTP_SERVER_URL="http://localhost:8080/host-runner" python3 drawing.py
 ```
 

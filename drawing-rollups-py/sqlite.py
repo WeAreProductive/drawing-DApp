@@ -11,7 +11,8 @@ def init_sqlite_database(filename):
             """
             CREATE TABLE IF NOT EXISTS drawing (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                owner TEXT NOT NULL,
+                uuid TEXT NOT NULL UNIQUE,
+                owner TEXT NOT NULL
             )
             """
         )
