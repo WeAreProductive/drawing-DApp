@@ -8,6 +8,4 @@ TODO.md
 
 drawing-rollups-py/dapp/.venv
 drawing-rollups-py/.cartesi 
-drawing-rollups-py/dapp/lib/__pycache__/
-drawing-rollups-py/dapp/lib/__pycache__/sqlite.cpython-310.pyc
-drawing-rollups-py/dapp/lib/__pycache__/utils.cpython-310.pyc
+drawing-rollups-py/dapp/lib/__pycache__
