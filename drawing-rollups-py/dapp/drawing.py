@@ -7,12 +7,12 @@ import traceback
 import json
 import sqlite3
 from datetime import datetime, timezone 
+from lib.rollups_api import send_notice, send_voucher, send_report, send_exception, send_post
 from lib.utils import clean_header, binary2hex, decompress, str2hex 
+from lib.db import store_data, get_data
 
 
-# @TODO move helper functions in utils file/folder
-# document functions in python
-# @TODO move api - post, get request functions in rollups-api file/folder
+# @TODO document functions python way
 # @TODO revise and remove obsolete variables and function declarations
 
 logging.basicConfig(level="INFO")
@@ -23,25 +23,6 @@ logger.info(f"HTTP rollup_server url is {rollup_server}")
 
 # connects to internal database
 con = sqlite3.connect("drawing.db")
-
-## 
-# Api functions
-
-def send_voucher(voucher):
-    send_post("voucher",voucher)
-
-def send_notice(notice):
-    send_post("notice",notice)
-
-def send_report(report):
-    send_post("report",report)
-
-def send_exception(exception):
-    send_post("exception",exception)
-
-def send_post(endpoint,json_data):
-    response = requests.post(rollup_server + f"/{endpoint}", json=json_data)
-    logger.info(f"/{endpoint}: Received response status {response.status_code} body {response.content}")
 
 
 ##
@@ -145,35 +126,7 @@ def store_drawing_data(
 
     notice = {"payload": payload}
     send_notice(notice)
-
-     # retrieves a cursor to the internal database
-    try:
-        cur = con.cursor()
-    except Exception as e:
-        # critical error if database is no longer accessible: DApp can no longer proceed
-        msg = f"Critical error connecting to database: {e}"
-        logger.info(f"{msg}") 
-    
-    try:
-            # attempts to execute the statement and fetch any results
-            
-            cur.execute(
-                """
-                INSERT INTO drawing(uuid, owner)
-                VALUES (?, ?)
-                """,
-                (uuid, sender),
-            )
-
-            con.commit()
-
-            id = cursor.lastrowid
-            logger.info(f"Last row id {id}") 
-
-
-    except Exception as e: 
-        msg = f"Error executing insert statement: {e}" 
-  
+    store_data(drawing_input) #@TODO query_args
 
 
 ###
@@ -247,17 +200,8 @@ while True:
     logger.info("Sending finish")
     response = requests.post(rollup_server + "/finish", json=finish)
     logger.info(f"Received finish status {response.status_code}")
-
-    cursor = con.cursor()
-    cursor.execute(
-        """
-        SELECT * FROM drawing
-        """,
-        (),
-    )
-
-    rows = cursor.fetchall()
-    logger.info(f"Received finish status {rows}")
+    #@TODO remove from here ...
+    get_data('all')
 
     if response.status_code == 202:
         logger.info("No pending rollup request, trying again")
