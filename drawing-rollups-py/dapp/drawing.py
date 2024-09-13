@@ -1,3 +1,4 @@
+import sys
 from os import environ
 import logging
 import zlib
@@ -5,21 +6,18 @@ import requests
 from eth_abi import encode
 import traceback
 import json
+import sqlite3
 from datetime import datetime, timezone 
+from lib.utils import clean_header, binary2hex, decompress, str2hex
+from lib.sqlite import init_sqlite_database
 
-# # @TODO
-# 1 - check the dApp is bulding
-# 2 - check is working on host mode - 
-# ------- emits vouchers
-# 3 - check is working on prod mode - 
-# ------- emits notices
-# ------- emits vouchers
-# ------- minting
 
 # @TODO move helper functions in utils file/folder
 # document functions in python
 # @TODO move api - post, get request functions in rollups-api file/folder
 # @TODO revise and remove obsolete variables and function declarations
+
+print(sys.path)
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -27,57 +25,9 @@ logger = logging.getLogger(__name__)
 rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
 logger.info(f"HTTP rollup_server url is {rollup_server}")
 
-##
-# Helper Functions 
-
-def str2hex(string):
-    """
-    Encode a string as a hex string
-    """
-    return binary2hex(str2binary(string))
-
-def str2binary(string):
-    """
-    Encode a string as a binary string
-    """
-    return string.encode("utf-8")
-
-def binary2hex(binary):
-    """
-    Encode a binary as a hex string
-    """
-    return "0x" + binary.hex()
-
-
-def hex2binary(hexstr):
-    """
-    Decodes a hex string into a regular byte string
-    """
-    return bytes.fromhex(hexstr[2:])
-
-def hex2str(hexstr):
-    """
-    Decodes a hex string into a regular string
-    """
-    return hex2binary(hexstr).decode("utf-8")
-
-def decompress(hexstr): 
-    """
-    Decodes a hex string into a bytearray
-    The bytearray is compressed data
-    """
-    bytearray_data = bytearray.fromhex(hexstr[2:])
-    decompressed = zlib.decompress(bytearray_data)
-
-    return decompressed
-
-def clean_header(mint_header):
-    if mint_header[:2] == "0x":
-        mint_header = mint_header[2:]
-    mint_header = bytes.fromhex(mint_header)
-    return mint_header
-
-
+# connects to internal database
+con = sqlite3.connect("../drawing.db")
+init_sqlite_database('../drawing.db')
 ## 
 # Api functions
 
@@ -200,6 +150,36 @@ def store_drawing_data(
     notice = {"payload": payload}
     send_notice(notice)
 
+     # retrieves a cursor to the internal database
+    try:
+        cur = con.cursor()
+    except Exception as e:
+        # critical error if database is no longer accessible: DApp can no longer proceed
+        msg = f"Critical error connecting to database: {e}"
+        logger.info(f"{msg}") 
+    
+    try:
+            # attempts to execute the statement and fetch any results
+            
+            cur.execute(
+                """
+                INSERT INTO drawing(uuid, owner)
+                VALUES (?, ?)
+                """,
+                (uuid, sender),
+            )
+
+            con.commit()
+
+            id = cursor.lastrowid
+            logger.info(f"Last row id {id}") 
+
+
+    except Exception as e: 
+        msg = f"Error executing insert statement: {e}" 
+  
+
+
 ###
 # handlers
 
@@ -271,6 +251,18 @@ while True:
     logger.info("Sending finish")
     response = requests.post(rollup_server + "/finish", json=finish)
     logger.info(f"Received finish status {response.status_code}")
+
+    cursor = con.cursor()
+    cursor.execute(
+        """
+        SELECT * FROM drawing
+        """,
+        (),
+    )
+
+    rows = cursor.fetchall()
+    logger.info(f"Received finish status {rows}")
+
     if response.status_code == 202:
         logger.info("No pending rollup request, trying again")
     else:

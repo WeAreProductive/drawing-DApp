@@ -26,5 +26,5 @@ def init_sqlite_database(filename):
             conn.close()
 
 
-if __name__ == '__main__':
-    init_sqlite_database("drawing.db") 
+# if __name__ == '__main__':
+#     init_sqlite_database("drawing.db") 
