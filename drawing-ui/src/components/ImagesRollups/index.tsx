@@ -25,7 +25,7 @@ const ImagesListRollups = () => {
     pause: true,
   });
   const { data, error } = result;
-  inspectCall("test");
+  inspectCall("all");
   // useEffect(() => {
   //   if (result.fetching) return;
   //   // Set up to refetch in one second, if the query is idle

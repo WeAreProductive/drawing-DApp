@@ -37,8 +37,8 @@ export const useInspect = () => {
    */
   const inspectCall = async (queryStr: string) => {
     if (!inspectUrl) return;
-    console.log(`Network inspect url: ${inspectUrl}`);
-    const response = await fetch(inspectUrl);
+    console.log(`Network inspect url: ${inspectUrl}/all`);
+    const response = await fetch(`${inspectUrl}all`);
     if (response.status == 200) {
       const result = await response.json();
       console.log(result);

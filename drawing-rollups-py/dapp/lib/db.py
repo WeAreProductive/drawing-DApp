@@ -10,8 +10,8 @@ logger = logging.getLogger(__name__)
 
 db_filename = '../drawing.db' #@TODO check Docker statements for creating db
 
-def get_data():
-    print(type)
+def get_data(query_args):
+    print(query_args)
     # prepare statement
     # execute statement
     """ create a database connection to an SQLite database """
@@ -28,8 +28,9 @@ def get_data():
       )
 
       rows = cursor.fetchall()
-
-      logger.info(f"Drawings table data {rows}")
+      #@TODO handle data based on type
+      return json.dumps(rows)
+      # logger.info(f"Drawings table data {rows}")
 
     except Exception as e: 
       msg = f"Error executing insert statement: {e}" 

@@ -8,7 +8,7 @@ import json
 import sqlite3
 from datetime import datetime, timezone 
 from lib.rollups_api import send_notice, send_voucher, send_report, send_exception, send_post
-from lib.utils import clean_header, binary2hex, decompress, str2hex 
+from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str 
 from lib.db import store_data, get_data
 
 
@@ -179,13 +179,18 @@ def handle_advance(data):
     return status
 
 def handle_inspect(request):
-    # data = request["data"]
-    logger.info(f"Received inspect request data 'Testing INSPECT")
-     #@TODO remove from here ...
-    get_data()
+    # payload = hex2(getKeySafe(data, "payload", ""))
+    # # data = request["data"]
+    logger.info(f"Received inspect request data {request}")
+   
+    #  #@TODO - all query args?
+    query_args = hex2str(request['payload'])
+    data = get_data(query_args)
     # logger.info("Adding report")
     # report = {"payload": data["payload"]}
-    # send_report(report)
+    # send_report(report) 
+    response = requests.post(rollup_server + "/report", json={"payload": str2hex(data)}) 
+    logger.info(f"Received report status {response.status_code}")
     return "accept"
 
 handlers = {
