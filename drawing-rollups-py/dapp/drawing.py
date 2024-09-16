@@ -179,11 +179,13 @@ def handle_advance(data):
     return status
 
 def handle_inspect(request):
-    data = request["data"]
-    logger.info(f"Received inspect request data ")
-    logger.info("Adding report")
-    report = {"payload": data["payload"]}
-    send_report(report)
+    # data = request["data"]
+    logger.info(f"Received inspect request data 'Testing INSPECT")
+     #@TODO remove from here ...
+    get_data()
+    # logger.info("Adding report")
+    # report = {"payload": data["payload"]}
+    # send_report(report)
     return "accept"
 
 handlers = {
@@ -198,9 +200,7 @@ while True:
     logger.info("Sending finish")
     response = requests.post(rollup_server + "/finish", json=finish)
     logger.info(f"Received finish status {response.status_code}")
-    #@TODO remove from here ...
-    get_data()
-
+   
     if response.status_code == 202:
         logger.info("No pending rollup request, trying again")
     else:

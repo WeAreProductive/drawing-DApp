@@ -29,7 +29,7 @@ def get_data():
 
       rows = cursor.fetchall()
 
-      logger.info(f"Received finish status {rows}")
+      logger.info(f"Drawings table data {rows}")
 
     except Exception as e: 
       msg = f"Error executing insert statement: {e}" 
@@ -41,9 +41,9 @@ def get_data():
     
 def store_data(query_args): 
   conn = None
-  for key, value in query_args.items() :
-    print(key)
-    print(value)
+  # for key, value in query_args.items() :
+  #   print(key)
+  #   print(value)
 
   uuid = query_args['uuid']
   dimensions = json.dumps(query_args['dimensions'])

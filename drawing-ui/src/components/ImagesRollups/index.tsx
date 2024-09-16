@@ -7,9 +7,11 @@ import DrawingsList from "./DrawingsList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { ScrollArea } from "../ui/scroll-area";
 import pako from "pako";
+import { useInspect } from "../../hooks/useInspect";
 
 const ImagesListRollups = () => {
   const [connectedWallet] = useWallets();
+  const { inspectCall } = useInspect();
   const account = connectedWallet.accounts[0].address;
   const [myDrawings, setMyDrawings] = useState<DrawingInputExtended[] | null>(
     null,
@@ -23,21 +25,21 @@ const ImagesListRollups = () => {
     pause: true,
   });
   const { data, error } = result;
-
-  useEffect(() => {
-    if (result.fetching) return;
-    // Set up to refetch in one second, if the query is idle
-    //Retrieve notices every 1000 ms
-    const timerId = setTimeout(() => {
-      reexecuteQuery({ requestPolicy: "network-only" });
-    }, 1000);
-    const length = data?.notices?.edges?.length;
-    if (length) {
-      // Update cursor so that next GraphQL poll retrieves only newer data
-      setCursor(data.notices.pageInfo.endCursor);
-    }
-    return () => clearTimeout(timerId);
-  }, [result.fetching, reexecuteQuery]);
+  inspectCall("test");
+  // useEffect(() => {
+  //   if (result.fetching) return;
+  //   // Set up to refetch in one second, if the query is idle
+  //   //Retrieve notices every 1000 ms
+  //   const timerId = setTimeout(() => {
+  //     reexecuteQuery({ requestPolicy: "network-only" });
+  //   }, 1000);
+  //   const length = data?.notices?.edges?.length;
+  //   if (length) {
+  //     // Update cursor so that next GraphQL poll retrieves only newer data
+  //     setCursor(data.notices.pageInfo.endCursor);
+  //   }
+  //   return () => clearTimeout(timerId);
+  // }, [result.fetching, reexecuteQuery]);
 
   useEffect(() => {
     const newDrawings = data?.notices.edges.map(({ node }: DataNoticeEdge) => {

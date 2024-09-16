@@ -24,7 +24,7 @@ def init_sqlite_database():
         )
 
         conn.commit()
-        print(sqlite3.sqlite_version)
+        print('Database created successfully!')
     except sqlite3.Error as e:
         print(e)
     finally:
