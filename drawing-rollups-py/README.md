@@ -38,5 +38,7 @@ Keep in mind that vouchers cannot be executed when the dApp is running in a deve
 
 # inspect requests - endpoints and response
 
-/drawings/all - returns all drawings data grouped by uuid
-/drawings/all/owner/{address}
+/drawings/all - returns all drawings grouped by uuid with pagination
+
+/drawings/owner/{address} - returns all drawings for a given address grouped by uuid with pagination
+drawing/{uuid} - returns single drawing data for the given uuid

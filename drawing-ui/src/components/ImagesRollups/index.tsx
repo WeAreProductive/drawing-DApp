@@ -25,7 +25,12 @@ const ImagesListRollups = () => {
     pause: true,
   });
   const { data, error } = result;
-  inspectCall("all");
+  // drawings/owner/{address}
+
+  // inspectCall(`drawings`);
+  // inspectCall(`drawings/page/${2}`);
+  // inspectCall(`drawings/owner/${account}`);
+  inspectCall(`drawing/uuid/${account}/owner/${account}`);
   useEffect(() => {
     if (result.fetching) return;
     // Set up to refetch in one second, if the query is idle

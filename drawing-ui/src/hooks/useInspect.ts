@@ -38,16 +38,15 @@ export const useInspect = () => {
    */
   const inspectCall = async (queryStr: string) => {
     if (!inspectUrl) return;
-    console.log(`Network inspect url: ${inspectUrl}/all`);
-    const response = await fetch(`${inspectUrl}all`);
+    console.log(`Network inspect url: ${inspectUrl}${queryStr}`);
+    const response = await fetch(`${inspectUrl}${queryStr}`);
     if (response.status == 200) {
       const result = await response.json();
-      console.log(result);
       for (const i in result.reports) {
         let output = result.reports[i].payload;
         try {
           output = ethers.utils.toUtf8String(output);
-          console.log(output);
+          console.log(JSON.parse(output));
           return JSON.parse(output);
         } catch (e) {
           // cannot decode hex payload as a UTF-8 string
