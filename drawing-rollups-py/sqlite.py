@@ -11,10 +11,14 @@ def init_sqlite_database():
 
         cursor.execute(
             """
-            CREATE TABLE IF NOT EXISTS drawing (
+            CREATE TABLE IF NOT EXISTS drawings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uuid TEXT NOT NULL UNIQUE,
-                owner TEXT NOT NULL
+                dimensions TEXT NOT NULL,
+                date_created TEXT NOT NULL,
+                owner TEXT NOT NULL,
+                action TEXT NOT NULL,
+                drawing_objects TEXT NOT NULL
             )
             """
         )
