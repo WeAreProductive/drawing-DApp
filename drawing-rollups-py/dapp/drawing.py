@@ -105,7 +105,8 @@ def store_drawing_data(
         drawing_input["date_created"]= now 
         drawing_input["last_updated"] = now
         drawing_input["update_log"] = []
-        drawing_input["update_log"].append(new_log_item) 
+        drawing_input["update_log"].append(new_log_item)
+        drawing_input['log'] = [] 
         if cmd == 'cv':
             drawing_input['voucher_requested'] = True
         else:

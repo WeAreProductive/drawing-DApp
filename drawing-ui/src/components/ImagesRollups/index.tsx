@@ -26,20 +26,20 @@ const ImagesListRollups = () => {
   });
   const { data, error } = result;
   inspectCall("all");
-  // useEffect(() => {
-  //   if (result.fetching) return;
-  //   // Set up to refetch in one second, if the query is idle
-  //   //Retrieve notices every 1000 ms
-  //   const timerId = setTimeout(() => {
-  //     reexecuteQuery({ requestPolicy: "network-only" });
-  //   }, 1000);
-  //   const length = data?.notices?.edges?.length;
-  //   if (length) {
-  //     // Update cursor so that next GraphQL poll retrieves only newer data
-  //     setCursor(data.notices.pageInfo.endCursor);
-  //   }
-  //   return () => clearTimeout(timerId);
-  // }, [result.fetching, reexecuteQuery]);
+  useEffect(() => {
+    if (result.fetching) return;
+    // Set up to refetch in one second, if the query is idle
+    //Retrieve notices every 1000 ms
+    const timerId = setTimeout(() => {
+      reexecuteQuery({ requestPolicy: "network-only" });
+    }, 1000);
+    const length = data?.notices?.edges?.length;
+    if (length) {
+      // Update cursor so that next GraphQL poll retrieves only newer data
+      setCursor(data.notices.pageInfo.endCursor);
+    }
+    return () => clearTimeout(timerId);
+  }, [result.fetching, reexecuteQuery]);
 
   useEffect(() => {
     const newDrawings = data?.notices.edges.map(({ node }: DataNoticeEdge) => {

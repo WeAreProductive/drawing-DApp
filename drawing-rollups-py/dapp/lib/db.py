@@ -1,6 +1,7 @@
 import sqlite3 
 import logging
 import json
+import time
 
 # @TODO document functions python way
 # @TODO revise and remove obsolete variables and function declarations
@@ -39,14 +40,9 @@ def get_data(query_args):
     finally:
       if conn:
         conn.close()
-    
-def store_data(query_args): 
-  conn = None
-  # for key, value in query_args.items() :
-  #   print(key)
-  #   print(value)
 
-  uuid = query_args['uuid']
+def insert_drawing_data(query_args):
+  uuid = query_args['uuid'] 
   dimensions = json.dumps(query_args['dimensions'])
   update_log = query_args['update_log']
   date_created = update_log[0]['date_updated'] #@TODO change last_updated to date_created
@@ -54,22 +50,23 @@ def store_data(query_args):
   action = update_log[0]['action']
   drawing_objects = json.dumps(update_log[0]['drawing_objects']) 
 
+
   try:
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor()
-    
+    json_log = json.dumps(query_args['log'])
     cursor.execute(
         """
-        INSERT INTO drawings(uuid, dimensions, date_created, owner, action, drawing_objects)
-        VALUES (?, ?, ?, ?, ?, ?)
+        INSERT INTO drawings(uuid, dimensions, date_created, owner, action, drawing_objects, log)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
-        (uuid, dimensions, date_created, owner, action, drawing_objects),
+        (uuid, dimensions, date_created, owner, action, drawing_objects, json_log),
     )
 
     conn.commit()
 
     id = cursor.lastrowid
-    logger.info(f"Last row id {id}") 
+    return id
 
   except Exception as e: 
     msg = f"Error executing insert statement: {e}" 
@@ -77,3 +74,45 @@ def store_data(query_args):
   finally:
     if conn:
       conn.close()
+
+def store_data(query_args): 
+  conn = None
+  # for key, value in query_args.items() :
+  #   print(key)
+  #   print(value)
+  id = insert_drawing_data(query_args)
+  
+  if id : 
+    log = query_args['log']
+    log.append(id) 
+
+    try:
+
+      conn = sqlite3.connect(db_filename)
+      cursor = conn.cursor()
+      json_log = json.dumps(log)
+      cursor.execute(
+          
+        """
+        UPDATE drawings
+        SET log = ?
+        WHERE id = ?
+        """,
+        (json_log, id),
+    
+      )
+
+      conn.commit()
+
+      id = cursor.lastrowid
+      return id
+
+    except Exception as e: 
+      msg = f"Error executing insert statement: {e}" 
+      logger.info(f"{msg}")
+    finally:
+      if conn:
+        conn.close()
+   
+  
+

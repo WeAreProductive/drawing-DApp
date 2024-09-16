@@ -35,3 +35,8 @@ INFO:**main**:Sending finish
 After that, you can interact with the application normally as explained in the README.md in the project's root directory.
 
 Keep in mind that vouchers cannot be executed when the dApp is running in a development mode.
+
+# inspect requests - endpoints and response
+
+/drawings/all - returns all drawings data grouped by uuid
+/drawings/all/owner/{address}
