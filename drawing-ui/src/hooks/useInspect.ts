@@ -4,6 +4,7 @@ import { Network } from "../shared/types";
 
 import configFile from "../config/config.json";
 import { useMemo } from "react";
+import { ethers } from "ethers";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -42,16 +43,17 @@ export const useInspect = () => {
     if (response.status == 200) {
       const result = await response.json();
       console.log(result);
-      // for (const i in result.reports) {
-      //   let output = result.reports[i].payload;
-      //   try {
-      //     output = ethers.utils.toUtf8String(output);
-      //     return JSON.parse(output);
-      //   } catch (e) {
-      //     // cannot decode hex payload as a UTF-8 string
-      //     console.log(e);
-      //   }
-      // }
+      for (const i in result.reports) {
+        let output = result.reports[i].payload;
+        try {
+          output = ethers.utils.toUtf8String(output);
+          console.log(output);
+          return JSON.parse(output);
+        } catch (e) {
+          // cannot decode hex payload as a UTF-8 string
+          console.log(e);
+        }
+      }
     } else {
       const errMessage = JSON.stringify(await response.text());
       console.log(errMessage);
