@@ -118,15 +118,13 @@ def store_drawing_data(
         if cmd == 'uv':
             drawing_input['voucher_requested'] = True 
     
-    compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8"))
-    logger.info(f"Compressed payload {compressed}") 
+    compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
     # uint8array to hex
-    payload = binary2hex(compressed)
-    logger.info(f"Hexed {payload}") 
+    payload = binary2hex(compressed) 
 
     notice = {"payload": payload}
     send_notice(notice)
-    store_data(drawing_input) #@TODO query_args
+    store_data(drawing_input) 
 
 
 ###
@@ -201,7 +199,7 @@ while True:
     response = requests.post(rollup_server + "/finish", json=finish)
     logger.info(f"Received finish status {response.status_code}")
     #@TODO remove from here ...
-    get_data('all')
+    get_data()
 
     if response.status_code == 202:
         logger.info("No pending rollup request, trying again")
