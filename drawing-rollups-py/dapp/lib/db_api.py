@@ -157,14 +157,6 @@ def get_drawing_by_ids(log):
     drawing_slices.append(row[6])
   return drawing_slices
 
-  # available endpoints 
-  # array of drawings response
-  # /drawings (page=1) query_args: [drawings]
-  # /drawings/page/33 (page=33) query_args: [drawings, page, 33]
-  # /drawings/owner/{address} (page=1) query_args: [drawings, owner, {address}]
-  # /drawings/owner/{address}/page/33 (page=33) query_args: [drawings, owner, {address}, page, 33]
-  # single drawing response
-  # /drawing/uuid/{uuid}/owner/{address} query_args: [drawing, uuid, {uuid}, owner, {address}]
 def get_data(query_str):
     query_args = query_str.split('/')  
 
