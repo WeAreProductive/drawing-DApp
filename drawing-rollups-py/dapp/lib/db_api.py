@@ -203,11 +203,16 @@ def insert_drawing_data(query_args):
   action = query_args['action']
   dimensions = json.dumps(query_args['dimensions']) 
   drawing_objects = json.dumps(query_args['drawing_objects'])   
-
+  # logger.info(f"{query_args}")
   try:
+    logger.info(f"{query_args['log']}")
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor()
-    json_log = json.dumps(query_args['log']) #string
+    log = query_args['log'] #string 
+    json_log = json.dumps(log)
+    logger.info(f"json_log {json_log}")
+    # else:
+      # json_log = log
     cursor.execute(
         """
         INSERT INTO drawings(uuid, dimensions, date_created, owner, action, drawing_objects, log)
@@ -230,43 +235,48 @@ def insert_drawing_data(query_args):
 
 def store_data(query_args): 
   conn = None
-  for key, value in query_args.items() :
-    print(key)
-    print(value)
+  # for key, value in query_args.items() :
+  #   print(key)
+  #   print(value)
   id = insert_drawing_data(query_args)
   
-  if id : 
-    log = json.loads(query_args['log'])
-    log.append(id)
-    json_log = json.dumps(log)
-    logger.info(f"log: {json_log}")
-    try:
-
-      conn = sqlite3.connect(db_filename)
-      cursor = conn.cursor()
-      
-      cursor.execute(
-          
-        """
-        UPDATE drawings
-        SET log = ?
-        WHERE id = ?
-        """,
-        (json_log, id),
+  # if id : 
+  #   log = query_args['log']
+  #   if log:
+  #     drawing_log = json.load(log)
+  #   else:
+  #     drawing_log = []
     
-      )
+  #   drawing_log.append(id)
+  #   json_log = json.dumps(drawing_log)
+  #   logger.info(f"log: {json_log}")
+  #   try:
 
-      conn.commit()
+  #     conn = sqlite3.connect(db_filename)
+  #     cursor = conn.cursor()
+      
+  #     cursor.execute(
+          
+  #       """
+  #       UPDATE drawings
+  #       SET log = ?
+  #       WHERE id = ?
+  #       """,
+  #       (json_log, id),
+    
+  #     )
 
-      id = cursor.lastrowid
-      return id
+  #     conn.commit()
 
-    except Exception as e: 
-      msg = f"Error executing insert statement: {e}" 
-      logger.info(f"{msg}")
-    finally:
-      if conn:
-        conn.close()
+  #     id = cursor.lastrowid
+  #     return id
+
+  #   except Exception as e: 
+  #     msg = f"Error executing insert statement: {e}" 
+  #     logger.info(f"{msg}")
+  #   finally:
+  #     if conn:
+  #       conn.close()
    
   
 

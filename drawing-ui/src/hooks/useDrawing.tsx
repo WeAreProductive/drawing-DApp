@@ -12,6 +12,7 @@ const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
   const { currentDrawingData, dappState, canvas } = useCanvasContext();
+  console.log(currentDrawingData);
   const getNoticeInput = (canvasData: any, uuid: string): string => {
     const canvasDimensions = {
       width: canvas?.width || 0,
@@ -19,29 +20,23 @@ export const useDrawing = () => {
     };
     // prepare drawing data notice input
     let drawingNoticePayload: DrawingInput | DrawingInputExtended;
+    const cmd =
+      dappState == DAPP_STATE.drawingUpdate
+        ? COMMANDS.updateAndStore.cmd
+        : COMMANDS.createAndStore.cmd;
+    const log = currentDrawingData ? currentDrawingData.log : [];
+    drawingNoticePayload = {
+      // ...currentDrawingData,
+      drawing: JSON.stringify(canvasData), // FE updates the svg string
+      dimensions: canvasDimensions,
+    };
 
-    if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
-      drawingNoticePayload = {
-        ...currentDrawingData,
-        drawing: JSON.stringify(canvasData), // FE updates the svg string
-        dimensions: canvasDimensions,
-      };
-      return JSON.stringify({
-        drawing_input: drawingNoticePayload,
-        uuid: uuid,
-        cmd: COMMANDS.updateAndStore.cmd, // BE will be notified to emit a notice
-      });
-    } else {
-      drawingNoticePayload = {
-        drawing: JSON.stringify(canvasData), // FE is responsible for the svg string only
-        dimensions: canvasDimensions,
-      };
-      return JSON.stringify({
-        drawing_input: drawingNoticePayload, // data to save in a notice
-        uuid: uuid,
-        cmd: COMMANDS.createAndStore.cmd, // BE will be notified to emit a notice
-      });
-    }
+    return JSON.stringify({
+      drawing_input: drawingNoticePayload,
+      log,
+      uuid,
+      cmd, // BE will be notified to emit a notice
+    });
   };
 
   const getVoucherInput = (

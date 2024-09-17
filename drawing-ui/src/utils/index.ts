@@ -33,12 +33,12 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const validateInputSize = (
-  currentDrawingData: DrawingInputExtended | null,
+  // currentDrawingData: DrawingInputExtended | null,
   strInput: string,
   isActiveDrawing: boolean = false,
 ) => {
   const drawingNoticePayload = {
-    ...currentDrawingData,
+    // ...currentDrawingData,
     drawing: strInput, // FE updates the svg string
   };
   const compressed = pako.deflate(JSON.stringify(drawingNoticePayload));

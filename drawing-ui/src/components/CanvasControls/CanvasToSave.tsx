@@ -46,18 +46,17 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     setLoading(true);
     setDappState(DAPP_STATE.canvasSave);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
+    // !!!! extracts the !!! currents session !!!! drawing objects using the old and current drawing data
     const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
       canvasContent.objects,
-    ); // extracts the currents session drawing objects using the old and current drawing data
+    );
     let canvasData = {
       content: currentDrawingLayerObjects,
     };
+
     // validate before sending the tx
-    const result = validateInputSize(
-      currentDrawingData,
-      JSON.stringify(canvasData),
-    );
+    const result = validateInputSize(JSON.stringify(canvasData));
     if (!result.isValid) {
       toast.error(result.info.message, {
         description: result.info.description,
