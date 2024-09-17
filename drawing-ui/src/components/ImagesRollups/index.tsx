@@ -1,5 +1,3 @@
-import { ethers } from "ethers";
-import { useGetNoticesQuery } from "../../generated/graphql";
 import { useWallets } from "@web3-onboard/react";
 import { useEffect, useState } from "react";
 import { DrawingInputExtended, DataNoticeEdge } from "../../shared/types";
@@ -10,24 +8,24 @@ import pako from "pako";
 import { useInspect } from "../../hooks/useInspect";
 
 const ImagesListRollups = () => {
-  const [connectedWallet] = useWallets();
-  const { inspectCall } = useInspect();
-  const account = connectedWallet.accounts[0].address;
-  const [myDrawings, setMyDrawings] = useState<DrawingInputExtended[] | null>(
-    null,
-  );
-  const [noticeDrawings, setNoticeDrawings] = useState<
-    DrawingInputExtended[] | null
-  >(null);
+  // const [connectedWallet] = useWallets();
+  // const { inspectCall } = useInspect();
+  // const account = connectedWallet.accounts[0].address;
+  // const [myDrawings, setMyDrawings] = useState<DrawingInputExtended[] | null>(
+  //   null,
+  // );
+  // const [noticeDrawings, setNoticeDrawings] = useState<
+  //   DrawingInputExtended[] | null
+  // >(null);
 
-  const initDrawingsData = async () => {
-    const data = await inspectCall("drawings");
-    setNoticeDrawings(data);
-  };
+  // const initDrawingsData = async () => {
+  //   const data = await inspectCall("drawings");
+  //   setNoticeDrawings(data);
+  // };
 
-  useEffect(() => {
-    initDrawingsData();
-  }, []);
+  // useEffect(() => {
+  //   initDrawingsData();
+  // }, []);
 
   return (
     <div className="flex">
@@ -38,12 +36,12 @@ const ImagesListRollups = () => {
         </TabsList>
         <TabsContent value="account" className="flex">
           <ScrollArea className="max-h-[calc(100svh-var(--header-height)-120px)]">
-            <DrawingsList drawings={myDrawings} />
+            <DrawingsList drawingsType="user" />
           </ScrollArea>
         </TabsContent>
         <TabsContent value="password" className="flex">
           <ScrollArea className="max-h-[calc(100svh-var(--header-height)-120px)]">
-            <DrawingsList drawings={noticeDrawings} />
+            <DrawingsList drawingsType="all" />
           </ScrollArea>
         </TabsContent>
       </Tabs>

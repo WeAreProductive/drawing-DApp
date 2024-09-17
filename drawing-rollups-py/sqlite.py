@@ -19,7 +19,7 @@ def init_sqlite_database():
                 owner VARCHAR NOT NULL,
                 action VARCHAR NOT NULL,
                 drawing_objects TEXT NOT NULL,
-                log TEXT NOT NULL
+                log TEXT
             )
             """
         )

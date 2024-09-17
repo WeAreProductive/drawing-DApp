@@ -88,36 +88,22 @@ def store_drawing_data(
     
     parsed_drawing = json.loads(drawing)
     content = parsed_drawing['content']
-   
-    new_log_item = { 
-        "date_updated": now,
-        "painter": sender, # @TODO use owner
-        "action": cmd,
-        "drawing_objects": content # tracks the drawing layers (the canvas drawing objects of each drawing session)
-    } 
-
+    
+    drawing_input["uuid"]= uuid
+    drawing_input["owner"] = sender
+    drawing_input["date_created"] = now  
+    drawing_input["action"] = cmd  
+    drawing_input["drawing_objects"] = content
+    
     if cmd == 'cn' or cmd == 'cv':
-        # set drawing id wneh new drawing
-        # unix_timestamp = str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
-        # drawing_input["id"]= f"{sender}-{unix_timestamp}"
-        drawing_input["uuid"]= uuid
-        drawing_input["owner"] = sender
-        drawing_input["date_created"]= now 
-        drawing_input["last_updated"] = now
-        drawing_input["update_log"] = []
-        drawing_input["update_log"].append(new_log_item)
-        drawing_input['log'] = [] 
+        drawing_input['log'] = [] #init log
         if cmd == 'cv':
-            drawing_input['voucher_requested'] = True
+            drawing_input['voucher_requested'] = True # not in db
         else:
-            drawing_input['voucher_requested'] = False
-    elif cmd == 'un' or cmd == 'uv':
-        drawing_input["uuid"]= uuid
-        drawing_input["owner"] = sender
-        drawing_input["last_updated"] = now
-        drawing_input["update_log"].append(new_log_item)
+            drawing_input['voucher_requested'] = False # not in db
+    elif cmd == 'un' or cmd == 'uv': 
         if cmd == 'uv':
-            drawing_input['voucher_requested'] = True 
+            drawing_input['voucher_requested'] = True # not in db
     
     compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
     # uint8array to hex
