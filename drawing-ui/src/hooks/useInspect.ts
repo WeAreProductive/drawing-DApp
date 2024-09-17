@@ -5,6 +5,7 @@ import { Network } from "../shared/types";
 import configFile from "../config/config.json";
 import { useMemo } from "react";
 import { ethers } from "ethers";
+import pako from "pako";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -44,13 +45,35 @@ export const useInspect = () => {
       const result = await response.json();
       for (const i in result.reports) {
         let output = result.reports[i].payload;
-        try {
-          output = ethers.utils.toUtf8String(output);
-          console.log(JSON.parse(output));
-          return JSON.parse(output);
-        } catch (e) {
-          // cannot decode hex payload as a UTF-8 string
-          console.log(e);
+        let compressedData;
+        console.log(output);
+        // try {
+        //   // output = ethers.utils.toUtf8String(output);
+        //   // console.log(JSON.parse(output));
+        //   // return JSON.parse(output);
+        // } catch (e) {
+        //   // cannot decode hex payload as a UTF-8 string
+        //   console.log(e);
+        // }
+        if (output) {
+          try {
+            compressedData = ethers.utils.arrayify(output);
+          } catch (e) {
+            console.log(e);
+          }
+        } else {
+          output = "(empty)";
+        }
+        if (compressedData) {
+          try {
+            const drawingsData = pako.inflate(compressedData, {
+              to: "string",
+            });
+            console.log(drawingsData);
+            return JSON.parse(drawingsData);
+          } catch (e) {
+            console.log(e);
+          }
         }
       }
     } else {
