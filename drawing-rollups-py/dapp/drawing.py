@@ -187,8 +187,11 @@ def handle_inspect(request):
     # logger.info("Adding report")
     # report = {"payload": data["payload"]}
     # send_report(report) 
-    # response = requests.post(rollup_server + "/report", json={"payload": str2hex(data)}) 
-    # logger.info(f"Received report status {response.status_code}")
+    compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
+    # uint8array to hex
+    payload = binary2hex(compressed) 
+    response = requests.post(rollup_server + "/report", json={"payload": payload})  # @TODO use send report
+    logger.info(f"Received report status {response.status_code}")
     return "accept"
 
 handlers = {
