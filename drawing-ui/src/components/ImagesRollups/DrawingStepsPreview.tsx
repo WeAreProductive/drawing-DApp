@@ -11,9 +11,10 @@ const DrawingStepsPreview = ({
 }) => {
   return (
     <div className="drawing-steps">
-      {updateLog.map((element: UpdateLogItem, idx: Key | null | undefined) => {
+      {updateLog.map((element: any, idx: Key | null | undefined) => {
+        const parsedElement = JSON.parse(element);
         const snapShotJson = JSON.stringify({
-          objects: element.drawing_objects,
+          objects: parsedElement,
         });
         return (
           <div key={idx} className="m-1 border">

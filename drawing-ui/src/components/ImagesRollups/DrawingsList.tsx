@@ -6,7 +6,6 @@ type DrawingsListProp = {
 };
 const DrawingsList = ({ drawings }: DrawingsListProp) => {
   const listRefAllDrawings = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     listRefAllDrawings.current?.lastElementChild?.scrollIntoView({
       behavior: "smooth",
@@ -16,13 +15,13 @@ const DrawingsList = ({ drawings }: DrawingsListProp) => {
   }, [drawings]);
 
   return (
-    <div ref={listRefAllDrawings} className="-mx-1 flex flex-wrap">
+    <div ref={listRefAllDrawings} className="flex flex-wrap -mx-1">
       {drawings && drawings.length > 0 ? (
         drawings.map((drawing, idx) => {
           try {
             return (
               <div key={`${drawing.id}-${idx}`} className="w-1/2 p-2">
-                <CanvasSnapshot key={`${drawing.id}-${idx}`} src={drawing} />
+                <CanvasSnapshot key={`${drawing.uuid}-${idx}`} src={drawing} />
               </div>
             );
           } catch (e) {

@@ -46,15 +46,6 @@ export const useInspect = () => {
       for (const i in result.reports) {
         let output = result.reports[i].payload;
         let compressedData;
-        console.log(output);
-        // try {
-        //   // output = ethers.utils.toUtf8String(output);
-        //   // console.log(JSON.parse(output));
-        //   // return JSON.parse(output);
-        // } catch (e) {
-        //   // cannot decode hex payload as a UTF-8 string
-        //   console.log(e);
-        // }
         if (output) {
           try {
             compressedData = ethers.utils.arrayify(output);

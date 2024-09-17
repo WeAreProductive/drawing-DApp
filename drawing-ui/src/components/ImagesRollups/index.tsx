@@ -25,89 +25,97 @@ const ImagesListRollups = () => {
     pause: true,
   });
   const { data, error } = result;
+
+  const initDrawingsData = async () => {
+    const data = await inspectCall("drawings");
+    console.log(data);
+    setNoticeDrawings(data);
+  };
   // drawings/owner/{address}
 
-  inspectCall(`drawings`);
+  // inspectCall(`drawings`);
   // inspectCall(`drawings/page/${2}`);
   // inspectCall(`drawings/owner/${account}`);
   // inspectCall(`drawing/uuid/${account}/owner/${account}`);
+  // useEffect(() => {
+  //   if (result.fetching) return;
+  //   // Set up to refetch in one second, if the query is idle
+  //   //Retrieve notices every 1000 ms
+  //   const timerId = setTimeout(() => {
+  //     reexecuteQuery({ requestPolicy: "network-only" });
+  //   }, 1000);
+  //   const length = data?.notices?.edges?.length;
+  //   if (length) {
+  //     // Update cursor so that next GraphQL poll retrieves only newer data
+  //     setCursor(data.notices.pageInfo.endCursor);
+  //   }
+  //   return () => clearTimeout(timerId);
+  // }, [result.fetching, reexecuteQuery]);
   useEffect(() => {
-    if (result.fetching) return;
-    // Set up to refetch in one second, if the query is idle
-    //Retrieve notices every 1000 ms
-    const timerId = setTimeout(() => {
-      reexecuteQuery({ requestPolicy: "network-only" });
-    }, 1000);
-    const length = data?.notices?.edges?.length;
-    if (length) {
-      // Update cursor so that next GraphQL poll retrieves only newer data
-      setCursor(data.notices.pageInfo.endCursor);
-    }
-    return () => clearTimeout(timerId);
-  }, [result.fetching, reexecuteQuery]);
+    initDrawingsData();
+  }, []);
+  console.log({ noticeDrawings });
+  // useEffect(() => {
+  //   const newDrawings = data?.notices.edges.map(({ node }: DataNoticeEdge) => {
+  //     let payload = node?.payload;
+  //     let compressedData;
+  //     if (payload) {
+  //       try {
+  //         compressedData = ethers.utils.arrayify(payload);
+  //       } catch (e) {
+  //         payload = payload;
+  //       }
+  //     } else {
+  //       payload = "(empty)";
+  //     }
+  //     if (compressedData) {
+  //       try {
+  //         const drawingData = pako.inflate(compressedData, {
+  //           to: "string",
+  //         });
+  //         return JSON.parse(drawingData);
+  //       } catch (e) {
+  //         console.log(e);
+  //       }
+  //     }
+  //   });
 
-  useEffect(() => {
-    const newDrawings = data?.notices.edges.map(({ node }: DataNoticeEdge) => {
-      let payload = node?.payload;
-      let compressedData;
-      if (payload) {
-        try {
-          compressedData = ethers.utils.arrayify(payload);
-        } catch (e) {
-          payload = payload;
-        }
-      } else {
-        payload = "(empty)";
-      }
-      if (compressedData) {
-        try {
-          const drawingData = pako.inflate(compressedData, {
-            to: "string",
-          });
-          return JSON.parse(drawingData);
-        } catch (e) {
-          console.log(e);
-        }
-      }
-    });
+  //   // Concat new drawings with previous ones
+  //   if (newDrawings && newDrawings.length) {
+  //     // Add new rendered drawings to stored data
+  //     const ret = noticeDrawings
+  //       ? noticeDrawings.concat(newDrawings)
+  //       : newDrawings;
+  //     if (!ret) return;
+  //     setNoticeDrawings(ret);
+  //   }
 
-    // Concat new drawings with previous ones
-    if (newDrawings && newDrawings.length) {
-      // Add new rendered drawings to stored data
-      const ret = noticeDrawings
-        ? noticeDrawings.concat(newDrawings)
-        : newDrawings;
-      if (!ret) return;
-      setNoticeDrawings(ret);
-    }
+  //   if (!newDrawings) return;
 
-    if (!newDrawings) return;
+  //   const newMyDrawings = newDrawings.filter(
+  //     (drawing) => drawing.owner.toLowerCase() == account.toLowerCase(),
+  //   );
 
-    const newMyDrawings = newDrawings.filter(
-      (drawing) => drawing.owner.toLowerCase() == account.toLowerCase(),
-    );
+  //   if (newMyDrawings && newMyDrawings.length) {
+  //     // Add new rendered drawings to stored data
+  //     const retMine = myDrawings
+  //       ? myDrawings.concat(newMyDrawings)
+  //       : newMyDrawings;
+  //     if (!retMine) return;
+  //     setMyDrawings(retMine);
+  //   }
+  // }, [data]);
 
-    if (newMyDrawings && newMyDrawings.length) {
-      // Add new rendered drawings to stored data
-      const retMine = myDrawings
-        ? myDrawings.concat(newMyDrawings)
-        : newMyDrawings;
-      if (!retMine) return;
-      setMyDrawings(retMine);
-    }
-  }, [data]);
+  // // reset my drawings on account change
+  // useEffect(() => {
+  //   if (!noticeDrawings) return;
+  //   const newMyDrawings = noticeDrawings.filter(
+  //     (drawing) => drawing?.owner?.toLowerCase() == account.toLowerCase(),
+  //   );
+  //   setMyDrawings(newMyDrawings);
+  // }, [account]);
 
-  // reset my drawings on account change
-  useEffect(() => {
-    if (!noticeDrawings) return;
-    const newMyDrawings = noticeDrawings.filter(
-      (drawing) => drawing?.owner?.toLowerCase() == account.toLowerCase(),
-    );
-    setMyDrawings(newMyDrawings);
-  }, [account]);
-
-  if (error) return <p className="error">Oh no... {error.message}</p>;
-
+  // if (error) return <p className="error">Oh no... {error.message}</p>;
   return (
     <div className="flex">
       <Tabs defaultValue="account">

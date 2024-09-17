@@ -40,10 +40,16 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     const label = showSteps ? true : false;
     setShowLabel(label);
   };
+  const parsedDimensions = useMemo(() => {
+    return JSON.parse(dimensions);
+  }, [dimensions]);
   return (
-    <div className="rounded-lg border bg-background p-2">
+    <div className="p-2 border rounded-lg bg-background">
       <div onClick={loadCanvasFromImage}>
-        <DrawingPreview dimensions={dimensions} snapShotJson={snapShotJson} />
+        <DrawingPreview
+          dimensions={parsedDimensions}
+          snapShotJson={snapShotJson}
+        />
       </div>
       <span className="block text-xs">Owner: {sliceAccountStr(owner)}</span>
       <span className="block text-xs">ID: {uuid}</span>
@@ -60,7 +66,10 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         {showLabel ? <Layers /> : <MinusCircle />}
       </span>
       {showSteps ? (
-        <DrawingStepsPreview dimensions={dimensions} updateLog={update_log} />
+        <DrawingStepsPreview
+          dimensions={parsedDimensions}
+          updateLog={update_log}
+        />
       ) : (
         ""
       )}

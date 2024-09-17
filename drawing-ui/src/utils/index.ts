@@ -186,8 +186,10 @@ export const prepareDrawingObjectsArrays = (
 };
 export const snapShotJsonfromLog = (update_log: UpdateLog): string => {
   const drawingObjectsArr: DrawingObject[] = [];
-  update_log.forEach((element: UpdateLogItem) => {
-    drawingObjectsArr.push(element.drawing_objects);
+  update_log.forEach((element: any) => {
+    console.log(JSON.parse(element));
+    const parsedElement = JSON.parse(element);
+    drawingObjectsArr.push(parsedElement);
   });
   const snapShot = drawingObjectsArr.flat();
   return JSON.stringify({ objects: snapShot });
