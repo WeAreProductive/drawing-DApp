@@ -163,7 +163,6 @@ export const prepareDrawingObjectsArrays = (
   const storedDrawingObj: DrawingObject[] = []; // array of objects
   if (rollupsDrawingData) {
     const { update_log } = rollupsDrawingData;
-    console.log(update_log);
     if (update_log) {
       // extract object array
       if (update_log.length) {

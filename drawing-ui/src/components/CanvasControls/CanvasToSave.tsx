@@ -16,6 +16,7 @@ import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
+import { useInspect } from "../../hooks/useInspect";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -51,8 +52,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       currentDrawingData,
       canvasContent.objects,
     );
-    console.log({ currentDrawingData });
-    console.log({ currentDrawingLayerObjects });
     let canvasData = {
       content: currentDrawingLayerObjects,
     };

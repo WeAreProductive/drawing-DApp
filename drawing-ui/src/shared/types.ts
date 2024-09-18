@@ -121,7 +121,7 @@ export type RollupsContracts = {
 
 export type RollupsInteractions = {
   contracts?: RollupsContracts;
-  sendInput: (strInput: string) => void;
+  sendInput: (strInput: string) => boolean;
   executeVoucher: (
     voucher: VoucherExtended,
   ) => Promise<VoucherExtended | undefined>;

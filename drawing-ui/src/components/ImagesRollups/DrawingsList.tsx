@@ -3,32 +3,38 @@ import { DrawingInputExtended } from "../../shared/types";
 import CanvasSnapshot from "./CanvasSnapshot";
 import { useWallets } from "@web3-onboard/react";
 import { useInspect } from "../../hooks/useInspect";
+import { useCanvasContext } from "../../context/CanvasContext";
+import { DAPP_STATE } from "../../shared/constants";
 type DrawingsListProp = {
   drawings: DrawingInputExtended[] | null;
 };
 const DrawingsList = ({ drawingsType }: string) => {
   const [connectedWallet] = useWallets();
+  const { dappState } = useCanvasContext();
   const { inspectCall } = useInspect();
   const account = connectedWallet.accounts[0].address;
   const [drawings, setDrawings] = useState<DrawingInputExtended[] | null>(null);
-  // const [noticeDrawings, setNoticeDrawings] = useState<
-  //   DrawingInputExtended[] | null
-  // >(null);
 
+  console.log(`Current state - ${dappState}`);
   const initDrawingsData = async () => {
-    let queryString = "";
-    if (drawingsType == "all") {
-      queryString = "drawings";
-    } else if (drawingsType == "user") {
-      queryString = `drawings/owner/${account}`;
+    if (
+      dappState == DAPP_STATE.canvasInit ||
+      dappState == DAPP_STATE.refetchDrawings
+    ) {
+      let queryString = "";
+      if (drawingsType == "all") {
+        queryString = "drawings";
+      } else if (drawingsType == "user") {
+        queryString = `drawings/owner/${account}`;
+      }
+      const data = await inspectCall(queryString);
+      setDrawings(data);
     }
-    const data = await inspectCall(queryString);
-    setDrawings(data);
   };
 
   useEffect(() => {
     initDrawingsData();
-  }, []);
+  }, [dappState]);
 
   const listRefAllDrawings = useRef<HTMLInputElement>(null);
   useEffect(() => {
