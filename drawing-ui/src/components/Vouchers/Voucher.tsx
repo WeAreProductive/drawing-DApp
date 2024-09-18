@@ -14,7 +14,8 @@ type VoucherProp = {
 
 const config: { [name: string]: Network } = configFile;
 
-const Voucher = ({ voucherData }: VoucherProp) => {
+const Voucher = ({ voucherData, drawing }: VoucherProp) => {
+  console.log(drawing);
   const [{ connectedChain }] = useSetChain();
   const [voucherToFetch, setVoucherToFetch] = useState([0, 0]);
   const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({
@@ -60,12 +61,12 @@ const Voucher = ({ voucherData }: VoucherProp) => {
       setVoucher(voucherResult.data.voucher);
     }
   }, [voucherResult, contracts]);
-  console.log(voucherToExecute?.events);
+
   return (
-    <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
-      {voucherData.drawing && (
+    <div className="flex flex-col gap-6 pb-4 my-4 border-b-2">
+      {drawing && (
         <div className="w-1/2 p-2">
-          <CanvasSnapshotLight data={voucherData.drawing} />
+          <CanvasSnapshotLight data={drawing} />
         </div>
       )}
 

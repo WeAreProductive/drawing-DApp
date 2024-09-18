@@ -47,28 +47,30 @@ def get_raw_data(type, query_args):
         rows = cursor.fetchall()
         return rows
 
-      case "get_drawing_by_uuid":
+      case "get_drawings_by_uuid":
 
         print("get_drawing_by_uuid_and_owner") 
-
-        cursor.execute(
-          """
-          SELECT * FROM drawings
-          WHERE uuid = ?
-          AND owner = ?
-          LIMIT 1
-          """,
-          (query_args['owner'], query_args['uuid']),
-        )
+        logger.info(f"get_drawings_by_owner {query_args}")
+        statement = 'SELECT * FROM drawings WHERE uuid IN("' +query_args+'")'
+        logger.info(statement)
+        # cursor.execute(
+        #   """
+        #   SELECT * FROM drawings
+        #   WHERE uuid = ?
+        #   AND owner = ?
+        #   LIMIT 1
+        #   """,
+        #   (query_args['owner'], query_args['uuid']),
+        # )
+        cursor.execute(statement)
         rows = cursor.fetchall() #@TODO fetch single row
         return rows
 
       case "get_drawing_by_ids":
 
-          logger.info(f"get drawing data where id in array: {query_args['ids']}")
-          args = query_args['ids']
-          logger.info(f"args {args}")
-          statement = "SELECT * FROM drawings WHERE id IN(" +args+")"
+          logger.info(f"get drawing data where id in array: {query_args}")
+        
+          statement = "SELECT * FROM drawings WHERE id IN(" + query_args +")"
           logger.info(statement)
           # @TODO how to correctly bind WHERE IN clause
           # cursor.execute(
@@ -137,20 +139,27 @@ def get_drawings_by_owner(query_args):
   # return array of drawings + current page + has next + has previous @TODO
   return drawings
 
-#@TODO add owner for this request
-def get_drawing_by_uuid(query_args): 
-  # gets single drawing row
-  print('get_drawing_by_uuid')
-  data_row = get_raw_data('get_drawing_by_uuid', query_args)
-  # forthe row.log item call get_drawing_data
-  # from each result get drawing_objects and add it to update_log array
  
-  # the result item will consist of 
-  # # row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log
-  #  # compress with compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
-  # returns single drawing object
-      
-  return 'single drawing for a given uuid'
+def get_drawings_by_uuid(query_args):  
+  uuids = json.loads(query_args[2])
+  string_uuids = '", "'.join(map(str,uuids))  
+  drawings = [] # all drawings array result
+  data_rows = get_raw_data('get_drawings_by_uuid', string_uuids) 
+  for row in data_rows:  
+    current_drawing = {}
+    current_drawing['uuid'] = row[1]
+    current_drawing['dimensions'] = row[2]
+    # current_drawing.date_created = row[3]
+    # current_drawing['owner'] = row[4]
+    # current_drawing.action = row[5]
+    current_drawing['log'] = row[7]
+    # for row.log item call get_drawing_by_ids
+    # from each result get drawing_objects and add it to update_log array
+    current_drawing['update_log'] = get_drawing_by_ids(current_drawing['log']) 
+    # compressed =  zlib.compress(bytes(json.dumps(current_drawing), "utf-8")) 
+    drawings.append(current_drawing)
+  # # result has to be shaped for the snapShotLight component
+  return drawings
 
 def get_drawing_by_ids(log):
   drawing_slices = []
@@ -158,9 +167,7 @@ def get_drawing_by_ids(log):
   logger.info(f"parsed log: {parsed_log}")
   string_log = ', '.join(map(str, parsed_log)) 
   
-  query_args = {'ids': string_log}
-  logger.info(f"string log {query_args}")
-  data_rows = get_raw_data('get_drawing_by_ids', query_args)
+  data_rows = get_raw_data('get_drawing_by_ids', string_log)
   # from each result get drawing_objects and add it to update_log/drawing_slices array 
   for row in data_rows:
     drawing_slices.append(row[6])
@@ -174,10 +181,12 @@ def get_data(query_str):
     if query_args[0] == 'drawings':
       if 'owner' in query_args:
         drawings = get_drawings_by_owner(query_args)
+      elif 'uuids' in query_args:
+        drawings = get_drawings_by_uuid(query_args)
       else:
         drawings = get_all_drawings(query_args)
-    elif query_args[0] == 'drawing':
-      drawings = get_drawing_by_uuid(query_args)
+    
+      
     return drawings 
 
 def insert_drawing_data(query_args):
