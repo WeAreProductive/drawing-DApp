@@ -49,6 +49,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
     setLoading(true);
     setDappState(DAPP_STATE.voucherRequest);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
+    // !!!! extracts the !!! currents session !!!! drawing objects using the old and current drawing data
     const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
       canvasContent.objects,
@@ -58,10 +59,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
       content: currentDrawingLayerObjects,
     };
     // validate before sending the tx
-    const result = validateInputSize(
-      currentDrawingData,
-      JSON.stringify(canvasData),
-    );
+    const result = validateInputSize(JSON.stringify(canvasData));
 
     if (!result.isValid) {
       toast.error(result.info.message, {

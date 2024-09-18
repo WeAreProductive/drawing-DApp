@@ -25,13 +25,12 @@ export const useDrawing = () => {
         : COMMANDS.createAndStore.cmd;
     const log = currentDrawingData ? currentDrawingData.log : [];
     drawingNoticePayload = {
-      // ...currentDrawingData,
       drawing: JSON.stringify(canvasData), // FE updates the svg string
       dimensions: canvasDimensions,
       log,
     };
     return JSON.stringify({
-      drawing_input: drawingNoticePayload,
+      drawing_input: drawingNoticePayload, //data to save in a notice and partially in the sqlite db
       uuid,
       cmd, // BE will be notified to emit a notice
     });
@@ -41,7 +40,6 @@ export const useDrawing = () => {
     canvasData: any,
     uuid: string,
     drawingMeta: {
-      // base64out: string; @TODO new BE validation
       ipfsHash: string;
       canvasDimensions: CanvasDimensions;
     },
@@ -49,43 +47,25 @@ export const useDrawing = () => {
   ) => {
     // prepare drawing data notice input
     let drawingNoticePayload: DrawingInput | DrawingInputExtended;
-
-    if (dappState == DAPP_STATE.drawingUpdate && currentDrawingData) {
-      drawingNoticePayload = {
-        ...currentDrawingData,
-        drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
-        dimensions: drawingMeta.canvasDimensions,
-      };
-      return JSON.stringify({
-        drawing_input: drawingNoticePayload, //data to save in a notice
-        // imageBase64: drawingMeta.base64out, @TODO new BE validation
-        imageIPFSMeta:
-          "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
-        // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
-        uuid: uuid,
-        erc721_to_mint: ercToMint,
-        selector: MINT_SELECTOR,
-        cmd: COMMANDS.updateAndMint.cmd,
-      });
-    } else {
-      // new drawing is sent to rollups, and voucher is requested
-      drawingNoticePayload = {
-        drawing: JSON.stringify(canvasData), // FE is responsible for the svg string only
-        dimensions: drawingMeta.canvasDimensions,
-      };
-      return JSON.stringify({
-        drawing_input: drawingNoticePayload, //data to save in a notice
-        // imageBase64: drawingMeta.base64out, @TODO new BE validation
-        canvasDimensions: drawingMeta.canvasDimensions,
-        imageIPFSMeta:
-          "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
-        // imageIPFSMeta: "ipfs://" + drawingMeta.ipfsHash,
-        uuid: uuid,
-        erc721_to_mint: ercToMint,
-        selector: MINT_SELECTOR,
-        cmd: COMMANDS.createAndMint.cmd,
-      });
-    }
+    const cmd =
+      dappState == DAPP_STATE.drawingUpdate
+        ? COMMANDS.updateAndMint.cmd
+        : COMMANDS.createAndMint.cmd;
+    const log = currentDrawingData ? currentDrawingData.log : [];
+    drawingNoticePayload = {
+      drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
+      dimensions: drawingMeta.canvasDimensions,
+      log,
+    };
+    return JSON.stringify({
+      drawing_input: drawingNoticePayload, //data to save in a notice and partially in the sqlite db
+      uuid,
+      cmd, // BE will be notified to emit a notice and a voucher
+      imageIPFSMeta:
+        "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
+      erc721_to_mint: ercToMint,
+      selector: MINT_SELECTOR,
+    });
   };
   return { getNoticeInput, getVoucherInput };
 };
