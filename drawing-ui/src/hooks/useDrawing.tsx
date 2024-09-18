@@ -12,7 +12,6 @@ const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
   const { currentDrawingData, dappState, canvas } = useCanvasContext();
-  console.log(currentDrawingData);
   const getNoticeInput = (canvasData: any, uuid: string): string => {
     const canvasDimensions = {
       width: canvas?.width || 0,
@@ -29,10 +28,8 @@ export const useDrawing = () => {
       // ...currentDrawingData,
       drawing: JSON.stringify(canvasData), // FE updates the svg string
       dimensions: canvasDimensions,
-
       log,
     };
-    console.log({ drawingNoticePayload });
     return JSON.stringify({
       drawing_input: drawingNoticePayload,
       uuid,

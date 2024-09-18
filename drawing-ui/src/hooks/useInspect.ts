@@ -39,7 +39,6 @@ export const useInspect = () => {
    */
   const inspectCall = async (queryStr: string) => {
     if (!inspectUrl) return;
-    console.log(`Network inspect url: ${inspectUrl}${queryStr}`);
     const response = await fetch(`${inspectUrl}${queryStr}`);
     if (response.status == 200) {
       const result = await response.json();
@@ -60,7 +59,6 @@ export const useInspect = () => {
             const drawingsData = pako.inflate(compressedData, {
               to: "string",
             });
-            console.log(drawingsData);
             return JSON.parse(drawingsData);
           } catch (e) {
             console.log(e);

@@ -163,12 +163,13 @@ export const prepareDrawingObjectsArrays = (
   const storedDrawingObj: DrawingObject[] = []; // array of objects
   if (rollupsDrawingData) {
     const { update_log } = rollupsDrawingData;
+    console.log(update_log);
     if (update_log) {
       // extract object array
       if (update_log.length) {
         // array of objects for each drawing session
         update_log.forEach((element) => {
-          storedDrawingObj.push(element.drawing_objects);
+          storedDrawingObj.push(JSON.parse(element));
         });
         // get all drawing_objects arrays and merge to one
       }
@@ -187,7 +188,6 @@ export const prepareDrawingObjectsArrays = (
 export const snapShotJsonfromLog = (update_log: UpdateLog): string => {
   const drawingObjectsArr: DrawingObject[] = [];
   update_log.forEach((element: any) => {
-    console.log(JSON.parse(element));
     const parsedElement = JSON.parse(element);
     drawingObjectsArr.push(parsedElement);
   });

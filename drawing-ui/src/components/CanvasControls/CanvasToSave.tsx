@@ -51,6 +51,8 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       currentDrawingData,
       canvasContent.objects,
     );
+    console.log({ currentDrawingData });
+    console.log({ currentDrawingLayerObjects });
     let canvasData = {
       content: currentDrawingLayerObjects,
     };
@@ -64,6 +66,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       setLoading(false);
       return;
     }
+
     const strInput = getNoticeInput(canvasData, uuid);
 
     sendInput(strInput);
