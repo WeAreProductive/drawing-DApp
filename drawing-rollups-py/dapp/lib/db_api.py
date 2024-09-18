@@ -9,7 +9,7 @@ import zlib
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
-db_filename = '../drawing.db' #@TODO check Docker statements for creating db
+db_filename = 'drawing.db' #@TODO check Docker statements for creating db
 offset = 15 
 
 # query args = {

@@ -40,7 +40,7 @@ COPY dapp/drawing.py .
 COPY dapp/lib lib
 # COPY dapp/entrypoint.sh .
 
-COPY ./sqlite.py .
+COPY dapp/sqlite.py .
 
 RUN python3 ./sqlite.py 
 RUN chmod -R a+w .
