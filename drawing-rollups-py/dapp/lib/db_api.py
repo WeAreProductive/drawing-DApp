@@ -97,8 +97,7 @@ def get_all_drawings(query_args):
   data_rows = get_raw_data('get_all_drawings', query_args)
   
   # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
-  for row in data_rows: 
-    logger.info(f"row: {row}")
+  for row in data_rows:  
     current_drawing = {}
     current_drawing['uuid'] = row[1]
     current_drawing['dimensions'] = row[2]
@@ -108,9 +107,7 @@ def get_all_drawings(query_args):
     current_drawing['log'] = row[7]
     # for row.log item call get_drawing_by_ids
     # from each result get drawing_objects and add it to update_log array
-    current_drawing['update_log'] = get_drawing_by_ids(current_drawing['log'])
-    
-    logger.info(f"Current drawing: {current_drawing} ")
+    current_drawing['update_log'] = get_drawing_by_ids(current_drawing['log']) 
     # compressed =  zlib.compress(bytes(json.dumps(current_drawing), "utf-8")) 
     drawings.append(current_drawing)
   # compress with compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
@@ -121,11 +118,9 @@ def get_all_drawings(query_args):
 def get_drawings_by_owner(query_args):
   drawings = [] # all drawings array result
   # gets offset rows of drawings
-  data_rows = get_raw_data('get_drawings_by_owner', query_args)
-  logger.info(f"drawings by owner {data_rows}")
+  data_rows = get_raw_data('get_drawings_by_owner', query_args) 
   # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
-  for row in data_rows: 
-    logger.info(f"row: {row}")
+  for row in data_rows:  
     current_drawing = {}
     current_drawing['uuid'] = row[1]
     current_drawing['dimensions'] = row[2]
@@ -135,9 +130,7 @@ def get_drawings_by_owner(query_args):
     current_drawing['log'] = row[7]
     # for row.log item call get_drawing_by_ids
     # from each result get drawing_objects and add it to update_log array
-    current_drawing['update_log'] = get_drawing_by_ids(current_drawing['log'])
-    
-    logger.info(f"Current drawing: {current_drawing} ")
+    current_drawing['update_log'] = get_drawing_by_ids(current_drawing['log']) 
     # compressed =  zlib.compress(bytes(json.dumps(current_drawing), "utf-8")) 
     drawings.append(current_drawing)
   # compress with compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
@@ -176,8 +169,7 @@ def get_drawing_by_ids(log):
 def get_data(query_str):
     query_args = query_str.split('/')  
 
-    # decide which get-data handler to use
-    logger.info(f"Router received query args: {query_args}")
+    # decide which get-data handler to use 
 
     if query_args[0] == 'drawings':
       if 'owner' in query_args:
@@ -202,15 +194,15 @@ def insert_drawing_data(query_args):
   date_created = query_args['date_created']
   action = query_args['action']
   dimensions = json.dumps(query_args['dimensions']) 
-  drawing_objects = json.dumps(query_args['drawing_objects'])   
-  # logger.info(f"{query_args}")
+  drawing_objects = json.dumps(query_args['drawing_objects'])    
   try:
-    logger.info(f"{query_args['log']}")
+    logger.info(f"query args log 1 - {query_args['log']}")
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor()
-    log = query_args['log'] #string 
+    log = query_args['log'] # string 
+    
     json_log = json.dumps(log)
-    logger.info(f"json_log {json_log}")
+    logger.info(f"json_log 2 - {json_log}")
     # else:
       # json_log = log
     cursor.execute(
@@ -240,43 +232,47 @@ def store_data(query_args):
   #   print(value)
   id = insert_drawing_data(query_args)
   
-  # if id : 
-  #   log = query_args['log']
-  #   if log:
-  #     drawing_log = json.load(log)
-  #   else:
-  #     drawing_log = []
+  if id : 
+    log = query_args['log']
+    logger.info(f"log 3 - {log}")
+    if log:
+      drawing_log = json.loads(log)
+      logger.info(f"drawing log 4 - {drawing_log}")
+    else:
+      drawing_log = []
+      logger.info(f"drawing log 5 - {drawing_log}")
     
-  #   drawing_log.append(id)
-  #   json_log = json.dumps(drawing_log)
-  #   logger.info(f"log: {json_log}")
-  #   try:
+    drawing_log.append(id)
+    logger.info(f"drawing log 6 - {drawing_log}")
+    json_log = json.dumps(drawing_log)
+    logger.info(f"drawing log 7 - {json_log}") 
+    try:
 
-  #     conn = sqlite3.connect(db_filename)
-  #     cursor = conn.cursor()
+      conn = sqlite3.connect(db_filename)
+      cursor = conn.cursor()
       
-  #     cursor.execute(
+      cursor.execute(
           
-  #       """
-  #       UPDATE drawings
-  #       SET log = ?
-  #       WHERE id = ?
-  #       """,
-  #       (json_log, id),
+        """
+        UPDATE drawings
+        SET log = ?
+        WHERE id = ?
+        """,
+        (json_log, id),
     
-  #     )
+      )
 
-  #     conn.commit()
+      conn.commit()
 
-  #     id = cursor.lastrowid
-  #     return id
+      id = cursor.lastrowid
+      return id
 
-  #   except Exception as e: 
-  #     msg = f"Error executing insert statement: {e}" 
-  #     logger.info(f"{msg}")
-  #   finally:
-  #     if conn:
-  #       conn.close()
+    except Exception as e: 
+      msg = f"Error executing insert statement: {e}" 
+      logger.info(f"{msg}")
+    finally:
+      if conn:
+        conn.close()
    
   
 

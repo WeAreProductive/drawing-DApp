@@ -29,11 +29,12 @@ export const useDrawing = () => {
       // ...currentDrawingData,
       drawing: JSON.stringify(canvasData), // FE updates the svg string
       dimensions: canvasDimensions,
-    };
 
+      log,
+    };
+    console.log({ drawingNoticePayload });
     return JSON.stringify({
       drawing_input: drawingNoticePayload,
-      log,
       uuid,
       cmd, // BE will be notified to emit a notice
     });

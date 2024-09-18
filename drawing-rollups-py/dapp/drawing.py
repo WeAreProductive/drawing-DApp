@@ -82,8 +82,7 @@ def store_drawing_data(
         drawing_input, 
         cmd
     ):
-    now = str(datetime.now(timezone.utc)) 
-    logger.info(f"Preparing notice payload")
+    now = str(datetime.now(timezone.utc))  
     drawing = drawing_input['drawing']
     
     parsed_drawing = json.loads(drawing)
@@ -96,7 +95,7 @@ def store_drawing_data(
     drawing_input["drawing_objects"] = content
     
     if cmd == 'cn' or cmd == 'cv':
-        drawing_input['log'] = [] #init log
+        # drawing_input['log'] = [] #init log
         if cmd == 'cv':
             drawing_input['voucher_requested'] = True # not in db
         else:
