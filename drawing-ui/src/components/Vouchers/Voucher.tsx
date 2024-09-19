@@ -7,6 +7,7 @@ import configFile from "../../config/config.json";
 import { VoucherExtended, Network } from "../../shared/types";
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
+import CanvasSnapshotLoader from "../ImagesRollups/CanvasSnapshotLoader";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
@@ -61,13 +62,15 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
       setVoucher(voucherResult.data.voucher);
     }
   }, [voucherResult, contracts]);
-
+  console.log({ drawing });
   return (
     <div className="flex flex-col gap-6 pb-4 my-4 border-b-2">
-      {drawing && (
+      {drawing ? (
         <div className="w-1/2 p-2">
           <CanvasSnapshotLight data={drawing} />
         </div>
+      ) : (
+        <CanvasSnapshotLoader />
       )}
 
       <div className="flex flex-row items-center gap-3">

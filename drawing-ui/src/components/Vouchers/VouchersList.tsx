@@ -190,7 +190,6 @@ const VouchersList = () => {
         myVouchers.map((n: VoucherExtended) => {
           const { drawingUUID } = n;
           const drawing = getVoucherDrawing(drawingUUID);
-          // const drawing = drawings.filter((d) => d.uuid == n.drawingUUID);
           return (
             <Voucher
               key={`${n.input.index}-${n.index}`}
