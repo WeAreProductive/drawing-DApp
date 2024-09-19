@@ -9,12 +9,7 @@ import {
   VALIDATE_INPUT_ERRORS,
 } from "../shared/constants";
 import prettyBytes from "pretty-bytes";
-import {
-  DrawingInputExtended,
-  DrawingObject,
-  UpdateLog,
-  UpdateLogItem,
-} from "../shared/types";
+import { DrawingInputExtended, DrawingObject } from "../shared/types";
 
 export const srcToJson = (src: string) => {
   return src.replace(".png", ".json");
@@ -33,12 +28,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const validateInputSize = (
-  // currentDrawingData: DrawingInputExtended | null,
   strInput: string,
   isActiveDrawing: boolean = false,
 ) => {
   const drawingNoticePayload = {
-    // ...currentDrawingData,
     drawing: strInput, // FE updates the svg string
   };
   const compressed = pako.deflate(JSON.stringify(drawingNoticePayload));
@@ -184,9 +177,9 @@ export const prepareDrawingObjectsArrays = (
   }
   return currentDrawingObjects;
 };
-export const snapShotJsonfromLog = (update_log: UpdateLog): string => {
+export const snapShotJsonfromLog = (update_log: string[]): string => {
   const drawingObjectsArr: DrawingObject[] = [];
-  update_log.forEach((element: any) => {
+  update_log.forEach((element: string) => {
     const parsedElement = JSON.parse(element);
     drawingObjectsArr.push(parsedElement);
   });

@@ -73,7 +73,7 @@ export type VoucherExtended = {
 
 export interface DrawingInput {
   drawing: string; // svg's json string
-  dimensions: { width: number; height: number };
+  dimensions: string;
 }
 export type DrawingObject = { [key: string]: any };
 export type UpdateLogItem = {
@@ -89,7 +89,7 @@ export interface DrawingInputExtended extends DrawingInput {
   date_created: string; // date-time string
   last_updated: null | string; // last update date-time string
   owner: string; //last painter's account
-  update_log: UpdateLog;
+  update_log: string[];
   voucher_requested: boolean;
   log: string[];
 }
