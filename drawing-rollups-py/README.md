@@ -51,6 +51,4 @@ drawing/{uuid} - returns single drawing data for the given uuid
 
 # /drawings/owner/{address}/page/33 (page=33) query_args: [drawings, owner, {address}, page, 33]
 
-# single drawing response
-
-# /drawing/uuid/{uuid}/owner/{address} query_args: [drawing, uuid, {uuid}, owner, {address}]
+# /drawings/uuids/{uuids}/ query_args: [drawing, uuids, {uuids}]

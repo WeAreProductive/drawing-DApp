@@ -32,7 +32,6 @@ const VouchersList = () => {
       const queryArg = JSON.stringify(arg);
       const queryString = `drawings/uuids/${queryArg}`;
       const data = await inspectCall(queryString);
-      console.log(data);
       setDrawings(data);
     }
     // send inspect call for the uuids
