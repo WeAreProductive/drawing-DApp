@@ -70,7 +70,7 @@ def get_raw_data(type, query_args):
 
           logger.info(f"get drawing data where id in array: {query_args}")
         
-          statement = "SELECT * FROM drawings WHERE id IN(" + query_args +")"
+          statement = "SELECT drawing_objects FROM drawings WHERE id IN(" + query_args +")"
           logger.info(statement)
           # @TODO how to correctly bind WHERE IN clause
           # cursor.execute(
@@ -170,7 +170,7 @@ def get_drawing_by_ids(log):
   data_rows = get_raw_data('get_drawing_by_ids', string_log)
   # from each result get drawing_objects and add it to update_log/drawing_slices array 
   for row in data_rows:
-    drawing_slices.append(row[6])
+    drawing_slices.append(row[0])
   return drawing_slices
 
 def get_data(query_str):
