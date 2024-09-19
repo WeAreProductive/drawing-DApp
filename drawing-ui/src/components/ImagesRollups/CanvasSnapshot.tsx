@@ -40,9 +40,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     const label = showSteps ? true : false;
     setShowLabel(label);
   };
-  const parsedDimensions: CanvasDimensions = useMemo(() => {
-    return JSON.parse(dimensions);
-  }, [dimensions]);
+  const parsedDimensions = JSON.parse(dimensions);
   return (
     <div className="p-2 border rounded-lg bg-background">
       <div onClick={loadCanvasFromImage}>

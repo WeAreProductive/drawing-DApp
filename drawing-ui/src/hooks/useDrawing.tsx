@@ -29,7 +29,7 @@ export const useDrawing = () => {
     const log = currentDrawingData ? currentDrawingData.log : [];
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string
-      dimensions: JSON.stringify(canvasDimensions),
+      dimensions: canvasDimensions,
       log,
     };
     return JSON.stringify({
@@ -57,7 +57,7 @@ export const useDrawing = () => {
     const log = currentDrawingData ? currentDrawingData.log : [];
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
-      dimensions: JSON.stringify(drawingMeta.canvasDimensions),
+      dimensions: drawingMeta.canvasDimensions,
       log,
     };
     return JSON.stringify({

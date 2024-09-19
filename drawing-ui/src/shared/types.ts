@@ -70,18 +70,20 @@ export type VoucherExtended = {
   drawingUUID?: string;
   events?: any;
 };
-
+// sent Drawings data
 export interface DrawingInput {
   drawing: string;
-  dimensions: string;
+  dimensions: CanvasDimensions;
   log: string[];
 }
-export interface DrawingInputExtended extends DrawingInput {
+// received Drawings data
+export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   uuid: string;
   owner: string; //last painter's account
   update_log: string[];
   voucher_requested?: boolean;
   date_created?: string; // date-time string
+  dimensions: string;
 }
 export type DrawingObject = { [key: string]: any };
 export type UpdateLogItem = {
