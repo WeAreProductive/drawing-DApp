@@ -3,32 +3,24 @@ import logging
 import json
 import zlib
 
-# @TODO document functions python way
-# @TODO revise and remove obsolete variables and function declarations
+# @TODO document functions python way 
+# @TODO query binding
+# @TODO paginate results
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
-db_filename = 'drawing.db' #@TODO check Docker statements for creating db
-offset = 15 
+db_filename = 'drawing.db'  
+offset = 15  
 
-# query args = {
-# offset
-# limit
-# owner
-# uuid
-# }
-
-def get_raw_data(type, query_args):
+def get_raw_data(query_args, type):
   conn = None
   try :
     conn = sqlite3.connect(db_filename) 
     cursor = conn.cursor()
     match type:
-      case "get_all_drawings":
-          
-          print("get_all_drawings")
-
+      case "get_all_drawings": 
+          print("get_all_drawings") 
           cursor.execute(
               """
               SELECT * FROM drawings
@@ -39,7 +31,6 @@ def get_raw_data(type, query_args):
           return rows
 
       case "get_drawings_by_owner":
-        # @TODO query binding
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         statement = "SELECT * FROM drawings WHERE owner LIKE '%" + query_args[2] +"%'"
         cursor.execute(statement)
@@ -48,10 +39,10 @@ def get_raw_data(type, query_args):
         return rows
 
       case "get_drawings_by_uuid":
-
-        print("get_drawing_by_uuid_and_owner") 
-        logger.info(f"get_drawings_by_owner {query_args}")
-        statement = 'SELECT * FROM drawings WHERE uuid IN("' +query_args+'")'
+        uuids = json.loads(query_args[2])
+        string_uuids = '", "'.join(map(str,uuids))  
+        logger.info(f"get_drawings_by_uuids {string_uuids}") 
+        statement = 'SELECT * FROM drawings WHERE uuid IN("' + string_uuids + '")'
         logger.info(statement)
         # cursor.execute(
         #   """
@@ -66,12 +57,9 @@ def get_raw_data(type, query_args):
         rows = cursor.fetchall() #@TODO fetch single row
         return rows
 
-      case "get_drawing_by_ids":
-
-          logger.info(f"get drawing data where id in array: {query_args}")
-        
-          statement = "SELECT drawing_objects FROM drawings WHERE id IN(" + query_args +")"
-          logger.info(statement)
+      case "get_drawing_by_ids": 
+          logger.info(f"get drawing data where id in array: {query_args}") 
+          statement = "SELECT drawing_objects FROM drawings WHERE id IN(" + query_args +")" 
           # @TODO how to correctly bind WHERE IN clause
           # cursor.execute(
           #   """
@@ -93,101 +81,48 @@ def get_raw_data(type, query_args):
     if conn:
       conn.close()
 
-def get_all_drawings(query_args):
-  drawings = [] # all drawings array result
-  # gets offset rows of drawings
-  data_rows = get_raw_data('get_all_drawings', query_args)
-  
-  # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
-  for row in data_rows:  
-    current_drawing = {}
-    current_drawing['uuid'] = row[1]
-    current_drawing['dimensions'] = row[2]
-    # current_drawing.date_created = row[3]
-    current_drawing['owner'] = row[4]
-    # current_drawing.action = row[5]
-    current_drawing['log'] = row[7]
-    # for row.log item call get_drawing_by_ids
-    # from each result get drawing_objects and add it to update_log array
-    current_drawing['update_log'] = get_drawing_by_ids(current_drawing['log']) 
-    # compressed =  zlib.compress(bytes(json.dumps(current_drawing), "utf-8")) 
-    drawings.append(current_drawing)
-  # compress with compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
-  # return array of drawings + current page + has next + has previous @TODO
+def get_drawings(query_args, type):
+  drawings = [] # all drawings array result 
+  data_rows = get_raw_data(query_args, type)
+  if data_rows:
+    # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
+    for row in data_rows:  
+      current_drawing = {}
+      current_drawing['uuid'] = row[1]
+      current_drawing['dimensions'] = row[2] 
+      current_drawing['owner'] = row[4] 
+      current_drawing['log'] = row[7]
+      # for row.log item call get_drawing_by_ids
+      # from each result get drawing_objects and add it to update_log array
+      current_drawing['update_log'] = get_drawings_by_ids(current_drawing['log'])  
+      drawings.append(current_drawing) 
+    # return array of drawings + current page + has next + has previous @TODO
   return drawings
 
-#@TODO combine with all with param owner
-def get_drawings_by_owner(query_args):
-  drawings = [] # all drawings array result
-  # gets offset rows of drawings
-  data_rows = get_raw_data('get_drawings_by_owner', query_args) 
-  # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
-  for row in data_rows:  
-    current_drawing = {}
-    current_drawing['uuid'] = row[1]
-    current_drawing['dimensions'] = row[2]
-    # current_drawing.date_created = row[3]
-    current_drawing['owner'] = row[4]
-    # current_drawing.action = row[5]
-    current_drawing['log'] = row[7]
-    # for row.log item call get_drawing_by_ids
-    # from each result get drawing_objects and add it to update_log array
-    current_drawing['update_log'] = get_drawing_by_ids(current_drawing['log']) 
-    # compressed =  zlib.compress(bytes(json.dumps(current_drawing), "utf-8")) 
-    drawings.append(current_drawing)
-  # compress with compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
-  # return array of drawings + current page + has next + has previous @TODO
-  return drawings
-
- 
-def get_drawings_by_uuid(query_args):  
-  uuids = json.loads(query_args[2])
-  string_uuids = '", "'.join(map(str,uuids))  
-  drawings = [] # all drawings array result
-  data_rows = get_raw_data('get_drawings_by_uuid', string_uuids) 
-  for row in data_rows:  
-    current_drawing = {}
-    current_drawing['uuid'] = row[1]
-    current_drawing['dimensions'] = row[2]
-    # current_drawing.date_created = row[3]
-    # current_drawing['owner'] = row[4]
-    # current_drawing.action = row[5]
-    current_drawing['log'] = row[7]
-    # for row.log item call get_drawing_by_ids
-    # from each result get drawing_objects and add it to update_log array
-    current_drawing['update_log'] = get_drawing_by_ids(current_drawing['log']) 
-    # compressed =  zlib.compress(bytes(json.dumps(current_drawing), "utf-8")) 
-    drawings.append(current_drawing)
-  # # result has to be shaped for the snapShotLight component
-  return drawings
-
-def get_drawing_by_ids(log):
+def get_drawings_by_ids(log):
   drawing_slices = []
   parsed_log = json.loads(log)
-  logger.info(f"parsed log: {parsed_log}")
   string_log = ', '.join(map(str, parsed_log)) 
-  
-  data_rows = get_raw_data('get_drawing_by_ids', string_log)
-  # from each result get drawing_objects and add it to update_log/drawing_slices array 
-  for row in data_rows:
-    drawing_slices.append(row[0])
+
+  data_rows = get_raw_data(string_log, 'get_drawing_by_ids')
+  if data_rows:
+    # from each result get drawing_objects and add it to update_log/drawing_slices array 
+    for row in data_rows:
+      drawing_slices.append(row[0])
   return drawing_slices
 
 def get_data(query_str):
-    query_args = query_str.split('/')  
-
-    # decide which get-data handler to use 
-
-    if query_args[0] == 'drawings':
-      if 'owner' in query_args:
-        drawings = get_drawings_by_owner(query_args)
-      elif 'uuids' in query_args:
-        drawings = get_drawings_by_uuid(query_args)
-      else:
-        drawings = get_all_drawings(query_args)
-    
-      
-    return drawings 
+  query_args = query_str.split('/')  
+  # decide which get-data handler to use 
+  if query_args[0] == 'drawings':
+    if 'owner' in query_args:
+      query_type = 'get_drawings_by_owner'
+    elif 'uuids' in query_args:
+      query_type = 'get_drawings_by_uuid'
+    else:
+      query_type = 'get_all_drawings'
+  drawings = get_drawings(query_args, query_type) 
+  return drawings
 
 def insert_drawing_data(query_args):
   # @TODO waiting for 
