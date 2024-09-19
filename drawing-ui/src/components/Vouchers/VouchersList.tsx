@@ -1,6 +1,6 @@
 import { ethers } from "ethers";
-import { useSetChain, useWallets } from "@web3-onboard/react";
-import { useEffect, useState } from "react";
+import { useWallets } from "@web3-onboard/react";
+import { useCallback, useEffect, useState } from "react";
 import { useVouchersQuery } from "../../generated/graphql";
 import { MINT_SELECTOR } from "../../shared/constants";
 import { VoucherExtended, DataNoticeEdge } from "../../shared/types";
@@ -20,7 +20,7 @@ const VouchersList = () => {
   const [myVouchers, setMyVouchers] = useState<VoucherExtended[]>([]);
   const [drawings, setDrawings] = useState<VoucherExtended[]>([]);
   const [uuids, setUuids] = useState<VoucherExtended[]>([]);
-  const { data, fetching, error } = result;
+  const { data } = result;
 
   const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
 
@@ -37,6 +37,12 @@ const VouchersList = () => {
     }
     // send inspect call for the uuids
   };
+  const getVoucherDrawing = useCallback(
+    (uuid) => {
+      return drawings.filter((d) => d.uuid == uuid);
+    },
+    [drawings],
+  );
   useEffect(() => {
     signer();
   }, []);
@@ -178,12 +184,13 @@ const VouchersList = () => {
     );
     fetchImages(uuids);
   }, [uuids]);
-  console.log(drawings);
   return (
     <div>
       {myVouchers && myVouchers.length > 0 ? (
         myVouchers.map((n: VoucherExtended) => {
-          const drawing = drawings.filter((d) => d.uuid == n.drawingUUID);
+          const { drawingUUID } = n;
+          const drawing = getVoucherDrawing(drawingUUID);
+          // const drawing = drawings.filter((d) => d.uuid == n.drawingUUID);
           return (
             <Voucher
               key={`${n.input.index}-${n.index}`}

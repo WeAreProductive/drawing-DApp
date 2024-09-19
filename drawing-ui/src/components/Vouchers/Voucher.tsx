@@ -10,12 +10,12 @@ import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
+  drawing: any;
 };
 
 const config: { [name: string]: Network } = configFile;
 
 const Voucher = ({ voucherData, drawing }: VoucherProp) => {
-  console.log(drawing);
   const [{ connectedChain }] = useSetChain();
   const [voucherToFetch, setVoucherToFetch] = useState([0, 0]);
   const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({
