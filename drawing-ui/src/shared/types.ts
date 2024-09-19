@@ -91,6 +91,7 @@ export interface DrawingInputExtended extends DrawingInput {
   owner: string; //last painter's account
   update_log: UpdateLog;
   voucher_requested: boolean;
+  log: string[];
 }
 
 export type DataNoticeEdge = {
@@ -121,7 +122,7 @@ export type RollupsContracts = {
 
 export type RollupsInteractions = {
   contracts?: RollupsContracts;
-  sendInput: (strInput: string) => boolean;
+  sendInput: (strInput: string) => Promise<void>;
   executeVoucher: (
     voucher: VoucherExtended,
   ) => Promise<VoucherExtended | undefined>;
