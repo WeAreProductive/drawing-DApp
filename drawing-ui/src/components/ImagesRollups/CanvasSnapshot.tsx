@@ -1,6 +1,6 @@
 import { useCanvasContext } from "../../context/CanvasContext";
 import { DAPP_STATE } from "../../shared/constants";
-import { DrawingInputExtended } from "../../shared/types";
+import { CanvasDimensions, DrawingInputExtended } from "../../shared/types";
 import { sliceAccountStr, snapShotJsonfromLog } from "../../utils";
 import { useMemo, useState } from "react";
 import DrawingPreview from "./DrawingPreview";
@@ -40,7 +40,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     const label = showSteps ? true : false;
     setShowLabel(label);
   };
-  const parsedDimensions = useMemo(() => {
+  const parsedDimensions: CanvasDimensions = useMemo(() => {
     return JSON.parse(dimensions);
   }, [dimensions]);
   return (

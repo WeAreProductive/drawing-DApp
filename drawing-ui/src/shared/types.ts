@@ -67,13 +67,21 @@ export type VoucherExtended = {
   proof?: any;
   executed?: any;
   msg?: string;
-  drawing?: string;
+  drawingUUID?: string;
   events?: any;
 };
 
 export interface DrawingInput {
-  drawing: string; // svg's json string
+  drawing: string;
   dimensions: string;
+  log: string[];
+}
+export interface DrawingInputExtended extends DrawingInput {
+  uuid: string;
+  owner: string; //last painter's account
+  update_log: string[];
+  voucher_requested?: boolean;
+  date_created?: string; // date-time string
 }
 export type DrawingObject = { [key: string]: any };
 export type UpdateLogItem = {
@@ -83,16 +91,6 @@ export type UpdateLogItem = {
   drawing_objects: DrawingObject[];
 };
 export type UpdateLog = UpdateLogItem[];
-export interface DrawingInputExtended extends DrawingInput {
-  id: string; // creator's account - timestamp
-  uuid: string;
-  date_created: string; // date-time string
-  last_updated: null | string; // last update date-time string
-  owner: string; //last painter's account
-  update_log: string[];
-  voucher_requested: boolean;
-  log: string[];
-}
 
 export type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;

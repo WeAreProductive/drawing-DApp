@@ -3,7 +3,7 @@ import { COMMANDS, DAPP_STATE, MINT_SELECTOR } from "../shared/constants";
 import {
   CanvasDimensions,
   DrawingInput,
-  DrawingInputExtended,
+  DrawingObject,
   Network,
 } from "../shared/types";
 import configFile from "../config/config.json";
@@ -12,13 +12,16 @@ const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
   const { currentDrawingData, dappState, canvas } = useCanvasContext();
-  const getNoticeInput = (canvasData: any, uuid: string): string => {
+  const getNoticeInput = (
+    canvasData: { content: DrawingObject[] },
+    uuid: string,
+  ): string => {
     const canvasDimensions = {
       width: canvas?.width || 0,
       height: canvas?.height || 0,
     };
     // prepare drawing data notice input
-    let drawingNoticePayload: DrawingInput | DrawingInputExtended;
+    let drawingNoticePayload: DrawingInput;
     const cmd =
       dappState == DAPP_STATE.drawingUpdate
         ? COMMANDS.updateAndStore.cmd
@@ -26,7 +29,7 @@ export const useDrawing = () => {
     const log = currentDrawingData ? currentDrawingData.log : [];
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string
-      dimensions: canvasDimensions,
+      dimensions: JSON.stringify(canvasDimensions),
       log,
     };
     return JSON.stringify({
@@ -37,7 +40,7 @@ export const useDrawing = () => {
   };
 
   const getVoucherInput = (
-    canvasData: any,
+    canvasData: { content: DrawingObject[] },
     uuid: string,
     drawingMeta: {
       ipfsHash: string;
@@ -46,7 +49,7 @@ export const useDrawing = () => {
     ercToMint: string,
   ) => {
     // prepare drawing data notice input
-    let drawingNoticePayload: DrawingInput | DrawingInputExtended;
+    let drawingNoticePayload: DrawingInput;
     const cmd =
       dappState == DAPP_STATE.drawingUpdate
         ? COMMANDS.updateAndMint.cmd
@@ -54,7 +57,7 @@ export const useDrawing = () => {
     const log = currentDrawingData ? currentDrawingData.log : [];
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
-      dimensions: drawingMeta.canvasDimensions,
+      dimensions: JSON.stringify(drawingMeta.canvasDimensions),
       log,
     };
     return JSON.stringify({

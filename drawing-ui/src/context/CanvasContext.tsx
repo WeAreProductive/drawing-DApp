@@ -28,7 +28,7 @@ const initialCanvasContext = {
   dappState: DAPP_STATE.canvasInit,
   setDappState: (dappState: string) => undefined,
   currentDrawingData: null,
-  setCurrentDrawingData: (data: any) => undefined,
+  setCurrentDrawingData: (data: DrawingInputExtended | null) => undefined,
   clearCanvas: () => undefined,
   currentDrawingLayer: null,
   setCurrentDrawingLayer: (data: DrawingObject[]) => undefined,

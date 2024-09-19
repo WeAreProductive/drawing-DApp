@@ -1,19 +1,21 @@
 import { fabric } from "fabric";
 import { useState, useEffect } from "react";
+import { CanvasDimensions } from "../../shared/types";
 
 const DrawingPreview = ({
   dimensions,
   snapShotJson,
 }: {
-  dimensions: string;
+  dimensions: CanvasDimensions;
   snapShotJson: string;
 }) => {
   const [url, setUrl] = useState("");
+
   useEffect(() => {
-    const parsedDimensions = JSON.parse(dimensions);
+    console.log(typeof dimensions);
     const canvas = new fabric.Canvas(null, {
-      width: parsedDimensions?.width | 600,
-      height: parsedDimensions?.height | 600,
+      width: dimensions?.width | 600,
+      height: dimensions?.height | 600,
     });
     canvas.loadFromJSON(snapShotJson, function () {});
 

@@ -13,7 +13,12 @@ const CanvasSnapshotLight = ({ data }: CanvasSnapshotLightProp) => {
     () => snapShotJsonfromLog(update_log),
     [update_log],
   );
-  return <DrawingPreview dimensions={dimensions} snapShotJson={snapShotJson} />;
+  const parsedDimensions = useMemo(() => {
+    return JSON.parse(dimensions);
+  }, [dimensions]);
+  return (
+    <DrawingPreview dimensions={parsedDimensions} snapShotJson={snapShotJson} />
+  );
 };
 
 export default CanvasSnapshotLight;

@@ -3,7 +3,11 @@ import { useWallets } from "@web3-onboard/react";
 import { useCallback, useEffect, useState } from "react";
 import { useVouchersQuery } from "../../generated/graphql";
 import { MINT_SELECTOR } from "../../shared/constants";
-import { VoucherExtended, DataNoticeEdge } from "../../shared/types";
+import {
+  VoucherExtended,
+  DataNoticeEdge,
+  DrawingInputExtended,
+} from "../../shared/types";
 import Voucher from "./Voucher";
 import pako from "pako";
 import { useInspect } from "../../hooks/useInspect";
@@ -18,8 +22,8 @@ const VouchersList = () => {
   });
   const [currentAccount, setCurrentAccount] = useState("");
   const [myVouchers, setMyVouchers] = useState<VoucherExtended[]>([]);
-  const [drawings, setDrawings] = useState<VoucherExtended[]>([]);
-  const [uuids, setUuids] = useState<VoucherExtended[]>([]);
+  const [drawings, setDrawings] = useState<DrawingInputExtended[]>([]);
+  const [uuids, setUuids] = useState<string[]>([]);
   const { data } = result;
 
   const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
@@ -27,7 +31,7 @@ const VouchersList = () => {
   const signer = async () => {
     setCurrentAccount(await provider.getSigner().getAddress());
   };
-  const fetchImages = async (arg) => {
+  const fetchImages = async (arg: string[]) => {
     if (arg.length) {
       const queryArg = JSON.stringify(arg);
       const queryString = `drawings/uuids/${queryArg}`;
@@ -37,7 +41,7 @@ const VouchersList = () => {
     // send inspect call for the uuids
   };
   const getVoucherDrawing = useCallback(
-    (uuid) => {
+    (uuid: string | undefined) => {
       return drawings.filter((d) => d.uuid == uuid);
     },
     [drawings],
@@ -70,8 +74,8 @@ const VouchersList = () => {
    * Filter user's vouchers.
    */
   useEffect(() => {
-    let uuids = [];
-    let newVouchers = [];
+    let uuids: string[] = [];
+    let newVouchers: VoucherExtended[] = [];
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
       // init data
       const n = node.node;
@@ -162,14 +166,6 @@ const VouchersList = () => {
         }
       }
     });
-    // const newVouchers = data?.vouchers.edges
-    //   .map((node: { node: VoucherExtended }) => {
-
-    //   })
-    //   .filter((voucher) => voucher.ownerAddress === currentAccount)
-    //   .sort(
-    //     (a, b) => parseInt(b.input.index) - parseInt(a.input.index),
-    //   ) as VoucherExtended[];
     // @TODO sort by index
     if (newVouchers.length) {
       // updates my-vouchers array
@@ -189,6 +185,7 @@ const VouchersList = () => {
         myVouchers.map((n: VoucherExtended) => {
           const { drawingUUID } = n;
           const drawing = getVoucherDrawing(drawingUUID);
+          console.log(drawing);
           return (
             <Voucher
               key={`${n.input.index}-${n.index}`}

@@ -6,9 +6,9 @@ import { useInspect } from "../../hooks/useInspect";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { DAPP_STATE } from "../../shared/constants";
 type DrawingsListProp = {
-  drawings: DrawingInputExtended[] | null;
+  drawingsType: string;
 };
-const DrawingsList = ({ drawingsType }: string) => {
+const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   const [connectedWallet] = useWallets();
   const { dappState } = useCanvasContext();
   const { inspectCall } = useInspect();
@@ -50,8 +50,8 @@ const DrawingsList = ({ drawingsType }: string) => {
         drawings.map((drawing, idx) => {
           try {
             return (
-              <div key={`${drawing.id}-${idx}`} className="w-1/2 p-2">
-                <CanvasSnapshot key={`${drawing.uuid}-${idx}`} src={drawing} />
+              <div key={`${drawing.uuid}`} className="w-1/2 p-2">
+                <CanvasSnapshot src={drawing} />
               </div>
             );
           } catch (e) {

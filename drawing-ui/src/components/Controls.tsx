@@ -4,7 +4,7 @@ import DrawingControls from "../components/Drawing/DrawingControls";
 import CanvasObjectsControl from "./CanvasObjectsControl";
 import { useCanvasContext } from "../context/CanvasContext";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../utils";
-import { CanvasLimitations } from "../shared/types";
+import { CanvasLimitations, DrawingInputExtended } from "../shared/types";
 
 const Controls = () => {
   const {
@@ -29,7 +29,9 @@ const Controls = () => {
     },
   });
 
-  const validateCanvasInputSize = (currentDrawingData: any) => {
+  const validateCanvasInputSize = (
+    currentDrawingData: DrawingInputExtended | null,
+  ) => {
     if (!canvas) return;
     // Gets current drawing data
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
@@ -44,7 +46,7 @@ const Controls = () => {
     };
     // validate before sending the tx
     const result = validateInputSize(
-      currentDrawingData,
+      // currentDrawingData,
       JSON.stringify(canvasData),
       true,
     );

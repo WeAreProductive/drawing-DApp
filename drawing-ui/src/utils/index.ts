@@ -130,7 +130,7 @@ export const deserializeArrElements = (arr: string[]) => {
 export const latestDrawingObjects = (
   arrObjFull: DrawingObject[],
   arrObjInitial: DrawingObject[],
-) => {
+): DrawingObject[] => {
   // use arrays of serializes objects to compare them as strings for equality!
   const serializedFull = serializeArrElements(arrObjFull);
   const serializedInitial = serializeArrElements(arrObjInitial);

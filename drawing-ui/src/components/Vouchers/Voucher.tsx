@@ -4,14 +4,18 @@ import { useSetChain } from "@web3-onboard/react";
 import { useVoucherQuery } from "../../generated/graphql";
 import { useRollups } from "../../hooks/useRollups";
 import configFile from "../../config/config.json";
-import { VoucherExtended, Network } from "../../shared/types";
+import {
+  VoucherExtended,
+  Network,
+  DrawingInputExtended,
+} from "../../shared/types";
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
 import CanvasSnapshotLoader from "../ImagesRollups/CanvasSnapshotLoader";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
-  drawing: any;
+  drawing: DrawingInputExtended;
 };
 
 const config: { [name: string]: Network } = configFile;
