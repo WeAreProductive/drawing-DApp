@@ -1,9 +1,7 @@
 import sqlite3 
 import logging
-import json
-import zlib
+import json 
 
-# @TODO document functions python way  
 # @TODO paginate results
 
 logging.basicConfig(level="INFO")

@@ -7,12 +7,9 @@ import traceback
 import json
 import sqlite3
 from datetime import datetime, timezone 
-from lib.rollups_api import send_notice, send_voucher, send_report, send_exception, send_post
+from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str 
-from lib.db_api import store_data, get_data
-
-
-# @TODO document functions python way 
+from lib.db_api import store_data, get_data 
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -20,25 +17,8 @@ logger = logging.getLogger(__name__)
 rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
 logger.info(f"HTTP rollup_server url is {rollup_server}")
 
-# connects to internal database
-con = sqlite3.connect("drawing.db")
-
-
 ##
-# Core functions
-
-# Prepare voucher to mint nft
-# while saving a notice
-# with nft's data
-# @param {String} msg_sender
-# @param {String} uuid
-# @param {String} erc721_to_mint
-# @param {String} mint_header
-# @param {String} imageIPFSMeta
-# @param {String} imageBase64
-# @param {String} drawing_input
-# @param {String} cmd
-
+# Core functions 
 
 def mint_erc721_with_string(
         msg_sender,
@@ -49,6 +29,25 @@ def mint_erc721_with_string(
         drawing_input,
         cmd
     ):
+    """ Prepares and requests a MINT NFT voucher.
+        Triggers the execution of the next function that 
+        emmits a notice with the voucher's drawing data.
+    Parameters
+    ----------
+    msg_sender : str
+    uuid : str
+    erc721_to_mint : str
+        The NFT's smart contract address
+    mint_header : str
+    imageIPFSMeta : str
+    imageBase64 : str
+    drawing_input : str
+    cmd : str
+    Raises
+    ------
+    Returns
+    -------
+    """
     logger.info(f"Preparing a VOUCHER for MINTING AN NFT")
     mint_header = clean_header(mint_header)
     data = encode(['address', 'string'], [msg_sender,imageIPFSMeta])
@@ -80,6 +79,23 @@ def store_drawing_data(
         drawing_input, 
         cmd
     ):
+    """ Prepares and requests a notice.
+        Triggers the execution of the next function that 
+        stores the drawing data in the sqlite database.
+    Parameters
+    ----------
+    sender : str
+    uuid : str
+    drawing_inpu : dict
+        The drawing's data
+    imageIPFSMeta : str
+    cmd : str
+    Raises
+    ------
+    Returns
+    -------
+    """
+    
     now = str(datetime.now(timezone.utc))  
     drawing = drawing_input['drawing']
     
@@ -115,6 +131,19 @@ def store_drawing_data(
 # handlers
 
 def handle_advance(data):
+    """ Handles advanced requests -
+        emitting a notice or voucher
+    Parameters
+    ----------
+    data: dict
+    Raises
+    ------
+        Exception
+    Returns
+    -------
+        status : str
+        The handling status of the request.
+    """
     logger.info(f"Received advance request") 
     status = "accept"
     payload = None
@@ -163,6 +192,18 @@ def handle_advance(data):
     return status
 
 def handle_inspect(request):
+    """ Handles inspect requests -
+        emitting reports
+    Parameters
+    ----------
+    request: dict
+    Raises
+    ------
+    Returns
+    -------
+        status : str
+        The handling status of the request.
+    """
     query_args = hex2str(request['payload'])
     logger.info(f"Received inspect request data {query_args}")
     
