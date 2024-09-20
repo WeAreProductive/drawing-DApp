@@ -3,8 +3,7 @@ import logging
 import json
 import zlib
 
-# @TODO document functions python way 
-# @TODO query binding
+# @TODO document functions python way  
 # @TODO paginate results
 
 logging.basicConfig(level="INFO")
@@ -14,6 +13,22 @@ db_filename = 'drawing.db'
 offset = 15  
 
 def get_raw_data(query_args, type):
+  """ Executes database query statement.
+  Parameters
+  ----------
+  query_args : list
+    Parameters to be bind in the query statement.
+  type : str
+    The query type to execute
+    
+  Raises
+  ------
+    Exception 
+      If error arises while execiting the database statement.
+  Returns
+  -------
+    list : drawings data
+  """
   conn = None
   try :
     conn = sqlite3.connect(db_filename) 
@@ -62,6 +77,20 @@ def get_raw_data(query_args, type):
       conn.close()
 
 def get_drawings(query_args, type):
+  """ Retrieves requested drawings data.
+  Parameters
+  ----------
+  query_args : list
+    Parameters to be bind in the query statement.
+  type : str
+    The query type to execute
+    
+  Raises
+  ------
+  Returns
+  -------
+    list : drawings data
+  """
   drawings = [] # all drawings array result 
   data_rows = get_raw_data(query_args, type)
   if data_rows:
@@ -80,10 +109,18 @@ def get_drawings(query_args, type):
   return drawings
 
 def get_drawings_by_ids(log):
+  """ Retrieves each drawing's layers
+  Parameters
+  ----------
+  log : list
+    PK of each row in drawings table. Each row represents a drawing layer. 
+  Raises
+  ------
+  Returns
+  -------
+    list : drawings layers data
+  """
   drawing_slices = []
-  parsed_log = json.loads(log)
-  # string_log = ', '.join(map(str, parsed_log)) 
-
   data_rows = get_raw_data(log, 'get_drawing_by_ids')
   if data_rows:
     # from each result get drawing_objects and add it to update_log/drawing_slices array 
@@ -105,12 +142,20 @@ def get_data(query_str):
   return drawings
 
 def insert_drawing_data(query_args): 
-  # uuid 
-  # dimensions 
-  # owner
-  # log 
-  # drawing_objects - last drawing layer
-  # action
+  """ Executes database insert query statement.
+  Parameters
+  ----------
+  query_args : list
+    Parameters to be bind in the query statement.
+  Raises
+  ------
+    Exception 
+      If error arises while execiting the database statement.
+  Returns
+  -------
+    id: int
+    The PK of the row created.
+  """
   logger.info(f"Insert {query_args}")
   uuid = query_args['uuid'] 
   owner = query_args['owner']  
@@ -126,8 +171,7 @@ def insert_drawing_data(query_args):
     
     json_log = json.dumps(log)
     logger.info(f"json_log 2 - {json_log}")
-    # else:
-      # json_log = log
+   
     cursor.execute(
         """
         INSERT INTO drawings(uuid, dimensions, date_created, owner, action, drawing_objects, log)
@@ -149,10 +193,21 @@ def insert_drawing_data(query_args):
       conn.close()
 
 def store_data(query_args): 
+  """ Executes database UPDATE query statement.
+  Parameters
+  ----------
+  query_args : list
+    Parameters to be bind in the query statement. 
+  Raises
+  ------
+    Exception 
+      If error arises while execiting the database statement.
+  Returns
+  -------
+    id : int
+    The PK of the row updated.
+  """
   conn = None
-  # for key, value in query_args.items() :
-  #   print(key)
-  #   print(value)
   id = insert_drawing_data(query_args)
   
   if id : 
@@ -175,18 +230,14 @@ def store_data(query_args):
       cursor = conn.cursor()
       
       cursor.execute(
-          
         """
         UPDATE drawings
         SET log = ?
         WHERE id = ?
         """,
         (json_log, id),
-    
       )
-
       conn.commit()
-
       id = cursor.lastrowid
       return id
 
