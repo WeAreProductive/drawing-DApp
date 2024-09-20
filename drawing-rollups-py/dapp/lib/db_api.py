@@ -39,21 +39,9 @@ def get_raw_data(query_args, type):
 
       case "get_drawings_by_uuid":
         uuids = json.loads(query_args[2])
-        string_uuids = '", "'.join(map(str,uuids))  
-        logger.info(f"get_drawings_by_uuids {string_uuids}") 
-        statement = 'SELECT * FROM drawings WHERE uuid IN(?)'
-        logger.info(statement)
-        # cursor.execute(
-        #   """
-        #   SELECT * FROM drawings
-        #   WHERE uuid = ?
-        #   AND owner = ?
-        #   LIMIT 1
-        #   """,
-        #   (query_args['owner'], query_args['uuid']),
-        # )
-        cursor.execute(statement, (string_uuids))
-        rows = cursor.fetchall() #@TODO fetch single row
+        statement = "SELECT * FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ")"   
+        cursor.execute(statement, uuids)
+        rows = cursor.fetchall() 
         return rows
 
       case "get_drawing_by_ids": 
