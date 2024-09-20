@@ -12,8 +12,7 @@ from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
 from lib.db_api import store_data, get_data
 
 
-# @TODO document functions python way
-# @TODO revise and remove obsolete variables and function declarations
+# @TODO document functions python way 
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -27,7 +26,6 @@ con = sqlite3.connect("drawing.db")
 
 ##
 # Core functions
-
 
 # Prepare voucher to mint nft
 # while saving a notice

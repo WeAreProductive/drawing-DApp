@@ -32,9 +32,8 @@ def get_raw_data(query_args, type):
 
       case "get_drawings_by_owner":
         logger.info(f"get_drawings_by_owner {query_args[2]}")
-        statement = "SELECT * FROM drawings WHERE owner LIKE '%" + query_args[2] +"%'"
-        cursor.execute(statement)
-
+        statement = "SELECT * FROM drawings WHERE owner LIKE ?"  
+        cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall()
         return rows
 
@@ -42,7 +41,7 @@ def get_raw_data(query_args, type):
         uuids = json.loads(query_args[2])
         string_uuids = '", "'.join(map(str,uuids))  
         logger.info(f"get_drawings_by_uuids {string_uuids}") 
-        statement = 'SELECT * FROM drawings WHERE uuid IN("' + string_uuids + '")'
+        statement = 'SELECT * FROM drawings WHERE uuid IN(?)'
         logger.info(statement)
         # cursor.execute(
         #   """
@@ -53,7 +52,7 @@ def get_raw_data(query_args, type):
         #   """,
         #   (query_args['owner'], query_args['uuid']),
         # )
-        cursor.execute(statement)
+        cursor.execute(statement, (string_uuids))
         rows = cursor.fetchall() #@TODO fetch single row
         return rows
 
@@ -124,15 +123,14 @@ def get_data(query_str):
   drawings = get_drawings(query_args, query_type) 
   return drawings
 
-def insert_drawing_data(query_args):
-  # @TODO waiting for 
+def insert_drawing_data(query_args): 
   # uuid 
   # dimensions 
   # owner
   # log 
   # drawing_objects - last drawing layer
   # action
-
+  logger.info(f"Insert {query_args}")
   uuid = query_args['uuid'] 
   owner = query_args['owner']  
   date_created = query_args['date_created']
