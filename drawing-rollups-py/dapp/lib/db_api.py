@@ -46,16 +46,9 @@ def get_raw_data(query_args, type):
 
       case "get_drawing_by_ids": 
           logger.info(f"get drawing data where id in array: {query_args}") 
-          statement = "SELECT drawing_objects FROM drawings WHERE id IN(" + query_args +")" 
-          # @TODO how to correctly bind WHERE IN clause
-          # cursor.execute(
-          #   """
-          #   SELECT * FROM drawings
-          #   WHERE id IN(?)
-          #   """,
-          #   (args),
-          # )
-          cursor.execute(statement)
+          log = query_args
+          statement = "SELECT drawing_objects FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"  
+          cursor.execute(statement, log)
           rows = cursor.fetchall() 
           return rows
 
@@ -89,9 +82,9 @@ def get_drawings(query_args, type):
 def get_drawings_by_ids(log):
   drawing_slices = []
   parsed_log = json.loads(log)
-  string_log = ', '.join(map(str, parsed_log)) 
+  # string_log = ', '.join(map(str, parsed_log)) 
 
-  data_rows = get_raw_data(string_log, 'get_drawing_by_ids')
+  data_rows = get_raw_data(log, 'get_drawing_by_ids')
   if data_rows:
     # from each result get drawing_objects and add it to update_log/drawing_slices array 
     for row in data_rows:
