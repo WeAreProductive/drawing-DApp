@@ -36,10 +36,9 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     }
   };
   const initCurrentDrawing = async (uuid: string) => {
-    console.log({ uuid });
     const queryStr = `drawing/uuid/${uuid}`;
     const drawingData = await inspectCall(queryStr);
-    return drawingData;
+    setCurrentDrawing(drawingData[0]);
   };
   useEffect(() => {
     initDrawingsData();

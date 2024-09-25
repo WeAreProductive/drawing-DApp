@@ -49,6 +49,13 @@ def get_raw_data(query_args, type):
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall()
         return rows
+      
+      case "get_drawing_by_uuid":
+        logger.info(f"get_drawing_by_uuid {query_args[2]}")
+        statement = "SELECT * FROM drawings WHERE uuid LIKE ? LIMIT 1"  
+        cursor.execute(statement, [query_args[2]]) 
+        rows = cursor.fetchall()
+        return rows
 
       case "get_drawings_by_uuid":
         uuids = json.loads(query_args[2])
@@ -87,10 +94,11 @@ def get_drawings(query_args, type):
   ------
   Returns
   -------
-    list : drawings data
+    list : drawings data, 'get_drawing_by_uuid' type returns list with 1 element
   """
   drawings = [] # all drawings array result 
   data_rows = get_raw_data(query_args, type)
+  logger.info(f"drawing by uuid {data_rows}")
   if data_rows:
     # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
     for row in data_rows:  
@@ -136,6 +144,9 @@ def get_data(query_str):
       query_type = 'get_drawings_by_uuid'
     else:
       query_type = 'get_all_drawings'
+  elif query_args[0] == 'drawing':
+    if 'uuid' in query_args:
+      query_type = 'get_drawing_by_uuid'
   drawings = get_drawings(query_args, query_type) 
   return drawings
 
