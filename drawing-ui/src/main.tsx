@@ -11,9 +11,16 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "drawing/:uuid?",
+        path: "drawing",
         element: <Root />,
-        errorElement: <ErrorPage />, //@TODO add dynamic message drawing not found
+        errorElement: <ErrorPage />,
+        children: [
+          {
+            path: ":uuid",
+            element: <Root />,
+            errorElement: <ErrorPage />,
+          },
+        ],
       },
     ],
   },

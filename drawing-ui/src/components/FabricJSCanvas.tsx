@@ -1,14 +1,62 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric"; // v5
 import { useCanvasContext } from "../context/CanvasContext";
-import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
-import { getCursorSvg } from "../utils";
+import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../shared/constants";
+import { getCursorSvg, snapShotJsonfromLog } from "../utils";
+import { useInspect } from "../hooks/useInspect";
+import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FabricJSCanvas = () => {
   const canvasWrapperEl = useRef<HTMLDivElement>(null);
   const canvasEl = useRef(null);
-  const { canvas, setCanvas, canvasOptions, currentDrawingData } =
-    useCanvasContext();
+  // temp error HandHelpingIcon, @TODO remove
+  const notify = (message: string) => {
+    toast.error(message, {
+      position: "top-center",
+      autoClose: false,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+      onClose: () => (location.href = "/drawing"),
+    });
+  };
+  const { inspectCall } = useInspect();
+  const { uuid } = useParams();
+  const {
+    canvas,
+    setDappState,
+    setCurrentDrawingData,
+    setRedoObjectsArr,
+    setCurrentDrawingLayer,
+    setCanvas,
+    canvasOptions,
+  } = useCanvasContext();
+  // const { owner, uuid, update_log, dimensions } = src;
+  const initCurrentDrawing = async (uuid: string) => {
+    const queryStr = `drawing/uuid/${uuid}`;
+    const drawingData = await inspectCall(queryStr);
+    if (!canvas) return;
+    console.log("load image...");
+    if (drawingData.length) {
+      const { update_log } = drawingData[0];
+
+      const snapShotJson = snapShotJsonfromLog(update_log);
+      // //fabricjs.com/fabric-intro-part-3#serialization
+      canvas.loadFromJSON(snapShotJson);
+      setDappState(DAPP_STATE.drawingUpdate);
+      setCurrentDrawingData(drawingData[0]);
+      setRedoObjectsArr([]);
+      setCurrentDrawingLayer([]);
+    } else {
+      // temp error handling with toaster
+      notify(`The drawing you're trying to load doesn't exist!`);
+    }
+  };
 
   useEffect(() => {
     const canvas = new fabric.Canvas(canvasEl.current, INITIAL_DRAWING_OPTIONS);
@@ -19,6 +67,10 @@ const FabricJSCanvas = () => {
       canvas.dispose();
     };
   }, []);
+  useEffect(() => {
+    if (!uuid) return;
+    initCurrentDrawing(uuid);
+  }, [canvas]);
 
   useEffect(() => {
     if (canvas) {
@@ -98,6 +150,17 @@ const FabricJSCanvas = () => {
           ref={canvasEl}
           width={canvasOptions.canvasWidth}
           height={canvasOptions.canvasHeight}
+        />
+        {/* @TODO remove, temp error handling */}
+        <ToastContainer
+          position="top-center"
+          autoClose={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss={false}
+          draggable={false}
+          theme="light"
         />
       </div>
     </div>

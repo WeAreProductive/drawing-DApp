@@ -13,12 +13,9 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   const [connectedWallet] = useWallets();
   const { dappState } = useCanvasContext();
   const { inspectCall } = useInspect();
-  const { uuid } = useParams();
+
   const account = connectedWallet.accounts[0].address;
   const [drawings, setDrawings] = useState<DrawingInputExtended[] | null>(null);
-  // @TODO proper place to set currentDrawing
-  const [currentDrawing, setCurrentDrawing] =
-    useState<DrawingInputExtended | null>(null);
 
   const initDrawingsData = async () => {
     if (
@@ -35,19 +32,10 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
       setDrawings(data);
     }
   };
-  const initCurrentDrawing = async (uuid: string) => {
-    const queryStr = `drawing/uuid/${uuid}`;
-    const drawingData = await inspectCall(queryStr);
-    setCurrentDrawing(drawingData[0]);
-  };
+
   useEffect(() => {
     initDrawingsData();
   }, [dappState]);
-  useEffect(() => {
-    console.log("Fetching the current drawing ...");
-    if (!uuid) return;
-    initCurrentDrawing(uuid);
-  }, []);
 
   const listRefAllDrawings = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -60,7 +48,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   return (
     <div ref={listRefAllDrawings} className="-mx-1 flex flex-wrap">
       {drawings && drawings.length > 0 ? (
-        drawings.map((drawing, idx) => {
+        drawings.map((drawing) => {
           try {
             return (
               <div key={`${drawing.uuid}`} className="w-1/2 p-2">
