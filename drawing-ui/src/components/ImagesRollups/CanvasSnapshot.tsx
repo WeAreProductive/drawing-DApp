@@ -27,7 +27,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const parsedDimensions = JSON.parse(dimensions);
   return (
     <div className="rounded-lg border bg-background p-2">
-      <Link to={`/drawing/${uuid}1`} reloadDocument>
+      <Link to={`/drawing/${uuid}`} reloadDocument>
         <div>
           <DrawingPreview
             dimensions={parsedDimensions}
