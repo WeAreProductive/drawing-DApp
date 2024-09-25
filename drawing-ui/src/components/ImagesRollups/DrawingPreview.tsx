@@ -12,7 +12,6 @@ const DrawingPreview = ({
   const [url, setUrl] = useState("");
 
   useEffect(() => {
-    console.log(typeof dimensions);
     const canvas = new fabric.Canvas(null, {
       width: dimensions?.width | 600,
       height: dimensions?.height | 600,

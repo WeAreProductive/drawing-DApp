@@ -13,7 +13,7 @@ const router = createBrowserRouter([
       {
         path: "drawing/:uuid?",
         element: <Root />,
-        // loader: drawingLoader,
+        errorElement: <ErrorPage />, //@TODO add dynamic message drawing not found
       },
     ],
   },
