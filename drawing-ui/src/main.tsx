@@ -9,6 +9,13 @@ const router = createBrowserRouter([
     path: "/",
     element: <Root />,
     errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "drawing/:uuid?",
+        element: <Root />,
+        // loader: drawingLoader,
+      },
+    ],
   },
 ]);
 
