@@ -54,24 +54,26 @@ def get_raw_data(query_args, type):
   try :
     conn = sqlite3.connect(db_filename) 
     cursor = conn.cursor()
+    # @TODO optimise query here - fetch only required data
     match type:
       case "get_all_drawings": 
           print("get_all_drawings") 
           offset = get_query_offset(page) 
           cursor.execute(
               """
-              SELECT * FROM drawings ORDER BY id DESC LIMIT ? OFFSET ?
+              SELECT *, (select count(*) from drawings) as total_rows FROM drawings ORDER BY id DESC LIMIT ? OFFSET ?
               """,
               (limit, offset),
             )
           rows = cursor.fetchall()
+          logger.infor(f"CURRENT ROWS {len(rows)}")
           return rows
 
       case "get_drawings_by_owner":
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         owner = query_args[2] 
         offset = get_query_offset(page) 
-        statement = "SELECT * FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
+        statement = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
         cursor.execute(statement, [owner, limit, offset]) 
         rows = cursor.fetchall()
         return rows
