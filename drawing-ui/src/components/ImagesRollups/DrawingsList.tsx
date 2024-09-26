@@ -9,15 +9,21 @@ type DrawingsListProp = {
   drawingsType: string;
 };
 const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
+  // @TODO refractor fetching drawings
+  // @TODO set hasNext, page number => get from the response
   const [connectedWallet] = useWallets();
   const { dappState } = useCanvasContext();
   const { inspectCall } = useInspect();
-
-  const account = connectedWallet.accounts[0].address;
   const [drawings, setDrawings] = useState<DrawingInputExtended[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState({
+    error: false,
+    message: "",
+  });
   const [page, setPage] = useState(1);
+  const [hasNext, setHasNext] = useState(false); // BE check that results < Offset and send has_next = False
+
+  const account = connectedWallet.accounts[0].address;
   const observerTarget = useRef(null);
   const initDrawingsData = async () => {
     if (
@@ -26,9 +32,9 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     ) {
       let queryString = "";
       if (drawingsType == "all") {
-        queryString = "drawings";
+        queryString = "drawings/page/1";
       } else if (drawingsType == "user") {
-        queryString = `drawings/owner/${account}`;
+        queryString = `drawings/owner/${account}/page/1`;
       }
       const data = await inspectCall(queryString);
       setDrawings(data);
@@ -37,12 +43,12 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   const fetchData = async () => {
     console.log("Fetching more drawings");
     setIsLoading(true);
-    setError(null);
+    setError({ error: false, message: "" });
     let queryString = "";
     if (drawingsType == "all") {
-      queryString = "drawings";
+      queryString = `drawings/page/${page}`;
     } else if (drawingsType == "user") {
-      queryString = `drawings/owner/${account}`;
+      queryString = `drawings/owner/${account}/page/${page}`;
     }
     const data = await inspectCall(queryString);
     setDrawings((prevItems) => [...prevItems, ...data]);
@@ -109,8 +115,9 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
       ) : (
         <div className="p-2">Canvas shanpshots will appear here...</div>
       )}
+      {/* @TODO loader component */}
       {isLoading && <p>Loading...</p>}
-      {error && <p>Error: {error.message}</p>}
+      {error?.error && <p>Error: {error.message}</p>}
       <div ref={observerTarget}></div>
     </div>
   );

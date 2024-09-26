@@ -34,19 +34,24 @@ def get_raw_data(query_args, type):
     match type:
       case "get_all_drawings": 
           print("get_all_drawings") 
+          # @TODO the limit
+          limit = 10 
           cursor.execute(
               """
-              SELECT * FROM drawings ORDER BY id DESC
+              SELECT * FROM drawings ORDER BY id DESC LIMIT ? OFFSET ?
               """,
-              (),
+              (limit, offset),
             )
           rows = cursor.fetchall()
           return rows
 
       case "get_drawings_by_owner":
         logger.info(f"get_drawings_by_owner {query_args[2]}")
-        statement = "SELECT * FROM drawings WHERE owner LIKE ? ORDER BY id DESC"  
-        cursor.execute(statement, [query_args[2]]) 
+        owner = query_args[2]
+        # @TODO the limit
+        limit = 10 
+        statement = "SELECT * FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
+        cursor.execute(statement, [owner, limit, offset]) 
         rows = cursor.fetchall()
         return rows
       
