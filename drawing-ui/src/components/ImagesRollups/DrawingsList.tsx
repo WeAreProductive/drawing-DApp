@@ -37,16 +37,8 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     initDrawingsData();
   }, [dappState]);
 
-  const listRefAllDrawings = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    listRefAllDrawings.current?.lastElementChild?.scrollIntoView({
-      behavior: "smooth",
-      block: "end",
-      inline: "nearest",
-    });
-  }, [drawings]);
   return (
-    <div ref={listRefAllDrawings} className="-mx-1 flex flex-wrap">
+    <div className="-mx-1 flex flex-wrap">
       {drawings && drawings.length > 0 ? (
         drawings.map((drawing) => {
           try {
