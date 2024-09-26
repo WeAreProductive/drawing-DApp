@@ -36,7 +36,7 @@ def get_raw_data(query_args, type):
           print("get_all_drawings") 
           cursor.execute(
               """
-              SELECT * FROM drawings
+              SELECT * FROM drawings ORDER BY id DESC
               """,
               (),
             )
@@ -45,7 +45,7 @@ def get_raw_data(query_args, type):
 
       case "get_drawings_by_owner":
         logger.info(f"get_drawings_by_owner {query_args[2]}")
-        statement = "SELECT * FROM drawings WHERE owner LIKE ?"  
+        statement = "SELECT * FROM drawings WHERE owner LIKE ? ORDER BY id DESC"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall()
         return rows
