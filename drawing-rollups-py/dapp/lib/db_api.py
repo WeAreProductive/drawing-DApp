@@ -8,8 +8,26 @@ logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
 db_filename = 'drawing.db'  
-offset = 15  
-
+limit = 6
+def get_query_offset(page):
+  """ Calculates the OFFSET parameter in query statements.
+  Parameters
+  ----------
+  page : string 
+    
+  Raises
+  ------
+  Returns
+  -------
+    offset: number
+  """
+  offset = 0
+  if page:
+    if page > 0:
+      offset = (page -1) * limit 
+  return offset
+  
+    
 def get_raw_data(query_args, type):
   """ Executes database query statement.
   Parameters
@@ -28,14 +46,18 @@ def get_raw_data(query_args, type):
     list : drawings data
   """
   conn = None
+  #  ['drawings', 'owner', '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 'page', '1']
+  page = 1
+
+  if len(query_args) > 3:
+    page = int(query_args[4])
   try :
     conn = sqlite3.connect(db_filename) 
     cursor = conn.cursor()
     match type:
       case "get_all_drawings": 
           print("get_all_drawings") 
-          # @TODO the limit
-          limit = 10 
+          offset = get_query_offset(page) 
           cursor.execute(
               """
               SELECT * FROM drawings ORDER BY id DESC LIMIT ? OFFSET ?
@@ -47,9 +69,8 @@ def get_raw_data(query_args, type):
 
       case "get_drawings_by_owner":
         logger.info(f"get_drawings_by_owner {query_args[2]}")
-        owner = query_args[2]
-        # @TODO the limit
-        limit = 10 
+        owner = query_args[2] 
+        offset = get_query_offset(page) 
         statement = "SELECT * FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
         cursor.execute(statement, [owner, limit, offset]) 
         rows = cursor.fetchall()
@@ -102,8 +123,7 @@ def get_drawings(query_args, type):
     list : drawings data, 'get_drawing_by_uuid' type returns list with 1 element
   """
   drawings = [] # all drawings array result 
-  data_rows = get_raw_data(query_args, type)
-  logger.info(f"drawing by uuid {data_rows}")
+  data_rows = get_raw_data(query_args, type) 
   if data_rows:
     # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
     for row in data_rows:  
@@ -141,14 +161,18 @@ def get_drawings_by_ids(log):
 
 def get_data(query_str):
   query_args = query_str.split('/')  
+  logger.info(f"query args as list {query_args}")
+  #  ['drawings', 'owner', '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 'page', '1']
   # decide which get-data handler to use 
   if query_args[0] == 'drawings':
     if 'owner' in query_args:
+       # paginated, expects 5 elements in query_args
       query_type = 'get_drawings_by_owner'
     elif 'uuids' in query_args:
       query_type = 'get_drawings_by_uuid'
     else:
-      query_type = 'get_all_drawings'
+      # paginated, expects 5 elements in query_args
+      query_type = 'get_all_drawings' 
   elif query_args[0] == 'drawing':
     if 'uuid' in query_args:
       query_type = 'get_drawing_by_uuid'
