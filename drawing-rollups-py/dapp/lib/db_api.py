@@ -28,7 +28,7 @@ def get_query_offset(page):
   return offset
   
     
-def get_raw_data(query_args, type):
+def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.
   Parameters
   ----------
@@ -36,6 +36,8 @@ def get_raw_data(query_args, type):
     Parameters to be bind in the query statement.
   type : str
     The query type to execute
+  page : integer
+    Result offset
     
   Raises
   ------
@@ -45,12 +47,7 @@ def get_raw_data(query_args, type):
   -------
     list : drawings data
   """
-  conn = None
-  #  ['drawings', 'owner', '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 'page', '1']
-  page = 1
-
-  if len(query_args) > 3:
-    page = int(query_args[4])
+  conn = None 
   try :
     conn = sqlite3.connect(db_filename) 
     cursor = conn.cursor()
@@ -66,7 +63,7 @@ def get_raw_data(query_args, type):
               (limit, offset),
             )
           rows = cursor.fetchall()
-          logger.infor(f"CURRENT ROWS {len(rows)}")
+          logger.info(f"CURRENT ROWS {len(rows)}")
           return rows
 
       case "get_drawings_by_owner":
@@ -109,7 +106,7 @@ def get_raw_data(query_args, type):
     if conn:
       conn.close()
 
-def get_drawings(query_args, type):
+def get_drawings(query_args, type, page):
   """ Retrieves requested drawings data.
   Parameters
   ----------
@@ -117,7 +114,8 @@ def get_drawings(query_args, type):
     Parameters to be bind in the query statement.
   type : str
     The query type to execute
-    
+  page : integer
+    Result offset
   Raises
   ------
   Returns
@@ -125,7 +123,7 @@ def get_drawings(query_args, type):
     list : drawings data, 'get_drawing_by_uuid' type returns list with 1 element
   """
   drawings = [] # all drawings array result 
-  data_rows = get_raw_data(query_args, type) 
+  data_rows = get_raw_data(query_args, type, page) 
   if data_rows:
     # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
     for row in data_rows:  
@@ -162,23 +160,27 @@ def get_drawings_by_ids(log):
   return drawing_slices
 
 def get_data(query_str):
-  query_args = query_str.split('/')  
-  logger.info(f"query args as list {query_args}")
-  #  ['drawings', 'owner', '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 'page', '1']
+  query_args = query_str.split('/')
+  page = 1 # default value
   # decide which get-data handler to use 
   if query_args[0] == 'drawings':
     if 'owner' in query_args:
-       # paginated, expects 5 elements in query_args
+      # paginated, expects 5 elements in query_args
+      # ['drawings', 'owner', '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 'page', '1']
       query_type = 'get_drawings_by_owner'
+      page = int(query_args[4])
     elif 'uuids' in query_args:
       query_type = 'get_drawings_by_uuid'
     else:
-      # paginated, expects 5 elements in query_args
+      # paginated, expects 3 elements in query_args
+      # ['drawings', 'page', '1']
       query_type = 'get_all_drawings' 
+      page = int(query_args[2])
   elif query_args[0] == 'drawing':
     if 'uuid' in query_args:
       query_type = 'get_drawing_by_uuid'
-  drawings = get_drawings(query_args, query_type) 
+
+  drawings = get_drawings(query_args, query_type, page) 
   return drawings
 
 def insert_drawing_data(query_args): 
