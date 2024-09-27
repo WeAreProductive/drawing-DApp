@@ -67,13 +67,23 @@ export type VoucherExtended = {
   proof?: any;
   executed?: any;
   msg?: string;
-  drawing?: string;
+  drawingUUID?: string;
   events?: any;
 };
-
+// sent Drawings data
 export interface DrawingInput {
-  drawing: string; // svg's json string
-  dimensions: { width: number; height: number };
+  drawing: string;
+  dimensions: CanvasDimensions;
+  log: string[];
+}
+// received Drawings data
+export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
+  uuid: string;
+  owner: string; //last painter's account
+  update_log: string[];
+  voucher_requested?: boolean;
+  date_created?: string; // date-time string
+  dimensions: string;
 }
 export type DrawingObject = { [key: string]: any };
 export type UpdateLogItem = {
@@ -83,15 +93,6 @@ export type UpdateLogItem = {
   drawing_objects: DrawingObject[];
 };
 export type UpdateLog = UpdateLogItem[];
-export interface DrawingInputExtended extends DrawingInput {
-  id: string; // creator's account - timestamp
-  uuid: string;
-  date_created: string; // date-time string
-  last_updated: null | string; // last update date-time string
-  owner: string; //last painter's account
-  update_log: UpdateLog;
-  voucher_requested: boolean;
-}
 
 export type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;
@@ -121,7 +122,7 @@ export type RollupsContracts = {
 
 export type RollupsInteractions = {
   contracts?: RollupsContracts;
-  sendInput: (strInput: string) => void;
+  sendInput: (strInput: string) => Promise<void>;
   executeVoucher: (
     voucher: VoucherExtended,
   ) => Promise<VoucherExtended | undefined>;

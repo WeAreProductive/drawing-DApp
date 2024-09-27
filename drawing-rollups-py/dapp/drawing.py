@@ -5,21 +5,11 @@ import requests
 from eth_abi import encode
 import traceback
 import json
+import sqlite3
 from datetime import datetime, timezone 
-
-# # @TODO
-# 1 - check the dApp is bulding
-# 2 - check is working on host mode - 
-# ------- emits vouchers
-# 3 - check is working on prod mode - 
-# ------- emits notices
-# ------- emits vouchers
-# ------- minting
-
-# @TODO move helper functions in utils file/folder
-# document functions in python
-# @TODO move api - post, get request functions in rollups-api file/folder
-# @TODO revise and remove obsolete variables and function declarations
+from lib.rollups_api import send_notice, send_voucher, send_report
+from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str 
+from lib.db_api import store_data, get_data 
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -28,92 +18,7 @@ rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
 logger.info(f"HTTP rollup_server url is {rollup_server}")
 
 ##
-# Helper Functions 
-
-def str2hex(string):
-    """
-    Encode a string as a hex string
-    """
-    return binary2hex(str2binary(string))
-
-def str2binary(string):
-    """
-    Encode a string as a binary string
-    """
-    return string.encode("utf-8")
-
-def binary2hex(binary):
-    """
-    Encode a binary as a hex string
-    """
-    return "0x" + binary.hex()
-
-
-def hex2binary(hexstr):
-    """
-    Decodes a hex string into a regular byte string
-    """
-    return bytes.fromhex(hexstr[2:])
-
-def hex2str(hexstr):
-    """
-    Decodes a hex string into a regular string
-    """
-    return hex2binary(hexstr).decode("utf-8")
-
-def decompress(hexstr): 
-    """
-    Decodes a hex string into a bytearray
-    The bytearray is compressed data
-    """
-    bytearray_data = bytearray.fromhex(hexstr[2:])
-    decompressed = zlib.decompress(bytearray_data)
-
-    return decompressed
-
-def clean_header(mint_header):
-    if mint_header[:2] == "0x":
-        mint_header = mint_header[2:]
-    mint_header = bytes.fromhex(mint_header)
-    return mint_header
-
-
-## 
-# Api functions
-
-def send_voucher(voucher):
-    send_post("voucher",voucher)
-
-def send_notice(notice):
-    send_post("notice",notice)
-
-def send_report(report):
-    send_post("report",report)
-
-def send_exception(exception):
-    send_post("exception",exception)
-
-def send_post(endpoint,json_data):
-    response = requests.post(rollup_server + f"/{endpoint}", json=json_data)
-    logger.info(f"/{endpoint}: Received response status {response.status_code} body {response.content}")
-
-
-##
-# Core functions
-
-
-# Prepare voucher to mint nft
-# while saving a notice
-# with nft's data
-# @param {String} msg_sender
-# @param {String} uuid
-# @param {String} erc721_to_mint
-# @param {String} mint_header
-# @param {String} imageIPFSMeta
-# @param {String} imageBase64
-# @param {String} drawing_input
-# @param {String} cmd
-
+# Core functions 
 
 def mint_erc721_with_string(
         msg_sender,
@@ -124,6 +29,25 @@ def mint_erc721_with_string(
         drawing_input,
         cmd
     ):
+    """ Prepares and requests a MINT NFT voucher.
+        Triggers the execution of the next function that 
+        emmits a notice with the voucher's drawing data.
+    Parameters
+    ----------
+    msg_sender : str
+    uuid : str
+    erc721_to_mint : str
+        The NFT's smart contract address
+    mint_header : str
+    imageIPFSMeta : str
+    imageBase64 : str
+    drawing_input : str
+    cmd : str
+    Raises
+    ------
+    Returns
+    -------
+    """
     logger.info(f"Preparing a VOUCHER for MINTING AN NFT")
     mint_header = clean_header(mint_header)
     data = encode(['address', 'string'], [msg_sender,imageIPFSMeta])
@@ -155,55 +79,71 @@ def store_drawing_data(
         drawing_input, 
         cmd
     ):
-    now = str(datetime.now(timezone.utc)) 
-    logger.info(f"Preparing notice payload")
+    """ Prepares and requests a notice.
+        Triggers the execution of the next function that 
+        stores the drawing data in the sqlite database.
+    Parameters
+    ----------
+    sender : str
+    uuid : str
+    drawing_inpu : dict
+        The drawing's data
+    imageIPFSMeta : str
+    cmd : str
+    Raises
+    ------
+    Returns
+    -------
+    """
+    
+    now = str(datetime.now(timezone.utc))  
     drawing = drawing_input['drawing']
     
     parsed_drawing = json.loads(drawing)
     content = parsed_drawing['content']
-   
-    new_log_item = { 
-        "date_updated": now,
-        "painter": sender, # @TODO use owner
-        "action": cmd,
-        "drawing_objects": content # tracks the drawing layers (the canvas drawing objects of each drawing session)
-    } 
-
-    if cmd == 'cn' or cmd == 'cv':
-        # set drawing id wneh new drawing
-        # unix_timestamp = str((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds())
-        # drawing_input["id"]= f"{sender}-{unix_timestamp}"
-        drawing_input["uuid"]= uuid
-        drawing_input["owner"] = sender
-        drawing_input["date_created"]= now 
-        drawing_input["last_updated"] = now
-        drawing_input["update_log"] = []
-        drawing_input["update_log"].append(new_log_item) 
-        if cmd == 'cv':
-            drawing_input['voucher_requested'] = True
-        else:
-            drawing_input['voucher_requested'] = False
-    elif cmd == 'un' or cmd == 'uv':
-        drawing_input["uuid"]= uuid
-        drawing_input["owner"] = sender
-        drawing_input["last_updated"] = now
-        drawing_input["update_log"].append(new_log_item)
-        if cmd == 'uv':
-            drawing_input['voucher_requested'] = True 
     
-    compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8"))
-    logger.info(f"Compressed payload {compressed}") 
+    drawing_input["uuid"]= uuid
+    drawing_input["owner"] = sender
+    drawing_input["date_created"] = now  
+    drawing_input["action"] = cmd  
+    drawing_input["drawing_objects"] = content
+    
+    if cmd == 'cn' or cmd == 'cv':
+        # drawing_input['log'] = [] #init log
+        if cmd == 'cv':
+            drawing_input['voucher_requested'] = True # not in db
+        else:
+            drawing_input['voucher_requested'] = False # not in db
+    elif cmd == 'un' or cmd == 'uv': 
+        if cmd == 'uv':
+            drawing_input['voucher_requested'] = True # not in db
+    
+    compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
     # uint8array to hex
-    payload = binary2hex(compressed)
-    logger.info(f"Hexed {payload}") 
+    payload = binary2hex(compressed) 
 
     notice = {"payload": payload}
     send_notice(notice)
+    store_data(drawing_input) 
+
 
 ###
 # handlers
 
 def handle_advance(data):
+    """ Handles advanced requests -
+        emitting a notice or voucher
+    Parameters
+    ----------
+    data: dict
+    Raises
+    ------
+        Exception
+    Returns
+    -------
+        status : str
+        The handling status of the request.
+    """
     logger.info(f"Received advance request") 
     status = "accept"
     payload = None
@@ -252,11 +192,27 @@ def handle_advance(data):
     return status
 
 def handle_inspect(request):
-    data = request["data"]
-    logger.info(f"Received inspect request data ")
-    logger.info("Adding report")
-    report = {"payload": data["payload"]}
-    send_report(report)
+    """ Handles inspect requests -
+        emitting reports
+    Parameters
+    ----------
+    request: dict
+    Raises
+    ------
+    Returns
+    -------
+        status : str
+        The handling status of the request.
+    """
+    query_args = hex2str(request['payload'])
+    logger.info(f"Received inspect request data {query_args}")
+    
+    data = get_data(query_args)
+    logger.info("Adding report") 
+    compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
+    # uint8array to hex
+    payload = binary2hex(compressed)  
+    send_report({"payload": payload})    
     return "accept"
 
 handlers = {
@@ -271,6 +227,7 @@ while True:
     logger.info("Sending finish")
     response = requests.post(rollup_server + "/finish", json=finish)
     logger.info(f"Received finish status {response.status_code}")
+   
     if response.status_code == 202:
         logger.info("No pending rollup request, trying again")
     else:

@@ -3,7 +3,7 @@ import { useCanvasContext } from "../../context/CanvasContext";
 import { INITIAL_DRAWING_OPTIONS } from "../../shared/constants";
 
 const ColorControl = () => {
-  const { canvasOptions, setOptions, canvas } = useCanvasContext();
+  const { canvasOptions, setOptions } = useCanvasContext();
   const [color, setColor] = useState(INITIAL_DRAWING_OPTIONS.color);
   const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setColor(e.target.value);
@@ -13,7 +13,7 @@ const ColorControl = () => {
     <div className="relative flex items-center">
       <label
         htmlFor="drawing-color"
-        className="relative z-10 mr-2 inline-block h-6 w-6 cursor-pointer rounded-full bg-gray-200"
+        className="relative z-10 inline-block w-6 h-6 mr-2 bg-gray-200 rounded-full cursor-pointer"
         style={{ backgroundColor: color }}
       >
         <span className="sr-only">Change color</span>
@@ -22,7 +22,7 @@ const ColorControl = () => {
         type="color"
         value={color}
         id="drawing-color"
-        className="absolute inset-0 -z-0 h-6 w-6 overflow-hidden opacity-0"
+        className="absolute inset-0 w-6 h-6 overflow-hidden opacity-0 -z-0"
         onChange={handleColorChange}
       />
     </div>

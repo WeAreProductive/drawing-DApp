@@ -127,16 +127,18 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         toast.success("Transaction Confirmed", {
           description: `Input added => index: ${event?.args?.inputIndex} `,
         });
+        setDappState(DAPP_STATE.refetchDrawings);
       } else {
         toast.error("Transaction Error 1", {
           description: `Input not added => index: ${event?.args?.inputIndex} `,
         });
       }
-      if (!canvas) return;
-      if (!canvas.isDrawingMode) {
-        canvas.isDrawingMode = true;
-        canvas.discardActiveObject();
-        canvas.renderAll();
+      if (canvas) {
+        if (!canvas.isDrawingMode) {
+          canvas.isDrawingMode = true;
+          canvas.discardActiveObject();
+          canvas.renderAll();
+        }
       }
     } catch (e: any) {
       const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";

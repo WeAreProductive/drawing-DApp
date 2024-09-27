@@ -13,10 +13,13 @@ This DApp's back-end is written in Python, so to run it in your machine you need
 Then in order to start the back-end, run the following commands in a dedicated terminal:
 
 ```shell
+
+python3 ./sqlite.py
+
 cd dapp
 python3 -m venv .venv
 . .venv/bin/activate
-pip install -r requirements-host.txt
+pip install -r requirements.txt
 ROLLUP_HTTP_SERVER_URL="http://localhost:8080/host-runner" python3 drawing.py
 ```
 
@@ -32,3 +35,20 @@ INFO:**main**:Sending finish
 After that, you can interact with the application normally as explained in the README.md in the project's root directory.
 
 Keep in mind that vouchers cannot be executed when the dApp is running in a development mode.
+
+# inspect requests - endpoints and response
+
+/drawings/all - returns all drawings grouped by uuid with pagination
+
+/drawings/owner/{address} - returns all drawings for a given address grouped by uuid with pagination
+drawing/{uuid} - returns single drawing data for the given uuid
+
+# /drawings (page=1) query_args: [drawings]
+
+# /drawings/page/33 (page=33) query_args: [drawings, page, 33]
+
+# /drawings/owner/{address} (page=1) query_args: [drawings, owner, {address}]
+
+# /drawings/owner/{address}/page/33 (page=33) query_args: [drawings, owner, {address}, page, 33]
+
+# /drawings/uuids/{uuids}/ query_args: [drawing, uuids, {uuids}]

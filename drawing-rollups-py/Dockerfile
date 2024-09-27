@@ -37,9 +37,10 @@ find /usr/local/lib -type d -name __pycache__ -exec rm -r {} +
 EOF
 
 COPY dapp/drawing.py .
-COPY dapp/entrypoint.sh .
+COPY dapp/lib lib
+# COPY dapp/entrypoint.sh .
 
-COPY ./sqlite.py .
+COPY dapp/sqlite.py .
 
 RUN python3 ./sqlite.py 
 RUN chmod -R a+w .

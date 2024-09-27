@@ -1,6 +1,6 @@
 import { useCanvasContext } from "../../context/CanvasContext";
 import { DAPP_STATE } from "../../shared/constants";
-import { DrawingInputExtended } from "../../shared/types";
+import { CanvasDimensions, DrawingInputExtended } from "../../shared/types";
 import { sliceAccountStr, snapShotJsonfromLog } from "../../utils";
 import { useMemo, useState } from "react";
 import DrawingPreview from "./DrawingPreview";
@@ -40,10 +40,14 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     const label = showSteps ? true : false;
     setShowLabel(label);
   };
+  const parsedDimensions = JSON.parse(dimensions);
   return (
-    <div className="rounded-lg border bg-background p-2">
+    <div className="p-2 border rounded-lg bg-background">
       <div onClick={loadCanvasFromImage}>
-        <DrawingPreview dimensions={dimensions} snapShotJson={snapShotJson} />
+        <DrawingPreview
+          dimensions={parsedDimensions}
+          snapShotJson={snapShotJson}
+        />
       </div>
       <span className="block text-xs">Owner: {sliceAccountStr(owner)}</span>
       <span className="block text-xs">ID: {uuid}</span>
@@ -60,7 +64,10 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         {showLabel ? <Layers /> : <MinusCircle />}
       </span>
       {showSteps ? (
-        <DrawingStepsPreview dimensions={dimensions} updateLog={update_log} />
+        <DrawingStepsPreview
+          dimensions={parsedDimensions}
+          updateLog={update_log}
+        />
       ) : (
         ""
       )}

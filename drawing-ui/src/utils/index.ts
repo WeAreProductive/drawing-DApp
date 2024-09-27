@@ -9,12 +9,7 @@ import {
   VALIDATE_INPUT_ERRORS,
 } from "../shared/constants";
 import prettyBytes from "pretty-bytes";
-import {
-  DrawingInputExtended,
-  DrawingObject,
-  UpdateLog,
-  UpdateLogItem,
-} from "../shared/types";
+import { DrawingInputExtended, DrawingObject } from "../shared/types";
 
 export const srcToJson = (src: string) => {
   return src.replace(".png", ".json");
@@ -33,12 +28,10 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export const validateInputSize = (
-  currentDrawingData: DrawingInputExtended | null,
   strInput: string,
   isActiveDrawing: boolean = false,
 ) => {
   const drawingNoticePayload = {
-    ...currentDrawingData,
     drawing: strInput, // FE updates the svg string
   };
   const compressed = pako.deflate(JSON.stringify(drawingNoticePayload));
@@ -137,7 +130,7 @@ export const deserializeArrElements = (arr: string[]) => {
 export const latestDrawingObjects = (
   arrObjFull: DrawingObject[],
   arrObjInitial: DrawingObject[],
-) => {
+): DrawingObject[] => {
   // use arrays of serializes objects to compare them as strings for equality!
   const serializedFull = serializeArrElements(arrObjFull);
   const serializedInitial = serializeArrElements(arrObjInitial);
@@ -168,7 +161,7 @@ export const prepareDrawingObjectsArrays = (
       if (update_log.length) {
         // array of objects for each drawing session
         update_log.forEach((element) => {
-          storedDrawingObj.push(element.drawing_objects);
+          storedDrawingObj.push(JSON.parse(element));
         });
         // get all drawing_objects arrays and merge to one
       }
@@ -184,10 +177,11 @@ export const prepareDrawingObjectsArrays = (
   }
   return currentDrawingObjects;
 };
-export const snapShotJsonfromLog = (update_log: UpdateLog): string => {
+export const snapShotJsonfromLog = (update_log: string[]): string => {
   const drawingObjectsArr: DrawingObject[] = [];
-  update_log.forEach((element: UpdateLogItem) => {
-    drawingObjectsArr.push(element.drawing_objects);
+  update_log.forEach((element: string) => {
+    const parsedElement = JSON.parse(element);
+    drawingObjectsArr.push(parsedElement);
   });
   const snapShot = drawingObjectsArr.flat();
   return JSON.stringify({ objects: snapShot });
