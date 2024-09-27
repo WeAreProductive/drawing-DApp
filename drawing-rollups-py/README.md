@@ -41,7 +41,10 @@ Keep in mind that vouchers cannot be executed when the dApp is running in a deve
 /drawings/all - returns all drawings grouped by uuid with pagination
 
 /drawings/owner/{address} - returns all drawings for a given address grouped by uuid with pagination
-drawing/{uuid} - returns single drawing data for the given uuid
+
+/drawings/uuids/{uuids}/ - returns all drawing for the array of uuids
+
+/drawing/{uuid} - returns a single drawing data for the given uuid
 
 # /drawings (page=1) query_args: [drawings]
 
@@ -51,4 +54,6 @@ drawing/{uuid} - returns single drawing data for the given uuid
 
 # /drawings/owner/{address}/page/33 (page=33) query_args: [drawings, owner, {address}, page, 33]
 
-# /drawings/uuids/{uuids}/ query_args: [drawing, uuids, {uuids}]
+# /drawings/uuids/{uuids}/ query_args: [drawings, uuids, {uuids}]
+
+# /drawing/uuid/{uuids}/ query_args: [drawing, uuid, {uuid}]

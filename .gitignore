@@ -2,11 +2,11 @@
 node_modules/  
 .env
 .turbo
-drawing-api/public/
-TODO.md
+drawing-api/public/ 
+todo.txt
  
 
 drawing-rollups-py/dapp/.venv
 drawing-rollups-py/.cartesi 
 drawing-rollups-py/dapp/lib/__pycache__
-drawing-rollups-py/dapp/drawing.db
+drawing-rollups-py/dapp/drawing.db 
