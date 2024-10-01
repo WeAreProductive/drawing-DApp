@@ -9,8 +9,6 @@ type DrawingsListProp = {
   drawingsType: string;
 };
 const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
-  // @TODO refractor fetching drawings
-  // @TODO set hasNext, page number => get from the response
   const [connectedWallet] = useWallets();
   const { dappState } = useCanvasContext();
   const { inspectCall } = useInspect();
@@ -28,14 +26,12 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   const observer = useRef(
     new IntersectionObserver((entries) => {
       const first = entries[0];
-      console.log(first.isIntersecting);
       if (first.isIntersecting) {
         setFetch(true);
       }
     }),
   );
   useEffect(() => {
-    console.log({ fetch });
     if (fetch) {
       fetchData();
     }
@@ -78,27 +74,29 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     }
   };
   const fetchData = async () => {
-    console.log(`Fetching more drawings - page: ${page}`);
-    if (page == 0 || page == undefined) return;
-    setIsLoading(true);
-    setFetch(false);
-    setError({ error: false, message: "" });
-    let queryString = "";
-    if (drawingsType == "all") {
-      queryString = `drawings/page/${page}`;
-    } else if (drawingsType == "user") {
-      queryString = `drawings/owner/${account}/page/${page}`;
+    if (dappState == DAPP_STATE.refetchDrawings) {
+      console.log(`Fetching more drawings - page: ${page}`);
+      if (page == 0 || page == undefined) return;
+      setIsLoading(true);
+      setFetch(false);
+      setError({ error: false, message: "" });
+      let queryString = "";
+      if (drawingsType == "all") {
+        queryString = `drawings/page/${page}`;
+      } else if (drawingsType == "user") {
+        queryString = `drawings/owner/${account}/page/${page}`;
+      }
+      const data = await inspectCall(queryString);
+      const { next_page, drawings } = data;
+      if (drawings) setDrawings((prevItems) => [...prevItems, ...drawings]);
+      setPage(next_page);
+      setIsLoading(false);
     }
-    const data = await inspectCall(queryString);
-    const { next_page, drawings } = data;
-    if (drawings) setDrawings((prevItems) => [...prevItems, ...drawings]);
-    setPage(next_page);
-    setIsLoading(false);
   };
 
   useEffect(() => {
     initDrawingsData();
-  }, [dappState]);
+  }, [dappState, account]);
 
   return (
     <div className="flex flex-wrap -mx-1">
@@ -125,8 +123,6 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
       ) : (
         <div className="p-2">Canvas shanpshots will appear here...</div>
       )}
-
-      {/* {isLoading && page != 0 && <p>Loading...</p>} */}
       {error?.error && <p>Error: {error.message}</p>}
     </div>
   );

@@ -8,7 +8,7 @@ logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
 db_filename = 'drawing.db'  
-limit = 6
+limit = 8
 def get_query_offset(page):
   """ Calculates the OFFSET parameter in query statements.
   Parameters
