@@ -159,8 +159,7 @@ def get_drawings(query_args, type, page):
    
     # result['has_next'] = has_next
     result['next_page'] = next_page
-    result['drawings'] = drawings
-    logger.info(f"DRAWINGS {result}")
+    result['drawings'] = drawings 
     
   return result
 

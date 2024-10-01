@@ -21,23 +21,25 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     message: "",
   });
   const [page, setPage] = useState(1);
-  const [hasNext, setHasNext] = useState(false); // BE check that results < Offset and send has_next = False
+
   const [lastElement, setLastElement] = useState(null);
   const [fetch, setFetch] = useState(false);
   const account = connectedWallet.accounts[0].address;
   const observer = useRef(
     new IntersectionObserver((entries) => {
       const first = entries[0];
+      console.log(first.isIntersecting);
       if (first.isIntersecting) {
         setFetch(true);
       }
     }),
   );
   useEffect(() => {
+    console.log({ fetch });
     if (fetch) {
       fetchData();
     }
-  }, [fetch]);
+  }, [fetch, page]);
   useEffect(() => {
     const currentElement = lastElement;
     const currentObserver = observer.current;
@@ -51,9 +53,13 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
         currentObserver.unobserve(currentElement);
       }
     };
-  }, [lastElement]);
+  }, [lastElement, dappState]);
 
   const initDrawingsData = async () => {
+    console.log("Init drawing data ...");
+    console.log(`Dapp state ${dappState}`);
+    setFetch(false);
+    setIsLoading(true);
     if (
       dappState == DAPP_STATE.canvasInit ||
       dappState == DAPP_STATE.refetchDrawings
@@ -65,14 +71,14 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
         queryString = `drawings/owner/${account}/page/1`;
       }
       const data = await inspectCall(queryString);
-      const { has_next, next_page, drawings } = data;
+      const { next_page, drawings } = data;
       setDrawings(drawings);
-      setHasNext(has_next);
       setPage(next_page);
+      setIsLoading(false);
     }
   };
   const fetchData = async () => {
-    console.log(`Fetching more drawings - page: ${page}, has next: ${hasNext}`);
+    console.log(`Fetching more drawings - page: ${page}`);
     if (page == 0) return;
     setIsLoading(true);
     setFetch(false);
@@ -84,11 +90,9 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
       queryString = `drawings/owner/${account}/page/${page}`;
     }
     const data = await inspectCall(queryString);
-    const { has_next, next_page, drawings } = data;
-    console.log({ data });
+    const { next_page, drawings } = data;
     if (drawings) setDrawings((prevItems) => [...prevItems, ...drawings]);
     setPage(next_page);
-    setHasNext(has_next);
     setIsLoading(false);
   };
 
@@ -122,7 +126,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
         <div className="p-2">Canvas shanpshots will appear here...</div>
       )}
       {/* @TODO loader component */}
-      {isLoading && <p>Loading...</p>}
+      {isLoading && page != 0 && <p>Loading...</p>}
       {error?.error && <p>Error: {error.message}</p>}
     </div>
   );
