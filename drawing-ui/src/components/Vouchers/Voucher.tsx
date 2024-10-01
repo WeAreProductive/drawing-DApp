@@ -66,7 +66,6 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
       setVoucher(voucherResult.data.voucher);
     }
   }, [voucherResult, contracts]);
-  console.log({ drawing });
   return (
     <div className="flex flex-col gap-6 pb-4 my-4 border-b-2">
       {drawing ? (
