@@ -145,6 +145,7 @@ def get_drawings(query_args, type, page):
     length = len(row)
 
     has_next = False
+    next_page = 0
     
     if length == 9:
       number_of_rows = row[8]
@@ -153,10 +154,11 @@ def get_drawings(query_args, type, page):
       loaded = page * limit
       if loaded < number_of_rows: 
         has_next = True 
+        next_page = page + 1
         
    
-    result['has_next'] = has_next
-    result['next_page'] = page + 1
+    # result['has_next'] = has_next
+    result['next_page'] = next_page
     result['drawings'] = drawings
     logger.info(f"DRAWINGS {result}")
     

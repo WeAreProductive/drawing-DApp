@@ -52,6 +52,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
       }
     };
   }, [lastElement]);
+
   const initDrawingsData = async () => {
     if (
       dappState == DAPP_STATE.canvasInit ||
@@ -71,11 +72,11 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     }
   };
   const fetchData = async () => {
-    console.log("Fetching more drawings");
+    console.log(`Fetching more drawings - page: ${page}, has next: ${hasNext}`);
+    if (page == 0) return;
     setIsLoading(true);
     setFetch(false);
     setError({ error: false, message: "" });
-    console.log({ page });
     let queryString = "";
     if (drawingsType == "all") {
       queryString = `drawings/page/${page}`;
@@ -84,6 +85,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     }
     const data = await inspectCall(queryString);
     const { has_next, next_page, drawings } = data;
+    console.log({ data });
     if (drawings) setDrawings((prevItems) => [...prevItems, ...drawings]);
     setPage(next_page);
     setHasNext(has_next);
@@ -99,7 +101,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
       {drawings && drawings.length > 0 ? (
         drawings.map((drawing, i) => {
           try {
-            return i === drawings.length - 1 && !isLoading ? (
+            return i === drawings.length - 1 ? (
               <div
                 key={`${drawing.uuid}`}
                 className="w-1/2 p-2 last-element"
