@@ -125,6 +125,7 @@ def get_drawings(query_args, type, page):
     page : number
     drawings : list : drawings data, 'get_drawing_by_uuid' type returns list with 1 element
   """
+  result = {}
   drawings = [] # all drawings array result 
   data_rows = get_raw_data(query_args, type, page) 
   if data_rows:
@@ -142,21 +143,24 @@ def get_drawings(query_args, type, page):
       drawings.append(current_drawing) 
     # return array of drawings + current page + has next + has previous @TODO
     length = len(row)
+
+    has_next = False
+    
     if length == 9:
       number_of_rows = row[8]
       logger.info(f"Number of ROWs {number_of_rows}")
       # calculate up_to_now_loaded including the current set
       loaded = page * limit
       if loaded < number_of_rows: 
-        has_next = True
-      else :
-        has_next = False
-      result = {}
-      result['has_next'] = has_next
-      result['current_page'] = page
-      result['drawings'] = drawings
-      logger.info(f"DRAWINGS {result}")
-  return drawings
+        has_next = True 
+        
+   
+    result['has_next'] = has_next
+    result['next_page'] = page + 1
+    result['drawings'] = drawings
+    logger.info(f"DRAWINGS {result}")
+    
+  return result
 
 def get_drawings_by_ids(log):
   """ Retrieves each drawing's layers
