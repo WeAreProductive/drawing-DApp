@@ -52,6 +52,7 @@ def get_raw_data(query_args, type, page = 1):
     conn = sqlite3.connect(db_filename) 
     cursor = conn.cursor()
     # @TODO optimise query here - fetch only required data
+    # @TODO use total_rows to send has_next in the respose
     match type:
       case "get_all_drawings": 
           print("get_all_drawings") 
@@ -62,8 +63,7 @@ def get_raw_data(query_args, type, page = 1):
               """,
               (limit, offset),
             )
-          rows = cursor.fetchall()
-          logger.info(f"CURRENT ROWS {len(rows)}")
+          rows = cursor.fetchall() 
           return rows
 
       case "get_drawings_by_owner":
@@ -120,13 +120,16 @@ def get_drawings(query_args, type, page):
   ------
   Returns
   -------
-    list : drawings data, 'get_drawing_by_uuid' type returns list with 1 element
+    dictionary with
+    has_next : boolean
+    page : number
+    drawings : list : drawings data, 'get_drawing_by_uuid' type returns list with 1 element
   """
   drawings = [] # all drawings array result 
   data_rows = get_raw_data(query_args, type, page) 
   if data_rows:
     # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
-    for row in data_rows:  
+    for row in data_rows:   
       current_drawing = {}
       current_drawing['uuid'] = row[1]
       current_drawing['dimensions'] = row[2] 
@@ -135,8 +138,24 @@ def get_drawings(query_args, type, page):
       # for row.log item call get_drawing_by_ids
       # from each result get drawing_objects and add it to update_log array
       current_drawing['update_log'] = get_drawings_by_ids(current_drawing['log'])  
+     
       drawings.append(current_drawing) 
     # return array of drawings + current page + has next + has previous @TODO
+    length = len(row)
+    if length == 9:
+      number_of_rows = row[8]
+      logger.info(f"Number of ROWs {number_of_rows}")
+      # calculate up_to_now_loaded including the current set
+      loaded = page * limit
+      if loaded < number_of_rows: 
+        has_next = True
+      else :
+        has_next = False
+      result = {}
+      result['has_next'] = has_next
+      result['current_page'] = page
+      result['drawings'] = drawings
+      logger.info(f"DRAWINGS {result}")
   return drawings
 
 def get_drawings_by_ids(log):
@@ -198,21 +217,18 @@ def insert_drawing_data(query_args):
     id: int
     The PK of the row created.
   """
-  logger.info(f"Insert {query_args}")
   uuid = query_args['uuid'] 
   owner = query_args['owner']  
   date_created = query_args['date_created']
   action = query_args['action']
   dimensions = json.dumps(query_args['dimensions']) 
   drawing_objects = json.dumps(query_args['drawing_objects'])    
-  try:
-    logger.info(f"query args log 1 - {query_args['log']}")
+  try: 
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor()
     log = query_args['log'] # string 
     
-    json_log = json.dumps(log)
-    logger.info(f"json_log 2 - {json_log}")
+    json_log = json.dumps(log) 
    
     cursor.execute(
         """
@@ -253,19 +269,14 @@ def store_data(query_args):
   id = insert_drawing_data(query_args)
   
   if id : 
-    log = query_args['log']
-    logger.info(f"log 3 - {log}")
+    log = query_args['log'] 
     if log:
-      drawing_log = json.loads(log)
-      logger.info(f"drawing log 4 - {drawing_log}")
+      drawing_log = json.loads(log) 
     else:
-      drawing_log = []
-      logger.info(f"drawing log 5 - {drawing_log}")
+      drawing_log = [] 
     
-    drawing_log.append(id)
-    logger.info(f"drawing log 6 - {drawing_log}")
-    json_log = json.dumps(drawing_log)
-    logger.info(f"drawing log 7 - {json_log}") 
+    drawing_log.append(id) 
+    json_log = json.dumps(drawing_log) 
     try:
 
       conn = sqlite3.connect(db_filename)
