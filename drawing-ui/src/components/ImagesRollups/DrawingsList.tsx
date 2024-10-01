@@ -79,7 +79,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   };
   const fetchData = async () => {
     console.log(`Fetching more drawings - page: ${page}`);
-    if (page == 0) return;
+    if (page == 0 || page == undefined) return;
     setIsLoading(true);
     setFetch(false);
     setError({ error: false, message: "" });
@@ -125,8 +125,8 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
       ) : (
         <div className="p-2">Canvas shanpshots will appear here...</div>
       )}
-      {/* @TODO loader component */}
-      {isLoading && page != 0 && <p>Loading...</p>}
+
+      {/* {isLoading && page != 0 && <p>Loading...</p>} */}
       {error?.error && <p>Error: {error.message}</p>}
     </div>
   );

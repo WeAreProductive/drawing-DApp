@@ -32,11 +32,12 @@ const VouchersList = () => {
     setCurrentAccount(await provider.getSigner().getAddress());
   };
   const fetchImages = async (arg: string[]) => {
+    console.log("Fetching voucher images ...");
     if (arg.length) {
       const queryArg = JSON.stringify(arg);
       const queryString = `drawings/uuids/${queryArg}`;
       const data = await inspectCall(queryString);
-      setDrawings(data);
+      setDrawings(data.drawings);
     }
     // send inspect call for the uuids
   };

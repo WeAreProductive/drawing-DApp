@@ -91,8 +91,12 @@ def get_raw_data(query_args, type, page = 1):
 
       case "get_drawing_by_ids": 
           logger.info(f"get drawing data where id in array: {query_args}") 
-          log = query_args
+          log = json.loads(query_args)
+         
+          logger.info(f"LOG LENGTH {len(log)}")
+          
           statement = "SELECT drawing_objects FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"  
+          logger.info(f"STATEMENT {statement}")
           cursor.execute(statement, log)
           rows = cursor.fetchall() 
           return rows
@@ -148,8 +152,7 @@ def get_drawings(query_args, type, page):
     next_page = 0
     
     if length == 9:
-      number_of_rows = row[8]
-      logger.info(f"Number of ROWs {number_of_rows}")
+      number_of_rows = row[8] 
       # calculate up_to_now_loaded including the current set
       loaded = page * limit
       if loaded < number_of_rows: 
@@ -176,6 +179,7 @@ def get_drawings_by_ids(log):
     list : drawings layers data
   """
   drawing_slices = []
+  logger.info(f"LOG {log}")
   data_rows = get_raw_data(log, 'get_drawing_by_ids')
   if data_rows:
     # from each result get drawing_objects and add it to update_log/drawing_slices array 
