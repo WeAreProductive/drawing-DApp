@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CanvasControls from "../components/CanvasControls";
 import DrawingControls from "../components/Drawing/DrawingControls";
 import CanvasObjectsControl from "./CanvasObjectsControl";
 import { useCanvasContext } from "../context/CanvasContext";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../utils";
 import { CanvasLimitations, DrawingInputExtended } from "../shared/types";
+import { useWallets } from "@web3-onboard/react";
 
 const Controls = () => {
   const {
@@ -16,9 +17,9 @@ const Controls = () => {
     setRedoObjectsArr,
     loading,
   } = useCanvasContext();
+
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
-
   const [currentResult, setCurrentResult] = useState<CanvasLimitations>({
     isValid: true,
     info: {
@@ -67,6 +68,7 @@ const Controls = () => {
     if (!currentDrawingLayer) return;
     currentDrawingLayer.length < 1 ? setCanUndo(false) : setCanUndo(true); // enable only if current drawing layer is not empty
   }, [currentDrawingLayer]);
+
   useEffect(() => {
     if (!redoObjectsArr) return;
     redoObjectsArr.length < 1 ? setCanRedo(false) : setCanRedo(true);
