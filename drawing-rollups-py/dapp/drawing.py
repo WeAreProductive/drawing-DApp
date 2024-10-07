@@ -20,15 +20,7 @@ logger.info(f"HTTP rollup_server url is {rollup_server}")
 ##
 # Core functions 
 
-def mint_erc721_with_string(
-        msg_sender,
-        uuid,
-        erc721_to_mint,
-        mint_header,
-        imageIPFSMeta,
-        drawing_input,
-        cmd
-    ):
+def mint_erc721_with_string( msg_sender, data ):
     """ Prepares and requests a MINT NFT voucher.
         Triggers the execution of the next function that 
         emmits a notice with the voucher's drawing data.
@@ -49,22 +41,18 @@ def mint_erc721_with_string(
     -------
     """
     logger.info(f"Preparing a VOUCHER for MINTING AN NFT")
-    mint_header = clean_header(mint_header)
-    data = encode(['address', 'string'], [msg_sender,imageIPFSMeta])
+
+    mint_header = clean_header( data["mint_header"] )
+    data = encode(['address', 'string'], [msg_sender, data["imageIPFSMeta"]])
     payload = f"0x{(mint_header+data).hex()}"
     voucher = {
-        "destination": erc721_to_mint, 
+        "destination": data["erc721_to_mint"], 
         "payload": payload
     }
     logger.info(f"Voucher {voucher}")
     send_voucher(voucher)
 
-    store_drawing_data(
-      msg_sender,
-      uuid,
-      drawing_input,
-      cmd
-    )
+    store_drawing_data( msg_sender, data )
 
 #  Prepare notice
 #  Save drawing data in a notice
@@ -73,13 +61,7 @@ def mint_erc721_with_string(
 #  @param {Object} drawing_input
 #  @param {String} cmd
 
-def store_drawing_data(
-        sender,
-        uuid,
-        drawing_input, 
-        cmd,
-        owner
-    ):
+def store_drawing_data( msg_sender, data ):
     """ Prepares and requests a notice.
         Triggers the execution of the next function that 
         stores the drawing data in the sqlite database.
@@ -98,6 +80,9 @@ def store_drawing_data(
     """
     
     now = str(datetime.now(timezone.utc))  
+
+    drawing_input = data["drawing_input"]
+
     drawing = drawing_input['drawing']
     
     parsed_drawing = json.loads(drawing)
@@ -105,12 +90,14 @@ def store_drawing_data(
     # owner is the owner of the drawing
     # the painter can be different than the drawing owner
     # only the first drawing layer's painter is the drawing owner for sure
-    drawing_input["uuid"]= uuid
-    drawing_input["owner"] = owner
-    drawing_input["painter"] = sender
+    drawing_input["uuid"]= data["uuid"]
+    drawing_input["owner"] = data["owner"]
+    drawing_input["painter"] = msg_sender
     drawing_input["date_created"] = now  
-    drawing_input["action"] = cmd  
+    cmd =  data["cmd"] 
+    drawing_input["action"] = cmd 
     drawing_input["drawing_objects"] = content
+    drawing_input["private"] = data["private"]
     
     if cmd == 'cn' or cmd == 'cv':
         # drawing_input['log'] = [] #init log
@@ -121,14 +108,14 @@ def store_drawing_data(
     elif cmd == 'un' or cmd == 'uv': 
         if cmd == 'uv':
             drawing_input['voucher_requested'] = True # not in db
-    
-    compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
+    # @TODO notice currently not used
+    # compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
     # uint8array to hex
-    payload = binary2hex(compressed) 
+    # payload = binary2hex(compressed) 
 
-    notice = {"payload": payload}
-    send_notice(notice)
-    store_data(drawing_input) 
+    # notice = {"payload": payload}
+    # send_notice(notice)
+    store_data( drawing_input ) 
 
 
 ###
@@ -162,26 +149,13 @@ def handle_advance(data):
             if json_data.get("cmd"):
                 if json_data['cmd']== 'cv' or json_data['cmd']== 'uv':
                     logger.info(f"COMMAND {json_data['cmd']}")
-                    if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"): 
-                        mint_erc721_with_string(
-                            sender,
-                            json_data["uuid"], 
-                            json_data["erc721_to_mint"],
-                            json_data["selector"],
-                            json_data['imageIPFSMeta'], 
-                            json_data["drawing_input"], 
-                            json_data['cmd']
-                        )
+                    drawing_data = { "sender": sender, "data": json_data }
+                    if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"):  
+                        mint_erc721_with_string( drawing_data )
                 elif json_data['cmd']== 'cn' or json_data['cmd']== 'un':
                     logger.info(f"COMMAND {json_data['cmd']}")
-                    if json_data.get("drawing_input"): 
-                        store_drawing_data(
-                            sender,
-                            json_data["uuid"],
-                            json_data["drawing_input"], 
-                            json_data['cmd'],
-                            json_data['owner']
-                        )
+                    if json_data.get("drawing_input"):  
+                        store_drawing_data( drawing_data )
             else:
                 raise Exception('Not supported json operation')
         except Exception as e2:
