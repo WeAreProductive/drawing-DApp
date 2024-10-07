@@ -17,6 +17,7 @@ def init_sqlite_database():
                 dimensions VARCHAR NOT NULL,
                 date_created VARCHAR NOT NULL,
                 owner VARCHAR NOT NULL,
+                painter VARCHAR NOT NULL,
                 action VARCHAR NOT NULL,
                 drawing_objects TEXT NOT NULL,
                 log TEXT

@@ -77,7 +77,8 @@ def store_drawing_data(
         sender,
         uuid,
         drawing_input, 
-        cmd
+        cmd,
+        owner
     ):
     """ Prepares and requests a notice.
         Triggers the execution of the next function that 
@@ -101,9 +102,12 @@ def store_drawing_data(
     
     parsed_drawing = json.loads(drawing)
     content = parsed_drawing['content']
-    
+    # owner is the owner of the drawing
+    # the painter can be different than the drawing owner
+    # only the first drawing layer's painter is the drawing owner for sure
     drawing_input["uuid"]= uuid
-    drawing_input["owner"] = sender
+    drawing_input["owner"] = owner
+    drawing_input["painter"] = sender
     drawing_input["date_created"] = now  
     drawing_input["action"] = cmd  
     drawing_input["drawing_objects"] = content
@@ -175,7 +179,8 @@ def handle_advance(data):
                             sender,
                             json_data["uuid"],
                             json_data["drawing_input"], 
-                            json_data['cmd']
+                            json_data['cmd'],
+                            json_data['owner']
                         )
             else:
                 raise Exception('Not supported json operation')

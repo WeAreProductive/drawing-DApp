@@ -82,6 +82,7 @@ def get_raw_data(query_args, type, page = 1):
         statement = "SELECT * FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall()
+        logger.info(f"BY UUID rows {rows}")
         return rows
 
       case "get_drawings_by_uuid":
@@ -134,6 +135,7 @@ def get_drawings(query_args, type, page):
   result = {}
   drawings = [] # all drawings array result 
   data_rows = get_raw_data(query_args, type, page) 
+  logger.info(f"Data rows {data_rows}")
   if data_rows:
     # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
     for row in data_rows:   
@@ -141,9 +143,9 @@ def get_drawings(query_args, type, page):
       current_drawing['uuid'] = row[1]
       current_drawing['dimensions'] = row[2] 
       current_drawing['owner'] = row[4] 
-      current_drawing['log'] = row[7]
-      # for row.log item call get_drawing_by_ids
-      # from each result get drawing_objects and add it to update_log array
+      current_drawing['log'] = row[8]
+      # # for row.log item call get_drawing_by_ids
+      # # from each result get drawing_objects and add it to update_log array
       current_drawing['update_log'] = get_drawings_by_ids(current_drawing['log'])  
      
       drawings.append(current_drawing) 
@@ -153,11 +155,11 @@ def get_drawings(query_args, type, page):
     has_next = False
     next_page = 0
     
-    if length == 9:
-      number_of_rows = row[8] 
+    if length == 10:
+      number_of_rows = row[9] 
       # calculate up_to_now_loaded including the current set
       loaded = page * limit
-      if loaded < number_of_rows: 
+      if loaded < int(number_of_rows): 
         has_next = True 
         next_page = page + 1
         
@@ -232,6 +234,7 @@ def insert_drawing_data(query_args):
   """
   uuid = query_args['uuid'] 
   owner = query_args['owner']  
+  painter = query_args['painter']  
   date_created = query_args['date_created']
   action = query_args['action']
   dimensions = json.dumps(query_args['dimensions']) 
@@ -245,10 +248,10 @@ def insert_drawing_data(query_args):
    
     cursor.execute(
         """
-        INSERT INTO drawings(uuid, dimensions, date_created, owner, action, drawing_objects, log)
-        VALUES (?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO drawings(uuid, dimensions, date_created, owner, painter, action, drawing_objects, log)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (uuid, dimensions, date_created, owner, action, drawing_objects, json_log),
+        (uuid, dimensions, date_created, owner, painter, action, drawing_objects, json_log),
     )
 
     conn.commit()

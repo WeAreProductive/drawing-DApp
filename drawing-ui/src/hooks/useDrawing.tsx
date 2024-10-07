@@ -8,11 +8,14 @@ import {
 } from "../shared/types";
 import configFile from "../config/config.json";
 import { v4 as uuidv4 } from "uuid";
+import { useWallets } from "@web3-onboard/react";
 
 const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
   const { currentDrawingData, dappState, canvas } = useCanvasContext();
+  const [connectedWallet] = useWallets();
+  const account = connectedWallet.accounts[0].address;
   const currentUuid = uuidv4();
   const getNoticeInput = (
     canvasData: { content: DrawingObject[] },
@@ -31,6 +34,7 @@ export const useDrawing = () => {
     // next 2 depend on the dappState also
     const log = currentDrawingData ? currentDrawingData.log : [];
     const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
+    const owner = currentDrawingData ? currentDrawingData.owner : account;
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string
       dimensions: canvasDimensions,
@@ -39,6 +43,7 @@ export const useDrawing = () => {
     return JSON.stringify({
       drawing_input: drawingNoticePayload, //data to save in a notice and partially in the sqlite db
       uuid,
+      owner,
       cmd, // BE will be notified to emit a notice
     });
   };
