@@ -11,10 +11,15 @@ import { Network } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
+
+import { confirmAlert } from "react-confirm-alert"; // Import
+import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
+
 import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
+import { useState } from "react";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -34,14 +39,48 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   if (!connectedChain) return;
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
   const { getNoticeInput } = useDrawing();
+  // @TODO add isPrivate into canvasData?
+  const saveDrawing = (canvasData: any, isPrivate: any) => {
+    const strInput = getNoticeInput(canvasData);
+    sendInput(strInput);
+  };
+
+  const handlePrivateDrawing = (canvasData: any) => {
+    // @TODO - refractor
+    confirmAlert({
+      title: "Set the drawing as PRIVATE",
+      message: "",
+      buttons: [
+        {
+          label: "OK",
+          onClick: () => {
+            saveDrawing(canvasData, 0);
+          },
+        },
+        {
+          label: "CANCEL",
+          onClick: () => {
+            saveDrawing(canvasData, 1);
+          },
+        },
+      ],
+    });
+  };
 
   const handleCanvasToSave = async () => {
+    // @TODO - check if new drawing
+    // - call handlePrivateDrawing
+    // - or directly call saveDrawing if the drawing is not new
+    // add isprivateDrawing to drawing input
+    // do the same for vouchers
+
     if (!canvas) return;
     if (!canvas.isDrawingMode) {
       canvas.isDrawingMode = true;
     }
     if (!currentDrawingLayer) return;
     if (currentDrawingLayer.length < 1) return;
+
     setLoading(true);
     setDappState(DAPP_STATE.canvasSave);
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
@@ -53,7 +92,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     let canvasData = {
       content: currentDrawingLayerObjects,
     };
-
     // validate before sending the tx
     const result = validateInputSize(JSON.stringify(canvasData));
     if (!result.isValid) {
@@ -64,9 +102,11 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       return;
     }
 
-    const strInput = getNoticeInput(canvasData);
-
-    sendInput(strInput);
+    if (!currentDrawingData) {
+      handlePrivateDrawing(canvasData);
+    } else {
+      saveDrawing(canvasData, currentDrawingData.private);
+    }
   };
 
   return (
