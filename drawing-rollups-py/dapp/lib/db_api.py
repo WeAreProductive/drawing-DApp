@@ -2,8 +2,6 @@ import sqlite3
 import logging
 import json 
 
-# @TODO paginate results
-
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
@@ -57,9 +55,11 @@ def get_raw_data(query_args, type, page = 1):
       case "get_all_drawings": 
           print("get_all_drawings") 
           offset = get_query_offset(page) 
+          # SELECT *, (select count(*) from drawings) as total_rows FROM drawings GROUP BY uuid ORDER BY id DESC LIMIT ? OFFSET ? initial query
           cursor.execute(
               """
-              SELECT *, (select count(*) from drawings) as total_rows FROM drawings ORDER BY id DESC LIMIT ? OFFSET ?
+              SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings 
+              GROUP BY uuid ) ORDER BY id DESC LIMIT ? OFFSET ?
               """,
               (limit, offset),
             )
@@ -70,7 +70,9 @@ def get_raw_data(query_args, type, page = 1):
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         owner = query_args[2] 
         offset = get_query_offset(page) 
-        statement = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
+        # statement = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  initial query
+        statement_initial = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid ) "
+        statement = statement_initial + "AND owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
         cursor.execute(statement, [owner, limit, offset]) 
         rows = cursor.fetchall()
         return rows
@@ -181,6 +183,7 @@ def get_drawings_by_ids(log):
   drawing_slices = []
   logger.info(f"LOG {log}")
   data_rows = get_raw_data(log, 'get_drawing_by_ids')
+  logger.info(f"Data rows {data_rows}")
   if data_rows:
     # from each result get drawing_objects and add it to update_log/drawing_slices array 
     for row in data_rows:
@@ -202,6 +205,7 @@ def get_data(query_str):
     else:
       # paginated, expects 3 elements in query_args
       # ['drawings', 'page', '1']
+      # @TODO count for has next will depend on grouped uuid
       query_type = 'get_all_drawings' 
       page = int(query_args[2])
   elif query_args[0] == 'drawing':

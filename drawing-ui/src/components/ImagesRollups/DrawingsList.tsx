@@ -99,20 +99,20 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   }, [dappState, account]);
 
   return (
-    <div className="flex flex-wrap -mx-1">
+    <div className="-mx-1 flex flex-wrap">
       {drawings && drawings.length > 0 ? (
         drawings.map((drawing, i) => {
           try {
             return i === drawings.length - 1 ? (
               <div
                 key={`${drawing.uuid}`}
-                className="w-1/2 p-2 last-element"
+                className="last-element w-1/2 p-2"
                 ref={setLastElement}
               >
                 <CanvasSnapshot src={drawing} />
               </div>
             ) : (
-              <div key={`${drawing.uuid}`} className="w-1/2 p-2">
+              <div key={`${drawing.uuid}-${i}`} className="w-1/2 p-2">
                 <CanvasSnapshot src={drawing} />
               </div>
             );

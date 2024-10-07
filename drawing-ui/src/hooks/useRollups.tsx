@@ -18,6 +18,7 @@ import {
   RollupsInteractions,
   VoucherExtended,
 } from "../shared/types";
+
 import { useCanvasContext } from "../context/CanvasContext";
 
 import configFile from "../config/config.json";

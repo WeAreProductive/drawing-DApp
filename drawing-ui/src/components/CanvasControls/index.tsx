@@ -4,6 +4,7 @@ import CanvasToSave from "./CanvasToSave";
 import CanvasUndo from "./CanvasUndo";
 import CanvasRedo from "./CanvasRedo";
 import CanvasDownload from "./CanvasDownload";
+import { useCanvasContext } from "../../context/CanvasContext";
 
 type CanvasControlsProp = {
   enabled: boolean;
@@ -17,6 +18,8 @@ const CanvasControls = ({
   canRedo,
   canDownload,
 }: CanvasControlsProp) => {
+  const { currentDrawingData, dappState, canvas } = useCanvasContext();
+  console.log({ dappState });
   return (
     <div className="flex gap-2">
       <CanvasUndo canUndo={canUndo} />

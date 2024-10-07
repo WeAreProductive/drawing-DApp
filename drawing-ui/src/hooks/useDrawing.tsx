@@ -7,14 +7,16 @@ import {
   Network,
 } from "../shared/types";
 import configFile from "../config/config.json";
+import { v4 as uuidv4 } from "uuid";
 
 const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
   const { currentDrawingData, dappState, canvas } = useCanvasContext();
+  const currentUuid = uuidv4();
   const getNoticeInput = (
     canvasData: { content: DrawingObject[] },
-    uuid: string,
+    // uuid: string,
   ): string => {
     const canvasDimensions = {
       width: canvas?.width || 0,
@@ -26,7 +28,9 @@ export const useDrawing = () => {
       dappState == DAPP_STATE.drawingUpdate
         ? COMMANDS.updateAndStore.cmd
         : COMMANDS.createAndStore.cmd;
+    // next 2 depend on the dappState also
     const log = currentDrawingData ? currentDrawingData.log : [];
+    const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string
       dimensions: canvasDimensions,
@@ -38,7 +42,7 @@ export const useDrawing = () => {
       cmd, // BE will be notified to emit a notice
     });
   };
-
+  // @TODO uuid in voucher input
   const getVoucherInput = (
     canvasData: { content: DrawingObject[] },
     uuid: string,

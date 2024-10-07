@@ -13,7 +13,7 @@ def init_sqlite_database():
             """
             CREATE TABLE IF NOT EXISTS drawings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                uuid VARCHAR UNIQUE NOT NULL,
+                uuid VARCHAR NOT NULL,
                 dimensions VARCHAR NOT NULL,
                 date_created VARCHAR NOT NULL,
                 owner VARCHAR NOT NULL,

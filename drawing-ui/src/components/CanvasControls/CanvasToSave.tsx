@@ -11,7 +11,6 @@ import { Network } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
-import { v4 as uuidv4 } from "uuid";
 import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
@@ -35,7 +34,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   if (!connectedChain) return;
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
   const { getNoticeInput } = useDrawing();
-  const uuid = uuidv4();
+
   const handleCanvasToSave = async () => {
     if (!canvas) return;
     if (!canvas.isDrawingMode) {
@@ -65,7 +64,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       return;
     }
 
-    const strInput = getNoticeInput(canvasData, uuid);
+    const strInput = getNoticeInput(canvasData);
 
     sendInput(strInput);
   };

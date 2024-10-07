@@ -205,6 +205,7 @@ def handle_inspect(request):
         The handling status of the request.
     """
     query_args = hex2str(request['payload'])
+    logger.info(f"Inspect state meta data {request}")
     logger.info(f"Received inspect request data {query_args}")
     
     data = get_data(query_args)
