@@ -40,13 +40,16 @@ def mint_erc721_with_string( msg_sender, data ):
     Returns
     -------
     """
-    logger.info(f"Preparing a VOUCHER for MINTING AN NFT")
+    logger.info(f"Preparing a VOUCHER for MINTING AN NFT {data}")
 
-    mint_header = clean_header( data["mint_header"] )
-    data = encode(['address', 'string'], [msg_sender, data["imageIPFSMeta"]])
-    payload = f"0x{(mint_header+data).hex()}"
+    mint_header = clean_header( data["selector"] )
+    imageIpfs = data["imageIPFSMeta"]
+
+    destination = data["erc721_to_mint"]
+    data_for_payload = encode(['address', 'string'], [msg_sender, imageIpfs])
+    payload = f"0x{(mint_header+data_for_payload).hex()}"
     voucher = {
-        "destination": data["erc721_to_mint"], 
+        "destination": destination, 
         "payload": payload
     }
     logger.info(f"Voucher {voucher}")
@@ -108,13 +111,13 @@ def store_drawing_data( msg_sender, data ):
     elif cmd == 'un' or cmd == 'uv': 
         if cmd == 'uv':
             drawing_input['voucher_requested'] = True # not in db
-    # @TODO notice currently not used
-    # compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
+    # notices are needed vor voucher's input 
+    compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
     # uint8array to hex
-    # payload = binary2hex(compressed) 
+    payload = binary2hex(compressed) 
 
-    # notice = {"payload": payload}
-    # send_notice(notice)
+    notice = {"payload": payload}
+    send_notice(notice)
     store_data( drawing_input ) 
 
 
@@ -146,7 +149,7 @@ def handle_advance(data):
             logger.info(f"Trying to decode json ")
             # try json data
             json_data = json.loads(decompressed_payload)  
-            
+
             if json_data.get("cmd"):
                 if json_data['cmd']== 'cv' or json_data['cmd']== 'uv':
                     logger.info(f"COMMAND {json_data['cmd']}")
