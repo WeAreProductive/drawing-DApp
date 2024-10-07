@@ -35,6 +35,10 @@ export const useDrawing = () => {
     const log = currentDrawingData ? currentDrawingData.log : [];
     const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
     const owner = currentDrawingData ? currentDrawingData.owner : account;
+    const privateDrawing = currentDrawingData
+      ? currentDrawingData.private
+      : "0"; // @TODO - add UI to handle is private
+
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string
       dimensions: canvasDimensions,
@@ -45,6 +49,7 @@ export const useDrawing = () => {
       uuid,
       owner,
       cmd, // BE will be notified to emit a notice
+      private: privateDrawing,
     });
   };
   // @TODO uuid in voucher input

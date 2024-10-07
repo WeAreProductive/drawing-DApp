@@ -21,6 +21,7 @@ def init_sqlite_database():
                 action VARCHAR NOT NULL,
                 drawing_objects TEXT NOT NULL,
                 log TEXT
+                is_private INTEGER
             )
             """
         )

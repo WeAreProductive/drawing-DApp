@@ -10,7 +10,7 @@ export const useCanvasControls = () => {
   const [connectedWallet] = useWallets();
 
   const account = connectedWallet.accounts[0].address;
-
+  // @TODO check isPrivate
   useEffect(() => {
     if (!currentDrawingData) return;
     currentDrawingData.owner === account

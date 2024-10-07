@@ -84,6 +84,7 @@ export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   voucher_requested?: boolean;
   date_created?: string; // date-time string
   dimensions: string;
+  private: 0 | 1;
 }
 export type DrawingObject = { [key: string]: any };
 export type UpdateLogItem = {
