@@ -38,7 +38,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
   if (!connectedChain) return;
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
 
-  const uuid = uuidv4();
+  const currentUuid = uuidv4();
 
   const handleCanvasToMint = async () => {
     if (!canvas) return;
@@ -68,7 +68,7 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
       setLoading(false);
       return;
     }
-
+    const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
     const drawingMeta: DrawingMeta = await storeAsFiles(
       canvasContent.objects,
       uuid,

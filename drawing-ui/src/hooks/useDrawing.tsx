@@ -70,6 +70,10 @@ export const useDrawing = () => {
         ? COMMANDS.updateAndMint.cmd
         : COMMANDS.createAndMint.cmd;
     const log = currentDrawingData ? currentDrawingData.log : [];
+    const owner = currentDrawingData ? currentDrawingData.owner : account;
+    const privateDrawing = currentDrawingData
+      ? currentDrawingData.private
+      : "1"; // @TODO - add UI to handle is private
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
       dimensions: drawingMeta.canvasDimensions,
@@ -79,6 +83,8 @@ export const useDrawing = () => {
       drawing_input: drawingNoticePayload, //data to save in a notice and partially in the sqlite db
       uuid,
       cmd, // BE will be notified to emit a notice and a voucher
+      owner,
+      private: privateDrawing,
       imageIPFSMeta:
         "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
       erc721_to_mint: ercToMint,
