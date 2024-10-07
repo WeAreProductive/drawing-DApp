@@ -14,6 +14,7 @@ const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
   const { currentDrawingData, dappState, canvas } = useCanvasContext();
+  console.log({ currentDrawingData });
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
   const currentUuid = uuidv4();
@@ -37,7 +38,7 @@ export const useDrawing = () => {
     const owner = currentDrawingData ? currentDrawingData.owner : account;
     const privateDrawing = currentDrawingData
       ? currentDrawingData.private
-      : "0"; // @TODO - add UI to handle is private
+      : "1"; // @TODO - add UI to handle is private
 
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string

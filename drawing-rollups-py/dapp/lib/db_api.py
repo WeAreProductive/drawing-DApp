@@ -144,6 +144,7 @@ def get_drawings(query_args, type, page):
       current_drawing['dimensions'] = row[2] 
       current_drawing['owner'] = row[4] 
       current_drawing['log'] = row[8]
+      current_drawing['private'] = row[9]
       # # for row.log item call get_drawing_by_ids
       # # from each result get drawing_objects and add it to update_log array
       current_drawing['update_log'] = get_drawings_by_ids(current_drawing['log'])  
@@ -155,8 +156,8 @@ def get_drawings(query_args, type, page):
     has_next = False
     next_page = 0
     
-    if length == 10:
-      number_of_rows = row[9] 
+    if length == 11:
+      number_of_rows = row[10] 
       # calculate up_to_now_loaded including the current set
       loaded = page * limit
       if loaded < int(number_of_rows): 
@@ -239,6 +240,7 @@ def insert_drawing_data(query_args):
   action = query_args['action']
   dimensions = json.dumps(query_args['dimensions']) 
   drawing_objects = json.dumps(query_args['drawing_objects'])    
+  private = int(query_args['private'])
   try: 
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor()
@@ -248,10 +250,10 @@ def insert_drawing_data(query_args):
    
     cursor.execute(
         """
-        INSERT INTO drawings(uuid, dimensions, date_created, owner, painter, action, drawing_objects, log)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO drawings(uuid, dimensions, date_created, owner, painter, action, drawing_objects, log, private)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (uuid, dimensions, date_created, owner, painter, action, drawing_objects, json_log),
+        (uuid, dimensions, date_created, owner, painter, action, drawing_objects, json_log, private),
     )
 
     conn.commit()

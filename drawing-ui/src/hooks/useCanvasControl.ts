@@ -10,12 +10,17 @@ export const useCanvasControls = () => {
   const [connectedWallet] = useWallets();
 
   const account = connectedWallet.accounts[0].address;
-  // @TODO check isPrivate
   useEffect(() => {
     if (!currentDrawingData) return;
-    currentDrawingData.owner === account
-      ? setIsActiveControl(true)
-      : setIsActiveControl(false);
+    if (currentDrawingData.private == 0) {
+      // we don't care about the owner if drawing is public
+      setIsActiveControl(true);
+    } else {
+      // only the owner can update the drawing
+      currentDrawingData.owner === account
+        ? setIsActiveControl(true)
+        : setIsActiveControl(false);
+    }
   }, [currentDrawingData?.owner]);
   return { isActiveControl };
 };

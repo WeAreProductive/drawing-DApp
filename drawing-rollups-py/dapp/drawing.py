@@ -145,17 +145,18 @@ def handle_advance(data):
         try:
             logger.info(f"Trying to decode json ")
             # try json data
-            json_data = json.loads(decompressed_payload) 
+            json_data = json.loads(decompressed_payload)  
+            
             if json_data.get("cmd"):
                 if json_data['cmd']== 'cv' or json_data['cmd']== 'uv':
                     logger.info(f"COMMAND {json_data['cmd']}")
-                    drawing_data = { "sender": sender, "data": json_data }
+                    
                     if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"):  
-                        mint_erc721_with_string( drawing_data )
+                        mint_erc721_with_string( sender, json_data )
                 elif json_data['cmd']== 'cn' or json_data['cmd']== 'un':
                     logger.info(f"COMMAND {json_data['cmd']}")
                     if json_data.get("drawing_input"):  
-                        store_drawing_data( drawing_data )
+                        store_drawing_data( sender, json_data )
             else:
                 raise Exception('Not supported json operation')
         except Exception as e2:

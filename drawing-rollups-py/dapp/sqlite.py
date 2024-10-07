@@ -20,8 +20,8 @@ def init_sqlite_database():
                 painter VARCHAR NOT NULL,
                 action VARCHAR NOT NULL,
                 drawing_objects TEXT NOT NULL,
-                log TEXT
-                is_private INTEGER
+                log TEXT,
+                private INTEGER
             )
             """
         )
