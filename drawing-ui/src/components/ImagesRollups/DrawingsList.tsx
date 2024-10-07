@@ -56,23 +56,23 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     console.log(`Dapp state ${dappState}`);
     setFetch(false);
     setIsLoading(true);
-    if (
-      dappState == DAPP_STATE.canvasInit ||
-      dappState == DAPP_STATE.refetchDrawings
-    ) {
-      let queryString = "";
-      if (drawingsType == "all") {
-        queryString = "drawings/page/1";
-      } else if (drawingsType == "user") {
-        queryString = `drawings/owner/${account}/page/1`;
-      }
-      const data = await inspectCall(queryString);
-      const { next_page, drawings } = data;
-      setDrawings(drawings);
-      setPage(next_page);
-      setIsLoading(false);
+    // if (
+    //   dappState == DAPP_STATE.canvasInit ||
+    //   dappState == DAPP_STATE.refetchDrawings
+    // ) {
+    let queryString = "";
+    if (drawingsType == "all") {
+      queryString = "drawings/page/1";
+    } else if (drawingsType == "user") {
+      queryString = `drawings/owner/${account}/page/1`;
     }
+    const data = await inspectCall(queryString);
+    const { next_page, drawings } = data;
+    setDrawings(drawings);
+    setPage(next_page);
+    setIsLoading(false);
   };
+  // };
   const fetchData = async () => {
     if (dappState == DAPP_STATE.refetchDrawings) {
       console.log(`Fetching more drawings - page: ${page}`);
@@ -96,8 +96,8 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
 
   useEffect(() => {
     initDrawingsData();
-  }, [dappState, account]);
-
+  }, [dappState, account, drawingsType]);
+  console.log({ drawingsType });
   return (
     <div className="-mx-1 flex flex-wrap">
       {drawings && drawings.length > 0 ? (
