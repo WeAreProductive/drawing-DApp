@@ -79,7 +79,7 @@ def get_raw_data(query_args, type, page = 1):
       
       case "get_drawing_by_uuid":
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
-        statement = "SELECT * FROM drawings WHERE uuid LIKE ? LIMIT 1"  
+        statement = "SELECT * FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall()
         return rows
