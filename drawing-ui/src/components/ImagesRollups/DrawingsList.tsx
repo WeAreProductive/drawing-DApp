@@ -97,7 +97,6 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   useEffect(() => {
     initDrawingsData();
   }, [dappState, account, drawingsType]);
-  console.log({ drawingsType });
   return (
     <div className="-mx-1 flex flex-wrap">
       {drawings && drawings.length > 0 ? (
