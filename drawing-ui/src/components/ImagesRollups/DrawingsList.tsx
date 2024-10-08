@@ -27,6 +27,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     new IntersectionObserver((entries) => {
       const first = entries[0];
       if (first.isIntersecting) {
+        console.log("is intersecting ...");
         setFetch(true);
       }
     }),
@@ -74,24 +75,26 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   };
   // };
   const fetchData = async () => {
-    if (dappState == DAPP_STATE.refetchDrawings) {
-      console.log(`Fetching more drawings - page: ${page}`);
-      if (page == 0 || page == undefined) return;
-      setIsLoading(true);
-      setFetch(false);
-      setError({ error: false, message: "" });
-      let queryString = "";
-      if (drawingsType == "all") {
-        queryString = `drawings/page/${page}`;
-      } else if (drawingsType == "user") {
-        queryString = `drawings/owner/${account}/page/${page}`;
-      }
-      const data = await inspectCall(queryString);
-      const { next_page, drawings } = data;
-      if (drawings) setDrawings((prevItems) => [...prevItems, ...drawings]);
-      setPage(next_page);
-      setIsLoading(false);
+    console.log("entering fetch ...");
+    console.log(dappState);
+    // if (dappState == DAPP_STATE.refetchDrawings) {
+    console.log(`Fetching more drawings - page: ${page}`);
+    if (page == 0 || page == undefined) return;
+    setIsLoading(true);
+    setFetch(false);
+    setError({ error: false, message: "" });
+    let queryString = "";
+    if (drawingsType == "all") {
+      queryString = `drawings/page/${page}`;
+    } else if (drawingsType == "user") {
+      queryString = `drawings/owner/${account}/page/${page}`;
     }
+    const data = await inspectCall(queryString);
+    const { next_page, drawings } = data;
+    if (drawings) setDrawings((prevItems) => [...prevItems, ...drawings]);
+    setPage(next_page);
+    setIsLoading(false);
+    // }
   };
 
   useEffect(() => {
