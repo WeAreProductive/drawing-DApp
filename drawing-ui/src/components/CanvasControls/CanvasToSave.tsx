@@ -19,7 +19,6 @@ import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
-import { useState } from "react";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -40,7 +39,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
   const { getNoticeInput } = useDrawing();
 
-  // @TODO add isPrivate into canvasData?
   const saveDrawing = async (
     canvasData: { content: DrawingObject[] },
     privateDrawing: 0 | 1,
@@ -51,7 +49,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
 
   const handlePrivateDrawing = (canvasData: { content: DrawingObject[] }) => {
     confirmAlert({
-      title: "Set the drawing as PRIVATE",
+      title: "Set the drawing as PRIVATE?",
       message: "",
       buttons: [
         {
@@ -71,8 +69,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   };
 
   const handleCanvasToSave = async () => {
-    // @TODO - do the same for vouchers and refractor - DRY
-
     if (!canvas) return;
     if (!canvas.isDrawingMode) {
       canvas.isDrawingMode = true;

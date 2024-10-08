@@ -31,13 +31,10 @@ export const useDrawing = () => {
       dappState == DAPP_STATE.drawingUpdate
         ? COMMANDS.updateAndStore.cmd
         : COMMANDS.createAndStore.cmd;
-    // next 2 depend on the dappState also
+
     const log = currentDrawingData ? currentDrawingData.log : [];
     const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
     const owner = currentDrawingData ? currentDrawingData.owner : account;
-    // const privateDrawing = currentDrawingData
-    //   ? currentDrawingData.private
-    //   : "1"; // @TODO - add UI to handle is private
 
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string
@@ -61,6 +58,7 @@ export const useDrawing = () => {
       canvasDimensions: CanvasDimensions;
     },
     ercToMint: string,
+    privateDrawing: 0 | 1,
   ) => {
     // prepare drawing data notice input
     let drawingNoticePayload: DrawingInput;
@@ -70,9 +68,7 @@ export const useDrawing = () => {
         : COMMANDS.createAndMint.cmd;
     const log = currentDrawingData ? currentDrawingData.log : [];
     const owner = currentDrawingData ? currentDrawingData.owner : account;
-    const privateDrawing = currentDrawingData
-      ? currentDrawingData.private
-      : "1"; // @TODO - add UI to handle is private
+
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
       dimensions: drawingMeta.canvasDimensions,
