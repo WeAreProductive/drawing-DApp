@@ -2,8 +2,8 @@ import Page from "../layouts/Page";
 import { CanvasContextProvider } from "../context/CanvasContext";
 import FabricJSCanvas from "../components/FabricJSCanvas";
 import Controls from "../components/Controls";
-import ImagesListRollups from "../components/ImagesRollups";
 import { GraphQLProvider } from "../context/GraphQLContext";
+import DrawingContributorsList from "../components/ImagesRollups/DrawingContributorsList";
 
 const Draw = () => {
   return (
@@ -19,9 +19,7 @@ const Draw = () => {
                     <FabricJSCanvas />
                   </div>
                 </div>
-                {/* <div className="p-6 rounded-xl bg-card">
-                  <ImagesListRollups />
-                </div> */}
+                <DrawingContributorsList />
               </div>
             </div>
           </CanvasContextProvider>
