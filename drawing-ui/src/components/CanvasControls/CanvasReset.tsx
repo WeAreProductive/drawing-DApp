@@ -2,7 +2,8 @@ import { Trash2 } from "lucide-react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { Button } from "../ui/button";
 const CanvasReset = () => {
-  const { clearCanvas, setRedoObjectsArr, canvas } = useCanvasContext();
+  const { clearCanvas, setRedoObjectsArr, canvas, setCurrentDrawingData } =
+    useCanvasContext();
   const handleCanvasClear = () => {
     if (!canvas) return;
     if (!canvas.isDrawingMode) {
@@ -10,6 +11,7 @@ const CanvasReset = () => {
     }
     clearCanvas();
     setRedoObjectsArr([]);
+    setCurrentDrawingData(null);
   };
   return (
     <Button variant={"ghost"} onClick={handleCanvasClear}>

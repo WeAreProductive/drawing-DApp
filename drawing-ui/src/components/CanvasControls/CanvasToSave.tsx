@@ -7,7 +7,7 @@
 import { useSetChain } from "@web3-onboard/react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import configFile from "../../config/config.json";
-import { Network } from "../../shared/types";
+import { DrawingObject, Network } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
@@ -39,28 +39,31 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   if (!connectedChain) return;
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
   const { getNoticeInput } = useDrawing();
+
   // @TODO add isPrivate into canvasData?
-  const saveDrawing = (canvasData: any, isPrivate: any) => {
-    const strInput = getNoticeInput(canvasData);
-    sendInput(strInput);
+  const saveDrawing = async (
+    canvasData: { content: DrawingObject[] },
+    privateDrawing: 0 | 1,
+  ) => {
+    const strInput = getNoticeInput(canvasData, privateDrawing);
+    await sendInput(strInput);
   };
 
-  const handlePrivateDrawing = (canvasData: any) => {
-    // @TODO - refractor
+  const handlePrivateDrawing = (canvasData: { content: DrawingObject[] }) => {
     confirmAlert({
       title: "Set the drawing as PRIVATE",
       message: "",
       buttons: [
         {
           label: "OK",
-          onClick: () => {
-            saveDrawing(canvasData, 0);
+          onClick: async () => {
+            await saveDrawing(canvasData, 1);
           },
         },
         {
-          label: "CANCEL",
-          onClick: () => {
-            saveDrawing(canvasData, 1);
+          label: "NO",
+          onClick: async () => {
+            await saveDrawing(canvasData, 0);
           },
         },
       ],
@@ -68,11 +71,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   };
 
   const handleCanvasToSave = async () => {
-    // @TODO - check if new drawing
-    // - call handlePrivateDrawing
-    // - or directly call saveDrawing if the drawing is not new
-    // add isprivateDrawing to drawing input
-    // do the same for vouchers
+    // @TODO - do the same for vouchers and refractor - DRY
 
     if (!canvas) return;
     if (!canvas.isDrawingMode) {
