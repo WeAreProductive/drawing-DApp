@@ -1,7 +1,5 @@
-import React from "react";
 import Vouchers from "./Vouchers/Vouchers";
 import { Link } from "react-router-dom";
-import { Menu } from "lucide-react";
 
 const Header = () => {
   return (
