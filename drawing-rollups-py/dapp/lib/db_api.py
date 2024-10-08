@@ -98,7 +98,7 @@ def get_raw_data(query_args, type, page = 1):
          
           logger.info(f"LOG LENGTH {len(log)}")
           
-          statement = "SELECT drawing_objects FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"  
+          statement = "SELECT drawing_objects, painter FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"  
           logger.info(f"STATEMENT {statement}")
           cursor.execute(statement, log)
           rows = cursor.fetchall() 
@@ -135,7 +135,7 @@ def get_drawings(query_args, type, page):
   result = {}
   drawings = [] # all drawings array result 
   data_rows = get_raw_data(query_args, type, page) 
-  logger.info(f"Data rows {data_rows}")
+  
   if data_rows:
     # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
     for row in data_rows:   
@@ -146,9 +146,9 @@ def get_drawings(query_args, type, page):
       current_drawing['log'] = row[8]
       current_drawing['private'] = row[9]
       # # for row.log item call get_drawing_by_ids
-      # # from each result get drawing_objects and add it to update_log array
+      # # from each result get drawing_objects and the painter and add them to update_log array
       current_drawing['update_log'] = get_drawings_by_ids(current_drawing['log'])  
-     
+      logger.info(f"Data rows UPDATE LOG {current_drawing['update_log']}")
       drawings.append(current_drawing) 
     # return array of drawings + current page + has next + has previous @TODO
     length = len(row)
@@ -190,7 +190,7 @@ def get_drawings_by_ids(log):
   if data_rows:
     # from each result get drawing_objects and add it to update_log/drawing_slices array 
     for row in data_rows:
-      drawing_slices.append(row[0])
+      drawing_slices.append(row)
   return drawing_slices
 
 def get_data(query_str):

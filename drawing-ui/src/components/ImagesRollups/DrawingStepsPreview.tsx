@@ -12,7 +12,8 @@ const DrawingStepsPreview = ({
   return (
     <div className="drawing-steps">
       {updateLog.map((element: string, idx: Key | null | undefined) => {
-        const parsedElement = JSON.parse(element);
+        // each element is array of `drawing_objects and the painter`
+        const parsedElement = JSON.parse(element[0]);
         const snapShotJson = JSON.stringify({
           objects: parsedElement,
         });

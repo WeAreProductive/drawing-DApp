@@ -161,7 +161,8 @@ export const prepareDrawingObjectsArrays = (
       if (update_log.length) {
         // array of objects for each drawing session
         update_log.forEach((element) => {
-          storedDrawingObj.push(JSON.parse(element));
+          // each element is array of drawing_objects + the painter
+          storedDrawingObj.push(JSON.parse(element[0]));
         });
         // get all drawing_objects arrays and merge to one
       }
@@ -180,7 +181,8 @@ export const prepareDrawingObjectsArrays = (
 export const snapShotJsonfromLog = (update_log: string[]): string => {
   const drawingObjectsArr: DrawingObject[] = [];
   update_log.forEach((element: string) => {
-    const parsedElement = JSON.parse(element);
+    // each element is array of drawing_objects + the painter!!!
+    const parsedElement = JSON.parse(element[0]);
     drawingObjectsArr.push(parsedElement);
   });
   const snapShot = drawingObjectsArr.flat();
