@@ -1,7 +1,5 @@
 import Page from "../layouts/Page";
 import { CanvasContextProvider } from "../context/CanvasContext";
-import FabricJSCanvas from "../components/FabricJSCanvas";
-import Controls from "../components/Controls";
 import ImagesListRollups from "../components/ImagesRollups";
 import { GraphQLProvider } from "../context/GraphQLContext";
 
