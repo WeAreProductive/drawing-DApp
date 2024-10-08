@@ -58,12 +58,14 @@ def get_raw_data(query_args, type, page = 1):
           # SELECT *, (select count(*) from drawings) as total_rows FROM drawings GROUP BY uuid ORDER BY id DESC LIMIT ? OFFSET ? initial query
           cursor.execute(
               """
-              SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings 
+              
+              SELECT *, (select COUNT(DISTINCT uuid) from drawings) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings 
               GROUP BY uuid ) ORDER BY id DESC LIMIT ? OFFSET ?
               """,
               (limit, offset),
             )
           rows = cursor.fetchall() 
+          logger.info(f"get all drawings ROWS {rows}")
           return rows
 
       case "get_drawings_by_owner":
@@ -71,7 +73,7 @@ def get_raw_data(query_args, type, page = 1):
         owner = query_args[2] 
         offset = get_query_offset(page) 
         # statement = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  initial query
-        statement_initial = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid ) "
+        statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid ) "
         statement = statement_initial + "AND owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
         cursor.execute(statement, [owner, limit, offset]) 
         rows = cursor.fetchall()
@@ -81,8 +83,7 @@ def get_raw_data(query_args, type, page = 1):
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
         statement = "SELECT * FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
-        rows = cursor.fetchall()
-        logger.info(f"BY UUID rows {rows}")
+        rows = cursor.fetchall() 
         return rows
 
       case "get_drawings_by_uuid":
@@ -94,12 +95,9 @@ def get_raw_data(query_args, type, page = 1):
 
       case "get_drawing_by_ids": 
           logger.info(f"get drawing data where id in array: {query_args}") 
-          log = json.loads(query_args)
-         
-          logger.info(f"LOG LENGTH {len(log)}")
+          log = json.loads(query_args) 
           
-          statement = "SELECT drawing_objects, painter FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"  
-          logger.info(f"STATEMENT {statement}")
+          statement = "SELECT drawing_objects, painter FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"   
           cursor.execute(statement, log)
           rows = cursor.fetchall() 
           return rows
@@ -147,8 +145,7 @@ def get_drawings(query_args, type, page):
       current_drawing['private'] = row[9]
       # # for row.log item call get_drawing_by_ids
       # # from each result get drawing_objects and the painter and add them to update_log array
-      current_drawing['update_log'] = get_drawings_by_ids(current_drawing['log'])  
-      logger.info(f"Data rows UPDATE LOG {current_drawing['update_log']}")
+      current_drawing['update_log'] = get_drawings_by_ids(current_drawing['log'])   
       drawings.append(current_drawing) 
     # return array of drawings + current page + has next + has previous @TODO
     length = len(row)
@@ -183,10 +180,8 @@ def get_drawings_by_ids(log):
   -------
     list : drawings layers data
   """
-  drawing_slices = []
-  logger.info(f"LOG {log}")
-  data_rows = get_raw_data(log, 'get_drawing_by_ids')
-  logger.info(f"Data rows {data_rows}")
+  drawing_slices = [] 
+  data_rows = get_raw_data(log, 'get_drawing_by_ids') 
   if data_rows:
     # from each result get drawing_objects and add it to update_log/drawing_slices array 
     for row in data_rows:
