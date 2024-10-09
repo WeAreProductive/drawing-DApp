@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import { ConnectedChain } from "@web3-onboard/core";
+import { replace } from "react-router-dom";
 
 import {
   InputBox__factory,
@@ -154,6 +155,11 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
           // init currentDrawingData, @TODO observe
           console.log({ tempDrawingData });
           setCurrentDrawingData(tempDrawingData);
+          window.history.replaceState(
+            null,
+            "New Page Title",
+            `/drawing/${tempDrawingData.uuid}`,
+          );
         }
       } else {
         toast.error("Transaction Error 1", {
