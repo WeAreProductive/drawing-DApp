@@ -30,9 +30,19 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
   const [contracts, setContracts] = useState<RollupsContracts | undefined>();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
+  const account = connectedWallet.accounts[0].address;
   const [dappAddress] = useState<string>(dAddress);
 
-  const { setDappState, clearCanvas, canvas, setLoading } = useCanvasContext();
+  const {
+    setDappState,
+    clearCanvas,
+    canvas,
+    setLoading,
+    currentDrawingData,
+    currentDrawingLayer,
+    setCurrentDrawingData,
+    tempDrawingData,
+  } = useCanvasContext();
   useEffect(() => {
     const connect = async (chain: ConnectedChain) => {
       const provider = new ethers.providers.Web3Provider(
@@ -98,7 +108,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       }
     }
   }, [connectedWallet, connectedChain, dappAddress]);
-  const sendInput = async (strInput: string) => {
+  const sendInput = async (strInput: string, tempDrawingData: any = null) => {
     if (!contracts) return;
     toast.info("Sending input to rollups...");
 
@@ -124,11 +134,27 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setLoading(false);
       if (event?.args?.inputIndex) {
-        clearCanvas(); // manages the dApp state
+        // clearCanvas(); // manages the dApp state
         toast.success("Transaction Confirmed", {
           description: `Input added => index: ${event?.args?.inputIndex} `,
         });
-        setDappState(DAPP_STATE.refetchDrawings);
+        setDappState(DAPP_STATE.refetchDrawings); // @TODO this state update is not correct anymore
+        if (currentDrawingData) {
+          const newLogItem = [JSON.stringify(currentDrawingLayer), account];
+          if (currentDrawingData?.update_log) {
+            const log = [...currentDrawingData?.update_log, newLogItem];
+
+            setCurrentDrawingData({
+              ...currentDrawingData,
+              update_log: log,
+            });
+            // setElephantProp({ ...elephantProp, ...input });
+          }
+        } else {
+          // init currentDrawingData, @TODO observe
+          console.log({ tempDrawingData });
+          setCurrentDrawingData(tempDrawingData);
+        }
       } else {
         toast.error("Transaction Error 1", {
           description: `Input not added => index: ${event?.args?.inputIndex} `,

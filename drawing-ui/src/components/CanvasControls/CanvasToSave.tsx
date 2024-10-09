@@ -11,6 +11,8 @@ import { DrawingObject, Network } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
+import { useWallets } from "@web3-onboard/react";
 
 import { confirmAlert } from "react-confirm-alert"; // Import
 import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
@@ -33,18 +35,49 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     setLoading,
     dappState,
     setDappState,
+    setTempDrawingData,
   } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
   const { getNoticeInput } = useDrawing();
+  const [connectedWallet] = useWallets();
+  const account = connectedWallet.accounts[0].address;
+  const currentUuid = uuidv4();
 
   const saveDrawing = async (
     canvasData: { content: DrawingObject[] },
     privateDrawing: 0 | 1,
   ) => {
-    const strInput = getNoticeInput(canvasData, privateDrawing);
-    await sendInput(strInput);
+    const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
+    const owner = currentDrawingData ? currentDrawingData.owner : account;
+    const canvasDimensions = {
+      width: canvas?.width || 0,
+      height: canvas?.height || 0,
+    };
+
+    const strInput = getNoticeInput(
+      canvasData,
+      uuid,
+      owner,
+      privateDrawing,
+      canvasDimensions,
+    );
+
+    if (!currentDrawingData) {
+      console.log("setting the temp drawing data");
+      const strDimensions = JSON.stringify(canvasDimensions);
+      const initCanvasData = {
+        uuid: uuid,
+        owner: account,
+        update_log: [[JSON.stringify(currentDrawingLayer), account]],
+        dimensions: strDimensions,
+        private: privateDrawing,
+      };
+      await sendInput(strInput, initCanvasData);
+    } else {
+      await sendInput(strInput);
+    }
   };
 
   const handlePrivateDrawing = (canvasData: { content: DrawingObject[] }) => {

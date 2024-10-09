@@ -4,7 +4,7 @@ import DrawingPreview from "./DrawingPreview";
 
 const DrawingContributorsList = () => {
   const { currentDrawingData } = useCanvasContext();
-
+  console.log({ currentDrawingData });
   return (
     currentDrawingData && (
       <div className="rounded-xl bg-card p-6">

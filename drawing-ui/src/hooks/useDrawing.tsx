@@ -13,18 +13,25 @@ import { useWallets } from "@web3-onboard/react";
 const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
-  const { currentDrawingData, dappState, canvas } = useCanvasContext();
+  const {
+    currentDrawingData,
+    dappState,
+    canvas,
+    currentDrawingLayer,
+    tempDrawingData,
+    setTempDrawingData,
+  } = useCanvasContext();
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
   const currentUuid = uuidv4();
+  console.log({ tempDrawingData });
   const getNoticeInput = (
     canvasData: { content: DrawingObject[] },
+    uuid: string,
+    owner: `0x${string}`,
     privateDrawing: 0 | 1,
+    canvasDimensions: { width: number; height: number },
   ): string => {
-    const canvasDimensions = {
-      width: canvas?.width || 0,
-      height: canvas?.height || 0,
-    };
     // prepare drawing data notice input
     let drawingNoticePayload: DrawingInput;
     const cmd =
@@ -33,9 +40,7 @@ export const useDrawing = () => {
         : COMMANDS.createAndStore.cmd;
 
     const log = currentDrawingData ? currentDrawingData.log : [];
-    const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
-    const owner = currentDrawingData ? currentDrawingData.owner : account;
-
+    console.log({ log });
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string
       dimensions: canvasDimensions,

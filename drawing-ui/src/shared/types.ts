@@ -47,6 +47,8 @@ export type CanvasContextType = {
   setDappState: React.Dispatch<string>;
   currentDrawingData: null | DrawingInputExtended;
   setCurrentDrawingData: React.Dispatch<null | DrawingInputExtended>;
+  tempDrawingData: any;
+  setTempDrawingData: React.Dispatch<any>;
   clearCanvas: () => void;
   currentDrawingLayer: null | DrawingObject[];
   setCurrentDrawingLayer: React.Dispatch<DrawingObject[]>;
@@ -76,11 +78,13 @@ export interface DrawingInput {
   dimensions: CanvasDimensions;
   log: string[];
 }
+// @TODO typing?
+
 // received Drawings data
 export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   uuid: string;
-  owner: string; //last painter's account
-  update_log: string[];
+  owner: `0x${string}`; //last painter's account
+  update_log: any; //@TODO typing?!
   voucher_requested?: boolean;
   date_created?: string; // date-time string
   dimensions: string;
@@ -123,7 +127,7 @@ export type RollupsContracts = {
 
 export type RollupsInteractions = {
   contracts?: RollupsContracts;
-  sendInput: (strInput: string) => Promise<void>;
+  sendInput: (strInput: string, tempDrawingData?: any) => Promise<void>;
   executeVoucher: (
     voucher: VoucherExtended,
   ) => Promise<VoucherExtended | undefined>;
