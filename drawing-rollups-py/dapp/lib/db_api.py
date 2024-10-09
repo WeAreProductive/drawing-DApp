@@ -214,6 +214,44 @@ def get_data(query_str):
   drawings = get_drawings(query_args, query_type, page) 
   return drawings
 
+def get_drawing_log(uuid):
+  """ Executes database query statement.
+  Parameters
+  ----------
+   
+  Raises
+  ------
+    Exception 
+      If error arises while execiting the database statement.
+  Returns
+  -------
+   
+  """
+  conn = None 
+  try :
+    conn = sqlite3.connect(db_filename) 
+    cursor = conn.cursor()
+    # @TODO optimise query here - fetch only required data
+    # @TODO use total_rows to send has_next in the respose
+   
+    print("getting the drawing log") 
+          
+    statement = "SELECT log FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
+    cursor.execute(statement, [uuid]) 
+    record = cursor.fetchone() 
+    logger.info(f"get all drawings ROWS {record}")
+    return record
+
+      
+
+  except Exception as e: 
+    msg = f"Error executing statement: {e}" 
+    logger.info(f"{msg}")
+
+  finally:
+    if conn:
+      conn.close()
+
 def insert_drawing_data(query_args): 
   """ Executes database insert query statement.
   Parameters
@@ -237,10 +275,25 @@ def insert_drawing_data(query_args):
   dimensions = json.dumps(query_args['dimensions']) 
   drawing_objects = json.dumps(query_args['drawing_objects'])    
   private = int(query_args['private'])
+
+  logTuple = get_drawing_log(query_args['uuid']) 
+
+  if logTuple:
+    log1 = logTuple[0]
+    logger.info(f"TYPE {type(log1)}")
+    log = json.loads(log1)
+    logger.info(f"TYPE @ {log}")
+  else :
+    log = []
+  
+    # if log:
+    #   drawing_log = json.loads(log)
+    # else:
+    #   drawing_log = [] 
   try: 
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor()
-    log = query_args['log'] # string 
+    # log = query_args['log'] # string // @TODO get the log from the db, not from FE 
     
     json_log = json.dumps(log) 
    
@@ -281,11 +334,18 @@ def store_data(query_args):
   """
   conn = None
   id = insert_drawing_data(query_args)
-  
+  # log1 = get_drawing_log(query_args['uuid'])
+  # logger.info(f"LOG 1 {log1}")
   if id : 
-    log = query_args['log'] 
-    if log:
-      drawing_log = json.loads(log) 
+    logTuple = get_drawing_log(query_args['uuid'])
+    logger.info(f"LOG 1 {logTuple[0]}")
+    
+    if logTuple:
+      log = logTuple[0]
+      logger.info(f"TYPE {type(log)}")
+      logParsed = json.loads(log)
+      logger.info(f"TYPE @ {logParsed}")
+      drawing_log = json.loads(log)
     else:
       drawing_log = [] 
     
