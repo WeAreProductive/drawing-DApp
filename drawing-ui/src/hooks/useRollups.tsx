@@ -149,15 +149,13 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
               ...currentDrawingData,
               update_log: log,
             });
-            // setElephantProp({ ...elephantProp, ...input });
           }
         } else {
           // init currentDrawingData, @TODO observe
-          console.log({ tempDrawingData });
           setCurrentDrawingData(tempDrawingData);
           window.history.replaceState(
             null,
-            "New Page Title",
+            "Page Title",
             `/drawing/${tempDrawingData.uuid}`,
           );
         }

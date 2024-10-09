@@ -12,6 +12,7 @@ const CanvasReset = () => {
     clearCanvas();
     setRedoObjectsArr([]);
     setCurrentDrawingData(null);
+    window.history.replaceState(null, "Page Title", `/drawing`);
   };
   return (
     <Button variant={"ghost"} onClick={handleCanvasClear}>
