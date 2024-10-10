@@ -73,7 +73,7 @@ def get_raw_data(query_args, type, page = 1):
         owner = query_args[2] 
         offset = get_query_offset(page) 
         # statement = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  initial query
-        statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid ) "
+        statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
         statement = statement_initial + "AND owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
         cursor.execute(statement, [owner, owner, limit, offset]) 
         rows = cursor.fetchall()
@@ -89,9 +89,10 @@ def get_raw_data(query_args, type, page = 1):
 
       case "get_drawings_by_uuid":
         uuids = json.loads(query_args[2])
-        statement = "SELECT * FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ")"   
+        statement = "SELECT * FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ") AND id in (SELECT max(id) FROM drawings GROUP BY uuid )"   
         cursor.execute(statement, uuids)
         rows = cursor.fetchall() 
+        logger.info(f"ROWS BY UUID {rows}")
         return rows
 
       case "get_drawing_by_ids": 
@@ -272,7 +273,9 @@ def insert_drawing_data(query_args):
   painter = query_args['painter']  
   date_created = query_args['date_created']
   action = query_args['action']
+  logger.info(f"Dimensions {query_args}")
   dimensions = json.dumps(query_args['dimensions']) 
+  logger.info(f"Dimensions {dimensions}")
   drawing_objects = json.dumps(query_args['drawing_objects'])    
   private = int(query_args['private'])
 

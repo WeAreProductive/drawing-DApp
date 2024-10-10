@@ -34,7 +34,9 @@ const VouchersList = () => {
   const fetchImages = async (arg: string[]) => {
     console.log("Fetching voucher images ...");
     if (arg.length) {
-      const queryArg = JSON.stringify(arg);
+      // remove duplicate uuids
+      const filteredArg = arg.filter((v, i, a) => a.indexOf(v) == i);
+      const queryArg = JSON.stringify(filteredArg);
       const queryString = `drawings/uuids/${queryArg}`;
       const data = await inspectCall(queryString);
       setDrawings(data.drawings);

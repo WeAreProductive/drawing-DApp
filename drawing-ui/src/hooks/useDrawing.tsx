@@ -63,7 +63,7 @@ export const useDrawing = () => {
         ? COMMANDS.updateAndMint.cmd
         : COMMANDS.createAndMint.cmd;
     const log = currentDrawingData ? currentDrawingData.log : [];
-
+    console.log(drawingMeta.canvasDimensions);
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
       dimensions: drawingMeta.canvasDimensions,
