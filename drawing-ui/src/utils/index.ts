@@ -4,7 +4,7 @@ import pako from "pako";
 import { ethers } from "ethers";
 import {
   CANVAS_CURSOR_TYPES,
-  DRAwING_INPUT_LIMIT,
+  DRAWING_INPUT_LIMIT,
   LIMIT_WARNING_AT,
   VALIDATE_INPUT_ERRORS,
 } from "../shared/constants";
@@ -42,7 +42,7 @@ export const validateInputSize = (
     "Canvas " +
     prettyBytes(inputBytesCompressed.length) +
     " of " +
-    prettyBytes(DRAwING_INPUT_LIMIT) +
+    prettyBytes(DRAWING_INPUT_LIMIT) +
     " allowed.";
 
   const validationResult = {
@@ -56,7 +56,7 @@ export const validateInputSize = (
   };
 
   if (!isActiveDrawing) {
-    if (inputBytesCompressed.length >= DRAwING_INPUT_LIMIT) {
+    if (inputBytesCompressed.length >= DRAWING_INPUT_LIMIT) {
       validationResult.isValid = false;
       validationResult.info = {
         message: VALIDATE_INPUT_ERRORS.error.message,
@@ -67,8 +67,8 @@ export const validateInputSize = (
     }
   } else {
     if (
-      inputBytesCompressed.length >= DRAwING_INPUT_LIMIT * LIMIT_WARNING_AT &&
-      inputBytesCompressed.length < DRAwING_INPUT_LIMIT
+      inputBytesCompressed.length >= DRAWING_INPUT_LIMIT * LIMIT_WARNING_AT &&
+      inputBytesCompressed.length < DRAWING_INPUT_LIMIT
     ) {
       validationResult.isValid = true;
       validationResult.info = {
@@ -77,7 +77,7 @@ export const validateInputSize = (
         size: sizes,
         type: "warning",
       };
-    } else if (inputBytesCompressed.length >= DRAwING_INPUT_LIMIT) {
+    } else if (inputBytesCompressed.length >= DRAWING_INPUT_LIMIT) {
       validationResult.isValid = false;
       validationResult.info = {
         message: VALIDATE_INPUT_ERRORS.error.message,

@@ -56,8 +56,8 @@ export const COMMANDS = {
   },
 };
 
-// export const INPUT_LIMIT = 128000;
-export const INPUT_LIMIT = 64000;
+export const INPUT_LIMIT = 128000;
+// export const INPUT_LIMIT = 64000;
 // =========================================================
 // bytes of Cartesi's JSON payload limit (2097152 bytes)
 // =========================================================
@@ -70,7 +70,7 @@ export const INPUT_LIMIT = 64000;
 // voucher input: = currentDrawingData + last DrawingLayer's data 98.6% of the input's size
 // =========================================================
 // drawing input limit (currentDrawingData + last DrawingLayer)
-export const DRAwING_INPUT_LIMIT = (INPUT_LIMIT * 97) / 100;
+export const DRAWING_INPUT_LIMIT = (INPUT_LIMIT * 97) / 100;
 // in %, at what size the warning will appear
 export const LIMIT_WARNING_AT = 0.9;
 
