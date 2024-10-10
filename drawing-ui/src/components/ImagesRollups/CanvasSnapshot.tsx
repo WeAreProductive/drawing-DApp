@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { useCanvasContext } from "../../context/CanvasContext";
 import { DrawingInputExtended } from "../../shared/types";
 import { sliceAccountStr, snapShotJsonfromLog } from "../../utils";
 import { useMemo, useState } from "react";
@@ -38,6 +37,9 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
 
       <span className="block text-xs">Owner: {sliceAccountStr(owner)}</span>
       <span className="block text-xs">ID: {uuid}</span>
+      <span className="block text-xs">
+        <b>{src.private ? "private" : "public"}</b>
+      </span>
       <span
         onClick={handleShowSteps}
         className="flex p-1"

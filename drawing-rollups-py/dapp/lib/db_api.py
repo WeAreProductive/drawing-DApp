@@ -72,10 +72,12 @@ def get_raw_data(query_args, type, page = 1):
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         owner = query_args[2] 
         offset = get_query_offset(page) 
+        # @TODO fix count rows
         # statement = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  initial query
-        statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
-        statement = statement_initial + "AND owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  
-        cursor.execute(statement, [owner, owner, limit, offset]) 
+        statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? OR (painter LIKE ? AND owner NOT LIKE ?) ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
+        # statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
+        statement = statement_initial + "AND owner LIKE ? OR (painter LIKE ? AND owner NOT LIKE ?) ORDER BY id DESC LIMIT ? OFFSET ?"  
+        cursor.execute(statement, [owner, owner, owner, owner, owner, owner, limit, offset]) 
         rows = cursor.fetchall()
         logger.info(f"get MINE drawings ROWS {rows}")
         return rows
