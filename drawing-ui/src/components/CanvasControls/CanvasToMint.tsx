@@ -6,7 +6,7 @@
  * and a NOTICE with the current drawing data
  */
 import { useCanvasContext } from "../../context/CanvasContext";
-import { useSetChain } from "@web3-onboard/react";
+import { useSetChain, useWallets } from "@web3-onboard/react";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Box } from "lucide-react";
@@ -36,6 +36,8 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
   } = useCanvasContext();
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
+  const [connectedWallet] = useWallets();
+  const account = connectedWallet.accounts[0].address;
   if (!connectedChain) return;
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
 
@@ -47,23 +49,38 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
     privateDrawing: 0 | 1,
   ) => {
     const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
+    const owner = currentDrawingData ? currentDrawingData.owner : account;
+    const canvasDimensions = {
+      width: canvas?.width || 0,
+      height: canvas?.height || 0,
+    };
     const drawingMeta: DrawingMeta = await storeAsFiles(
       canvasContent.objects,
       uuid,
-      {
-        width: canvas?.width || 0,
-        height: canvas?.height || 0,
-      },
+      canvasDimensions,
     );
     if (!connectedChain) return;
     const strInput = getVoucherInput(
       canvasData,
       uuid,
+      owner,
       drawingMeta,
       config[connectedChain.id].ercToMint,
       privateDrawing,
     );
-    sendInput(strInput);
+    if (!currentDrawingData) {
+      const strDimensions = JSON.stringify(canvasDimensions);
+      const initCanvasData = {
+        uuid: uuid,
+        owner: account,
+        update_log: [[JSON.stringify(currentDrawingLayer), account]],
+        dimensions: strDimensions,
+        private: privateDrawing,
+      };
+      await sendInput(strInput, initCanvasData);
+    } else {
+      await sendInput(strInput);
+    }
   };
 
   const handlePrivateDrawing = (

@@ -13,17 +13,9 @@ import { useWallets } from "@web3-onboard/react";
 const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
-  const {
-    currentDrawingData,
-    dappState,
-    canvas,
-    currentDrawingLayer,
-    tempDrawingData,
-    setTempDrawingData,
-  } = useCanvasContext();
+  const { currentDrawingData, dappState, tempDrawingData } = useCanvasContext();
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
-  const currentUuid = uuidv4();
   console.log({ tempDrawingData });
   const getNoticeInput = (
     canvasData: { content: DrawingObject[] },
@@ -40,7 +32,6 @@ export const useDrawing = () => {
         : COMMANDS.createAndStore.cmd;
 
     const log = currentDrawingData ? currentDrawingData.log : [];
-    console.log({ log });
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string
       dimensions: canvasDimensions,
@@ -54,10 +45,10 @@ export const useDrawing = () => {
       private: privateDrawing,
     });
   };
-  // @TODO uuid in voucher input
   const getVoucherInput = (
     canvasData: { content: DrawingObject[] },
     uuid: string,
+    owner: `0x${string}`,
     drawingMeta: {
       ipfsHash: string;
       canvasDimensions: CanvasDimensions;
@@ -72,7 +63,6 @@ export const useDrawing = () => {
         ? COMMANDS.updateAndMint.cmd
         : COMMANDS.createAndMint.cmd;
     const log = currentDrawingData ? currentDrawingData.log : [];
-    const owner = currentDrawingData ? currentDrawingData.owner : account;
 
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData

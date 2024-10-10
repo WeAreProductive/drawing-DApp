@@ -65,7 +65,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     );
 
     if (!currentDrawingData) {
-      console.log("setting the temp drawing data");
       const strDimensions = JSON.stringify(canvasDimensions);
       const initCanvasData = {
         uuid: uuid,

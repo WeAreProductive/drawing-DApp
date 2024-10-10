@@ -36,7 +36,6 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
 
   const {
     setDappState,
-    clearCanvas,
     canvas,
     setLoading,
     currentDrawingData,
