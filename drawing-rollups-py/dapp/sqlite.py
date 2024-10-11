@@ -5,6 +5,16 @@ db_filename = 'drawing.db'
 def init_sqlite_database():
     """ create a database connection to an SQLite database """
     conn = None
+    # @TODO - add description for the data each column stores
+    #     BE
+    # (created_at) - replaces date_created
+    # (expires_at)
+
+    # FE, required
+    # title
+    # Description (optional) (new db column)
+    # Price for minting (new db column)
+
     try:
         conn = sqlite3.connect(db_filename)
         cursor = conn.cursor()
@@ -14,18 +24,29 @@ def init_sqlite_database():
             CREATE TABLE IF NOT EXISTS drawings (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 uuid VARCHAR NOT NULL,
-                dimensions VARCHAR NOT NULL,
-                date_created VARCHAR NOT NULL,
                 owner VARCHAR NOT NULL,
-                painter VARCHAR NOT NULL,
-                action VARCHAR NOT NULL,
-                drawing_objects TEXT NOT NULL,
-                log TEXT,
-                private INTEGER
+                dimensions VARCHAR NOT NULL,
+                private INTEGER,
+                title VARCHR NOT NULL,
+                description TEXT,
+                price FLOAT NOT NULL,
+                created_at VARCHAR NOT NULL,
+                expires_at VARCHR NOT NULL
             )
             """
         )
-
+        cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS layers (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    painter VARCHAR NOT NULL,
+                    drawing_objects TEXT NOT NULL,
+                    dimensions VARCHAR NOT NULL, 
+                    drawing_id INTEGER NOT NULL,
+                    FOREIGN KEY (drawing_id) REFERENCES drawings(id)
+                )
+               """
+            )
         conn.commit()
         print('Database created successfully!')
     except sqlite3.Error as e:
