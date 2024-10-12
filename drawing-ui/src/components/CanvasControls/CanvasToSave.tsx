@@ -21,6 +21,8 @@ import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
+import { useState } from "react";
+import InputDialog from "../Drawing/InputDialog";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -44,6 +46,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
   const currentUuid = uuidv4();
+  const [isOpen, setIsOpenModal] = useState(false);
 
   const saveDrawing = async (
     canvasData: { content: DrawingObject[] },
@@ -130,21 +133,27 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     }
 
     if (!currentDrawingData) {
-      handlePrivateDrawing(canvasData);
+      // handlePrivateDrawing(canvasData);
+      setIsOpenModal(true);
     } else {
       saveDrawing(canvasData, currentDrawingData.private);
     }
   };
 
+  console.log({ isOpen });
+
   return (
-    <Button
-      variant={"outline"}
-      onClick={handleCanvasToSave}
-      disabled={!connectedChain || !enabled}
-    >
-      <Save size={18} className="mr-2" strokeWidth={1.5} />
-      {dappState == DAPP_STATE.canvasSave ? "Saving..." : "Save"}
-    </Button>
+    <>
+      <Button
+        variant={"outline"}
+        onClick={handleCanvasToSave}
+        disabled={!connectedChain || !enabled}
+      >
+        <Save size={18} className="mr-2" strokeWidth={1.5} />
+        {dappState == DAPP_STATE.canvasSave ? "Saving..." : "Save"}
+      </Button>
+      <InputDialog isOpen={isOpen} />
+    </>
   );
 };
 

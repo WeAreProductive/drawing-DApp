@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import CanvasControls from "../components/CanvasControls";
-import DrawingControls from "../components/Drawing/DrawingControls";
+import DrawingControls from "./DrawingControls/DrawingControls";
 import CanvasObjectsControl from "./CanvasObjectsControl";
 import { useCanvasContext } from "../context/CanvasContext";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../utils";

@@ -121,3 +121,17 @@ svg.active .svg-elem-2 {
   stroke-dashoffset: 0;
   fill: rgb(255, 255, 255);
 }
+
+/* @TODO fix styles */
+[data-testid="modal-overlay"] {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+[data-testid="modal-overlay"] div.relative {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+}
+[data-testid="modal-overlay"] div.relative div.relative {
+  width: 100%;
+}
