@@ -104,20 +104,22 @@ const InputDialog = ({ isOpen }) => {
                 placeholder="Drawing description..."
               />
             </div>
-            <div className="my-2 flex">
-              <div className="flex flex-col">
-                <Label htmlFor="price" value="Minting Price" className="mb-4" />
-
-                <div className="flex max-w-md items-start gap-4">
-                  <DialogTextinput
-                    id="price"
-                    placeholder="Minting price"
-                    required
-                  />
-                  <DialogToggleSwitch checked={switch1} onChange={setSwitch1} />
-                  <Label value="Private drawing" className="mb-4" />
-                </div>
-              </div>
+            <div className="my-2 flex max-w-md items-start gap-4">
+              <Label
+                htmlFor="price"
+                value="Minting Price"
+                className="self-center"
+              />
+              {/* @TODO check comet's price */}
+              <DialogTextinput
+                id="price"
+                placeholder="Minting price"
+                required
+              />
+            </div>
+            <div className="my-2 flex max-w-md items-start gap-4">
+              <Label value="Private drawing" className="self-center" />
+              <DialogToggleSwitch checked={switch1} onChange={setSwitch1} />
             </div>
           </div>
         </Modal.Body>
