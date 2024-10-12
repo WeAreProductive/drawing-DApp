@@ -123,7 +123,7 @@ svg.active .svg-elem-2 {
 }
 
 /* @TODO fix styles */
-[data-testid="modal-overlay"] {
+/* [data-testid="modal-overlay"] {
   background-color: rgba(0, 0, 0, 0.4);
 }
 [data-testid="modal-overlay"] div.relative {
@@ -134,4 +134,4 @@ svg.active .svg-elem-2 {
 }
 [data-testid="modal-overlay"] div.relative div.relative {
   width: 100%;
-}
+} */
