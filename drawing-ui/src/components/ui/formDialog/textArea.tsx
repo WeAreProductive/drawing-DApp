@@ -1,6 +1,6 @@
 import type { CustomFlowbiteTheme } from "flowbite-react";
 import { Textarea } from "flowbite-react";
-const customTheme: CustomFlowbiteTheme["textarea"] = {
+export const customThemeTextarea: CustomFlowbiteTheme["textarea"] = {
   base: "block w-full rounded-lg border text-sm disabled:cursor-not-allowed disabled:opacity-50",
   colors: {
     gray: "border-gray-300 bg-gray-50 text-gray-900 focus:border-cyan-500 focus:ring-cyan-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-cyan-500 dark:focus:ring-cyan-500",
@@ -18,5 +18,7 @@ const customTheme: CustomFlowbiteTheme["textarea"] = {
   },
 };
 export default function DialogTextarea({ id }: any) {
-  return <Textarea theme={customTheme} id={id} rows={4} className="p-2" />;
+  return (
+    <Textarea theme={customThemeTextarea} id={id} rows={4} className="p-2" />
+  );
 }

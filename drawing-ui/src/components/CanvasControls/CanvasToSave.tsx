@@ -37,7 +37,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     setLoading,
     dappState,
     setDappState,
-    setTempDrawingData,
   } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
@@ -47,6 +46,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const account = connectedWallet.accounts[0].address;
   const currentUuid = uuidv4();
   const [isOpen, setIsOpenModal] = useState(false);
+  const [title, setTitle] = useState("");
 
   const saveDrawing = async (
     canvasData: { content: DrawingObject[] },
@@ -141,7 +141,14 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   };
 
   console.log({ isOpen });
-
+  const [value, setValue] = useState<any>([]);
+  const [inputValues, setInputValues] = useState<any>({
+    title: "",
+    description: "",
+    mintingPrice: "",
+    private: false,
+  });
+  console.log({ inputValues });
   return (
     <>
       <Button
@@ -152,7 +159,14 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
         <Save size={18} className="mr-2" strokeWidth={1.5} />
         {dappState == DAPP_STATE.canvasSave ? "Saving..." : "Save"}
       </Button>
-      <InputDialog isOpen={isOpen} />
+      <InputDialog
+        isOpen={isOpen}
+        value={value}
+        setValue={setValue}
+        inputValues={inputValues}
+        setInputValues={setInputValues}
+      />
+      {/* <InputDialog isOpen={isOpen} /> */}
     </>
   );
 };

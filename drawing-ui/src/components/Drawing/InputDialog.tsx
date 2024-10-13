@@ -1,8 +1,13 @@
-import { CustomFlowbiteTheme, Label, Modal, TextInput } from "flowbite-react";
+import {
+  CustomFlowbiteTheme,
+  Label,
+  Modal,
+  Textarea,
+  TextInput,
+} from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
-import DialogTextarea from "../ui/formDialog/textArea";
-import DialogTextinput from "../ui/formDialog/textInput";
+import { customThemeTextarea } from "../ui/formDialog/textArea";
 import DialogToggleSwitch from "../ui/formDialog/toggleSwitch";
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
@@ -59,23 +64,39 @@ const customTheme: CustomFlowbiteTheme["modal"] = {
     popup: "border-t",
   },
 };
-const InputDialog = ({ isOpen }) => {
+const InputDialog = ({ isOpen, setInputValues, inputValues }: any) => {
   const [openModal, setOpenModal] = useState(false);
   const [switch1, setSwitch1] = useState(false);
-  console.log({ isOpen });
-  console.log({ openModal });
-  const titleInputRef = useRef<HTMLInputElement>(null);
+  //  @TODO - use for input validation https://flowbite-react.com/docs/components/forms
+  // const titleInputRef = useRef<HTMLInputElement>(null);
   useEffect(() => {
     setOpenModal(isOpen);
   }, [isOpen]);
+
+  const handleInputChange = (e: any, inputName: string) => {
+    // @TODO add validation for string length before updating the state
+    setInputValues({
+      ...inputValues,
+      [inputName]: e.target.value,
+    });
+  };
+  const handleSwitch = () => {
+    // handle switch display
+    setSwitch1(!switch1);
+    // handle isPrivate value
+    setInputValues({
+      ...inputValues,
+      ["private"]: !switch1,
+    });
+  };
   return (
     <>
       <Modal
-        show={true}
+        show={openModal}
         size="lg"
         popup
         onClose={() => setOpenModal(false)}
-        initialFocus={titleInputRef}
+        // initialFocus={titleInputRef}
         theme={customTheme}
       >
         <Modal.Header />
@@ -86,11 +107,12 @@ const InputDialog = ({ isOpen }) => {
             </h3>
             <div className="my-2 flex flex-col">
               <Label htmlFor="title" value="Drawing title" className="mb-4" />
-              <DialogTextinput
+              <TextInput
                 id="title"
-                ref={titleInputRef}
+                // ref={titleInputRef}
                 placeholder="Drawing title ..."
                 required
+                onChange={(e) => handleInputChange(e, "title")}
               />
             </div>
             <div className="my-2 flex flex-col">
@@ -99,18 +121,28 @@ const InputDialog = ({ isOpen }) => {
                 value="Drawing description"
                 className="mb-4"
               />
-              <DialogTextarea
+              <Textarea
+                theme={customThemeTextarea}
+                rows={4}
+                className="p-2"
                 id="description"
                 placeholder="Drawing description..."
-              />
+                onChange={(e) => handleInputChange(e, "description")}
+              ></Textarea>
             </div>
             <div className="my-2 flex flex-col">
               <Label htmlFor="price" value="Minting Price" className="mb-4" />
-              <TextInput id="price" placeholder="0" required addon="ETH" />
+              <TextInput
+                id="mintingPrice"
+                placeholder="0"
+                required
+                addon="ETH"
+                onChange={(e) => handleInputChange(e, "mintingPrice")}
+              />
             </div>
             <div className="my-2 flex items-start gap-4">
               <Label value="Private drawing" className="self-center" />
-              <DialogToggleSwitch checked={switch1} onChange={setSwitch1} />
+              <DialogToggleSwitch checked={switch1} onChange={handleSwitch} />
             </div>
           </div>
         </Modal.Body>
