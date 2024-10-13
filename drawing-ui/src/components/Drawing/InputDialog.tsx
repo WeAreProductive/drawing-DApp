@@ -1,4 +1,4 @@
-import { CustomFlowbiteTheme, Label, Modal } from "flowbite-react";
+import { CustomFlowbiteTheme, Label, Modal, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
 import DialogTextarea from "../ui/formDialog/textArea";
@@ -104,20 +104,11 @@ const InputDialog = ({ isOpen }) => {
                 placeholder="Drawing description..."
               />
             </div>
-            <div className="my-2 flex max-w-md items-start gap-4">
-              <Label
-                htmlFor="price"
-                value="Minting Price"
-                className="self-center"
-              />
-              {/* @TODO check comet's price */}
-              <DialogTextinput
-                id="price"
-                placeholder="Minting price"
-                required
-              />
+            <div className="my-2 flex flex-col">
+              <Label htmlFor="price" value="Minting Price" className="mb-4" />
+              <TextInput id="price" placeholder="0" required addon="ETH" />
             </div>
-            <div className="my-2 flex max-w-md items-start gap-4">
+            <div className="my-2 flex items-start gap-4">
               <Label value="Private drawing" className="self-center" />
               <DialogToggleSwitch checked={switch1} onChange={setSwitch1} />
             </div>
