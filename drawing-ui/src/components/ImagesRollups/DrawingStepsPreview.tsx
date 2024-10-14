@@ -6,14 +6,15 @@ const DrawingStepsPreview = ({
   updateLog,
   dimensions,
 }: {
-  updateLog: string[];
+  updateLog: any;
   dimensions: CanvasDimensions;
 }) => {
   return (
     <div className="drawing-steps">
-      {updateLog.map((element: string, idx: Key | null | undefined) => {
+      {updateLog.map((element: any, idx: Key | null | undefined) => {
+        const { drawing_objects } = element;
         // each element is array of `drawing_objects and the painter`
-        const parsedElement = JSON.parse(element[0]);
+        const parsedElement = JSON.parse(drawing_objects);
         const snapShotJson = JSON.stringify({
           objects: parsedElement,
         });

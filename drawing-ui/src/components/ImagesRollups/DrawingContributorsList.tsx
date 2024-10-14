@@ -4,15 +4,15 @@ import DrawingPreview from "./DrawingPreview";
 
 const DrawingContributorsList = () => {
   const { currentDrawingData } = useCanvasContext();
-  console.log({ currentDrawingData });
   return (
     currentDrawingData && (
-      <div className="rounded-xl bg-card p-6">
-        <div className="-mx-1 flex flex-wrap">
+      <div className="p-6 rounded-xl bg-card">
+        <div className="flex flex-wrap -mx-1">
           {currentDrawingData.update_log.map(
-            (element: string, idx: Key | null | undefined) => {
+            (element: any, idx: Key | null | undefined) => {
               // each element is array of `drawing_objects and the painter`
-              const parsedElement = JSON.parse(element[0]);
+              const { drawing_objects, painter } = element;
+              const parsedElement = JSON.parse(drawing_objects);
               const snapShotJson = JSON.stringify({
                 objects: parsedElement,
               });
@@ -22,7 +22,7 @@ const DrawingContributorsList = () => {
                     dimensions={JSON.parse(currentDrawingData.dimensions)}
                     snapShotJson={snapShotJson}
                   />
-                  Painter: {element[1]}
+                  Painter: {painter}
                 </div>
               );
             },

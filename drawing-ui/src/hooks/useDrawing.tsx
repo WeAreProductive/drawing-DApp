@@ -17,7 +17,6 @@ export const useDrawing = () => {
     useCanvasContext();
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
-  console.log({ tempDrawingData });
   const getNoticeInput = (
     uuid: string,
     canvasData: { content: DrawingObject[] },
@@ -49,8 +48,7 @@ export const useDrawing = () => {
         uuid,
       };
     }
-    console.log(canvasData);
-    console.log(drawingPayload);
+
     return JSON.stringify({
       drawing_input: drawingPayload, //data to save in a notice and partially in the sqlite db
       cmd, // BE will be notified how to handle the payload
@@ -74,7 +72,6 @@ export const useDrawing = () => {
         ? COMMANDS.updateAndMint.cmd
         : COMMANDS.createAndMint.cmd;
     const log = currentDrawingData ? currentDrawingData.log : [];
-    console.log(drawingMeta.canvasDimensions);
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
       dimensions: drawingMeta.canvasDimensions,

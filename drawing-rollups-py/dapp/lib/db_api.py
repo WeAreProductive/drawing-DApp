@@ -91,7 +91,8 @@ def get_raw_data(query_args, type, page = 1):
       
       case "get_drawing_by_uuid":
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
-        statement = "SELECT * FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
+        statement = "SELECT id, uuid, owner, dimensions, private, title, description, minting_price, expires_at "
+        statement = statement + "FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall() 
         return rows
@@ -170,8 +171,10 @@ def get_drawings(query_args, type, page):
   if data_rows: 
     for row in data_rows:   
     # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at
+      logger.info(f" Drawing row {row}")
       current_drawing = {}
       current_drawing['uuid'] = row['uuid']
+      current_drawing['owner'] = row['owner']
       current_drawing['dimensions'] = row['dimensions'] #@TODO json parse maybe
       current_drawing['private'] = row['private']
       current_drawing['title'] = row['title']
@@ -179,10 +182,10 @@ def get_drawings(query_args, type, page):
       current_drawing['minting_price'] = row['minting_price']
       current_drawing['expires_at'] = row['expires_at']
 
-      current_drawing['update_log'] = get_drawing_layers(row['id'])
-      logger.info(f"Total results {row['total_rows']}")
+      current_drawing['update_log'] = get_drawing_layers(row['id']) 
       drawings.append(current_drawing) 
 
+  if type != 'get_drawing_by_uuid' :
     has_next = False
     next_page = 0
     number_of_rows = row['total_rows']
@@ -191,11 +194,11 @@ def get_drawings(query_args, type, page):
     loaded = page * limit
     if loaded < int(number_of_rows): 
       has_next = True 
-      next_page = page + 1
-        
+      next_page = page + 1 
    
-  result['has_next'] = has_next
-  result['next_page'] = next_page
+    result['has_next'] = has_next
+    result['next_page'] = next_page
+
   result['drawings'] = drawings 
     
   return result
@@ -273,8 +276,6 @@ def get_drawing_log(uuid):
     record = cursor.fetchone() 
     logger.info(f"get all drawings ROWS {record}")
     return record
-
-      
 
   except Exception as e: 
     msg = f"Error executing statement: {e}" 

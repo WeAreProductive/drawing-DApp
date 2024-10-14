@@ -180,9 +180,10 @@ export const prepareDrawingObjectsArrays = (
 };
 export const snapShotJsonfromLog = (update_log: string[]): string => {
   const drawingObjectsArr: DrawingObject[] = [];
-  update_log.forEach((element: string) => {
+  update_log.forEach((element: any) => {
     // each element is array of drawing_objects + the painter!!!
-    const parsedElement = JSON.parse(element[0]);
+    const { drawing_objects } = element;
+    const parsedElement = JSON.parse(drawing_objects);
     drawingObjectsArr.push(parsedElement);
   });
   const snapShot = drawingObjectsArr.flat();

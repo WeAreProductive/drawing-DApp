@@ -40,11 +40,9 @@ const FabricJSCanvas = () => {
   const initCurrentDrawing = async (uuid: string) => {
     const queryStr = `drawing/uuid/${uuid}`;
     const drawingData = await inspectCall(queryStr);
-    console.log({ drawingData });
     const { drawings } = drawingData;
     if (!canvas) return;
-    console.log("load image...");
-    if (drawings && drawings) {
+    if (drawings && drawings.length) {
       const { update_log } = drawings[0];
 
       const snapShotJson = snapShotJsonfromLog(update_log);
@@ -147,7 +145,7 @@ const FabricJSCanvas = () => {
 
   return (
     <div ref={canvasWrapperEl} className="flex justify-center">
-      <div className="bg-card shadow-sm">
+      <div className="shadow-sm bg-card">
         <canvas
           ref={canvasEl}
           width={canvasOptions.canvasWidth}
