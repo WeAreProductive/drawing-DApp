@@ -116,7 +116,7 @@ def store_drawing_data( sender, cmd, data ):
     notice = {"payload": payload}
     send_notice( notice )
     logger.info(f"DATA to store {data}")
-    store_data( cmd, data ) 
+    store_data( cmd, sender, data ) 
 
 
 ###

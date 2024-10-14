@@ -48,6 +48,7 @@ def get_raw_data(query_args, type, page = 1):
   conn = None 
   try :
     conn = sqlite3.connect(db_filename) 
+    conn.row_factory = sqlite3.Row # receive named results
     cursor = conn.cursor()
     # @TODO optimise query here - fetch only required data
     # @TODO use total_rows to send has_next in the respose
@@ -69,14 +70,20 @@ def get_raw_data(query_args, type, page = 1):
           return rows
 
       case "get_drawings_by_owner":
+
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         owner = query_args[2] 
         offset = get_query_offset(page) 
-        # @TODO fix count rows
+        # @TODO fix count rows and get only needed data
         # statement = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  initial query
-        statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? OR (painter LIKE ? AND owner NOT LIKE ?) ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
+        # statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? OR (painter LIKE ? AND owner NOT LIKE ?) ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
         # statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
-        statement = statement_initial + "AND owner LIKE ? OR (painter LIKE ? AND owner NOT LIKE ?) ORDER BY id DESC LIMIT ? OFFSET ?"  
+        # statement = statement_initial + "AND owner LIKE ? OR (painter LIKE ? AND owner NOT LIKE ?) ORDER BY id DESC LIMIT ? OFFSET ?"  
+
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, "
+        statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
+        statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE l.drawing_id in (SELECT max(id) FROM drawings GROUP BY uuid )"
+        statement = statement + "AND d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?) ORDER BY d.id DESC LIMIT ? OFFSET ?"
         cursor.execute(statement, [owner, owner, owner, owner, owner, owner, limit, offset]) 
         rows = cursor.fetchall()
         logger.info(f"get MINE drawings ROWS {rows}")
@@ -105,6 +112,14 @@ def get_raw_data(query_args, type, page = 1):
           cursor.execute(statement, log)
           rows = cursor.fetchall() 
           return rows
+      case "get_drawing_layers": 
+          logger.info(f"get drawing layers {query_args}")  
+          
+          statement = "SELECT painter, drawing_objects, dimensions FROM layers WHERE drawing_id = ?"   
+          cursor.execute(statement, [query_args])
+          rows = cursor.fetchall() 
+          logger.info(f"get MINE drawings ROWS {rows}")
+          return rows
 
 
   except Exception as e: 
@@ -114,6 +129,20 @@ def get_raw_data(query_args, type, page = 1):
   finally:
     if conn:
       conn.close()
+
+
+def get_drawing_layers(id) :
+  update_log = []
+  data_rows = get_raw_data(id, 'get_drawing_layers')  
+  if data_rows:
+    for row in data_rows:  
+      current_log = {}
+      current_log['painter'] = row['painter']
+      current_log['drawing_objects'] = row['drawing_objects']
+      current_log['dimensions'] = row['dimensions']
+
+      update_log.append(current_log)
+  return update_log
 
 def get_drawings(query_args, type, page):
   """ Retrieves requested drawings data.
@@ -138,37 +167,36 @@ def get_drawings(query_args, type, page):
   drawings = [] # all drawings array result 
   data_rows = get_raw_data(query_args, type, page) 
   
-  if data_rows:
-    # format drawings data as row.uuid, row.owner, row.dimensions, row.date_created, row.action(?), row.update_log, row.log
+  if data_rows: 
     for row in data_rows:   
+    # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at
       current_drawing = {}
-      current_drawing['uuid'] = row[1]
-      current_drawing['dimensions'] = row[2] 
-      current_drawing['owner'] = row[4] 
-      current_drawing['log'] = row[8]
-      current_drawing['private'] = row[9]
-      # # for row.log item call get_drawing_by_ids
-      # # from each result get drawing_objects and the painter and add them to update_log array
-      current_drawing['update_log'] = get_drawings_by_ids(current_drawing['log'])   
+      current_drawing['uuid'] = row['uuid']
+      current_drawing['dimensions'] = row['dimensions'] #@TODO json parse maybe
+      current_drawing['private'] = row['private']
+      current_drawing['title'] = row['title']
+      current_drawing['description'] = row['description']
+      current_drawing['minting_price'] = row['minting_price']
+      current_drawing['expires_at'] = row['expires_at']
+
+      current_drawing['update_log'] = get_drawing_layers(row['id'])
+      logger.info(f"Total results {row['total_rows']}")
       drawings.append(current_drawing) 
-    # return array of drawings + current page + has next + has previous @TODO
-    length = len(row)
 
     has_next = False
     next_page = 0
-    
-    if length == 11:
-      number_of_rows = row[10] 
-      # calculate up_to_now_loaded including the current set
-      loaded = page * limit
-      if loaded < int(number_of_rows): 
-        has_next = True 
-        next_page = page + 1
+    number_of_rows = row['total_rows']
+    # calculate up_to_now_loaded including the current set
+    logger.info(f"Calculate number of rows ...")
+    loaded = page * limit
+    if loaded < int(number_of_rows): 
+      has_next = True 
+      next_page = page + 1
         
    
-    # result['has_next'] = has_next
-    result['next_page'] = next_page
-    result['drawings'] = drawings 
+  result['has_next'] = has_next
+  result['next_page'] = next_page
+  result['drawings'] = drawings 
     
   return result
 
@@ -217,6 +245,7 @@ def get_data(query_str):
   drawings = get_drawings(query_args, query_type, page) 
   return drawings
 
+# Obsolete - remove
 def get_drawing_log(uuid):
   """ Executes database query statement.
   Parameters
@@ -308,8 +337,36 @@ def create_drawing(data):
   finally:
     if conn:
       conn.close()
+def store_drawing_layer(id, sender, data):
+  parsed_drawing = json.loads(data['drawing'])
+  content = json.dumps(parsed_drawing['content'])
+  dimensions = json.dumps(data['dimensions'])
+    # drawing_input["drawing_objects"] = content
+  try: 
+    conn = sqlite3.connect(db_filename)
+    cursor = conn.cursor() 
+    
+    cursor.execute(
+        """
+        INSERT INTO layers(painter, drawing_objects, dimensions, drawing_id)
+        VALUES (?, ?, ?, ?)
+        """,
+        (sender, content, dimensions, id),
+    )
 
-def store_data(cmd, data): 
+    conn.commit()
+
+    id = cursor.lastrowid
+    return id
+
+  except Exception as e: 
+    msg = f"Error executing insert statement: {e}" 
+    logger.info(f"{msg}")
+  finally:
+    if conn:
+      conn.close()
+
+def store_data(cmd, sender, data): 
   """ Routes dra.
   Parameters
   ----------
@@ -331,6 +388,7 @@ def store_data(cmd, data):
     
     id = create_drawing(data)
     # store the drawing layer with the id returned from create_drawing
+    store_drawing_layer(id, sender, data)
   elif cmd == 'un' :
     logger.info(f"Update drawing")
     # get_drawing_by_uuid
