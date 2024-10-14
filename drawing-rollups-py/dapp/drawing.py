@@ -64,61 +64,59 @@ def mint_erc721_with_string( msg_sender, data ):
 #  @param {Object} drawing_input
 #  @param {String} cmd
 
-def store_drawing_data( msg_sender, data ):
+def store_drawing_data( sender, cmd, data ):
     """ Prepares and requests a notice.
         Triggers the execution of the next function that 
         stores the drawing data in the sqlite database.
     Parameters
     ----------
-    sender : str
-    uuid : str
-    drawing_inpu : dict
-        The drawing's data
-    imageIPFSMeta : str
-    cmd : str
+    sender : str 
+    cmd : str 
+    data : dict
+        The drawing's data 
     Raises
     ------
     Returns
     -------
     """
     
-    now = str(datetime.now(timezone.utc))  
+    now = str(datetime.now(timezone.utc))  # convert to timestamp at be
 
-    drawing_input = data["drawing_input"]
+    # drawing_input = data["drawing_input"]
 
-    drawing = drawing_input['drawing']
+    # drawing = drawing_input['drawing']
     
-    parsed_drawing = json.loads(drawing)
-    content = parsed_drawing['content']
-    # owner is the owner of the drawing
-    # the painter can be different than the drawing owner
-    # only the first drawing layer's painter is the drawing owner for sure
-    drawing_input["uuid"]= data["uuid"]
-    drawing_input["owner"] = data["owner"]
-    drawing_input["painter"] = msg_sender
-    drawing_input["date_created"] = now  
-    cmd =  data["cmd"] 
-    drawing_input["action"] = cmd 
-    drawing_input["drawing_objects"] = content
-    drawing_input["private"] = data["private"]
+    # parsed_drawing = json.loads(drawing)
+    # content = parsed_drawing['content']
+    # # owner is the owner of the drawing
+    # # the painter can be different than the drawing owner
+    # # only the first drawing layer's painter is the drawing owner for sure
+    # drawing_input["uuid"]= data["uuid"]
+    # drawing_input["owner"] = data["owner"]
+    # drawing_input["painter"] = msg_sender
+    data["date_created"] = now  
+    # @TODO add date created  
+    # drawing_input["drawing_objects"] = content 
+    # drawing_input["private"] = data["private"]
     
-    if cmd == 'cn' or cmd == 'cv':
-        # drawing_input['log'] = [] #init log
-        if cmd == 'cv':
-            drawing_input['voucher_requested'] = True # not in db
-        else:
-            drawing_input['voucher_requested'] = False # not in db
-    elif cmd == 'un' or cmd == 'uv': 
-        if cmd == 'uv':
-            drawing_input['voucher_requested'] = True # not in db
+    # if cmd == 'cn' or cmd == 'cv':
+    #     # drawing_input['log'] = [] #init log
+    #     if cmd == 'cv':
+    #         drawing_input['voucher_requested'] = True # not in db
+    #     else:
+    #         drawing_input['voucher_requested'] = False # not in db
+    # elif cmd == 'un' or cmd == 'uv': 
+    #     if cmd == 'uv':
+    #         drawing_input['voucher_requested'] = True # not in db
     # notices are needed vor voucher's input 
-    compressed = zlib.compress(bytes(json.dumps(drawing_input), "utf-8")) 
+    compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
     # uint8array to hex
     payload = binary2hex(compressed) 
 
     notice = {"payload": payload}
-    send_notice(notice)
-    store_data( drawing_input ) 
+    send_notice( notice )
+    logger.info(f"DATA to store {data}")
+    store_data( cmd, data ) 
 
 
 ###
@@ -160,8 +158,9 @@ def handle_advance(data):
                     logger.info(f"COMMAND {json_data['cmd']}")
                     if json_data.get("drawing_input"):  
                         drawing_input = json_data.get("drawing_input")
+                        cmd = json_data['cmd']
                         logger.info(f"DRAWING INPUT {json_data['drawing_input']}")
-                        # store_drawing_data( sender, json_data )
+                        store_drawing_data( sender, cmd, drawing_input )
             else:
                 raise Exception('Not supported json operation')
         except Exception as e2:

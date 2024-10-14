@@ -255,7 +255,7 @@ def get_drawing_log(uuid):
     if conn:
       conn.close()
 
-def insert_drawing_data(query_args): 
+def create_drawing(data): 
   """ Executes database insert query statement.
   Parameters
   ----------
@@ -269,45 +269,32 @@ def insert_drawing_data(query_args):
   -------
     id: int
     The PK of the row created.
-  """
-  uuid = query_args['uuid'] 
-  owner = query_args['owner']  
-  painter = query_args['painter']  
-  date_created = query_args['date_created']
-  action = query_args['action']
-  logger.info(f"Dimensions {query_args}")
-  dimensions = json.dumps(query_args['dimensions']) 
-  logger.info(f"Dimensions {dimensions}")
-  drawing_objects = json.dumps(query_args['drawing_objects'])    
-  private = int(query_args['private'])
-
-  logTuple = get_drawing_log(query_args['uuid']) 
-
-  if logTuple:
-    log1 = logTuple[0]
-    logger.info(f"TYPE {type(log1)}")
-    log = json.loads(log1)
-    logger.info(f"TYPE @ {log}")
-  else :
-    log = []
-  
-    # if log:
-    #   drawing_log = json.loads(log)
-    # else:
-    #   drawing_log = [] 
+  """ 
+  uuid = data['uuid']
+  owner = data['owner']
+  dimensions = json.dumps(data['dimensions'])
+  created_at = data['date_created']
+  expires_at = data['date_created'] #add 7 days @TODO
+  logger.info(f"Private {data['userInputData']['private']}")
+  # user input data
+  private = 0
+  if data['userInputData']['private'] == True:
+    private= 1
+  title = data['userInputData']['title']
+  description = data['userInputData']['description']
+  minting_price = data['userInputData']['mintingPrice'] 
+  logger.info(f"OWNER {type(owner)}")
+  logger.info(f"UUID {type(uuid)}")
   try: 
     conn = sqlite3.connect(db_filename)
-    cursor = conn.cursor()
-    # log = query_args['log'] # string // @TODO get the log from the db, not from FE 
-    
-    json_log = json.dumps(log) 
+    cursor = conn.cursor() 
    
     cursor.execute(
         """
-        INSERT INTO drawings(uuid, dimensions, date_created, owner, painter, action, drawing_objects, log, private)
+        INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, expires_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (uuid, dimensions, date_created, owner, painter, action, drawing_objects, json_log, private),
+        (uuid, owner, dimensions, private, title, description, minting_price, created_at, expires_at),
     )
 
     conn.commit()
@@ -322,8 +309,8 @@ def insert_drawing_data(query_args):
     if conn:
       conn.close()
 
-def store_data(query_args): 
-  """ Executes database UPDATE query statement.
+def store_data(cmd, data): 
+  """ Routes dra.
   Parameters
   ----------
   query_args : list
@@ -337,48 +324,59 @@ def store_data(query_args):
     id : int
     The PK of the row updated.
   """
-  conn = None
-  id = insert_drawing_data(query_args)
+  # prepare data
+  
+  if cmd == 'cn' :
+    # create new record - create_drawing
+    
+    id = create_drawing(data)
+    # store the drawing layer with the id returned from create_drawing
+  elif cmd == 'un' :
+    logger.info(f"Update drawing")
+    # get_drawing_by_uuid
+    # store_drawing_layer
+  # conn = None
+  # id = insert_drawing_data(query_args)
   # log1 = get_drawing_log(query_args['uuid'])
   # logger.info(f"LOG 1 {log1}")
-  if id : 
-    logTuple = get_drawing_log(query_args['uuid'])
-    logger.info(f"LOG 1 {logTuple[0]}")
+  # if id : 
+  #   logTuple = get_drawing_log(query_args['uuid'])
+  #   logger.info(f"LOG 1 {logTuple[0]}")
     
-    if logTuple:
-      log = logTuple[0]
-      logger.info(f"TYPE {type(log)}")
-      logParsed = json.loads(log)
-      logger.info(f"TYPE @ {logParsed}")
-      drawing_log = json.loads(log)
-    else:
-      drawing_log = [] 
+  #   if logTuple:
+  #     log = logTuple[0]
+  #     logger.info(f"TYPE {type(log)}")
+  #     logParsed = json.loads(log)
+  #     logger.info(f"TYPE @ {logParsed}")
+  #     drawing_log = json.loads(log)
+  #   else:
+  #     drawing_log = [] 
     
-    drawing_log.append(id) 
-    json_log = json.dumps(drawing_log) 
-    try:
+  #   drawing_log.append(id) 
+  #   json_log = json.dumps(drawing_log) 
+  #   try:
 
-      conn = sqlite3.connect(db_filename)
-      cursor = conn.cursor()
+  #     conn = sqlite3.connect(db_filename)
+  #     cursor = conn.cursor()
       
-      cursor.execute(
-        """
-        UPDATE drawings
-        SET log = ?
-        WHERE id = ?
-        """,
-        (json_log, id),
-      )
-      conn.commit()
-      id = cursor.lastrowid
-      return id
+  #     cursor.execute(
+  #       """
+  #       UPDATE drawings
+  #       SET log = ?
+  #       WHERE id = ?
+  #       """,
+  #       (json_log, id),
+  #     )
+  #     conn.commit()
+  #     id = cursor.lastrowid
+  #     return id
 
-    except Exception as e: 
-      msg = f"Error executing insert statement: {e}" 
-      logger.info(f"{msg}")
-    finally:
-      if conn:
-        conn.close()
+  #   except Exception as e: 
+  #     msg = f"Error executing insert statement: {e}" 
+  #     logger.info(f"{msg}")
+  #   finally:
+  #     if conn:
+  #       conn.close()
    
   
 
