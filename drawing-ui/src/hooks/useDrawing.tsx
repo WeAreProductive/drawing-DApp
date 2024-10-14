@@ -13,36 +13,47 @@ import { useWallets } from "@web3-onboard/react";
 const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
-  const { currentDrawingData, dappState, tempDrawingData } = useCanvasContext();
+  const { currentDrawingData, dappState, tempDrawingData, canvas } =
+    useCanvasContext();
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
   console.log({ tempDrawingData });
   const getNoticeInput = (
-    canvasData: { content: DrawingObject[] },
     uuid: string,
-    owner: `0x${string}`,
-    privateDrawing: 0 | 1,
-    canvasDimensions: { width: number; height: number },
+    canvasData: { content: DrawingObject[] },
+    drawingInputData: any,
   ): string => {
-    // prepare drawing data notice input
-    let drawingNoticePayload: DrawingInput;
-    const cmd =
-      dappState == DAPP_STATE.drawingUpdate
-        ? COMMANDS.updateAndStore.cmd
-        : COMMANDS.createAndStore.cmd;
-
-    const log = currentDrawingData ? currentDrawingData.log : [];
-    drawingNoticePayload = {
-      drawing: JSON.stringify(canvasData), // FE updates the svg string
-      dimensions: canvasDimensions,
-      log,
+    // prepare drawing data nput
+    let drawingPayload: any;
+    const cmd = currentDrawingData
+      ? COMMANDS.updateAndStore.cmd
+      : COMMANDS.createAndStore.cmd;
+    const canvasDimensions = {
+      width: canvas?.width || 0,
+      height: canvas?.height || 0,
     };
+
+    if (cmd === COMMANDS.createAndStore.cmd) {
+      // cmd - outside of drawing input
+      drawingPayload = {
+        drawing: JSON.stringify(canvasData), // FE updates the svg string
+        dimensions: canvasDimensions,
+        userInputData: drawingInputData,
+        owner: account,
+        uuid,
+      };
+    } else if (cmd === COMMANDS.updateAndStore.cmd) {
+      drawingPayload = {
+        drawing: JSON.stringify(canvasData), // FE updates the svg string
+        dimensions: canvasDimensions,
+        uuid,
+      };
+    }
+    console.log(canvasData);
+    console.log(drawingPayload);
     return JSON.stringify({
-      drawing_input: drawingNoticePayload, //data to save in a notice and partially in the sqlite db
-      uuid,
-      owner,
-      cmd, // BE will be notified to emit a notice
-      private: privateDrawing,
+      drawing_input: drawingPayload, //data to save in a notice and partially in the sqlite db
+      cmd, // BE will be notified how to handle the payload
     });
   };
   const getVoucherInput = (

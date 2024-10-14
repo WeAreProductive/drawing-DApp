@@ -46,74 +46,19 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const account = connectedWallet.accounts[0].address;
   const currentUuid = uuidv4();
   const [isOpen, setIsOpenModal] = useState(false);
-  const [title, setTitle] = useState("");
+  const [value, setValue] = useState<any>([]);
+  const [inputValues, setInputValues] = useState<any>({
+    title: "",
+    description: "",
+    mintingPrice: "",
+    private: false,
+  });
+  const [canvasData, setCanvasData] = useState();
 
-  const saveDrawing = async (
-    canvasData: { content: DrawingObject[] },
-    privateDrawing: 0 | 1,
-  ) => {
-    const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
-    const owner = currentDrawingData ? currentDrawingData.owner : account;
-    const canvasDimensions = {
-      width: canvas?.width || 0,
-      height: canvas?.height || 0,
-    };
-
-    const strInput = getNoticeInput(
-      canvasData,
-      uuid,
-      owner,
-      privateDrawing,
-      canvasDimensions,
-    );
-
-    if (!currentDrawingData) {
-      const strDimensions = JSON.stringify(canvasDimensions);
-      const initCanvasData = {
-        uuid: uuid,
-        owner: account,
-        update_log: [[JSON.stringify(currentDrawingLayer), account]],
-        dimensions: strDimensions,
-        private: privateDrawing,
-      };
-      await sendInput(strInput, initCanvasData);
-    } else {
-      await sendInput(strInput);
-    }
-  };
-
-  const handlePrivateDrawing = (canvasData: { content: DrawingObject[] }) => {
-    confirmAlert({
-      title: "Set the drawing as PRIVATE?",
-      message: "",
-      buttons: [
-        {
-          label: "OK",
-          onClick: async () => {
-            await saveDrawing(canvasData, 1);
-          },
-        },
-        {
-          label: "NO",
-          onClick: async () => {
-            await saveDrawing(canvasData, 0);
-          },
-        },
-      ],
-    });
-  };
-
-  const handleCanvasToSave = async () => {
-    if (!canvas) return;
-    if (!canvas.isDrawingMode) {
-      canvas.isDrawingMode = true;
-    }
-    if (!currentDrawingLayer) return;
-    if (currentDrawingLayer.length < 1) return;
-
-    setLoading(true);
+  const saveDrawing = async () => {
     setDappState(DAPP_STATE.canvasSave);
-    const canvasContent = canvas.toJSON(); // or canvas.toObject()
+    if (!canvas) return;
+    const canvasContent = canvas?.toJSON(); // or canvas.toObject()
     // !!!! extracts the !!! currents session !!!! drawing objects using the old and current drawing data
     const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
       currentDrawingData,
@@ -132,23 +77,44 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       return;
     }
 
+    const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
+
+    const strInput = getNoticeInput(uuid, canvasData, inputValues);
+
+    if (!currentDrawingData) {
+      // @TODO set useDrawing function for init canvas data
+      // const strDimensions = JSON.stringify(canvasDimensions);
+      // const initCanvasData = {
+      //   uuid: uuid,
+      //   owner: account,
+      //   update_log: [[JSON.stringify(currentDrawingLayer), account]],
+      //   dimensions: strDimensions,
+      //   private: privateDrawing,
+      // };
+      // await sendInput(strInput, initCanvasData);
+      await sendInput(strInput);
+    } else {
+      await sendInput(strInput);
+    }
+  };
+
+  const handleCanvasToSave = async () => {
+    setLoading(true);
+    if (!canvas) return;
+    if (!canvas.isDrawingMode) {
+      canvas.isDrawingMode = true;
+    }
+    if (!currentDrawingLayer) return;
+    if (currentDrawingLayer.length < 1) return;
+
     if (!currentDrawingData) {
       // handlePrivateDrawing(canvasData);
       setIsOpenModal(true);
     } else {
-      saveDrawing(canvasData, currentDrawingData.private);
+      saveDrawing();
     }
   };
 
-  console.log({ isOpen });
-  const [value, setValue] = useState<any>([]);
-  const [inputValues, setInputValues] = useState<any>({
-    title: "",
-    description: "",
-    mintingPrice: "",
-    private: false,
-  });
-  console.log({ inputValues });
   return (
     <>
       <Button
@@ -165,6 +131,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
         setValue={setValue}
         inputValues={inputValues}
         setInputValues={setInputValues}
+        action={() => saveDrawing()}
       />
       {/* <InputDialog isOpen={isOpen} /> */}
     </>

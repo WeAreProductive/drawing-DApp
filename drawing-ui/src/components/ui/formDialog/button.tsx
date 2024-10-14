@@ -9,9 +9,9 @@ const customTheme: CustomFlowbiteTheme["button"] = {
   },
 };
 
-export default function DialogButton({ color, children }: any) {
+export default function DialogButton({ color, children, onClick }: any) {
   return (
-    <Button theme={customTheme} color={color} className="m-2">
+    <Button theme={customTheme} color={color} className="m-2" onClick={onClick}>
       {children}
     </Button>
   );
