@@ -52,17 +52,17 @@ def get_raw_data(query_args, type, page = 1):
     cursor = conn.cursor() 
     match type:
       case "get_all_drawings": 
-          print("get_all_drawings") 
-          offset = get_query_offset(page)  
-          statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, "
-          statement = statement + "count(*) OVER() AS total_rows " 
-          statement = statement + "FROM drawings d "
-          statement = statement + "ORDER BY d.id DESC LIMIT ? OFFSET ?"
-          logger.info(f"LIMIT {limit}")
-          logger.info(f"Statement {offset}")
-          cursor.execute(statement, [limit, offset]) 
-          rows = cursor.fetchall() 
-          return rows
+        print("get_all_drawings") 
+        offset = get_query_offset(page)  
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, "
+        statement = statement + "count(*) OVER() AS total_rows " 
+        statement = statement + "FROM drawings d "
+        statement = statement + "ORDER BY d.id DESC LIMIT ? OFFSET ?"
+        logger.info(f"LIMIT {limit}")
+        logger.info(f"Statement {offset}")
+        cursor.execute(statement, [limit, offset]) 
+        rows = cursor.fetchall() 
+        return rows
 
       case "get_drawings_by_owner":
         logger.info(f"get_drawings_by_owner {query_args[2]}")
@@ -100,21 +100,21 @@ def get_raw_data(query_args, type, page = 1):
         return rows
 
       case "get_drawing_by_ids": 
-          logger.info(f"get drawing data where id in array: {query_args}") 
-          log = json.loads(query_args) 
-          
-          statement = "SELECT drawing_objects, painter FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"   
-          cursor.execute(statement, log)
-          rows = cursor.fetchall() 
-          return rows
+        logger.info(f"get drawing data where id in array: {query_args}") 
+        log = json.loads(query_args) 
+        
+        statement = "SELECT drawing_objects, painter FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"   
+        cursor.execute(statement, log)
+        rows = cursor.fetchall() 
+        return rows
       case "get_drawing_layers": 
-          logger.info(f"get drawing layers {query_args}")  
-          
-          statement = "SELECT painter, drawing_objects, dimensions FROM layers WHERE drawing_id = ?"   
-          cursor.execute(statement, [query_args])
-          rows = cursor.fetchall() 
-          logger.info(f"get MINE drawings ROWS {rows}")
-          return rows
+        logger.info(f"get drawing layers {query_args}")  
+        
+        statement = "SELECT painter, drawing_objects, dimensions FROM layers WHERE drawing_id = ?"   
+        cursor.execute(statement, [query_args])
+        rows = cursor.fetchall() 
+        logger.info(f"get MINE drawings ROWS {rows}")
+        return rows
 
 
   except Exception as e: 
@@ -198,6 +198,7 @@ def get_drawings(query_args, type, page):
     
   return result
 
+# Obsolete @TODO remove after check
 def get_drawings_by_ids(log):
   """ Retrieves each drawing's layers
   Parameters
@@ -243,42 +244,6 @@ def get_data(query_str):
   drawings = get_drawings(query_args, query_type, page) 
   return drawings
 
-# Obsolete - remove
-def get_drawing_log(uuid):
-  """ Executes database query statement.
-  Parameters
-  ----------
-   
-  Raises
-  ------
-    Exception 
-      If error arises while execiting the database statement.
-  Returns
-  -------
-   
-  """
-  conn = None 
-  try :
-    conn = sqlite3.connect(db_filename) 
-    cursor = conn.cursor()
-    # @TODO optimise query here - fetch only required data
-    # @TODO use total_rows to send has_next in the respose
-   
-    print("getting the drawing log") 
-          
-    statement = "SELECT log FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
-    cursor.execute(statement, [uuid]) 
-    record = cursor.fetchone() 
-    logger.info(f"get all drawings ROWS {record}")
-    return record
-
-  except Exception as e: 
-    msg = f"Error executing statement: {e}" 
-    logger.info(f"{msg}")
-
-  finally:
-    if conn:
-      conn.close()
 def create_drawing(data): 
   """ Executes database insert query statement.
   Parameters
