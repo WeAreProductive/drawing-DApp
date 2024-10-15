@@ -148,8 +148,6 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
               height: canvas?.height || 0,
             }),
           };
-          console.log({ currentDrawingLayer });
-          console.log({ currentDrawingData });
           if (currentDrawingData?.update_log) {
             const log = [...currentDrawingData?.update_log, newLogItem];
 

@@ -11,7 +11,6 @@ const DrawingContributorsList = () => {
           {currentDrawingData.update_log.map(
             (element: any, idx: Key | null | undefined) => {
               // each element is array of `drawing_objects and the painter`
-              console.log({ element });
               const { drawing_objects, painter, dimensions } = element;
               const parsedElement = JSON.parse(drawing_objects);
               const snapShotJson = JSON.stringify({
