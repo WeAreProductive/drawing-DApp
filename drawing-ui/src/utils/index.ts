@@ -156,13 +156,15 @@ export const prepareDrawingObjectsArrays = (
   const storedDrawingObj: DrawingObject[] = []; // array of objects
   if (rollupsDrawingData) {
     const { update_log } = rollupsDrawingData;
+
     if (update_log) {
       // extract object array
       if (update_log.length) {
         // array of objects for each drawing session
-        update_log.forEach((element) => {
+        update_log.forEach((element: any) => {
+          const { drawing_objects } = element;
           // each element is array of drawing_objects + the painter
-          storedDrawingObj.push(JSON.parse(element[0]));
+          storedDrawingObj.push(JSON.parse(drawing_objects));
         });
         // get all drawing_objects arrays and merge to one
       }

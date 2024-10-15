@@ -84,7 +84,13 @@ def get_raw_data(query_args, type, page = 1):
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall() 
         return rows
-
+      case "get_drawing_id":
+        logger.info(f"get_drawing_id {query_args}")
+        statement = "SELECT id "
+        statement = statement + "FROM drawings WHERE uuid LIKE ? LIMIT 1"  
+        cursor.execute(statement, [query_args]) 
+        row = cursor.fetchone() 
+        return row
       case "get_drawings_by_uuid":
         uuids = json.loads(query_args[2])
         statement = "SELECT * FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ") AND id in (SELECT max(id) FROM drawings GROUP BY uuid )"   
@@ -273,7 +279,6 @@ def get_drawing_log(uuid):
   finally:
     if conn:
       conn.close()
-
 def create_drawing(data): 
   """ Executes database insert query statement.
   Parameters
@@ -373,16 +378,19 @@ def store_data(cmd, sender, data):
   """
   # prepare data
   
-  if cmd == 'cn' :
-    # create new record - create_drawing
-    
+  if cmd == 'cn' : 
+    logger.info(f"Create drawing") 
     id = create_drawing(data)
-    # store the drawing layer with the id returned from create_drawing
-    store_drawing_layer(id, sender, data)
+    
   elif cmd == 'un' :
-    logger.info(f"Update drawing")
-    # get_drawing_by_uuid
-    # store_drawing_layer
+    logger.info(f"Update drawing") 
+    uuid = data['uuid']
+    row = get_raw_data(uuid, 'get_drawing_id')
+    logger.info(f"ID {row['id']}")
+    id = row['id']
+  
+  store_drawing_layer(id, sender, data)
+
   # conn = None
   # id = insert_drawing_data(query_args)
   # log1 = get_drawing_log(query_args['uuid'])
