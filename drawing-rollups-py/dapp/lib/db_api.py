@@ -2,12 +2,15 @@ import sqlite3
 import logging
 import json  
 import time
+from datetime import datetime, timedelta  
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
 db_filename = 'drawing.db'  
 limit = 3
+drawing_is_enabled = 7 # days
+# helpers - move to utils.py
 def get_query_offset(page):
   """ Calculates the OFFSET parameter in query statements.
   Parameters
@@ -25,7 +28,13 @@ def get_query_offset(page):
     if page > 0:
       offset = (page -1) * limit 
   return offset
-  
+
+def get_expires_at(now):
+  # days * hours * min *s
+  seconds_period = drawing_is_enabled*24*60*60
+  expires_at = seconds_period + now
+  logger.info(f"Expires at {datetime.fromtimestamp(expires_at)}")
+  return expires_at
     
 def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.
@@ -262,12 +271,13 @@ def create_drawing(data):
   """ 
   uuid = data['uuid']
   owner = data['owner']
-  dimensions = json.dumps(data['dimensions'])
-  # now = str(datetime.now(timezone.utc))  # convert to timestamp at be
+  dimensions = json.dumps(data['dimensions']) 
+  # @TODO timezones?
   now = int( time.time() )
   logger.info(f"Now {now}")
   created_at = now
-  expires_at = now #add 7 days @TODO
+  expires_at = get_expires_at(now) 
+ 
   logger.info(f"Private {data['userInputData']['private']}")
   # user input data
   private = 0
