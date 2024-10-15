@@ -53,8 +53,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     mintingPrice: "",
     private: false,
   });
-  const [canvasData, setCanvasData] = useState();
-
   const saveDrawing = async () => {
     setDappState(DAPP_STATE.canvasSave);
     if (!canvas) return;
@@ -82,17 +80,24 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     const strInput = getNoticeInput(uuid, canvasData, inputValues);
 
     if (!currentDrawingData) {
-      // @TODO set useDrawing function for init canvas data
-      // const strDimensions = JSON.stringify(canvasDimensions);
-      // const initCanvasData = {
-      //   uuid: uuid,
-      //   owner: account,
-      //   update_log: [[JSON.stringify(currentDrawingLayer), account]],
-      //   dimensions: strDimensions,
-      //   private: privateDrawing,
-      // };
-      // await sendInput(strInput, initCanvasData);
-      await sendInput(strInput);
+      const canvasDimensions = {
+        width: canvas?.width || 0,
+        height: canvas?.height || 0,
+      };
+      const initCanvasData = {
+        uuid: uuid,
+        owner: account,
+        update_log: [
+          {
+            drawing_objects: JSON.stringify(currentDrawingLayer),
+            painter: account,
+            dimensions: JSON.stringify(canvasDimensions),
+          },
+        ],
+        dimensions: JSON.stringify(canvasDimensions),
+        userInputData: inputValues,
+      };
+      await sendInput(strInput, initCanvasData);
     } else {
       await sendInput(strInput);
     }

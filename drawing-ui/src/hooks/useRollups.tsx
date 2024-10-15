@@ -108,7 +108,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       }
     }
   }, [connectedWallet, connectedChain, dappAddress]);
-  const sendInput = async (strInput: string, tempDrawingData: any = null) => {
+  const sendInput = async (strInput: string, initDrawingData: any = null) => {
     if (!contracts) return;
     toast.info("Sending input to rollups...");
 
@@ -140,7 +140,16 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         });
         setDappState(DAPP_STATE.refetchDrawings); // @TODO this state update is not correct anymore
         if (currentDrawingData) {
-          const newLogItem = [JSON.stringify(currentDrawingLayer), account];
+          const newLogItem = {
+            drawing_objects: JSON.stringify(currentDrawingLayer),
+            painter: account,
+            dimensions: JSON.stringify({
+              width: canvas?.width || 0, // ?? @TODO get from current drawing layer ...
+              height: canvas?.height || 0,
+            }),
+          };
+          console.log({ currentDrawingLayer });
+          console.log({ currentDrawingData });
           if (currentDrawingData?.update_log) {
             const log = [...currentDrawingData?.update_log, newLogItem];
 
@@ -151,7 +160,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
           }
         } else {
           // init currentDrawingData, @TODO observe
-          setCurrentDrawingData(tempDrawingData);
+          setCurrentDrawingData(initDrawingData);
           window.history.replaceState(
             null,
             "Page Title",
