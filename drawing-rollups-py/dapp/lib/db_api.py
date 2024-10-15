@@ -49,14 +49,11 @@ def get_raw_data(query_args, type, page = 1):
   try :
     conn = sqlite3.connect(db_filename) 
     conn.row_factory = sqlite3.Row # receive named results
-    cursor = conn.cursor()
-    # @TODO optimise query here - fetch only required data
-    # @TODO use total_rows to send has_next in the respose
+    cursor = conn.cursor() 
     match type:
       case "get_all_drawings": 
           print("get_all_drawings") 
-          offset = get_query_offset(page) 
-          # SELECT *, (select count(*) from drawings) as total_rows FROM drawings GROUP BY uuid ORDER BY id DESC LIMIT ? OFFSET ? initial query
+          offset = get_query_offset(page)  
           statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, "
           statement = statement + "count(*) OVER() AS total_rows " 
           statement = statement + "FROM drawings d "
@@ -71,12 +68,6 @@ def get_raw_data(query_args, type, page = 1):
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         owner = query_args[2] 
         offset = get_query_offset(page) 
-        # @TODO fix count rows and get only needed data
-        # statement = "SELECT *, (select count(*) from drawings) as total_rows FROM drawings WHERE owner LIKE ? ORDER BY id DESC LIMIT ? OFFSET ?"  initial query
-        # statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? OR (painter LIKE ? AND owner NOT LIKE ?) ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
-        # statement_initial = "SELECT *, (select COUNT(DISTINCT uuid) from drawings WHERE owner LIKE ? ) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings GROUP BY uuid )"
-        # statement = statement_initial + "AND owner LIKE ? OR (painter LIKE ? AND owner NOT LIKE ?) ORDER BY id DESC LIMIT ? OFFSET ?"  
-
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, "
         statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
         statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE l.drawing_id in (SELECT max(id) FROM drawings GROUP BY uuid )"
