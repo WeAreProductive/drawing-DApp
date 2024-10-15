@@ -4,9 +4,7 @@ import zlib
 import requests
 from eth_abi import encode
 import traceback
-import json
-import sqlite3
-from datetime import datetime, timezone 
+import json 
 from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str 
 from lib.db_api import store_data, get_data 
@@ -80,7 +78,7 @@ def store_drawing_data( sender, cmd, data ):
     -------
     """
     
-    now = str(datetime.now(timezone.utc))  # convert to timestamp at be
+    # now = str(datetime.now(timezone.utc))  # convert to timestamp at be
 
     # drawing_input = data["drawing_input"]
 
@@ -94,7 +92,7 @@ def store_drawing_data( sender, cmd, data ):
     # drawing_input["uuid"]= data["uuid"]
     # drawing_input["owner"] = data["owner"]
     # drawing_input["painter"] = msg_sender
-    data["date_created"] = now  
+    # data["date_created"] = now  
     # @TODO add date created  
     # drawing_input["drawing_objects"] = content 
     # drawing_input["private"] = data["private"]

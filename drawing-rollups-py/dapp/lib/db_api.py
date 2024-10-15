@@ -1,6 +1,7 @@
 import sqlite3 
 import logging
-import json 
+import json  
+import time
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -262,8 +263,11 @@ def create_drawing(data):
   uuid = data['uuid']
   owner = data['owner']
   dimensions = json.dumps(data['dimensions'])
-  created_at = data['date_created']
-  expires_at = data['date_created'] #add 7 days @TODO
+  # now = str(datetime.now(timezone.utc))  # convert to timestamp at be
+  now = int( time.time() )
+  logger.info(f"Now {now}")
+  created_at = now
+  expires_at = now #add 7 days @TODO
   logger.info(f"Private {data['userInputData']['private']}")
   # user input data
   private = 0
