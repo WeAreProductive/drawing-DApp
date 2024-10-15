@@ -33,7 +33,7 @@ export const DAPP_STATE = {
   refetchDrawings: "send inspect request to refetch drawings",
   txFail: "transaction failed",
 };
-
+// @TODO update the commands
 export const COMMANDS = {
   createAndStore: {
     cmd: "cn",

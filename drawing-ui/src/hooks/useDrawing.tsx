@@ -33,7 +33,7 @@ export const useDrawing = () => {
     };
 
     if (cmd === COMMANDS.createAndStore.cmd) {
-      // cmd - outside of drawing input
+      // cmd - is sent outside of drawing input
       drawingPayload = {
         drawing: JSON.stringify(canvasData), // FE updates the svg string
         dimensions: canvasDimensions,

@@ -57,20 +57,17 @@ def get_raw_data(query_args, type, page = 1):
           print("get_all_drawings") 
           offset = get_query_offset(page) 
           # SELECT *, (select count(*) from drawings) as total_rows FROM drawings GROUP BY uuid ORDER BY id DESC LIMIT ? OFFSET ? initial query
-          cursor.execute(
-              """
-              
-              SELECT *, (select COUNT(DISTINCT uuid) from drawings) as total_rows FROM drawings WHERE id in (SELECT max(id) FROM drawings 
-              GROUP BY uuid ) ORDER BY id DESC LIMIT ? OFFSET ?
-              """,
-              (limit, offset),
-            )
+          statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, "
+          statement = statement + "count(*) OVER() AS total_rows " 
+          statement = statement + "FROM drawings d "
+          statement = statement + "ORDER BY d.id DESC LIMIT ? OFFSET ?"
+          logger.info(f"LIMIT {limit}")
+          logger.info(f"Statement {offset}")
+          cursor.execute(statement, [limit, offset]) 
           rows = cursor.fetchall() 
-          logger.info(f"get all drawings ROWS {rows}")
           return rows
 
       case "get_drawings_by_owner":
-
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         owner = query_args[2] 
         offset = get_query_offset(page) 
@@ -170,6 +167,7 @@ def get_drawings(query_args, type, page):
   
   if data_rows: 
     for row in data_rows:   
+
     # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at
       logger.info(f" Drawing row {row}")
       current_drawing = {}
@@ -184,7 +182,7 @@ def get_drawings(query_args, type, page):
 
       current_drawing['update_log'] = get_drawing_layers(row['id']) 
       drawings.append(current_drawing) 
-
+  logger.info(f"Drawings {drawings}")
   if type != 'get_drawing_by_uuid' :
     has_next = False
     next_page = 0
