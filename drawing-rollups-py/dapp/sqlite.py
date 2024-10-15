@@ -31,7 +31,8 @@ def init_sqlite_database():
                 description TEXT,
                 minting_price FLOAT NOT NULL,
                 created_at VARCHAR NOT NULL,
-                expires_at VARCHR NOT NULL
+                expires_at VARCHR NOT NULL,
+                last_updated VARCHAR NOT NULL
             )
             """
         )

@@ -8,7 +8,7 @@ logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
 db_filename = 'drawing.db'  
-limit = 3
+limit = 8
 drawing_is_enabled = 7 # days
 # helpers - move to utils.py
 def get_query_offset(page):
@@ -64,10 +64,10 @@ def get_raw_data(query_args, type, page = 1):
       case "get_all_drawings": 
         print("get_all_drawings") 
         offset = get_query_offset(page)  
-        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, "
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, d.last_updated, "
         statement = statement + "count(*) OVER() AS total_rows " 
         statement = statement + "FROM drawings d "
-        statement = statement + "ORDER BY d.id DESC LIMIT ? OFFSET ?"
+        statement = statement + "ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
         logger.info(f"LIMIT {limit}")
         logger.info(f"Statement {offset}")
         cursor.execute(statement, [limit, offset]) 
@@ -78,10 +78,13 @@ def get_raw_data(query_args, type, page = 1):
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         owner = query_args[2] 
         offset = get_query_offset(page) 
-        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, "
-        statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
-        statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE l.drawing_id in (SELECT max(id) FROM drawings GROUP BY uuid )"
-        statement = statement + "AND d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?) ORDER BY d.id DESC LIMIT ? OFFSET ?"
+        # get all drawings where I am the owner(the first painter) or where(I am a contributor and not the owner) 
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, d.last_updated, "
+        statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE (d.owner LIKE ?) "
+        statement = statement + "OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
+        statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )"
+        statement = statement + "AND d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?) GROUP BY d.uuid ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
+        
         cursor.execute(statement, [owner, owner, owner, owner, owner, owner, limit, offset]) 
         rows = cursor.fetchall()
         logger.info(f"get MINE drawings ROWS {rows}")
@@ -277,6 +280,7 @@ def create_drawing(data):
   logger.info(f"Now {now}")
   created_at = now
   expires_at = get_expires_at(now) 
+  last_updated = now
  
   logger.info(f"Private {data['userInputData']['private']}")
   # user input data
@@ -294,10 +298,10 @@ def create_drawing(data):
    
     cursor.execute(
         """
-        INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, expires_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, expires_at, last_updated)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (uuid, owner, dimensions, private, title, description, minting_price, created_at, expires_at),
+        (uuid, owner, dimensions, private, title, description, minting_price, created_at, expires_at, last_updated),
     )
 
     conn.commit()
@@ -311,10 +315,14 @@ def create_drawing(data):
   finally:
     if conn:
       conn.close()
+
 def store_drawing_layer(id, sender, data):
   parsed_drawing = json.loads(data['drawing'])
   content = json.dumps(parsed_drawing['content'])
   dimensions = json.dumps(data['dimensions'])
+   # @TODO timezones?
+  now = int( time.time() )
+  logger.info(f"Now {now}")
     # drawing_input["drawing_objects"] = content
   try: 
     conn = sqlite3.connect(db_filename)
@@ -326,6 +334,16 @@ def store_drawing_layer(id, sender, data):
         VALUES (?, ?, ?, ?)
         """,
         (sender, content, dimensions, id),
+    )
+    cursor.execute(
+       """
+        UPDATE drawings
+        SET last_updated = ?
+        WHERE
+        id = ?
+        LIMIT 1;
+        """,
+        (now, id),
     )
 
     conn.commit()
