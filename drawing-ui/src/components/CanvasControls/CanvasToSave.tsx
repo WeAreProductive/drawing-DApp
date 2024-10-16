@@ -7,15 +7,12 @@
 import { useSetChain } from "@web3-onboard/react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import configFile from "../../config/config.json";
-import { DrawingObject, Network } from "../../shared/types";
+import { DrawingUserInput, Network } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 import { useWallets } from "@web3-onboard/react";
-
-import { confirmAlert } from "react-confirm-alert"; // Import
-import "react-confirm-alert/src/react-confirm-alert.css"; // Import css
 
 import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
@@ -46,8 +43,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const account = connectedWallet.accounts[0].address;
   const currentUuid = uuidv4();
   const [isOpen, setIsOpenModal] = useState(false);
-  const [value, setValue] = useState<any>([]);
-  const [inputValues, setInputValues] = useState<any>({
+  const [inputValues, setInputValues] = useState<DrawingUserInput>({
     title: "",
     description: "",
     mintingPrice: "",
@@ -132,13 +128,10 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       </Button>
       <InputDialog
         isOpen={isOpen}
-        value={value}
-        setValue={setValue}
         inputValues={inputValues}
         setInputValues={setInputValues}
         action={() => saveDrawing()}
       />
-      {/* <InputDialog isOpen={isOpen} /> */}
     </>
   );
 };

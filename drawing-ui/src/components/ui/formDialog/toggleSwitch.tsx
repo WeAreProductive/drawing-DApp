@@ -44,7 +44,13 @@ const customTheme: CustomFlowbiteTheme["toggleSwitch"] = {
   },
 };
 
-export default function DialogToggleSwitch({ checked, onChange }: any) {
+export default function DialogToggleSwitch({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+}) {
   return (
     <ToggleSwitch theme={customTheme} checked={checked} onChange={onChange} />
   );

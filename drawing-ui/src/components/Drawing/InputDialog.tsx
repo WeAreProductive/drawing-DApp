@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import DialogToggleSwitch from "../ui/formDialog/toggleSwitch";
+import { DrawingUserInput } from "../../shared/types";
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -64,7 +65,18 @@ const customTheme: CustomFlowbiteTheme["modal"] = {
     popup: "border-t",
   },
 };
-const InputDialog = ({ isOpen, setInputValues, inputValues, action }: any) => {
+type InputDialogType = {
+  isOpen: boolean;
+  setInputValues: React.Dispatch<React.SetStateAction<DrawingUserInput>>;
+  inputValues: DrawingUserInput;
+  action: () => Promise<void>;
+};
+const InputDialog = ({
+  isOpen,
+  setInputValues,
+  inputValues,
+  action,
+}: InputDialogType) => {
   const [openModal, setOpenModal] = useState(false);
   const [switch1, setSwitch1] = useState(false);
   //  @TODO - use for input validation https://flowbite-react.com/docs/components/forms
@@ -73,7 +85,10 @@ const InputDialog = ({ isOpen, setInputValues, inputValues, action }: any) => {
     setOpenModal(isOpen);
   }, [isOpen]);
 
-  const handleInputChange = (e: any, inputName: string) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    inputName: string,
+  ) => {
     // @TODO add validation for string length before updating the state
     setInputValues({
       ...inputValues,
@@ -111,7 +126,7 @@ const InputDialog = ({ isOpen, setInputValues, inputValues, action }: any) => {
             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
               Give us more info about your drawing:
             </h3>
-            <div className="flex flex-col my-2">
+            <div className="my-2 flex flex-col">
               <Label htmlFor="title" value="Drawing title" className="mb-4" />
               <TextInput
                 id="title"
@@ -121,7 +136,7 @@ const InputDialog = ({ isOpen, setInputValues, inputValues, action }: any) => {
                 onChange={(e) => handleInputChange(e, "title")}
               />
             </div>
-            <div className="flex flex-col my-2">
+            <div className="my-2 flex flex-col">
               <Label
                 htmlFor="description"
                 value="Drawing description(optional)"
@@ -136,7 +151,7 @@ const InputDialog = ({ isOpen, setInputValues, inputValues, action }: any) => {
                 onChange={(e) => handleInputChange(e, "description")}
               ></Textarea>
             </div>
-            <div className="flex flex-col my-2">
+            <div className="my-2 flex flex-col">
               <Label htmlFor="price" value="Minting Price" className="mb-4" />
               <TextInput
                 id="mintingPrice"
@@ -146,7 +161,7 @@ const InputDialog = ({ isOpen, setInputValues, inputValues, action }: any) => {
                 onChange={(e) => handleInputChange(e, "mintingPrice")}
               />
             </div>
-            <div className="flex items-start gap-4 my-2">
+            <div className="my-2 flex items-start gap-4">
               <Label value="Private drawing" className="self-center" />
               <DialogToggleSwitch checked={switch1} onChange={handleSwitch} />
             </div>

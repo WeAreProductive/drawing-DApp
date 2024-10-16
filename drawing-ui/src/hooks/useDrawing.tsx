@@ -54,26 +54,7 @@ export const useDrawing = () => {
       cmd, // BE will be notified how to handle the payload
     });
   };
-  const getInitCanvasData = (
-    uuid: string,
-    currentDrawingLayerObjects: any,
-    inputValues: any,
-  ) => {
-    const canvasDimensions = {
-      width: canvas?.width || 0,
-      height: canvas?.height || 0,
-    };
 
-    const strDimensions = JSON.stringify(canvasDimensions);
-    const initCanvasData = {
-      uuid: uuid,
-      owner: account,
-      update_log: [[JSON.stringify(currentDrawingLayerObjects), account]],
-      dimensions: strDimensions,
-      userInputData: inputValues,
-    };
-    return initCanvasData;
-  };
   const getVoucherInput = (
     canvasData: { content: DrawingObject[] },
     uuid: string,
@@ -109,5 +90,5 @@ export const useDrawing = () => {
       selector: MINT_SELECTOR,
     });
   };
-  return { getNoticeInput, getVoucherInput, getInitCanvasData };
+  return { getNoticeInput, getVoucherInput };
 };

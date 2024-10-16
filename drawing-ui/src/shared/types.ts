@@ -90,6 +90,12 @@ export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   dimensions: string;
   private: 0 | 1;
 }
+export type DrawingUserInput = {
+  title: string;
+  description: string;
+  mintingPrice: string;
+  private: boolean;
+};
 export type DrawingObject = { [key: string]: any };
 export type UpdateLogItem = {
   date_updated: string;

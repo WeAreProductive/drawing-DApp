@@ -17,7 +17,7 @@ export const customThemeTextarea: CustomFlowbiteTheme["textarea"] = {
     off: "",
   },
 };
-export default function DialogTextarea({ id }: any) {
+export default function DialogTextarea({ id }: { id: string }) {
   return (
     <Textarea theme={customThemeTextarea} id={id} rows={4} className="p-2" />
   );

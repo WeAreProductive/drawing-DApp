@@ -15,6 +15,6 @@ const customTheme: CustomFlowbiteTheme["label"] = {
   },
 };
 
-export default function DialogLabel({ htmlFor }: any) {
+export default function DialogLabel({ htmlFor }: { htmlFor: string }) {
   return <Label theme={customTheme} htmlFor={htmlFor} />;
 }

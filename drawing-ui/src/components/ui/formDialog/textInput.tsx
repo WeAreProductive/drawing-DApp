@@ -52,6 +52,6 @@ const customTheme: CustomFlowbiteTheme["textInput"] = {
   },
 };
 
-export default function DialogTextinput({ id }: any) {
+export default function DialogTextinput({ id }: { id: string }) {
   return <TextInput theme={customTheme} id={id} />;
 }
