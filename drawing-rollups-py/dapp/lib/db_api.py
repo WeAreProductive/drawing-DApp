@@ -29,12 +29,12 @@ def get_query_offset(page):
       offset = (page -1) * limit 
   return offset
 
-def get_expires_at(now):
+def get_closed_at(now):
   # days * hours * min *s
   seconds_period = drawing_is_enabled*24*60*60
-  expires_at = seconds_period + now
-  logger.info(f"Expires at {datetime.fromtimestamp(expires_at)}")
-  return expires_at
+  closed_at = seconds_period + now
+  logger.info(f"Expires at {datetime.fromtimestamp(closed_at)}")
+  return closed_at
     
 def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.
@@ -64,7 +64,7 @@ def get_raw_data(query_args, type, page = 1):
       case "get_all_drawings": 
         print("get_all_drawings") 
         offset = get_query_offset(page)  
-        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, d.last_updated, "
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
         statement = statement + "count(*) OVER() AS total_rows " 
         statement = statement + "FROM drawings d "
         statement = statement + "ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
@@ -79,7 +79,7 @@ def get_raw_data(query_args, type, page = 1):
         owner = query_args[2] 
         offset = get_query_offset(page) 
         # get all drawings where I am the owner(the first painter) or where(I am a contributor and not the owner) 
-        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at, d.last_updated, "
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
         statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE (d.owner LIKE ?) "
         statement = statement + "OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
         statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )"
@@ -92,7 +92,7 @@ def get_raw_data(query_args, type, page = 1):
       
       case "get_drawing_by_uuid":
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
-        statement = "SELECT id, uuid, owner, dimensions, private, title, description, minting_price, expires_at "
+        statement = "SELECT id, uuid, owner, dimensions, private, title, description, minting_price, closed_at "
         statement = statement + "FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall() 
@@ -178,7 +178,7 @@ def get_drawings(query_args, type, page):
   if data_rows: 
     for row in data_rows:   
 
-    # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.expires_at
+    # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at
       logger.info(f" Drawing row {row}")
       current_drawing = {}
       current_drawing['uuid'] = row['uuid']
@@ -188,7 +188,7 @@ def get_drawings(query_args, type, page):
       current_drawing['title'] = row['title']
       current_drawing['description'] = row['description']
       current_drawing['minting_price'] = row['minting_price']
-      current_drawing['expires_at'] = row['expires_at']
+      current_drawing['closed_at'] = row['closed_at']
 
       current_drawing['update_log'] = get_drawing_layers(row['id']) 
       drawings.append(current_drawing)  
@@ -280,7 +280,7 @@ def create_drawing(data):
   now = int( time.time() )
   logger.info(f"Now {now}")
   created_at = now
-  expires_at = get_expires_at(now) 
+  closed_at = get_closed_at(now) 
   last_updated = now
  
   logger.info(f"Private {data['userInputData']['private']}")
@@ -299,10 +299,10 @@ def create_drawing(data):
    
     cursor.execute(
         """
-        INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, expires_at, last_updated)
+        INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
-        (uuid, owner, dimensions, private, title, description, minting_price, created_at, expires_at, last_updated),
+        (uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated),
     )
 
     conn.commit()

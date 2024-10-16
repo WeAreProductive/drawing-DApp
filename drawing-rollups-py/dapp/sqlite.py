@@ -8,7 +8,7 @@ def init_sqlite_database():
     # @TODO - add description for the data each column stores
     #     BE
     # (created_at) - replaces date_created
-    # (expires_at)
+    # (closed_at)
 
     # FE, required
     # title
@@ -31,7 +31,7 @@ def init_sqlite_database():
                 description TEXT,
                 minting_price FLOAT NOT NULL,
                 created_at VARCHAR NOT NULL,
-                expires_at VARCHR NOT NULL,
+                closed_at VARCHR NOT NULL,
                 last_updated VARCHAR NOT NULL
             )
             """
