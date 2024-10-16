@@ -191,18 +191,19 @@ def get_drawings(query_args, type, page):
       current_drawing['expires_at'] = row['expires_at']
 
       current_drawing['update_log'] = get_drawing_layers(row['id']) 
-      drawings.append(current_drawing) 
-  logger.info(f"Drawings {drawings}")
+      drawings.append(current_drawing)  
+
   if type != 'get_drawing_by_uuid' :
     has_next = False
     next_page = 0
-    number_of_rows = row['total_rows']
-    # calculate up_to_now_loaded including the current set
-    logger.info(f"Calculate number of rows ...")
-    loaded = page * limit
-    if loaded < int(number_of_rows): 
-      has_next = True 
-      next_page = page + 1 
+    if data_rows:
+      number_of_rows = data_rows[0]['total_rows']
+      # calculate up_to_now_loaded including the current set
+      logger.info(f"Calculate number of rows ...")
+      loaded = page * limit
+      if loaded < int(number_of_rows): 
+        has_next = True 
+        next_page = page + 1 
    
     result['has_next'] = has_next
     result['next_page'] = next_page

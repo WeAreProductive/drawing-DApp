@@ -6,14 +6,11 @@ type CanvasObjectsControlProp = {
   enabled: boolean;
 };
 const CanvasObjectsControl = ({ enabled }: CanvasObjectsControlProp) => {
-  const { isActiveControl } = useCanvasControls();
-  return isActiveControl ? (
+  return (
     <div className="flex gap-2">
       <ModeControl enabled={enabled} />
       <RemoveControl enabled={enabled} />
     </div>
-  ) : (
-    <div></div>
   );
 };
 export default CanvasObjectsControl;

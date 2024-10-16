@@ -6,6 +6,7 @@ import { useCanvasContext } from "../context/CanvasContext";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../utils";
 import { CanvasLimitations, DrawingInputExtended } from "../shared/types";
 import { useWallets } from "@web3-onboard/react";
+import { useCanvasControls } from "../hooks/useCanvasControl";
 
 const Controls = () => {
   const {
@@ -18,6 +19,7 @@ const Controls = () => {
     loading,
   } = useCanvasContext();
 
+  const { isActiveControl, drawingIsClosed } = useCanvasControls();
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
   const [currentResult, setCurrentResult] = useState<CanvasLimitations>({
@@ -77,18 +79,26 @@ const Controls = () => {
   return (
     <div className="flex flex-col">
       <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
-        <DrawingControls />
-        <CanvasObjectsControl
-          enabled={
-            currentResult.isValid && !!currentDrawingLayer?.length && !loading
-          }
-        />
+        {isActiveControl && !drawingIsClosed && (
+          <>
+            <DrawingControls />
+            <CanvasObjectsControl
+              enabled={
+                currentResult.isValid &&
+                !!currentDrawingLayer?.length &&
+                !loading
+              }
+            />
+          </>
+        )}
+
         <CanvasControls
           enabled={
             currentResult.isValid && !!currentDrawingLayer?.length && !loading
           }
           canUndo={canUndo}
           canRedo={canRedo}
+          // @TODO will depend on
           canDownload={!!currentDrawingLayer?.length}
         />
       </div>

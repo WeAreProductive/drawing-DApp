@@ -7,6 +7,7 @@ export const useCanvasControls = () => {
   const { currentDrawingData } = useCanvasContext();
 
   const [isActiveControl, setIsActiveControl] = useState(true);
+  const [drawingIsClosed, setDrawingIsClosed] = useState(false);
   const [connectedWallet] = useWallets();
 
   const account = connectedWallet.accounts[0].address;
@@ -22,5 +23,13 @@ export const useCanvasControls = () => {
         : setIsActiveControl(false);
     }
   }, [currentDrawingData?.owner]);
-  return { isActiveControl };
+  useEffect(() => {
+    const unixTimestamp = Math.floor(Date.now() / 1000);
+    let shouldCloseDrawing = false;
+    if (currentDrawingData?.expires_at <= unixTimestamp) {
+      shouldCloseDrawing = true;
+    }
+    setDrawingIsClosed(shouldCloseDrawing);
+  }, [currentDrawingData?.expires_at]);
+  return { isActiveControl, drawingIsClosed };
 };
