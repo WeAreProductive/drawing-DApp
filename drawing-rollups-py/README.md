@@ -17,6 +17,7 @@ Then in order to start the back-end, run the following commands in a dedicated t
 python3 ./sqlite.py
 
 cd dapp
+python3 ./sqlite.py
 python3 -m venv .venv
 . .venv/bin/activate
 pip install -r requirements.txt
