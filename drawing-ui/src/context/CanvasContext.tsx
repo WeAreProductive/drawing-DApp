@@ -3,6 +3,7 @@ import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../shared/constants";
 import {
   CanvasContextType,
   CanvasOptions,
+  DrawingInitialData,
   DrawingInputExtended,
   DrawingObject,
 } from "../shared/types";
@@ -28,9 +29,10 @@ const initialCanvasContext = {
   dappState: DAPP_STATE.canvasInit,
   setDappState: (dappState: string) => undefined,
   currentDrawingData: null,
-  setCurrentDrawingData: (data: DrawingInputExtended | null) => undefined,
-  tempDrawingData: null,
-  setTempDrawingData: (data: any) => undefined,
+  setCurrentDrawingData: (
+    data: DrawingInputExtended | DrawingInitialData | null,
+  ) => undefined,
+
   clearCanvas: () => undefined,
   currentDrawingLayer: null,
   setCurrentDrawingLayer: (data: DrawingObject[]) => undefined,
@@ -55,9 +57,10 @@ export const CanvasContextProvider = ({ children }: Props) => {
   const [canvas, setCanvas] = useState<Canvas | null>(null);
   const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
   const [dappState, setDappState] = useState<string>(DAPP_STATE.canvasInit);
-  const [currentDrawingData, setCurrentDrawingData] =
-    useState<DrawingInputExtended | null>(null);
-  const [tempDrawingData, setTempDrawingData] = useState<any>(null);
+  const [currentDrawingData, setCurrentDrawingData] = useState<
+    DrawingInputExtended | null | DrawingInitialData
+  >(null);
+
   // array of objects belonging to the last drawing layer
   const [currentDrawingLayer, setCurrentDrawingLayer] = useState<
     DrawingObject[] | null
@@ -91,8 +94,6 @@ export const CanvasContextProvider = ({ children }: Props) => {
     setRedoObjectsArr,
     loading,
     setLoading,
-    tempDrawingData,
-    setTempDrawingData,
   };
   return (
     <CanvasContext.Provider value={value}>{children}</CanvasContext.Provider>

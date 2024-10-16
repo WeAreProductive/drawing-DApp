@@ -13,8 +13,7 @@ import { useWallets } from "@web3-onboard/react";
 const config: { [name: string]: Network } = configFile;
 
 export const useDrawing = () => {
-  const { currentDrawingData, dappState, tempDrawingData, canvas } =
-    useCanvasContext();
+  const { currentDrawingData, dappState, canvas } = useCanvasContext();
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;
   const getNoticeInput = (
@@ -72,11 +71,9 @@ export const useDrawing = () => {
       dappState == DAPP_STATE.drawingUpdate
         ? COMMANDS.updateAndMint.cmd
         : COMMANDS.createAndMint.cmd;
-    const log = currentDrawingData ? currentDrawingData.log : [];
     drawingNoticePayload = {
       drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
       dimensions: drawingMeta.canvasDimensions,
-      log,
     };
     return JSON.stringify({
       drawing_input: drawingNoticePayload, //data to save in a notice and partially in the sqlite db

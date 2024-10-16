@@ -109,7 +109,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     if (currentDrawingLayer.length < 1) return;
 
     if (!currentDrawingData) {
-      // handlePrivateDrawing(canvasData);
       setIsOpenModal(true);
     } else {
       saveDrawing();

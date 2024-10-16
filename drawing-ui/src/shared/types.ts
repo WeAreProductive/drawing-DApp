@@ -45,10 +45,11 @@ export type CanvasContextType = {
   setOptions: React.Dispatch<CanvasOptions>;
   dappState: string;
   setDappState: React.Dispatch<string>;
-  currentDrawingData: null | DrawingInputExtended;
-  setCurrentDrawingData: React.Dispatch<null | DrawingInputExtended>;
-  tempDrawingData: any;
-  setTempDrawingData: React.Dispatch<any>;
+  currentDrawingData: null | DrawingInputExtended | DrawingInitialData;
+  setCurrentDrawingData: React.Dispatch<
+    null | DrawingInputExtended | DrawingInitialData
+  >;
+
   clearCanvas: () => void;
   currentDrawingLayer: null | DrawingObject[];
   setCurrentDrawingLayer: React.Dispatch<DrawingObject[]>;
@@ -76,7 +77,6 @@ export type VoucherExtended = {
 export interface DrawingInput {
   drawing: string;
   dimensions: CanvasDimensions;
-  log: string[];
 }
 // @TODO typing?
 
@@ -96,12 +96,21 @@ export type DrawingUserInput = {
   mintingPrice: string;
   private: boolean;
 };
+export type DrawingInitialData = {
+  uuid: string;
+  owner: string;
+  dimensions: string;
+  update_log: UpdateLog;
+  userInputData: DrawingUserInput;
+};
+
 export type DrawingObject = { [key: string]: any };
 export type UpdateLogItem = {
-  date_updated: string;
-  painter: string;
-  action: string;
-  drawing_objects: DrawingObject[];
+  date_updated?: string;
+  painter?: string;
+  action?: string;
+  drawing_objects: string;
+  dimensions?: string;
 };
 export type UpdateLog = UpdateLogItem[];
 

@@ -9,7 +9,11 @@ import {
   VALIDATE_INPUT_ERRORS,
 } from "../shared/constants";
 import prettyBytes from "pretty-bytes";
-import { DrawingInputExtended, DrawingObject } from "../shared/types";
+import {
+  DrawingInitialData,
+  DrawingInputExtended,
+  DrawingObject,
+} from "../shared/types";
 
 export const srcToJson = (src: string) => {
   return src.replace(".png", ".json");
@@ -150,7 +154,7 @@ export const latestDrawingObjects = (
  * @returns
  */
 export const prepareDrawingObjectsArrays = (
-  rollupsDrawingData: DrawingInputExtended | null,
+  rollupsDrawingData: DrawingInputExtended | DrawingInitialData | null,
   currentDrawingObjects: DrawingObject[],
 ) => {
   const storedDrawingObj: DrawingObject[] = []; // array of objects

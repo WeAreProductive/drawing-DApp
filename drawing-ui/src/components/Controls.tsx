@@ -4,7 +4,11 @@ import DrawingControls from "./DrawingControls/DrawingControls";
 import CanvasObjectsControl from "./CanvasObjectsControl";
 import { useCanvasContext } from "../context/CanvasContext";
 import { prepareDrawingObjectsArrays, validateInputSize } from "../utils";
-import { CanvasLimitations, DrawingInputExtended } from "../shared/types";
+import {
+  CanvasLimitations,
+  DrawingInitialData,
+  DrawingInputExtended,
+} from "../shared/types";
 import { useWallets } from "@web3-onboard/react";
 import { useCanvasControls } from "../hooks/useCanvasControl";
 
@@ -33,7 +37,7 @@ const Controls = () => {
   });
 
   const validateCanvasInputSize = (
-    currentDrawingData: DrawingInputExtended | null,
+    currentDrawingData: DrawingInputExtended | DrawingInitialData | null,
   ) => {
     if (!canvas) return;
     // Gets current drawing data

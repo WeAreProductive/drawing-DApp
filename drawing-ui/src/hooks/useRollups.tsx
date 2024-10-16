@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
 import { useSetChain, useWallets } from "@web3-onboard/react";
 import { ConnectedChain } from "@web3-onboard/core";
-import { replace } from "react-router-dom";
 
 import {
   InputBox__factory,
@@ -14,6 +13,7 @@ import {
 import { toast } from "sonner";
 import pako from "pako";
 import {
+  DrawingInitialData,
   Network,
   RollupsContracts,
   RollupsInteractions,
@@ -41,7 +41,6 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
     currentDrawingData,
     currentDrawingLayer,
     setCurrentDrawingData,
-    tempDrawingData,
   } = useCanvasContext();
   useEffect(() => {
     const connect = async (chain: ConnectedChain) => {
@@ -108,7 +107,10 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       }
     }
   }, [connectedWallet, connectedChain, dappAddress]);
-  const sendInput = async (strInput: string, initDrawingData: any = null) => {
+  const sendInput = async (
+    strInput: string,
+    initDrawingData: DrawingInitialData | null,
+  ) => {
     if (!contracts) return;
     toast.info("Sending input to rollups...");
 
@@ -162,7 +164,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
           window.history.replaceState(
             null,
             "Page Title",
-            `/drawing/${tempDrawingData.uuid}`,
+            `/drawing/${initDrawingData?.uuid}`,
           );
         }
       } else {
