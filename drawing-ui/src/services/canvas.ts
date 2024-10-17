@@ -1,5 +1,5 @@
 import { BASE_API_URL, API_ENDPOINTS } from "../shared/constants";
-import { CanvasDimensions } from "../shared/types";
+import { CanvasDimensions, DrawingMeta } from "../shared/types";
 
 /**
  *
@@ -27,10 +27,10 @@ export const storeAsFiles = async (
         },
       },
     );
-    const data = await response.json();
+    const data: DrawingMeta = await response.json();
     return data;
   } catch (error) {
     console.log(error);
-    return { error: "Something went wrong ..." };
+    return false;
   }
 };

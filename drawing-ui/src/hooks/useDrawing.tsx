@@ -3,6 +3,7 @@ import { COMMANDS, DAPP_STATE, MINT_SELECTOR } from "../shared/constants";
 import {
   CanvasDimensions,
   DrawingInput,
+  DrawingMeta,
   DrawingObject,
   Network,
 } from "../shared/types";
@@ -55,32 +56,16 @@ export const useDrawing = () => {
   };
 
   const getVoucherInput = (
-    canvasData: { content: DrawingObject[] },
     uuid: string,
-    owner: `0x${string}`,
-    drawingMeta: {
-      ipfsHash: string;
-      canvasDimensions: CanvasDimensions;
-    },
+    drawingMeta: DrawingMeta,
     ercToMint: string,
-    privateDrawing: 0 | 1,
   ) => {
-    // prepare drawing data notice input
-    let drawingNoticePayload: DrawingInput;
-    const cmd =
-      dappState == DAPP_STATE.drawingUpdate
-        ? COMMANDS.updateAndMint.cmd
-        : COMMANDS.createAndMint.cmd;
-    drawingNoticePayload = {
-      drawing: JSON.stringify(canvasData), // FE updates the svg string only, compressedCanvasData
-      dimensions: drawingMeta.canvasDimensions,
-    };
+    // @TODO VoucherMintPayloadType
+    let voucherMintPayload: any;
+
     return JSON.stringify({
-      drawing_input: drawingNoticePayload, //data to save in a notice and partially in the sqlite db
-      uuid,
-      cmd, // BE will be notified to emit a notice and a voucher
-      owner,
-      private: privateDrawing,
+      uuid, // notice to register the img for this voucher
+      cmd: COMMANDS.mintDrawingAsNFT.cmd, // BE will be notified to emit a notice and a voucher
       imageIPFSMeta:
         "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
       erc721_to_mint: ercToMint,

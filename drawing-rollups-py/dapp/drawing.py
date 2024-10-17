@@ -52,8 +52,10 @@ def mint_erc721_with_string( msg_sender, data ):
     }
     logger.info(f"Voucher {voucher}")
     send_voucher(voucher)
-
-    store_drawing_data( msg_sender, data )
+    # uint8array to hex
+    payload = binary2hex(data) 
+    notice = {"payload": payload}
+    send_notice( notice ) 
 
 #  Prepare notice
 #  Save drawing data in a notice
@@ -103,17 +105,16 @@ def store_drawing_data( sender, cmd, data ):
     #         drawing_input['voucher_requested'] = True # not in db
     #     else:
     #         drawing_input['voucher_requested'] = False # not in db
-    # elif cmd == 'un' or cmd == 'uv': 
-    #     if cmd == 'uv':
+    # elif cmd == 'ud' or cmd == 'ud': 
+    #     if cmd == 'v-d-nft':
     #         drawing_input['voucher_requested'] = True # not in db
     # notices are needed vor voucher's input 
-    compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
-    # uint8array to hex
-    payload = binary2hex(compressed) 
+    # compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
+    # # uint8array to hex
+    # payload = binary2hex(compressed) 
 
-    notice = {"payload": payload}
-    send_notice( notice )
-    logger.info(f"DATA to store {data}")
+    # notice = {"payload": payload}
+    # send_notice( notice ) 
     store_data( cmd, sender, data ) 
 
 
@@ -147,12 +148,12 @@ def handle_advance(data):
             json_data = json.loads(decompressed_payload)  
 
             if json_data.get("cmd"):
-                if json_data['cmd'] == 'cv' or json_data['cmd'] == 'uv':
-                    logger.info(f"COMMAND {json_data['cmd']}")
+                if json_data['cmd'] == 'v-d-nft':
+                    logger.info(f"COMMAND {json_data['v-d-nft']}")
                     
                     if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"):  
                         mint_erc721_with_string( sender, json_data )
-                elif json_data['cmd']== 'cn' or json_data['cmd']== 'un':
+                elif json_data['cmd']== 'cd' or json_data['cmd']== 'ud':
                     logger.info(f"COMMAND {json_data['cmd']}")
                     if json_data.get("drawing_input"):  
                         drawing_input = json_data.get("drawing_input")

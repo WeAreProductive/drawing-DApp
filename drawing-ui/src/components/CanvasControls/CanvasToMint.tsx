@@ -6,19 +6,15 @@
  * and a NOTICE with the current drawing data
  */
 import { useCanvasContext } from "../../context/CanvasContext";
-import { useSetChain, useWallets } from "@web3-onboard/react";
-import { toast } from "sonner";
+import { useSetChain } from "@web3-onboard/react";
 import { Button } from "../ui/button";
 import { Box } from "lucide-react";
 import configFile from "../../config/config.json";
 import { storeAsFiles } from "../../services/canvas";
-import { v4 as uuidv4 } from "uuid";
-import { DrawingMeta, DrawingObject, Network } from "../../shared/types";
-import { prepareDrawingObjectsArrays, validateInputSize } from "../../utils";
+import { Network } from "../../shared/types";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
-import { confirmAlert } from "react-confirm-alert";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -26,122 +22,64 @@ type CanvasToMintProp = {
   enabled: boolean;
 };
 const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
-  const {
-    canvas,
-    currentDrawingData,
-    currentDrawingLayer,
-    setLoading,
-    dappState,
-    setDappState,
-  } = useCanvasContext();
+  const { canvas, currentDrawingData, setLoading, dappState, setDappState } =
+    useCanvasContext();
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
-  const [connectedWallet] = useWallets();
-  const account = connectedWallet.accounts[0].address;
   if (!connectedChain) return;
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
 
-  const currentUuid = uuidv4();
-
-  const saveAndMintDrawing = async (
-    canvasData: { content: DrawingObject[] },
-    canvasContent: any,
-    privateDrawing: 0 | 1,
-  ) => {
-    const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
-    const owner = currentDrawingData ? currentDrawingData.owner : account;
-    const canvasDimensions = {
-      width: canvas?.width || 0,
-      height: canvas?.height || 0,
-    };
-    const drawingMeta: DrawingMeta = await storeAsFiles(
-      canvasContent.objects,
-      uuid,
-      canvasDimensions,
-    );
-    if (!connectedChain) return;
-    const strInput = getVoucherInput(
-      canvasData,
-      uuid,
-      owner,
-      drawingMeta,
-      config[connectedChain.id].ercToMint,
-      privateDrawing,
-    );
-    if (!currentDrawingData) {
-      const strDimensions = JSON.stringify(canvasDimensions);
-      const initCanvasData = {
-        uuid: uuid,
-        owner: account,
-        update_log: [[JSON.stringify(currentDrawingLayer), account]],
-        dimensions: strDimensions,
-        private: privateDrawing,
-      };
-      await sendInput(strInput, initCanvasData);
-    } else {
-      await sendInput(strInput);
-    }
-  };
-
-  const handlePrivateDrawing = (
-    canvasData: { content: DrawingObject[] },
-    canvasContent: any,
-  ) => {
-    confirmAlert({
-      title: "Set the drawing as PRIVATE?",
-      message: "",
-      buttons: [
-        {
-          label: "OK",
-          onClick: async () => {
-            await saveAndMintDrawing(canvasData, canvasContent, 1);
-          },
-        },
-        {
-          label: "NO",
-          onClick: async () => {
-            await saveAndMintDrawing(canvasData, canvasContent, 0);
-          },
-        },
-      ],
-    });
-  };
-
   const handleCanvasToMint = async () => {
     if (!canvas) return;
-
-    if (!currentDrawingLayer) return;
-    if (currentDrawingLayer.length < 1) return;
-
+    if (!currentDrawingData) return;
+    const { uuid, owner } = currentDrawingData;
     setLoading(true);
     setDappState(DAPP_STATE.voucherRequest);
 
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
-    // !!!! extracts the !!! currents session !!!! drawing objects using the old and current drawing data
-    const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
-      currentDrawingData,
-      canvasContent.objects,
-    ); // extracts the currents session drawing objects using the old and current drawing data
-    let canvasData = {
-      // svg: base64_encode(canvasSVG), // for validation before minting
-      content: currentDrawingLayerObjects,
-      // @TODO uuid is missing from validation
-    };
-    // validate before sending the tx
-    const result = validateInputSize(JSON.stringify(canvasData));
+    // validate before sending the tx @TODO different validation
 
-    if (!result.isValid) {
-      toast.error(result.info.message, {
-        description: result.info.description,
-      });
-      setLoading(false);
-      return;
-    }
-    if (!currentDrawingData) {
-      handlePrivateDrawing(canvasData, canvasContent);
-    } else {
-      saveAndMintDrawing(canvasData, canvasContent, currentDrawingData.private);
-    }
+    // !!!! extracts the !!! currents session !!!! drawing objects using the old and current drawing data
+    // const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
+    //   currentDrawingData,
+    //   canvasContent.objects,
+    // ); // extracts the currents session drawing objects using the old and current drawing data
+    // let canvasData = {
+    //   // svg: base64_encode(canvasSVG), // for validation before minting
+    //   content: currentDrawingLayerObjects,
+    //   // @TODO uuid is missing from validation
+    // };
+
+    // const result = validateInputSize(JSON.stringify(canvasData));
+
+    // if (!result.isValid) {
+    //   toast.error(result.info.message, {
+    //     description: result.info.description,
+    //   });
+    //   setLoading(false);
+    //   return;
+    // }
+
+    const canvasDimensions = {
+      width: canvas?.width || 0,
+      height: canvas?.height || 0,
+    };
+    const drawingMeta = await storeAsFiles(
+      canvasContent.objects,
+      uuid,
+      canvasDimensions,
+    );
+    if (!drawingMeta) return;
+    if (!connectedChain) return;
+
+    const strInput = getVoucherInput(
+      uuid,
+      drawingMeta,
+      config[connectedChain.id].ercToMint,
+    );
+
+    await sendInput(strInput);
+    setLoading(false);
   };
 
   return connectedChain ? (

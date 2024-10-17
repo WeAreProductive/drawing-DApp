@@ -36,12 +36,12 @@ export const DAPP_STATE = {
 // @TODO update the commands
 export const COMMANDS = {
   createAndStore: {
-    cmd: "cn",
+    cmd: "cd",
     description:
       "BE will emit a notice with the data of the newly created drawing",
   },
   updateAndStore: {
-    cmd: "un",
+    cmd: "ud",
     description: "BE will emit a notice with the data of the updated drawing",
   },
   createAndMint: {
@@ -53,6 +53,10 @@ export const COMMANDS = {
     cmd: "uv",
     description:
       "BE will emit a notice (with the data of the updated drawing) and a voucher to mint a NFT",
+  },
+  mintDrawingAsNFT: {
+    cmd: "v-d-nft",
+    description: "Emit a voucher to mint a drawing as nft",
   },
 };
 

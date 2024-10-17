@@ -376,11 +376,11 @@ def store_data(cmd, sender, data):
   """
   # prepare data
   
-  if cmd == 'cn' : 
+  if cmd == 'cd' : 
     logger.info(f"Create drawing") 
     id = create_drawing(data)
     
-  elif cmd == 'un' :
+  elif cmd == 'ud' :
     logger.info(f"Update drawing") 
     uuid = data['uuid']
     row = get_raw_data(uuid, 'get_drawing_id')
