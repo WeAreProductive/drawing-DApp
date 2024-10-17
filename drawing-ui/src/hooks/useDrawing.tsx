@@ -62,7 +62,7 @@ export const useDrawing = () => {
   ) => {
     // @TODO VoucherMintPayloadType
     let voucherMintPayload: any;
-
+    console.log(COMMANDS.mintDrawingAsNFT.cmd);
     return JSON.stringify({
       uuid, // notice to register the img for this voucher
       cmd: COMMANDS.mintDrawingAsNFT.cmd, // BE will be notified to emit a notice and a voucher

@@ -52,8 +52,9 @@ def mint_erc721_with_string( msg_sender, data ):
     }
     logger.info(f"Voucher {voucher}")
     send_voucher(voucher)
-    # uint8array to hex
-    payload = binary2hex(data) 
+    # uint8array to hex 
+    compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
+    payload = binary2hex(compressed) 
     notice = {"payload": payload}
     send_notice( notice ) 
 
@@ -146,10 +147,11 @@ def handle_advance(data):
             logger.info(f"Trying to decode json ")
             # try json data
             json_data = json.loads(decompressed_payload)  
-
+            
             if json_data.get("cmd"):
+                logger.info(f"JSON {json_data}")
                 if json_data['cmd'] == 'v-d-nft':
-                    logger.info(f"COMMAND {json_data['v-d-nft']}")
+                    logger.info(f"COMMAND {json_data['cmd']}")
                     
                     if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"):  
                         mint_erc721_with_string( sender, json_data )

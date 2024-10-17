@@ -87,6 +87,8 @@ export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   update_log: any; //@TODO typing?!
   voucher_requested?: boolean;
   date_created?: string; // date-time string
+  last_updated?: string;
+  closed_at?: string;
   dimensions: string;
   private: 0 | 1;
 }
@@ -96,6 +98,7 @@ export type DrawingUserInput = {
   mintingPrice: string;
   private: boolean;
 };
+// @TODO combine DrawingInitial & DrawingInputExtended & DrawingInput
 export type DrawingInitialData = {
   uuid: string;
   owner: string;

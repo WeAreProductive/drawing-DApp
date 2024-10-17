@@ -18,18 +18,22 @@ import { DAPP_STATE } from "../../shared/constants";
 
 const config: { [name: string]: Network } = configFile;
 
-type CanvasToMintProp = {
-  enabled: boolean;
-};
-const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
-  const { canvas, currentDrawingData, setLoading, dappState, setDappState } =
-    useCanvasContext();
+const CanvasToMint = () => {
+  const {
+    canvas,
+    currentDrawingData,
+    setLoading,
+    loading,
+    dappState,
+    setDappState,
+  } = useCanvasContext();
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
   const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
 
   const handleCanvasToMint = async () => {
+    console.log("handle canvas to mint");
     if (!canvas) return;
     if (!currentDrawingData) return;
     const { uuid, owner } = currentDrawingData;
@@ -81,17 +85,10 @@ const CanvasToMint = ({ enabled }: CanvasToMintProp) => {
     await sendInput(strInput);
     setLoading(false);
   };
-
   return connectedChain ? (
-    <Button
-      variant={"outline"}
-      onClick={handleCanvasToMint}
-      disabled={!enabled}
-    >
+    <Button variant={"outline"} onClick={handleCanvasToMint} disabled={loading}>
       <Box size={18} className="mr-2" strokeWidth={1.5} />
-      {dappState == DAPP_STATE.voucherRequest
-        ? " Queuing NFT for minting..."
-        : " Save & Mint NFT"}
+      {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
     </Button>
   ) : null;
 };

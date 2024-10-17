@@ -106,7 +106,8 @@ def get_raw_data(query_args, type, page = 1):
         return row
       case "get_drawings_by_uuid":
         uuids = json.loads(query_args[2])
-        statement = "SELECT * FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ") AND id in (SELECT max(id) FROM drawings GROUP BY uuid )"   
+        statement = "SELECT id, uuid, owner, dimensions, private, title, description, minting_price, closed_at, last_updated "
+        statement = statement + "FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ")"   
         cursor.execute(statement, uuids)
         rows = cursor.fetchall() 
         logger.info(f"ROWS BY UUID {rows}")
@@ -177,8 +178,8 @@ def get_drawings(query_args, type, page):
   
   if data_rows: 
     for row in data_rows:   
-
-    # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at
+      # @TODO handle data based on query type
+      # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at
       logger.info(f" Drawing row {row}")
       current_drawing = {}
       current_drawing['uuid'] = row['uuid']
@@ -192,10 +193,11 @@ def get_drawings(query_args, type, page):
 
       current_drawing['update_log'] = get_drawing_layers(row['id']) 
       drawings.append(current_drawing)  
-
-  if type != 'get_drawing_by_uuid' :
+  
+  if type == 'get_drawings_by_owner' or type == "get_all_drawings" :
     has_next = False
     next_page = 0
+    
     if data_rows:
       number_of_rows = data_rows[0]['total_rows']
       # calculate up_to_now_loaded including the current set
