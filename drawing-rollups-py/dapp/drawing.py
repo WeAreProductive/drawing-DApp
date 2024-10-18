@@ -15,6 +15,12 @@ logger = logging.getLogger(__name__)
 rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
 logger.info(f"HTTP rollup_server url is {rollup_server}")
 
+nft_erc1155_address = '0xb73bDcde8C529A289956B5C9726ecDC4b29309CA' 
+ether_portal_address = "0xFfdbe43d4c855BF7e0f105c400A50857f53AB044" # @TODO check
+dapp_address_relay_contract = "0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e" # localhost
+
+# wallet py referrence https://github.com/jplgarcia/python-wallet/blob/main/dapp.py
+
 ##
 # Core functions 
 
