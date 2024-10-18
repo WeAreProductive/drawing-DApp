@@ -7,7 +7,9 @@ import traceback
 import json 
 from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str 
-from lib.db_api import store_data, get_data 
+from lib.db_api import store_data, get_data, get_drawing_minting_price, get_drawing_contributors 
+import cartesi_wallet.wallet as Wallet
+from cartesi_wallet.util import hex_to_str, str_to_hex
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -15,12 +17,14 @@ logger = logging.getLogger(__name__)
 rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
 logger.info(f"HTTP rollup_server url is {rollup_server}")
 
-nft_erc1155_address = '0xb73bDcde8C529A289956B5C9726ecDC4b29309CA' 
-ether_portal_address = "0xFfdbe43d4c855BF7e0f105c400A50857f53AB044" # @TODO check
+nft_erc1155_address = '0xb73bDcde8C529A289956B5C9726ecDC4b29309CA' # Simple erc contract address on localhost
+ether_portal_address = "0xFfdbe43d4c855BF7e0f105c400A50857f53AB044" #open(f'./deployments/{network}/EtherPortal.json')
+
 dapp_address_relay_contract = "0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e" # localhost
+dapp_wallet_address = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8' # 3rd address from the localhost test address list
 
-# wallet py referrence https://github.com/jplgarcia/python-wallet/blob/main/dapp.py
-
+# wallet py refference https://github.com/jplgarcia/python-wallet/blob/main/dapp.py
+wallet = Wallet
 ##
 # Core functions 
 
@@ -46,23 +50,67 @@ def mint_erc721_with_string( msg_sender, data ):
     """
     logger.info(f"Preparing a VOUCHER for MINTING AN NFT {data}")
 
-    mint_header = clean_header( data["selector"] )
-    imageIpfs = data["imageIPFSMeta"]
+    #1 sender should transfer the minting price from its to the dapp wallet
+    # check sender wallet balance
+    minter_eth_balance = wallet.etherBalanceOf(msg_sender) #@TODO python wallet.method check?
+    # get drawing minting price @TODO
+    minting_price = 1
+    if minting_price <= minter_eth_balance :
+        # callData = encodeFunctionData({
+        #                 abi: nftContractAbi,
+        #                 functionName: "mint",
+        #                 args: [input_data[0], etherDepositExecJSON.jamID],
+        #             });
+        #4 emit a voucher with the sender address for minting the nft
+        #             app.createVoucher({
+        #                 destination: nft_erc1155_address,
+        #                 payload: callData,
+        #             });
+      
+        # @TODO change the destination, is mint_header enough? or mention the function - mint
+        mint_header = clean_header( data["selector"] )
+        imageIpfs = data["imageIPFSMeta"]
 
-    destination = data["erc721_to_mint"]
-    data_for_payload = encode(['address', 'string'], [msg_sender, imageIpfs])
-    payload = f"0x{(mint_header+data_for_payload).hex()}"
-    voucher = {
-        "destination": destination, 
-        "payload": payload
-    }
-    logger.info(f"Voucher {voucher}")
-    send_voucher(voucher)
-    # uint8array to hex 
-    compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
-    payload = binary2hex(compressed) 
-    notice = {"payload": payload}
-    send_notice( notice ) 
+        destination = data["erc721_to_mint"]
+        data_for_payload = encode(['address', 'string'], [msg_sender, imageIpfs])
+        payload = f"0x{(mint_header+data_for_payload).hex()}"
+        voucher = {
+            "destination": destination, 
+            "payload": payload
+        }
+        logger.info(f"Voucher {voucher}")
+        send_voucher(voucher)
+
+        uuid = data['uuid']
+        #2 transfer 10% of the price to the dapp wallet's balance
+        #3 transfer 90% of the price/number of unique layer creators to each layer creator's balance
+        update_creators_balance( uuid, msg_sender, wallet)
+        # uint8array to hex 
+        compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
+        payload = binary2hex(compressed) 
+        notice = {"payload": payload}
+        send_notice( notice ) 
+    else :
+        raise Exception('Not enough balance to execute the operation')
+    
+def update_creators_balance( uuid, from_address, wallet ):
+    # const jam = Jam.getJamByID(jamID); uuid 
+    # const totalParticipants = jam.submittedAddresses.size; - get unique layer creators
+    # const amountPerParticipant =
+    #     parseEther(String(jam.mintPrice)) / BigInt(totalParticipants);
+    minting_price = get_drawing_minting_price( uuid )
+    participants = get_drawing_contributors( uuid ) # @TODO get unique addresses contributed to current drawing
+
+    amount_per_dapp = minting_price * .9
+    amount_per_participant = ( minting_price - amount_per_dapp ) / len(participants) 
+    for p in participants :
+        try :
+            wallet.ether_transfer(from_address.lower(), p.lower(), amount_per_participant)
+        except Exception as e: 
+            msg = f"Error: {e}"
+            traceback.print_exc()
+            logger.error(msg)
+            send_report({"payload": str2hex(msg)})   
 
 #  Prepare notice
 #  Save drawing data in a notice

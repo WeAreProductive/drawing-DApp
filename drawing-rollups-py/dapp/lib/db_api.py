@@ -129,6 +129,16 @@ def get_raw_data(query_args, type, page = 1):
         rows = cursor.fetchall() 
         logger.info(f"get MINE drawings ROWS {rows}")
         return rows
+      case 'get_drawing_contributors':
+        logger.info(f"get drawing contributors {query_args}")  
+        
+        statement = "SELECT DISTINCT(l.painter) FROM layers l LEFT JOIN drawings d "
+        statement = statement + " on l.drawing_id = d.id WHERE d.uuid = ?"   
+        
+        cursor.execute(statement, [query_args])
+        rows = cursor.fetchall()  
+        
+        return rows
 
 
   except Exception as e: 
@@ -259,6 +269,16 @@ def get_data(query_str):
 
   drawings = get_drawings(query_args, query_type, page) 
   return drawings
+
+def get_drawing_minting_price( uuid ):
+  drawing = get_raw_data(['drawing', uuid], 'get_drawing_by_uuid')
+  return drawing[0]['minting_price']
+
+def get_drawing_contributors( uuid ):
+  
+  contributors = get_raw_data(uuid, 'get_drawing_contributors')
+
+  return contributors
 
 def create_drawing(data): 
   """ Executes database insert query statement.
