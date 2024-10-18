@@ -10,6 +10,7 @@ from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
 from lib.db_api import store_data, get_data, get_drawing_minting_price, get_drawing_contributors 
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str, str_to_hex
+from web3 import Web3
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -25,6 +26,8 @@ dapp_wallet_address = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8' # 3rd address
 
 # wallet py refference https://github.com/jplgarcia/python-wallet/blob/main/dapp.py
 wallet = Wallet
+w3 = Web3()
+
 ##
 # Core functions 
 
@@ -50,55 +53,63 @@ def mint_erc721_with_string( msg_sender, data ):
     """
     logger.info(f"Preparing a VOUCHER for MINTING AN NFT {data}")
 
-    #1 sender should transfer the minting price from its to the dapp wallet
-    # check sender wallet balance
-    minter_eth_balance = wallet.etherBalanceOf(msg_sender) #@TODO python wallet.method check?
-    # get drawing minting price @TODO
-    minting_price = 1
-    if minting_price <= minter_eth_balance :
-        # callData = encodeFunctionData({
-        #                 abi: nftContractAbi,
-        #                 functionName: "mint",
-        #                 args: [input_data[0], etherDepositExecJSON.jamID],
-        #             });
-        #4 emit a voucher with the sender address for minting the nft
-        #             app.createVoucher({
-        #                 destination: nft_erc1155_address,
-        #                 payload: callData,
-        #             });
+    #1 sender should've transfered the minting price 
+    # from its to the wallet virtual instance
+    # in FE
+    # check sender wallet virtual/portal deposited balance ...
+    minter_eth_balance = wallet.balance_get(msg_sender)  
+
+    minting_price = get_drawing_minting_price(data['uuid'])
+
+    parsed_minting_price = w3.to_wei(minting_price, 'ether') 
+    contributors = get_drawing_contributors( data['uuid'] ) # list of obj, to access a contributor - iterate and call c['painter']
+
+    logger.info(minter_eth_balance.erc20_get('ether'))
+    # if parsed_minting_price <= minter_eth_balance :
+      #  logger.info(parsed_minting_price)
+    #     # callData = encodeFunctionData({
+    #     #                 abi: nftContractAbi,
+    #     #                 functionName: "mint",
+    #     #                 args: [input_data[0], etherDepositExecJSON.jamID],
+    #     #             });
+    #     #4 emit a voucher with the sender address for minting the nft
+    #     #             app.createVoucher({
+    #     #                 destination: nft_erc1155_address,
+    #     #                 payload: callData,
+    #     #             });
       
-        # @TODO change the destination, is mint_header enough? or mention the function - mint
-        mint_header = clean_header( data["selector"] )
-        imageIpfs = data["imageIPFSMeta"]
+    # @TODO change the destination, is mint_header enough? or mention the function - mint
+    #     mint_header = clean_header( data["selector"] )
+    #     imageIpfs = data["imageIPFSMeta"]
 
-        destination = data["erc721_to_mint"]
-        data_for_payload = encode(['address', 'string'], [msg_sender, imageIpfs])
-        payload = f"0x{(mint_header+data_for_payload).hex()}"
-        voucher = {
-            "destination": destination, 
-            "payload": payload
-        }
-        logger.info(f"Voucher {voucher}")
-        send_voucher(voucher)
+    #     destination = data["erc721_to_mint"]
+    #     data_for_payload = encode(['address', 'string'], [msg_sender, imageIpfs])
+    #     payload = f"0x{(mint_header+data_for_payload).hex()}"
+    #     voucher = {
+    #         "destination": destination, 
+    #         "payload": payload
+    #     }
+    #     logger.info(f"Voucher {voucher}")
+    #     send_voucher(voucher)
 
-        uuid = data['uuid']
-        #2 transfer 10% of the price to the dapp wallet's balance
-        #3 transfer 90% of the price/number of unique layer creators to each layer creator's balance
-        update_creators_balance( uuid, msg_sender, wallet)
-        # uint8array to hex 
-        compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
-        payload = binary2hex(compressed) 
-        notice = {"payload": payload}
-        send_notice( notice ) 
-    else :
-        raise Exception('Not enough balance to execute the operation')
+    #     uuid = data['uuid']
+    #     #2 transfer 10% of the price to the dapp wallet's balance
+    #     #3 transfer 90% of the price/number of unique layer creators to each layer creator's balance
+    #     update_creators_balance( uuid, msg_sender, wallet)
+    #     # uint8array to hex 
+    #     compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
+    #     payload = binary2hex(compressed) 
+    #     notice = {"payload": payload}
+    #     send_notice( notice ) 
+    # else :
+    #     raise Exception('Not enough balance to execute the operation')
     
-def update_creators_balance( uuid, from_address, wallet ):
+def update_creators_balance( uuid, from_address, wallet, minting_price ):
     # const jam = Jam.getJamByID(jamID); uuid 
     # const totalParticipants = jam.submittedAddresses.size; - get unique layer creators
     # const amountPerParticipant =
     #     parseEther(String(jam.mintPrice)) / BigInt(totalParticipants);
-    minting_price = get_drawing_minting_price( uuid )
+
     participants = get_drawing_contributors( uuid ) # @TODO get unique addresses contributed to current drawing
 
     amount_per_dapp = minting_price * .9
@@ -135,41 +146,6 @@ def store_drawing_data( sender, cmd, data ):
     -------
     """
     
-    # now = str(datetime.now(timezone.utc))  # convert to timestamp at be
-
-    # drawing_input = data["drawing_input"]
-
-    # drawing = drawing_input['drawing']
-    
-    # parsed_drawing = json.loads(drawing)
-    # content = parsed_drawing['content']
-    # # owner is the owner of the drawing
-    # # the painter can be different than the drawing owner
-    # # only the first drawing layer's painter is the drawing owner for sure
-    # drawing_input["uuid"]= data["uuid"]
-    # drawing_input["owner"] = data["owner"]
-    # drawing_input["painter"] = msg_sender
-    # data["date_created"] = now  
-    # @TODO add date created  
-    # drawing_input["drawing_objects"] = content 
-    # drawing_input["private"] = data["private"]
-    
-    # if cmd == 'cn' or cmd == 'cv':
-    #     # drawing_input['log'] = [] #init log
-    #     if cmd == 'cv':
-    #         drawing_input['voucher_requested'] = True # not in db
-    #     else:
-    #         drawing_input['voucher_requested'] = False # not in db
-    # elif cmd == 'ud' or cmd == 'ud': 
-    #     if cmd == 'v-d-nft':
-    #         drawing_input['voucher_requested'] = True # not in db
-    # notices are needed vor voucher's input 
-    # compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
-    # # uint8array to hex
-    # payload = binary2hex(compressed) 
-
-    # notice = {"payload": payload}
-    # send_notice( notice ) 
     store_data( cmd, sender, data ) 
 
 
@@ -210,7 +186,7 @@ def handle_advance(data):
                     if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"):  
                         mint_erc721_with_string( sender, json_data )
                 elif json_data['cmd']== 'cd' or json_data['cmd']== 'ud':
-                    logger.info(f"COMMAND {json_data['cmd']}")
+                    logger.info(f"COMMAND {json_data['cmd']}") 
                     if json_data.get("drawing_input"):  
                         drawing_input = json_data.get("drawing_input")
                         cmd = json_data['cmd']

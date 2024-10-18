@@ -136,8 +136,7 @@ def get_raw_data(query_args, type, page = 1):
         statement = statement + " on l.drawing_id = d.id WHERE d.uuid = ?"   
         
         cursor.execute(statement, [query_args])
-        rows = cursor.fetchall()  
-        
+        rows = cursor.fetchall()   
         return rows
 
 
@@ -271,13 +270,12 @@ def get_data(query_str):
   return drawings
 
 def get_drawing_minting_price( uuid ):
-  drawing = get_raw_data(['drawing', uuid], 'get_drawing_by_uuid')
+  drawing = get_raw_data(['', '', uuid], 'get_drawing_by_uuid')
+  logger.info(drawing)
   return drawing[0]['minting_price']
 
 def get_drawing_contributors( uuid ):
-  
   contributors = get_raw_data(uuid, 'get_drawing_contributors')
-
   return contributors
 
 def create_drawing(data): 
@@ -409,50 +407,4 @@ def store_data(cmd, sender, data):
     logger.info(f"ID {row['id']}")
     id = row['id']
   
-  store_drawing_layer(id, sender, data)
-
-  # conn = None
-  # id = insert_drawing_data(query_args)
-  # log1 = get_drawing_log(query_args['uuid'])
-  # logger.info(f"LOG 1 {log1}")
-  # if id : 
-  #   logTuple = get_drawing_log(query_args['uuid'])
-  #   logger.info(f"LOG 1 {logTuple[0]}")
-    
-  #   if logTuple:
-  #     log = logTuple[0]
-  #     logger.info(f"TYPE {type(log)}")
-  #     logParsed = json.loads(log)
-  #     logger.info(f"TYPE @ {logParsed}")
-  #     drawing_log = json.loads(log)
-  #   else:
-  #     drawing_log = [] 
-    
-  #   drawing_log.append(id) 
-  #   json_log = json.dumps(drawing_log) 
-  #   try:
-
-  #     conn = sqlite3.connect(db_filename)
-  #     cursor = conn.cursor()
-      
-  #     cursor.execute(
-  #       """
-  #       UPDATE drawings
-  #       SET log = ?
-  #       WHERE id = ?
-  #       """,
-  #       (json_log, id),
-  #     )
-  #     conn.commit()
-  #     id = cursor.lastrowid
-  #     return id
-
-  #   except Exception as e: 
-  #     msg = f"Error executing insert statement: {e}" 
-  #     logger.info(f"{msg}")
-  #   finally:
-  #     if conn:
-  #       conn.close()
-   
-  
-
+  store_drawing_layer(id, sender, data) 
