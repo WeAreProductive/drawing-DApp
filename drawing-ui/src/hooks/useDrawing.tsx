@@ -10,6 +10,7 @@ import {
 import configFile from "../config/config.json";
 import { v4 as uuidv4 } from "uuid";
 import { useWallets } from "@web3-onboard/react";
+import { ethers } from "ethers";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -54,16 +55,17 @@ export const useDrawing = () => {
       cmd, // BE will be notified how to handle the payload
     });
   };
-
   const getVoucherInput = (
     uuid: string,
     drawingMeta: DrawingMeta,
     ercToMint: string,
+    address: string, //dappRelayAddress
   ) => {
     // @TODO VoucherMintPayloadType
     let voucherMintPayload: any;
     console.log(COMMANDS.mintDrawingAsNFT.cmd);
-    return JSON.stringify({
+
+    const execLayerData = JSON.stringify({
       uuid, // notice to register the img for this voucher
       cmd: COMMANDS.mintDrawingAsNFT.cmd, // BE will be notified to emit a notice and a voucher
       imageIPFSMeta:
@@ -71,6 +73,10 @@ export const useDrawing = () => {
       erc721_to_mint: ercToMint,
       selector: MINT_SELECTOR,
     });
+    const amount = currentDrawingData?.minting_price;
+    const data = ethers.utils.toUtf8Bytes(execLayerData);
+
+    return { address, data, amount };
   };
   return { getNoticeInput, getVoucherInput };
 };

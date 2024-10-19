@@ -7,6 +7,7 @@ import {
   ERC721Portal,
 } from "@cartesi/rollups";
 import { Dispatch, SetStateAction } from "react";
+import { EtherPortal } from "../generated/rollups";
 
 export type Network = {
   token: string;
@@ -17,6 +18,7 @@ export type Network = {
   DAppRelayAddress: string;
   InputBoxAddress: string;
   Erc721PortalAddress: string;
+  etherPortalAddress: string;
   ercToMint: string;
 };
 
@@ -90,6 +92,7 @@ export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   last_updated?: string;
   closed_at?: string;
   dimensions: string;
+  minting_price: any;
   private: 0 | 1;
 }
 export type DrawingUserInput = {
@@ -141,11 +144,13 @@ export type RollupsContracts = {
   relayContract: DAppAddressRelay;
   inputContract: InputBox;
   erc721PortalContract: ERC721Portal;
+  etherPortalContract: EtherPortal;
 };
 
 export type RollupsInteractions = {
   contracts?: RollupsContracts;
   sendInput: (strInput: string, tempDrawingData?: any) => Promise<void>;
+  sendMintingInput: (input: any, tempDrawingData?: any) => Promise<void>;
   executeVoucher: (
     voucher: VoucherExtended,
   ) => Promise<VoucherExtended | undefined>;

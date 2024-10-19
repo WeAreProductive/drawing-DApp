@@ -30,7 +30,9 @@ const CanvasToMint = () => {
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
-  const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
+  const { sendMintingInput } = useRollups(
+    config[connectedChain.id].DAppRelayAddress,
+  );
 
   const handleCanvasToMint = async () => {
     console.log("handle canvas to mint");
@@ -76,13 +78,14 @@ const CanvasToMint = () => {
     if (!drawingMeta) return;
     if (!connectedChain) return;
 
-    const strInput = getVoucherInput(
+    const input = getVoucherInput(
       uuid,
       drawingMeta,
       config[connectedChain.id].ercToMint,
+      config[connectedChain.id].DAppRelayAddress,
     );
 
-    await sendInput(strInput);
+    await sendMintingInput(input);
     setLoading(false);
   };
   return connectedChain ? (

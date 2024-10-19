@@ -76,8 +76,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
           `No erc721 portal address address defined for chain ${chain.id}`,
         );
         alert(`No box erc721 portal address defined for chain ${chain.id}`);
-      }
-      // @TODO check the address in config
+      // @TODO check the address
       let etherPortalAddress = "";
       if (config[chain.id]?.etherPortalAddress) {
         etherPortalAddress = config[chain.id].etherPortalAddress;
@@ -87,6 +86,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         );
         alert(`No box ether portal address defined for chain ${chain.id}`);
       }
+
       // dapp contract
       const dappContract = CartesiDApp__factory.connect(dappAddress, signer);
       // relay contract
@@ -96,6 +96,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       );
       // input contract
       const inputContract = InputBox__factory.connect(inputBoxAddress, signer);
+
       const erc721PortalContract = ERC721Portal__factory.connect(
         erc721PortalAddress,
         signer,
@@ -111,7 +112,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         relayContract,
         inputContract,
         erc721PortalContract,
-        etherPortalContract,
+        etherPortalContract
       };
     };
     if (connectedWallet) {
@@ -122,6 +123,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       }
     }
   }, [connectedWallet, connectedChain, dappAddress]);
+  
   const sendInput = async (
     strInput: string,
     initDrawingData: DrawingInitialData | null,
@@ -203,30 +205,22 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       setLoading(false);
     }
   };
-  const sendMintingInput = async (inputData: {
-    address: string;
-    data: string;
-    amount: any;
-  }) => {
+  const sendMintingInput = async (
+    inputData: { address: string, data: string, txOverrides: any }
+  ) => {
     if (!contracts) return;
-    toast.info("Sending input to rollups...");
-
+    toast.info("Sending input to rollups...");   
+  
     if (!connectedChain) return;
-    // see echo dapp plus - frontend web for reference
     // const data = ethers.utils.toUtf8Bytes(`Deposited (${amount}) ether.`);
     // const txOverrides = {value: ethers.utils.parseEther(`${amount}`)}
+
     // // const tx = await ...
     // rollups.etherPortalContract.depositEther(rollups.dappContract.address,data,txOverrides);
-    const { address, data, amount } = inputData;
-    console.log({ amount });
-    const txOverrides = { value: ethers.utils.parseEther(`${amount}`) };
+    const { address, data, txOverrides } = inputData
     // Send the transaction
     try {
-      const tx = await contracts.etherPortalContract.depositEther(
-        address,
-        data,
-        txOverrides,
-      );
+      const tx = await contracts.etherPortalContract.depositEther(address, data, txOverrides);
       toast.success("Transaction Sent");
       // Wait for confirmation
       const receipt = await tx.wait(1);
@@ -239,18 +233,45 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         toast.success("Transaction Confirmed", {
           description: `Input added => index: ${event?.args?.inputIndex} `,
         });
+        setDappState(DAPP_STATE.refetchDrawings); // @TODO this state update is not correct anymore
+        if (currentDrawingData) {
+          const newLogItem = {
+            drawing_objects: JSON.stringify(currentDrawingLayer),
+            painter: account,
+            dimensions: JSON.stringify({
+              width: canvas?.width || 0, // ?? @TODO get from current drawing layer ...
+              height: canvas?.height || 0,
+            }),
+          };
+          if (currentDrawingData?.update_log) {
+            const log = [...currentDrawingData?.update_log, newLogItem];
+
+            setCurrentDrawingData({
+              ...currentDrawingData,
+              update_log: log,
+            });
+          }
+        } else {
+          // init currentDrawingData, @TODO observe
+          setCurrentDrawingData(initDrawingData);
+          window.history.replaceState(
+            null,
+            "Page Title",
+            `/drawing/${initDrawingData?.uuid}`,
+          );
+        }
       } else {
         toast.error("Transaction Error 1", {
           description: `Input not added => index: ${event?.args?.inputIndex} `,
         });
       }
-      // if (canvas) {
-      //   if (!canvas.isDrawingMode) {
-      //     canvas.isDrawingMode = true;
-      //     canvas.discardActiveObject();
-      //     canvas.renderAll();
-      //   }
-      // }
+      if (canvas) {
+        if (!canvas.isDrawingMode) {
+          canvas.isDrawingMode = true;
+          canvas.discardActiveObject();
+          canvas.renderAll();
+        }
+      }
     } catch (e: any) {
       const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
       toast.error("Transaction Error", {
