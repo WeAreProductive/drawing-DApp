@@ -10,7 +10,7 @@ from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str , h
 from lib.db_api import store_data, get_data, get_drawing_minting_price, get_drawing_contributors 
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str, str_to_hex
-# from web3 import Web3
+from web3 import Web3
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ dapp_wallet_address = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8' # 3rd address
 
 # wallet py refference https://github.com/jplgarcia/python-wallet/blob/main/dapp.py
 wallet = Wallet
-# w3 = Web3()
+web3 = Web3()
 def decode_json(b):
     s = bytes.fromhex(b[2:]).decode("utf-8")
     d = json.loads(s)
@@ -61,16 +61,15 @@ def mint_erc721_with_string( msg_sender, data ):
     # in FE
     # check sender wallet virtual/portal deposited balance ...
     minter_eth_balance = wallet.balance_get(msg_sender)  
-    ether_balance = minter_eth_balance.erc20_get('ether')
+    ether_balance = minter_eth_balance.ether_get()
+    # ether_balance = minter_eth_balance.ether_get()
     logger.info(f"Minter balance {ether_balance}")
-
     minting_price = get_drawing_minting_price(data['uuid'])
-
-    # parsed_minting_price = w3.to_wei(minting_price, 'ether') 
-    contributors = get_drawing_contributors( data['uuid'] ) # list of obj, to access a contributor - iterate and call c['painter']
-
-    logger.info(minter_eth_balance.erc20_get('ether'))
-    # if parsed_minting_price <= minter_eth_balance :
+    # contributors = get_drawing_contributors( data['uuid'] ) # list of obj, to access a contributor - iterate and call c['painter']
+    parsed_price = web3.to_wei(minting_price, 'ether')
+    logger.info(f"Parsed price {parsed_price}")
+    if parsed_price <= ether_balance : 
+        update_creators_balance( data['uuid'], msg_sender, wallet, parsed_price )
       #  logger.info(parsed_minting_price)
     #     # callData = encodeFunctionData({
     #     #                 abi: nftContractAbi,
@@ -117,11 +116,20 @@ def update_creators_balance( uuid, from_address, wallet, minting_price ):
 
     participants = get_drawing_contributors( uuid ) # @TODO get unique addresses contributed to current drawing
 
-    amount_per_dapp = minting_price * .9
+    amount_per_dapp = minting_price * 0.1
+    logger.info(amount_per_dapp)
     amount_per_participant = ( minting_price - amount_per_dapp ) / len(participants) 
+    logger.info(amount_per_participant)
+    wallet.ether_transfer(from_address.lower(), dapp_wallet_address.lower(), amount_per_dapp)
+    eth_balance = wallet.balance_get(dapp_wallet_address.lower())  
+    balance = eth_balance.ether_get()
+    logger.info(f"Balance {balance}")
     for p in participants :
         try :
-            wallet.ether_transfer(from_address.lower(), p.lower(), amount_per_participant)
+            wallet.ether_transfer(from_address.lower(), p['painter'].lower(), amount_per_participant)
+            minter_eth_balance = wallet.balance_get(p['painter'].lower())  
+            ether_balance = minter_eth_balance.ether_get()
+            logger.info(f"Balance {ether_balance}")
         except Exception as e: 
             msg = f"Error: {e}"
             traceback.print_exc()
@@ -187,15 +195,14 @@ def handle_advance(data):
             msg_sender = payload[:42]  
             logger.info(f"Address {msg_sender}")
             input_data_1 = payload[42:104]
-            logger.info(f"input_data 1 {input_data_1}")
+            logger.info(f"input_data 1 {input_data_1}")  
+            wallet.ether_deposit_process(payload)
             if len(payload) > 104 :
                 input_data_2 = payload[104:]
                 logger.info(f"input 2 {input_data_2}")
                 str_data = hex_to_str(input_data_2) 
-                json_data = json.loads(str_data)
-                
+                json_data = json.loads(str_data) 
                 mint_erc721_with_string( msg_sender, json_data )
-                logger.info(json_data)
         else :
             payload = data["payload"]
             decompressed_payload = decompress(payload)
@@ -260,7 +267,7 @@ rollup_address = None
 while True:
     logger.info("Sending finish")
     response = requests.post(rollup_server + "/finish", json=finish)
-    logger.info(f"Received finish status {response.status_code}")
+    logger.info(f"Received finish status {response.status_code}") 
    
     if response.status_code == 202:
         logger.info("No pending rollup request, trying again")
