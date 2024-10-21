@@ -23,6 +23,7 @@ export const INITIAL_DRAWING_OPTIONS = {
 
 //mint method selector constant
 export const MINT_SELECTOR = "0xd0def521";
+export const ETHER_TRANSFER_SELECTOR = "0x522f6815"; // ether depsit header
 
 export const DAPP_STATE = {
   canvasInit: "initialize a canvas",

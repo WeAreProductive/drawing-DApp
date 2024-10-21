@@ -1,5 +1,10 @@
 import { useCanvasContext } from "../context/CanvasContext";
-import { COMMANDS, DAPP_STATE, MINT_SELECTOR } from "../shared/constants";
+import {
+  COMMANDS,
+  DAPP_STATE,
+  ETHER_TRANSFER_SELECTOR,
+  MINT_SELECTOR,
+} from "../shared/constants";
 import {
   CanvasDimensions,
   DrawingInput,
@@ -71,7 +76,7 @@ export const useDrawing = () => {
       imageIPFSMeta:
         "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
       erc721_to_mint: ercToMint,
-      selector: MINT_SELECTOR,
+      selector: ETHER_TRANSFER_SELECTOR,
     });
     const amount = currentDrawingData?.minting_price;
     const data = ethers.utils.toUtf8Bytes(execLayerData);

@@ -10,7 +10,7 @@ from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
 from lib.db_api import store_data, get_data, get_drawing_minting_price, get_drawing_contributors 
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str, str_to_hex
-from web3 import Web3
+# from web3 import Web3
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ dapp_wallet_address = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8' # 3rd address
 
 # wallet py refference https://github.com/jplgarcia/python-wallet/blob/main/dapp.py
 wallet = Wallet
-w3 = Web3()
+# w3 = Web3()
 
 ##
 # Core functions 
@@ -170,34 +170,42 @@ def handle_advance(data):
     status = "accept"
     payload = None
     sender = data["metadata"]["msg_sender"].lower() 
+    logger.info(f"METADATA {data['metadata']}")
+    # notice - msg sender is the user wallet address
+    # METADATA {'msg_sender': '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc', 'epoch_index': 0, 'input_index': 2, 'block_number': 369, 'timestamp': 1729492682}
+    # voucher - msg sender is the "etherPortalAddress": "0xFfdbe43d4c855BF7e0f105c400A50857f53AB044",
+    # INFO:__main__:METADATA {'msg_sender': '0xffdbe43d4c855bf7e0f105c400a50857f53ab044', 'epoch_index': 0, 'input_index': 3, 'block_number': 380, 'timestamp': 1729492737}
     try:
         payload = data["payload"]
-        decompressed_payload = decompress(payload)
-        try:
-            logger.info(f"Trying to decode json ")
-            # try json data
-            json_data = json.loads(decompressed_payload)  
-            
-            if json_data.get("cmd"):
-                logger.info(f"JSON {json_data}")
-                if json_data['cmd'] == 'v-d-nft':
-                    logger.info(f"COMMAND {json_data['cmd']}")
-                    
-                    if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"):  
-                        mint_erc721_with_string( sender, json_data )
-                elif json_data['cmd']== 'cd' or json_data['cmd']== 'ud':
-                    logger.info(f"COMMAND {json_data['cmd']}") 
-                    if json_data.get("drawing_input"):  
-                        drawing_input = json_data.get("drawing_input")
-                        cmd = json_data['cmd']
-                        logger.info(f"DRAWING INPUT {json_data['drawing_input']}")
-                        store_drawing_data( sender, cmd, drawing_input )
-            else:
-                raise Exception('Not supported json operation')
-        except Exception as e2:
-            msg = f"Not valid json: {e2}"
-            traceback.print_exc()
-            logger.info(msg)
+        if sender == ether_portal_address.lower() :
+            logger.info(f"Handle ether portal request eith payload {payload}")
+        else :
+            decompressed_payload = decompress(payload)
+            try:
+                logger.info(f"Trying to decode json ")
+                # try json data
+                json_data = json.loads(decompressed_payload)  
+                
+                if json_data.get("cmd"):
+                    logger.info(f"JSON {json_data}")
+                    if json_data['cmd'] == 'v-d-nft':
+                        logger.info(f"COMMAND {json_data['cmd']}")
+                        
+                        if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"):  
+                            mint_erc721_with_string( sender, json_data )
+                    elif json_data['cmd']== 'cd' or json_data['cmd']== 'ud':
+                        logger.info(f"COMMAND {json_data['cmd']}") 
+                        if json_data.get("drawing_input"):  
+                            drawing_input = json_data.get("drawing_input")
+                            cmd = json_data['cmd']
+                            logger.info(f"DRAWING INPUT {json_data['drawing_input']}")
+                            store_drawing_data( sender, cmd, drawing_input )
+                else:
+                    raise Exception('Not supported json operation')
+            except Exception as e2:
+                msg = f"Not valid json: {e2}"
+                traceback.print_exc()
+                logger.info(msg)
     except Exception as e:
         status = "reject"
         msg = f"Error: {e}"
