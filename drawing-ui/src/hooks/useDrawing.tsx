@@ -76,7 +76,7 @@ export const useDrawing = () => {
       imageIPFSMeta:
         "https://gateway.pinata.cloud/ipfs/" + drawingMeta.ipfsHash,
       erc721_to_mint: ercToMint,
-      // selector: ETHER_TRANSFER_SELECTOR,
+      selector: ETHER_TRANSFER_SELECTOR,
     });
     const amount = currentDrawingData?.minting_price;
     const data = ethers.utils.toUtf8Bytes(execLayerData);

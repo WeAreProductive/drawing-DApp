@@ -2,7 +2,7 @@ import { ethers } from "ethers";
 import { useWallets } from "@web3-onboard/react";
 import { useCallback, useEffect, useState } from "react";
 import { useVouchersQuery } from "../../generated/graphql";
-import { MINT_SELECTOR } from "../../shared/constants";
+import { MINT_SELECTOR, ETHER_TRANSFER_SELECTOR } from "../../shared/constants";
 import {
   VoucherExtended,
   DataNoticeEdge,
@@ -25,7 +25,6 @@ const VouchersList = () => {
   const [drawings, setDrawings] = useState<DrawingInputExtended[]>([]);
   const [uuids, setUuids] = useState<string[]>([]);
   const { data } = result;
-
   const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
 
   const signer = async () => {
@@ -103,7 +102,7 @@ const VouchersList = () => {
         payload = ethers.utils.hexDataSlice(payload, 4);
         try {
           switch (selector) {
-            case MINT_SELECTOR: {
+            case ETHER_TRANSFER_SELECTOR: {
               const decode = decoder.decode(["address", "string"], payload);
               payload = `Mint Erc721 - String: ${decode[1]} - Address: ${decode[0]}`;
               erc721string = decode[1];
