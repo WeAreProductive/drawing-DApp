@@ -78,6 +78,7 @@ const VouchersList = () => {
   useEffect(() => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
+    console.log(data?.vouchers);
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
       // init data
       const n = node.node;
@@ -102,7 +103,7 @@ const VouchersList = () => {
         payload = ethers.utils.hexDataSlice(payload, 4);
         try {
           switch (selector) {
-            case ETHER_TRANSFER_SELECTOR: {
+            case MINT_SELECTOR: {
               const decode = decoder.decode(["address", "string"], payload);
               payload = `Mint Erc721 - String: ${decode[1]} - Address: ${decode[0]}`;
               erc721string = decode[1];
