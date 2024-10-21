@@ -32,7 +32,9 @@ def hex2str(hexstr):
     """
     Decodes a hex string into a regular string
     """
-    return hex2binary(hexstr).decode("utf-8")
+    print(hexstr)
+    return hex2binary(hexstr).decode("utf-8", errors='ignore')
+    # return hex2binary(hexstr).decode("utf-8")
 
 def decompress(hexstr): 
     """

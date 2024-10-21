@@ -6,7 +6,7 @@ from eth_abi import encode
 import traceback
 import json 
 from lib.rollups_api import send_notice, send_voucher, send_report
-from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str 
+from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str , hex2binary
 from lib.db_api import store_data, get_data, get_drawing_minting_price, get_drawing_contributors 
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str, str_to_hex
@@ -27,7 +27,10 @@ dapp_wallet_address = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8' # 3rd address
 # wallet py refference https://github.com/jplgarcia/python-wallet/blob/main/dapp.py
 wallet = Wallet
 # w3 = Web3()
-
+def decode_json(b):
+    s = bytes.fromhex(b[2:]).decode("utf-8")
+    d = json.loads(s)
+    return d
 ##
 # Core functions 
 
@@ -58,10 +61,12 @@ def mint_erc721_with_string( msg_sender, data ):
     # in FE
     # check sender wallet virtual/portal deposited balance ...
     minter_eth_balance = wallet.balance_get(msg_sender)  
+    ether_balance = minter_eth_balance.erc20_get('ether')
+    logger.info(f"Minter balance {ether_balance}")
 
     minting_price = get_drawing_minting_price(data['uuid'])
 
-    parsed_minting_price = w3.to_wei(minting_price, 'ether') 
+    # parsed_minting_price = w3.to_wei(minting_price, 'ether') 
     contributors = get_drawing_contributors( data['uuid'] ) # list of obj, to access a contributor - iterate and call c['painter']
 
     logger.info(minter_eth_balance.erc20_get('ether'))
@@ -171,35 +176,40 @@ def handle_advance(data):
     payload = None
     sender = data["metadata"]["msg_sender"].lower() 
     logger.info(f"METADATA {data['metadata']}")
+    logger.info(f"METADATA {data}")
     # notice - msg sender is the user wallet address
     # METADATA {'msg_sender': '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc', 'epoch_index': 0, 'input_index': 2, 'block_number': 369, 'timestamp': 1729492682}
     # voucher - msg sender is the "etherPortalAddress": "0xFfdbe43d4c855BF7e0f105c400A50857f53AB044",
     # INFO:__main__:METADATA {'msg_sender': '0xffdbe43d4c855bf7e0f105c400a50857f53ab044', 'epoch_index': 0, 'input_index': 3, 'block_number': 380, 'timestamp': 1729492737}
     try:
-        payload = data["payload"]
-        if sender == ether_portal_address.lower() :
-            logger.info(f"Handle ether portal request eith payload {payload}")
+        if sender == ether_portal_address.lower() : 
+            payload = data["payload"]
+            msg_sender = payload[:42]  
+            logger.info(f"Address {msg_sender}")
+            input_data_1 = payload[42:104]
+            logger.info(f"input_data 1 {input_data_1}")
+            if len(payload) > 104 :
+                input_data_2 = payload[104:]
+                logger.info(f"input 2 {input_data_2}")
+                str_data = hex_to_str(input_data_2) 
+                json_data = json.loads(str_data)
+                
+                mint_erc721_with_string( msg_sender, json_data )
+                logger.info(json_data)
         else :
+            payload = data["payload"]
             decompressed_payload = decompress(payload)
             try:
                 logger.info(f"Trying to decode json ")
                 # try json data
                 json_data = json.loads(decompressed_payload)  
-                
-                if json_data.get("cmd"):
-                    logger.info(f"JSON {json_data}")
-                    if json_data['cmd'] == 'v-d-nft':
-                        logger.info(f"COMMAND {json_data['cmd']}")
-                        
-                        if json_data.get('imageIPFSMeta') and json_data.get("erc721_to_mint") and json_data.get("selector"):  
-                            mint_erc721_with_string( sender, json_data )
-                    elif json_data['cmd']== 'cd' or json_data['cmd']== 'ud':
-                        logger.info(f"COMMAND {json_data['cmd']}") 
-                        if json_data.get("drawing_input"):  
-                            drawing_input = json_data.get("drawing_input")
-                            cmd = json_data['cmd']
-                            logger.info(f"DRAWING INPUT {json_data['drawing_input']}")
-                            store_drawing_data( sender, cmd, drawing_input )
+                # if json_data.get("cmd"):
+                logger.info(f"COMMAND {json_data['cmd']}") 
+                if json_data.get("drawing_input"):  
+                    drawing_input = json_data.get("drawing_input")
+                    cmd = json_data['cmd']
+                    logger.info(f"DRAWING INPUT {json_data['drawing_input']}")
+                    store_drawing_data( sender, cmd, drawing_input )
                 else:
                     raise Exception('Not supported json operation')
             except Exception as e2:

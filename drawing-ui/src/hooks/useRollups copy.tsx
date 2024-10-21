@@ -220,6 +220,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
     const { address, data, txOverrides } = inputData
     // Send the transaction
     try {
+      console.log({data})
       const tx = await contracts.etherPortalContract.depositEther(address, data, txOverrides);
       toast.success("Transaction Sent");
       // Wait for confirmation

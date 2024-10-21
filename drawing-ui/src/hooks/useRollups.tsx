@@ -220,6 +220,10 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
     const { address, data, amount } = inputData;
     console.log({ amount });
     const txOverrides = { value: ethers.utils.parseEther(`${amount}`) };
+    // const txOverrides = {value: ethers.utils.parseEther(`${amount}`)}
+
+    // const tx = await ...
+    // rollups.etherPortalContract.depositEther(propos.dappAddress,data,txOverrides);
     // Send the transaction
     try {
       const tx = await contracts.etherPortalContract.depositEther(
