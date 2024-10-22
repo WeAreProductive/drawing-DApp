@@ -12,9 +12,7 @@ This DApp's back-end is written in Python, so to run it in your machine you need
 
 Then in order to start the back-end, run the following commands in a dedicated terminal:
 
-```shell
-
-python3 ./sqlite.py
+```shell 
 
 cd dapp
 python3 ./sqlite.py
