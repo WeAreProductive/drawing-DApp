@@ -167,8 +167,7 @@ def handle_advance(data):
     payload = None
     sender = data["metadata"]["msg_sender"].lower() 
     logger.info(f"METADATA {data['metadata']}")
-    logger.info(f"METADATA {data}")
-    rollup_address = "0xa37ae2b259d35af4abdde122ec90b204323ed304"
+    logger.info(f"METADATA {data}") 
     try:
         if sender == ether_portal_address.lower() : 
             payload = data["payload"]
@@ -196,7 +195,8 @@ def handle_advance(data):
 
                     if json_data['cmd'] == 'eth.withdraw':
                         amount = to_wei(json_data['amount'], 'ether')
-                        voucher = wallet.ether_withdraw(rollup_address, sender.lower(), amount)
+                        # https://docs.cartesi.io/cartesi-rollups/1.5/development/asset-handling/
+                        voucher = wallet.ether_withdraw(dapp_address_relay_contract, sender.lower(), amount)
                         # voucher = wallet.ether_withdraw(rollup_address, req_json["from"].lower(), converted_value)
                         response = requests.post(rollup_server + "/voucher", json={"payload": voucher.payload, "destination": voucher.destination})
                         print(voucher.payload)
