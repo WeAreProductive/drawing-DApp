@@ -1,8 +1,7 @@
 import sqlite3 
 import logging
-import json  
-import time
-from datetime import datetime, timedelta  
+import json   
+from datetime import datetime
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -97,6 +96,7 @@ def get_raw_data(query_args, type, page = 1):
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall() 
         return rows
+      
       case "get_drawing_id":
         logger.info(f"get_drawing_id {query_args}")
         statement = "SELECT id "
@@ -104,6 +104,7 @@ def get_raw_data(query_args, type, page = 1):
         cursor.execute(statement, [query_args]) 
         row = cursor.fetchone() 
         return row
+      
       case "get_drawings_by_uuid":
         uuids = json.loads(query_args[2])
         statement = "SELECT id, uuid, owner, dimensions, private, title, description, minting_price, closed_at, last_updated "
@@ -121,6 +122,7 @@ def get_raw_data(query_args, type, page = 1):
         cursor.execute(statement, log)
         rows = cursor.fetchall() 
         return rows
+      
       case "get_drawing_layers": 
         logger.info(f"get drawing layers {query_args}")  
         
@@ -129,6 +131,7 @@ def get_raw_data(query_args, type, page = 1):
         rows = cursor.fetchall() 
         logger.info(f"get MINE drawings ROWS {rows}")
         return rows
+      
       case 'get_drawing_contributors':
         logger.info(f"get drawing contributors {query_args}")  
         
@@ -150,6 +153,7 @@ def get_raw_data(query_args, type, page = 1):
 
 
 def get_drawing_layers(id) :
+  """ Retrieves the drawing layers """
   update_log = []
   data_rows = get_raw_data(id, 'get_drawing_layers')  
   if data_rows:
@@ -223,28 +227,8 @@ def get_drawings(query_args, type, page):
     
   return result
 
-# Obsolete @TODO remove after check
-def get_drawings_by_ids(log):
-  """ Retrieves each drawing's layers
-  Parameters
-  ----------
-  log : list
-    PK of each row in drawings table. Each row represents a drawing layer. 
-  Raises
-  ------
-  Returns
-  -------
-    list : drawings layers data
-  """
-  drawing_slices = [] 
-  data_rows = get_raw_data(log, 'get_drawing_by_ids') 
-  if data_rows:
-    # from each result get drawing_objects and add it to update_log/drawing_slices array 
-    for row in data_rows:
-      drawing_slices.append(row)
-  return drawing_slices
-
 def get_data(query_args):
+  """ @TODO Document """
   page = 1 # default value
   # decide which get-data handler to use 
   if query_args[0] == 'drawings':
@@ -269,20 +253,21 @@ def get_data(query_args):
   return drawings
 
 def get_drawing_minting_price( uuid ):
+  """ @TODO Document """
   drawing = get_raw_data(['', '', uuid], 'get_drawing_by_uuid')
   logger.info(drawing)
   return drawing[0]['minting_price']
 
 def get_drawing_contributors( uuid ):
+  """ @TODO Document """
   contributors = get_raw_data(uuid, 'get_drawing_contributors')
   return contributors
 
-def create_drawing(data): 
+def create_drawing(data, timestamp): 
   """ Executes database insert query statement.
   Parameters
   ----------
-  query_args : list
-    Parameters to be bind in the query statement.
+   
   Raises
   ------
     Exception 
@@ -295,14 +280,10 @@ def create_drawing(data):
   uuid = data['uuid']
   owner = data['owner']
   dimensions = json.dumps(data['dimensions']) 
-  # @TODO timezones?
-  now = int( time.time() )
-  logger.info(f"Now {now}")
-  created_at = now
-  closed_at = get_closed_at(now) 
-  last_updated = now
- 
-  logger.info(f"Private {data['userInputData']['private']}")
+  
+  created_at = timestamp
+  closed_at = get_closed_at(timestamp) 
+  last_updated = timestamp
   # user input data
   private = 0
   if data['userInputData']['private'] == True:
@@ -310,8 +291,6 @@ def create_drawing(data):
   title = data['userInputData']['title']
   description = data['userInputData']['description']
   minting_price = data['userInputData']['mintingPrice'] 
-  logger.info(f"OWNER {type(owner)}")
-  logger.info(f"UUID {type(uuid)}")
   try: 
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor() 
@@ -336,14 +315,12 @@ def create_drawing(data):
     if conn:
       conn.close()
 
-def store_drawing_layer(id, sender, data):
+def store_drawing_layer(id, sender, data, timestamp):
   parsed_drawing = json.loads(data['drawing'])
   content = json.dumps(parsed_drawing['content'])
-  dimensions = json.dumps(data['dimensions'])
-   # @TODO timezones?
-  now = int( time.time() )
-  logger.info(f"Now {now}")
-    # drawing_input["drawing_objects"] = content
+  dimensions = json.dumps(data['dimensions']) 
+  now = timestamp
+
   try: 
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor() 
@@ -378,26 +355,23 @@ def store_drawing_layer(id, sender, data):
     if conn:
       conn.close()
 
-def store_data(cmd, sender, data): 
+def store_data(cmd, timestamp, sender, data): 
   """ Routes dra.
   Parameters
   ----------
-  query_args : list
-    Parameters to be bind in the query statement. 
+  
   Raises
   ------
     Exception 
       If error arises while execiting the database statement.
   Returns
   -------
-    id : int
-    The PK of the row updated.
+  
   """
   # prepare data
-  
   if cmd == 'cd' : 
     logger.info(f"Create drawing") 
-    id = create_drawing(data)
+    id = create_drawing(data, timestamp)
     
   elif cmd == 'ud' :
     logger.info(f"Update drawing") 
@@ -406,4 +380,4 @@ def store_data(cmd, sender, data):
     logger.info(f"ID {row['id']}")
     id = row['id']
   
-  store_drawing_layer(id, sender, data) 
+  store_drawing_layer(id, sender, data, timestamp) 

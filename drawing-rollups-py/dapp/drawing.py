@@ -91,14 +91,8 @@ def mint_erc721_with_string( msg_sender, data ):
     else :
         raise Exception('Not enough balance to execute the operation')
     
-def update_creators_balance( uuid, from_address, wallet, minting_price ):
-    # const jam = Jam.getJamByID(jamID); uuid 
-    # const totalParticipants = jam.submittedAddresses.size; - get unique layer creators
-    # const amountPerParticipant =
-    #     parseEther(String(jam.mintPrice)) / BigInt(totalParticipants);
-
-    participants = get_drawing_contributors( uuid ) # @TODO get unique addresses contributed to current drawing
-
+def update_creators_balance( uuid, from_address, wallet, minting_price ): 
+    participants = get_drawing_contributors( uuid )  
     amount_per_dapp = minting_price * 0.1
     logger.info(amount_per_dapp)
     amount_per_participant = ( minting_price - amount_per_dapp ) / len(participants) 
@@ -119,20 +113,15 @@ def update_creators_balance( uuid, from_address, wallet, minting_price ):
             logger.error(msg)
             send_report({"payload": str2hex(msg)})   
 
-#  Prepare notice
-#  Save drawing data in a notice
-#  @param {String} sender
-#  @param {String} uuid
-#  @param {Object} drawing_input
-#  @param {String} cmd
 
-def store_drawing_data( sender, cmd, data ):
-    """ Prepares and requests a notice.
-        Triggers the execution of the next function that 
-        stores the drawing data in the sqlite database.
+def store_drawing_data( sender, timestamp, cmd, data ):
+    """ Stores the drawing data in the sqlite database.
     Parameters
     ----------
     sender : str 
+    timestamp : str
+        Unix timestamp ouside of the cartesi machine
+        Comes from the request metada
     cmd : str 
     data : dict
         The drawing's data 
@@ -140,9 +129,8 @@ def store_drawing_data( sender, cmd, data ):
     ------
     Returns
     -------
-    """
-    
-    store_data( cmd, sender, data ) 
+    """  
+    store_data( cmd, timestamp, sender, data ) 
 
 
 ###
@@ -166,6 +154,7 @@ def handle_advance(data):
     status = "accept"
     payload = None
     sender = data["metadata"]["msg_sender"].lower() 
+    timestamp = data["metadata"]['timestamp'] # outside of the cartesi machine timestamp
     logger.info(f"METADATA {data['metadata']}")
     logger.info(f"METADATA {data}") 
     try:
@@ -187,27 +176,23 @@ def handle_advance(data):
             decompressed_payload = decompress(payload)
             logger.info(f"Decompressed payload {decompressed_payload}")
             try:
-                logger.info(f"Trying to decode json ")
+                logger.info(f"Trying to decode json")
                 # try json data
                 json_data = json.loads(decompressed_payload)  
                 if json_data.get("cmd"):
                     logger.info(f"COMMAND {json_data['cmd']}") 
-
                     if json_data['cmd'] == 'eth.withdraw':
                         amount = to_wei(json_data['amount'], 'ether')
                         # https://docs.cartesi.io/cartesi-rollups/1.5/development/asset-handling/
-                        voucher = wallet.ether_withdraw(dapp_address_relay_contract, sender.lower(), amount)
-                        # voucher = wallet.ether_withdraw(rollup_address, req_json["from"].lower(), converted_value)
+                        voucher = wallet.ether_withdraw(dapp_address_relay_contract, sender.lower(), amount) 
                         response = requests.post(rollup_server + "/voucher", json={"payload": voucher.payload, "destination": voucher.destination})
-                        print(voucher.payload)
-                        print(voucher.destination)
                         logger.info(f"Voucher response {response}") 
                     else :
                         if json_data.get("drawing_input"):  
                             drawing_input = json_data.get("drawing_input")
                             cmd = json_data['cmd']
                             logger.info(f"DRAWING INPUT {json_data['drawing_input']}")
-                            store_drawing_data( sender, cmd, drawing_input )
+                            store_drawing_data( sender, timestamp, cmd, drawing_input )
                 else:
                     raise Exception('Not supported json operation')
             except Exception as e2:
