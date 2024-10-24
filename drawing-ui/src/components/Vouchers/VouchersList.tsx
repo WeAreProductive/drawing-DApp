@@ -101,7 +101,6 @@ const VouchersList = () => {
       let selector = "";
       if (payload) {
         const decoder = new ethers.utils.AbiCoder();
-        // 0x522f6815000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000429d069189e0000
         selector = decoder.decode(["bytes4"], payload)[0];
         payload = ethers.utils.hexDataSlice(payload, 4);
         try {
@@ -114,11 +113,9 @@ const VouchersList = () => {
               break;
             }
             case ETHER_TRANSFER_SELECTOR: {
-              // @TODO decode vouchers - see ./jam-twt/apps/jam-ui/src/components/vouchers
-              // 0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000429d069189e0000
               //ether transfer;
               const decode2 = decoder.decode(["address", "uint256"], payload);
-              payload = `Ether Transfer - Amount: ${ethers.utils.formatEther(decode2[1])} (Native eth) - Address: ${decode2[0]}`;
+              payload = `Ether Transfer, amount: ${ethers.utils.formatEther(decode2[1])}`;
               info: decode2[1];
               ownerAddress = decode2[0];
             }

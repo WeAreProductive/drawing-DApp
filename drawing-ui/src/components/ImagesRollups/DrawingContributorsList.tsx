@@ -2,6 +2,7 @@ import { Key } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import DrawingPreview from "./DrawingPreview";
 import { UpdateLogItem } from "../../shared/types";
+import { sliceAccountStr } from "../../utils";
 
 const DrawingContributorsList = () => {
   const { currentDrawingData } = useCanvasContext();
@@ -23,7 +24,7 @@ const DrawingContributorsList = () => {
                     dimensions={dimensions ? JSON.parse(dimensions) : ""}
                     snapShotJson={snapShotJson}
                   />
-                  Painter: {painter}
+                  Painter: {sliceAccountStr(painter)}
                 </div>
               );
             },

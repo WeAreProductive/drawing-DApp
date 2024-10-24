@@ -28,7 +28,7 @@ export const useCanvasControls = () => {
     console.log({ unixTimestamp });
     console.log(currentDrawingData?.closed_at);
     let shouldCloseDrawing = false;
-    if (currentDrawingData?.closed_at <= unixTimestamp) {
+    if (currentDrawingData?.closed_at >= unixTimestamp) {
       shouldCloseDrawing = true;
     }
     setDrawingIsClosed(shouldCloseDrawing);

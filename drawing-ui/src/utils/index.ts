@@ -19,7 +19,7 @@ export const srcToJson = (src: string) => {
   return src.replace(".png", ".json");
 };
 
-export const sliceAccountStr = (str: string) => {
+export const sliceAccountStr = (str: string | undefined) => {
   if (!str) return;
   const len = str.length;
   const start = str.slice(0, 3);
