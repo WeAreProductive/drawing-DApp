@@ -80,7 +80,6 @@ export const useDrawing = () => {
     });
     const amount = currentDrawingData?.minting_price;
     const data = ethers.utils.toUtf8Bytes(execLayerData);
-    console.log({ data });
     return { address, data, amount };
   };
   return { getNoticeInput, getVoucherInput };

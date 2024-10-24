@@ -78,15 +78,16 @@ const VouchersList = () => {
   useEffect(() => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
-    console.log(data?.vouchers);
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
+      // console.log(node);
       // init data
       const n = node.node;
       let payload = n?.payload; // voucher data
       let inputPayload = n?.input.payload; // ?!
-      let erc721string = null;
+      let info = null;
       let ownerAddress = null;
       let notices = n?.input.notices; // drawing data
+      let drawings = [];
       // @TODO inputPayload is used for ?!
       if (inputPayload) {
         try {
@@ -97,18 +98,29 @@ const VouchersList = () => {
       } else {
         inputPayload = "(empty)";
       }
+      let selector = "";
       if (payload) {
         const decoder = new ethers.utils.AbiCoder();
-        const selector = decoder.decode(["bytes4"], payload)[0];
+        // 0x522f6815000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000429d069189e0000
+        selector = decoder.decode(["bytes4"], payload)[0];
         payload = ethers.utils.hexDataSlice(payload, 4);
         try {
           switch (selector) {
             case MINT_SELECTOR: {
               const decode = decoder.decode(["address", "string"], payload);
               payload = `Mint Erc721 - String: ${decode[1]} - Address: ${decode[0]}`;
-              erc721string = decode[1];
+              info = decode[1];
               ownerAddress = decode[0];
               break;
+            }
+            case ETHER_TRANSFER_SELECTOR: {
+              // @TODO decode vouchers - see ./jam-twt/apps/jam-ui/src/components/vouchers
+              // 0x000000000000000000000000f39fd6e51aad88f6f4ce6ab8827279cfffb922660000000000000000000000000000000000000000000000000429d069189e0000
+              //ether transfer;
+              const decode2 = decoder.decode(["address", "uint256"], payload);
+              payload = `Ether Transfer - Amount: ${ethers.utils.formatEther(decode2[1])} (Native eth) - Address: ${decode2[0]}`;
+              info: decode2[1];
+              ownerAddress = decode2[0];
             }
             default: {
               break;
@@ -121,9 +133,9 @@ const VouchersList = () => {
         payload = "(empty)";
       }
       // filter only current account's vouchers
-      if (ownerAddress === currentAccount) {
+      if (ownerAddress === currentAccount && MINT_SELECTOR == selector) {
         // drawings data
-        const drawings = notices.edges.map(({ node }: DataNoticeEdge) => {
+        drawings = notices.edges.map(({ node }: DataNoticeEdge) => {
           let payload = node?.payload;
           let compressedData;
           if (payload) {
@@ -149,24 +161,25 @@ const VouchersList = () => {
             }
           }
         });
-        // curent voucher data
-        // @TODO revise voucher data
-        const currentVoucher = {
-          id: `${n?.id}`, // voucher
-          index: n?.index, // voucher
-          destination: `${n?.destination ?? ""}`, // voucher
-          payload: `${payload}`, // voucher
-          input: n ? { index: n.input.index, payload: inputPayload } : {}, // voucher
-          erc721string: erc721string, // voucher
-          ownerAddress: ownerAddress, // voucher
-          drawingUUID: drawings[0] ? drawings[0] : "", // drawing uuid
-          proof: null,
-          executed: null,
-        };
-        newVouchers.push(currentVoucher);
-        if (drawings[0]) {
-          uuids.push(drawings[0]);
-        }
+      }
+      // curent voucher data
+      // @TODO revise voucher data
+      const currentVoucher = {
+        id: `${n?.id}`, // voucher
+        selector,
+        index: n?.index, // voucher
+        destination: `${n?.destination ?? ""}`, // voucher
+        payload: `${payload}`, // voucher
+        input: n ? { index: n.input.index, payload: inputPayload } : {}, // voucher
+        info: info, // voucher core info... @TODO more descriptive name
+        ownerAddress: ownerAddress, // voucher
+        drawingUUID: drawings && drawings[0] ? drawings[0] : "", // drawing uuid
+        proof: null,
+        executed: null,
+      };
+      newVouchers.push(currentVoucher);
+      if (drawings.length && drawings[0]) {
+        uuids.push(drawings[0]);
       }
     });
     // @TODO sort by index
@@ -182,6 +195,7 @@ const VouchersList = () => {
     );
     fetchImages(uuids);
   }, [uuids]);
+  console.log({ myVouchers });
   return (
     <div>
       {myVouchers && myVouchers.length > 0 ? (

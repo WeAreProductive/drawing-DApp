@@ -32,7 +32,8 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
   const [contracts, setContracts] = useState<RollupsContracts | undefined>();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
-  const account = connectedWallet.accounts[0].address;
+  const [account, setAccount] = useState("0x");
+
   const [dappAddress] = useState<string>(dAddress);
 
   const {
@@ -122,6 +123,10 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       }
     }
   }, [connectedWallet, connectedChain, dappAddress]);
+  useEffect(() => {
+    if (!connectedWallet) return;
+    setAccount(connectedWallet.accounts[0].address);
+  }, [connectedWallet]);
   const sendInput = async (
     strInput: string,
     initDrawingData: DrawingInitialData | null,
@@ -212,18 +217,8 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
     toast.info("Sending input to rollups...");
 
     if (!connectedChain) return;
-    // see echo dapp plus - frontend web for reference
-    // const data = ethers.utils.toUtf8Bytes(`Deposited (${amount}) ether.`);
-    // const txOverrides = {value: ethers.utils.parseEther(`${amount}`)}
-    // // const tx = await ...
-    // rollups.etherPortalContract.depositEther(rollups.dappContract.address,data,txOverrides);
     const { address, data, amount } = inputData;
-    console.log({ amount });
     const txOverrides = { value: ethers.utils.parseEther(`${amount}`) };
-    // const txOverrides = {value: ethers.utils.parseEther(`${amount}`)}
-
-    // const tx = await ...
-    // rollups.etherPortalContract.depositEther(propos.dappAddress,data,txOverrides);
     // Send the transaction
     try {
       const tx = await contracts.etherPortalContract.depositEther(
@@ -255,6 +250,48 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       //     canvas.renderAll();
       //   }
       // }
+    } catch (e: any) {
+      const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
+      toast.error("Transaction Error", {
+        description: `Input not added => ${reason}`,
+      });
+      setDappState(DAPP_STATE.txFail);
+      setLoading(false);
+    }
+  };
+  const sendWithdrawInput = async (input: string) => {
+    if (!contracts) return;
+    toast.info("Sending input to rollups...");
+    if (!connectedChain) return;
+    const compressedStr = pako.deflate(input);
+    // Encode the input
+    const inputBytes = ethers.utils.isBytesLike(compressedStr)
+      ? compressedStr
+      : ethers.utils.toUtf8Bytes(compressedStr);
+
+    // Send the transaction
+    try {
+      const tx = await contracts.inputContract.addInput(
+        config[connectedChain.id].DAppRelayAddress,
+        inputBytes,
+      );
+      toast.success("Transaction Sent");
+      // Wait for confirmation
+      const receipt = await tx.wait(1);
+
+      // Search for the InputAdded event
+      const event = receipt.events?.find((e) => e.event === "InputAdded");
+      setLoading(false);
+      if (event?.args?.inputIndex) {
+        // clearCanvas(); // manages the dApp state
+        toast.success("Transaction Confirmed", {
+          description: `Input added => index: ${event?.args?.inputIndex} `,
+        });
+      } else {
+        toast.error("Transaction Error 1", {
+          description: `Input not added => index: ${event?.args?.inputIndex} `,
+        });
+      }
     } catch (e: any) {
       const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
       toast.error("Transaction Error", {
@@ -316,5 +353,11 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       return newVoucherToExecute;
     }
   };
-  return { contracts, sendInput, sendMintingInput, executeVoucher };
+  return {
+    contracts,
+    sendInput,
+    sendMintingInput,
+    executeVoucher,
+    sendWithdrawInput,
+  };
 };

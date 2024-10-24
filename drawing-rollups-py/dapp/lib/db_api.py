@@ -244,8 +244,7 @@ def get_drawings_by_ids(log):
       drawing_slices.append(row)
   return drawing_slices
 
-def get_data(query_str):
-  query_args = query_str.split('/')
+def get_data(query_args):
   page = 1 # default value
   # decide which get-data handler to use 
   if query_args[0] == 'drawings':

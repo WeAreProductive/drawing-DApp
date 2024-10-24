@@ -74,6 +74,7 @@ export type VoucherExtended = {
   msg?: string;
   drawingUUID?: string;
   events?: any;
+  selector?: string;
 };
 // sent Drawings data
 export interface DrawingInput {
@@ -151,6 +152,7 @@ export type RollupsInteractions = {
   contracts?: RollupsContracts;
   sendInput: (strInput: string, tempDrawingData?: any) => Promise<void>;
   sendMintingInput: (input: any, tempDrawingData?: any) => Promise<void>;
+  sendWithdrawInput: (amount: string) => Promise<void>;
   executeVoucher: (
     voucher: VoucherExtended,
   ) => Promise<VoucherExtended | undefined>;

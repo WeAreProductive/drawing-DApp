@@ -11,7 +11,7 @@ from lib.db_api import store_data, get_data, get_drawing_minting_price, get_draw
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str, str_to_hex
 # from web3 import Web3
-from eth_utils import to_wei
+from eth_utils import to_wei, from_wei
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -168,10 +168,7 @@ def handle_advance(data):
     sender = data["metadata"]["msg_sender"].lower() 
     logger.info(f"METADATA {data['metadata']}")
     logger.info(f"METADATA {data}")
-    # notice - msg sender is the user wallet address
-    # METADATA {'msg_sender': '0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc', 'epoch_index': 0, 'input_index': 2, 'block_number': 369, 'timestamp': 1729492682}
-    # voucher - msg sender is the "etherPortalAddress": "0xFfdbe43d4c855BF7e0f105c400A50857f53AB044",
-    # INFO:__main__:METADATA {'msg_sender': '0xffdbe43d4c855bf7e0f105c400a50857f53ab044', 'epoch_index': 0, 'input_index': 3, 'block_number': 380, 'timestamp': 1729492737}
+    rollup_address = "0xa37ae2b259d35af4abdde122ec90b204323ed304"
     try:
         if sender == ether_portal_address.lower() : 
             payload = data["payload"]
@@ -189,17 +186,28 @@ def handle_advance(data):
         else :
             payload = data["payload"]
             decompressed_payload = decompress(payload)
+            logger.info(f"Decompressed payload {decompressed_payload}")
             try:
                 logger.info(f"Trying to decode json ")
                 # try json data
                 json_data = json.loads(decompressed_payload)  
-                # if json_data.get("cmd"):
-                logger.info(f"COMMAND {json_data['cmd']}") 
-                if json_data.get("drawing_input"):  
-                    drawing_input = json_data.get("drawing_input")
-                    cmd = json_data['cmd']
-                    logger.info(f"DRAWING INPUT {json_data['drawing_input']}")
-                    store_drawing_data( sender, cmd, drawing_input )
+                if json_data.get("cmd"):
+                    logger.info(f"COMMAND {json_data['cmd']}") 
+
+                    if json_data['cmd'] == 'eth.withdraw':
+                        amount = to_wei(json_data['amount'], 'ether')
+                        voucher = wallet.ether_withdraw(rollup_address, sender.lower(), amount)
+                        # voucher = wallet.ether_withdraw(rollup_address, req_json["from"].lower(), converted_value)
+                        response = requests.post(rollup_server + "/voucher", json={"payload": voucher.payload, "destination": voucher.destination})
+                        print(voucher.payload)
+                        print(voucher.destination)
+                        logger.info(f"Voucher response {response}") 
+                    else :
+                        if json_data.get("drawing_input"):  
+                            drawing_input = json_data.get("drawing_input")
+                            cmd = json_data['cmd']
+                            logger.info(f"DRAWING INPUT {json_data['drawing_input']}")
+                            store_drawing_data( sender, cmd, drawing_input )
                 else:
                     raise Exception('Not supported json operation')
             except Exception as e2:
@@ -213,7 +221,7 @@ def handle_advance(data):
         logger.error(msg)
         send_report({"payload": str2hex(msg)})   
     return status
-
+    
 def handle_inspect(request):
     """ Handles inspect requests -
         emitting reports
@@ -227,16 +235,23 @@ def handle_inspect(request):
         status : str
         The handling status of the request.
     """
-    query_args = hex2str(request['payload'])
-    logger.info(f"Inspect state meta data {request}")
-    logger.info(f"Received inspect request data {query_args}")
-    
-    data = get_data(query_args)
-    logger.info("Adding report") 
-    compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
-    # uint8array to hex
-    payload = binary2hex(compressed)  
-    send_report({"payload": payload})    
+    query_str = hex2str(request['payload'])
+    logger.info(f"Received inspect request data {query_str}")
+    query_args = query_str.split('/')
+    if query_args[0] == 'balance':
+        user_address = query_args[1]
+        balance = wallet.balance_get(user_address)
+        wei_balance = balance.ether_get()
+        eth_balance = from_wei(wei_balance, 'ether')
+        payload = str2hex(str(eth_balance))
+        send_report({"payload": payload})  
+    else :
+        data = get_data(query_args)
+        logger.info(f"DATA before report {data}")
+        compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
+        # uint8array to hex
+        payload = binary2hex(compressed)  
+        send_report({"payload": payload})    
     return "accept"
 
 handlers = {

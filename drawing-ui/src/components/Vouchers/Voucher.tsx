@@ -12,10 +12,12 @@ import {
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
 import CanvasSnapshotLoader from "../ImagesRollups/CanvasSnapshotLoader";
+import { ETHER_TRANSFER_SELECTOR, MINT_SELECTOR } from "../../shared/constants";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
   drawing: DrawingInputExtended;
+  selector: string;
 };
 
 const config: { [name: string]: Network } = configFile;
@@ -50,6 +52,25 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
     setVoucherToExecute(newVoucherToExecute);
     setLoading(false);
   };
+  const handleVoucherDisplay = (
+    data: VoucherExtended,
+    drawing: DrawingInputExtended,
+  ) => {
+    switch (data.selector) {
+      case MINT_SELECTOR:
+        return drawing ? (
+          <div className="w-1/2 p-2">
+            <CanvasSnapshotLight data={drawing} />
+          </div>
+        ) : (
+          <CanvasSnapshotLoader />
+        );
+      case ETHER_TRANSFER_SELECTOR:
+        return <div className="w-1/2 p-2">{data.payload}</div>;
+      default:
+        break;
+    }
+  };
 
   useEffect(() => {
     const setVoucher = async (voucher: VoucherExtended) => {
@@ -67,14 +88,8 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
     }
   }, [voucherResult, contracts]);
   return (
-    <div className="flex flex-col gap-6 pb-4 my-4 border-b-2">
-      {drawing ? (
-        <div className="w-1/2 p-2">
-          <CanvasSnapshotLight data={drawing} />
-        </div>
-      ) : (
-        <CanvasSnapshotLoader />
-      )}
+    <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
+      {handleVoucherDisplay(voucherData, drawing)}
 
       <div className="flex flex-row items-center gap-3">
         <button
