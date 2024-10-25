@@ -2,4 +2,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export { ERC1155Holder__factory } from "./ERC1155Holder__factory";
-export { ERC1155Receiver__factory } from "./ERC1155Receiver__factory";

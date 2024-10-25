@@ -2,3 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { Authority } from "./Authority";
+export type { AuthorityFactory } from "./AuthorityFactory";
+export type { IAuthority } from "./IAuthority";
+export type { IAuthorityFactory } from "./IAuthorityFactory";

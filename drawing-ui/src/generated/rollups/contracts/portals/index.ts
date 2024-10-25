@@ -11,3 +11,5 @@ export type { IERC1155SinglePortal } from "./IERC1155SinglePortal";
 export type { IERC20Portal } from "./IERC20Portal";
 export type { IERC721Portal } from "./IERC721Portal";
 export type { IEtherPortal } from "./IEtherPortal";
+export type { IPortal } from "./IPortal";
+export type { Portal } from "./Portal";

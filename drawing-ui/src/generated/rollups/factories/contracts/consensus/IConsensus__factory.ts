@@ -14,43 +14,65 @@ const _abi = [
     anonymous: false,
     inputs: [
       {
+        indexed: true,
+        internalType: "address",
+        name: "appContract",
+        type: "address",
+      },
+      {
         indexed: false,
-        internalType: "address",
-        name: "application",
-        type: "address",
-      },
-    ],
-    name: "ApplicationJoined",
-    type: "event",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "_dapp",
-        type: "address",
-      },
-      {
-        internalType: "bytes",
-        name: "_proofContext",
-        type: "bytes",
-      },
-    ],
-    name: "getClaim",
-    outputs: [
-      {
-        internalType: "bytes32",
-        name: "epochHash_",
-        type: "bytes32",
-      },
-      {
         internalType: "uint256",
-        name: "firstInputIndex_",
+        name: "lastProcessedBlockNumber",
         type: "uint256",
       },
       {
+        indexed: false,
+        internalType: "bytes32",
+        name: "claim",
+        type: "bytes32",
+      },
+    ],
+    name: "ClaimAcceptance",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "submitter",
+        type: "address",
+      },
+      {
+        indexed: true,
+        internalType: "address",
+        name: "appContract",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "uint256",
-        name: "lastInputIndex_",
+        name: "lastProcessedBlockNumber",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "claim",
+        type: "bytes32",
+      },
+    ],
+    name: "ClaimSubmission",
+    type: "event",
+  },
+  {
+    inputs: [],
+    name: "getEpochLength",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
         type: "uint256",
       },
     ],
@@ -58,10 +80,50 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "join",
+    inputs: [
+      {
+        internalType: "address",
+        name: "appContract",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "lastProcessedBlockNumber",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes32",
+        name: "claim",
+        type: "bytes32",
+      },
+    ],
+    name: "submitClaim",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "appContract",
+        type: "address",
+      },
+      {
+        internalType: "bytes32",
+        name: "claim",
+        type: "bytes32",
+      },
+    ],
+    name: "wasClaimAccepted",
+    outputs: [
+      {
+        internalType: "bool",
+        name: "",
+        type: "bool",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ] as const;

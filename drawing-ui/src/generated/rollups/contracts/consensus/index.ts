@@ -3,5 +3,7 @@
 /* eslint-disable */
 import type * as authority from "./authority";
 export type { authority };
+import type * as quorum from "./quorum";
+export type { quorum };
 export type { AbstractConsensus } from "./AbstractConsensus";
 export type { IConsensus } from "./IConsensus";

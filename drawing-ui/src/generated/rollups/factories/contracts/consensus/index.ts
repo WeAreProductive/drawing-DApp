@@ -2,5 +2,6 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as authority from "./authority";
+export * as quorum from "./quorum";
 export { AbstractConsensus__factory } from "./AbstractConsensus__factory";
 export { IConsensus__factory } from "./IConsensus__factory";

@@ -89,76 +89,76 @@ export interface ERC1155SinglePortal extends BaseContract {
 
   functions: {
     /**
-     * Transfer an ERC-1155 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-1155 token contract
-     * @param _tokenId The identifier of the token being transferred
-     * @param _value Transfer amount
+     * Transfer ERC-1155 tokens of a single type to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-1155 token contract
+     * @param tokenId The identifier of the token being transferred
+     * @param value Transfer amount
      */
     depositSingleERC1155Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _value: PromiseOrValue<BigNumberish>,
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<[string]>;
   };
 
   /**
-   * Transfer an ERC-1155 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-   * @param _baseLayerData Additional data to be interpreted by the base layer
-   * @param _dapp The address of the DApp
-   * @param _execLayerData Additional data to be interpreted by the execution layer
-   * @param _token The ERC-1155 token contract
-   * @param _tokenId The identifier of the token being transferred
-   * @param _value Transfer amount
+   * Transfer ERC-1155 tokens of a single type to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+   * @param appContract The application contract address
+   * @param baseLayerData Additional data to be interpreted by the base layer
+   * @param execLayerData Additional data to be interpreted by the execution layer
+   * @param token The ERC-1155 token contract
+   * @param tokenId The identifier of the token being transferred
+   * @param value Transfer amount
    */
   depositSingleERC1155Token(
-    _token: PromiseOrValue<string>,
-    _dapp: PromiseOrValue<string>,
-    _tokenId: PromiseOrValue<BigNumberish>,
-    _value: PromiseOrValue<BigNumberish>,
-    _baseLayerData: PromiseOrValue<BytesLike>,
-    _execLayerData: PromiseOrValue<BytesLike>,
+    token: PromiseOrValue<string>,
+    appContract: PromiseOrValue<string>,
+    tokenId: PromiseOrValue<BigNumberish>,
+    value: PromiseOrValue<BigNumberish>,
+    baseLayerData: PromiseOrValue<BytesLike>,
+    execLayerData: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   /**
-   * Get the input box used by this input relay.
+   * Get the input box used by this portal.
    */
   getInputBox(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     /**
-     * Transfer an ERC-1155 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-1155 token contract
-     * @param _tokenId The identifier of the token being transferred
-     * @param _value Transfer amount
+     * Transfer ERC-1155 tokens of a single type to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-1155 token contract
+     * @param tokenId The identifier of the token being transferred
+     * @param value Transfer amount
      */
     depositSingleERC1155Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _value: PromiseOrValue<BigNumberish>,
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<string>;
   };
@@ -167,52 +167,52 @@ export interface ERC1155SinglePortal extends BaseContract {
 
   estimateGas: {
     /**
-     * Transfer an ERC-1155 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-1155 token contract
-     * @param _tokenId The identifier of the token being transferred
-     * @param _value Transfer amount
+     * Transfer ERC-1155 tokens of a single type to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-1155 token contract
+     * @param tokenId The identifier of the token being transferred
+     * @param value Transfer amount
      */
     depositSingleERC1155Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _value: PromiseOrValue<BigNumberish>,
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     /**
-     * Transfer an ERC-1155 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-1155 token contract
-     * @param _tokenId The identifier of the token being transferred
-     * @param _value Transfer amount
+     * Transfer ERC-1155 tokens of a single type to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-1155 token contract
+     * @param tokenId The identifier of the token being transferred
+     * @param value Transfer amount
      */
     depositSingleERC1155Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _value: PromiseOrValue<BigNumberish>,
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      value: PromiseOrValue<BigNumberish>,
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };

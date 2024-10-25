@@ -4,6 +4,7 @@
 import type {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
   ContractTransaction,
@@ -28,38 +29,81 @@ import type {
 
 export interface IConsensusInterface extends utils.Interface {
   functions: {
-    "getClaim(address,bytes)": FunctionFragment;
-    "join()": FunctionFragment;
+    "getEpochLength()": FunctionFragment;
+    "submitClaim(address,uint256,bytes32)": FunctionFragment;
+    "wasClaimAccepted(address,bytes32)": FunctionFragment;
   };
 
-  getFunction(nameOrSignatureOrTopic: "getClaim" | "join"): FunctionFragment;
+  getFunction(
+    nameOrSignatureOrTopic:
+      | "getEpochLength"
+      | "submitClaim"
+      | "wasClaimAccepted"
+  ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "getClaim",
+    functionFragment: "getEpochLength",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "submitClaim",
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "wasClaimAccepted",
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
-  encodeFunctionData(functionFragment: "join", values?: undefined): string;
 
-  decodeFunctionResult(functionFragment: "getClaim", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "join", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getEpochLength",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "submitClaim",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "wasClaimAccepted",
+    data: BytesLike
+  ): Result;
 
   events: {
-    "ApplicationJoined(address)": EventFragment;
+    "ClaimAcceptance(address,uint256,bytes32)": EventFragment;
+    "ClaimSubmission(address,address,uint256,bytes32)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "ApplicationJoined"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ClaimAcceptance"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ClaimSubmission"): EventFragment;
 }
 
-export interface ApplicationJoinedEventObject {
-  application: string;
+export interface ClaimAcceptanceEventObject {
+  appContract: string;
+  lastProcessedBlockNumber: BigNumber;
+  claim: string;
 }
-export type ApplicationJoinedEvent = TypedEvent<
-  [string],
-  ApplicationJoinedEventObject
+export type ClaimAcceptanceEvent = TypedEvent<
+  [string, BigNumber, string],
+  ClaimAcceptanceEventObject
 >;
 
-export type ApplicationJoinedEventFilter =
-  TypedEventFilter<ApplicationJoinedEvent>;
+export type ClaimAcceptanceEventFilter = TypedEventFilter<ClaimAcceptanceEvent>;
+
+export interface ClaimSubmissionEventObject {
+  submitter: string;
+  appContract: string;
+  lastProcessedBlockNumber: BigNumber;
+  claim: string;
+}
+export type ClaimSubmissionEvent = TypedEvent<
+  [string, string, BigNumber, string],
+  ClaimSubmissionEventObject
+>;
+
+export type ClaimSubmissionEventFilter = TypedEventFilter<ClaimSubmissionEvent>;
 
 export interface IConsensus extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -89,127 +133,190 @@ export interface IConsensus extends BaseContract {
 
   functions: {
     /**
-     * Get a specific claim regarding a specific DApp.         The encoding of `_proofContext` might vary         depending on the implementation.
-     * @param _dapp The DApp address
-     * @param _proofContext Data for retrieving the desired claim
+     * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+     * Get the epoch length, in number of base layer blocks.
      */
-    getClaim(
-      _dapp: PromiseOrValue<string>,
-      _proofContext: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, BigNumber, BigNumber] & {
-        epochHash_: string;
-        firstInputIndex_: BigNumber;
-        lastInputIndex_: BigNumber;
-      }
-    >;
+    getEpochLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     /**
-     * MUST fire an `ApplicationJoined` event with the message sender as argument.
-     * Signal the consensus that the message sender wants to join its validation set.
+     * MUST fire a `ClaimSubmission` event.MAY fire a `ClaimAcceptance` event, if the acceptance criteria is met.
+     * Submit a claim to the consensus.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
+     * @param lastProcessedBlockNumber The number of the last processed block
      */
-    join(
+    submitClaim(
+      appContract: PromiseOrValue<string>,
+      lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+      claim: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    /**
+     * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
+     */
+    wasClaimAccepted(
+      appContract: PromiseOrValue<string>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
   };
 
   /**
-   * Get a specific claim regarding a specific DApp.         The encoding of `_proofContext` might vary         depending on the implementation.
-   * @param _dapp The DApp address
-   * @param _proofContext Data for retrieving the desired claim
+   * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+   * Get the epoch length, in number of base layer blocks.
    */
-  getClaim(
-    _dapp: PromiseOrValue<string>,
-    _proofContext: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<
-    [string, BigNumber, BigNumber] & {
-      epochHash_: string;
-      firstInputIndex_: BigNumber;
-      lastInputIndex_: BigNumber;
-    }
-  >;
+  getEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
 
   /**
-   * MUST fire an `ApplicationJoined` event with the message sender as argument.
-   * Signal the consensus that the message sender wants to join its validation set.
+   * MUST fire a `ClaimSubmission` event.MAY fire a `ClaimAcceptance` event, if the acceptance criteria is met.
+   * Submit a claim to the consensus.
+   * @param appContract The application contract address
+   * @param claim The root of the Merkle tree of outputs
+   * @param lastProcessedBlockNumber The number of the last processed block
    */
-  join(
+  submitClaim(
+    appContract: PromiseOrValue<string>,
+    lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+    claim: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  /**
+   * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+   * @param appContract The application contract address
+   * @param claim The root of the Merkle tree of outputs
+   */
+  wasClaimAccepted(
+    appContract: PromiseOrValue<string>,
+    claim: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   callStatic: {
     /**
-     * Get a specific claim regarding a specific DApp.         The encoding of `_proofContext` might vary         depending on the implementation.
-     * @param _dapp The DApp address
-     * @param _proofContext Data for retrieving the desired claim
+     * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+     * Get the epoch length, in number of base layer blocks.
      */
-    getClaim(
-      _dapp: PromiseOrValue<string>,
-      _proofContext: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, BigNumber, BigNumber] & {
-        epochHash_: string;
-        firstInputIndex_: BigNumber;
-        lastInputIndex_: BigNumber;
-      }
-    >;
+    getEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
 
     /**
-     * MUST fire an `ApplicationJoined` event with the message sender as argument.
-     * Signal the consensus that the message sender wants to join its validation set.
+     * MUST fire a `ClaimSubmission` event.MAY fire a `ClaimAcceptance` event, if the acceptance criteria is met.
+     * Submit a claim to the consensus.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
+     * @param lastProcessedBlockNumber The number of the last processed block
      */
-    join(overrides?: CallOverrides): Promise<void>;
+    submitClaim(
+      appContract: PromiseOrValue<string>,
+      lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    /**
+     * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
+     */
+    wasClaimAccepted(
+      appContract: PromiseOrValue<string>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
   };
 
   filters: {
-    "ApplicationJoined(address)"(
-      application?: null
-    ): ApplicationJoinedEventFilter;
-    ApplicationJoined(application?: null): ApplicationJoinedEventFilter;
+    "ClaimAcceptance(address,uint256,bytes32)"(
+      appContract?: PromiseOrValue<string> | null,
+      lastProcessedBlockNumber?: null,
+      claim?: null
+    ): ClaimAcceptanceEventFilter;
+    ClaimAcceptance(
+      appContract?: PromiseOrValue<string> | null,
+      lastProcessedBlockNumber?: null,
+      claim?: null
+    ): ClaimAcceptanceEventFilter;
+
+    "ClaimSubmission(address,address,uint256,bytes32)"(
+      submitter?: PromiseOrValue<string> | null,
+      appContract?: PromiseOrValue<string> | null,
+      lastProcessedBlockNumber?: null,
+      claim?: null
+    ): ClaimSubmissionEventFilter;
+    ClaimSubmission(
+      submitter?: PromiseOrValue<string> | null,
+      appContract?: PromiseOrValue<string> | null,
+      lastProcessedBlockNumber?: null,
+      claim?: null
+    ): ClaimSubmissionEventFilter;
   };
 
   estimateGas: {
     /**
-     * Get a specific claim regarding a specific DApp.         The encoding of `_proofContext` might vary         depending on the implementation.
-     * @param _dapp The DApp address
-     * @param _proofContext Data for retrieving the desired claim
+     * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+     * Get the epoch length, in number of base layer blocks.
      */
-    getClaim(
-      _dapp: PromiseOrValue<string>,
-      _proofContext: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
+    getEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
+
+    /**
+     * MUST fire a `ClaimSubmission` event.MAY fire a `ClaimAcceptance` event, if the acceptance criteria is met.
+     * Submit a claim to the consensus.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
+     * @param lastProcessedBlockNumber The number of the last processed block
+     */
+    submitClaim(
+      appContract: PromiseOrValue<string>,
+      lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * MUST fire an `ApplicationJoined` event with the message sender as argument.
-     * Signal the consensus that the message sender wants to join its validation set.
+     * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
      */
-    join(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    wasClaimAccepted(
+      appContract: PromiseOrValue<string>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     /**
-     * Get a specific claim regarding a specific DApp.         The encoding of `_proofContext` might vary         depending on the implementation.
-     * @param _dapp The DApp address
-     * @param _proofContext Data for retrieving the desired claim
+     * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+     * Get the epoch length, in number of base layer blocks.
      */
-    getClaim(
-      _dapp: PromiseOrValue<string>,
-      _proofContext: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
+    getEpochLength(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    /**
+     * MUST fire a `ClaimSubmission` event.MAY fire a `ClaimAcceptance` event, if the acceptance criteria is met.
+     * Submit a claim to the consensus.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
+     * @param lastProcessedBlockNumber The number of the last processed block
+     */
+    submitClaim(
+      appContract: PromiseOrValue<string>,
+      lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * MUST fire an `ApplicationJoined` event with the message sender as argument.
-     * Signal the consensus that the message sender wants to join its validation set.
+     * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
      */
-    join(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    wasClaimAccepted(
+      appContract: PromiseOrValue<string>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

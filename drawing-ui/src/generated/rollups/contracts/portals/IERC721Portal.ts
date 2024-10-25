@@ -88,70 +88,70 @@ export interface IERC721Portal extends BaseContract {
 
   functions: {
     /**
-     * Transfer an ERC-721 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-721 token contract
-     * @param _tokenId The identifier of the token being transferred
+     * Transfer an ERC-721 token to an application contract and add an input to the application's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-721 token contract
+     * @param tokenId The identifier of the token being transferred
      */
     depositERC721Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<[string]>;
   };
 
   /**
-   * Transfer an ERC-721 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
-   * @param _baseLayerData Additional data to be interpreted by the base layer
-   * @param _dapp The address of the DApp
-   * @param _execLayerData Additional data to be interpreted by the execution layer
-   * @param _token The ERC-721 token contract
-   * @param _tokenId The identifier of the token being transferred
+   * Transfer an ERC-721 token to an application contract and add an input to the application's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
+   * @param appContract The application contract address
+   * @param baseLayerData Additional data to be interpreted by the base layer
+   * @param execLayerData Additional data to be interpreted by the execution layer
+   * @param token The ERC-721 token contract
+   * @param tokenId The identifier of the token being transferred
    */
   depositERC721Token(
-    _token: PromiseOrValue<string>,
-    _dapp: PromiseOrValue<string>,
-    _tokenId: PromiseOrValue<BigNumberish>,
-    _baseLayerData: PromiseOrValue<BytesLike>,
-    _execLayerData: PromiseOrValue<BytesLike>,
+    token: PromiseOrValue<string>,
+    appContract: PromiseOrValue<string>,
+    tokenId: PromiseOrValue<BigNumberish>,
+    baseLayerData: PromiseOrValue<BytesLike>,
+    execLayerData: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   /**
-   * Get the input box used by this input relay.
+   * Get the input box used by this portal.
    */
   getInputBox(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     /**
-     * Transfer an ERC-721 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-721 token contract
-     * @param _tokenId The identifier of the token being transferred
+     * Transfer an ERC-721 token to an application contract and add an input to the application's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-721 token contract
+     * @param tokenId The identifier of the token being transferred
      */
     depositERC721Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<string>;
   };
@@ -160,48 +160,48 @@ export interface IERC721Portal extends BaseContract {
 
   estimateGas: {
     /**
-     * Transfer an ERC-721 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-721 token contract
-     * @param _tokenId The identifier of the token being transferred
+     * Transfer an ERC-721 token to an application contract and add an input to the application's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-721 token contract
+     * @param tokenId The identifier of the token being transferred
      */
     depositERC721Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     /**
-     * Transfer an ERC-721 token to a DApp and add an input to the DApp's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-721 token contract
-     * @param _tokenId The identifier of the token being transferred
+     * Transfer an ERC-721 token to an application contract and add an input to the application's input box to signal such operation. The caller must change the approved address for the ERC-721 token to the portal address beforehand, by calling the `approve` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-721 token contract
+     * @param tokenId The identifier of the token being transferred
      */
     depositERC721Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenId: PromiseOrValue<BigNumberish>,
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenId: PromiseOrValue<BigNumberish>,
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };
