@@ -64,7 +64,7 @@ export const useDrawing = () => {
     uuid: string,
     drawingMeta: DrawingMeta,
     ercToMint: string,
-    address: string, //dappRelayAddress
+    address: string, //DAppAddress
   ) => {
     // @TODO VoucherMintPayloadType
     let voucherMintPayload: any;

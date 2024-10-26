@@ -31,7 +31,7 @@ const CanvasToMint = () => {
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
   const { sendMintingInput } = useRollups(
-    config[connectedChain.id].DAppRelayAddress,
+    config[connectedChain.id].DAppAddress,
   );
 
   const handleCanvasToMint = async () => {
@@ -82,7 +82,7 @@ const CanvasToMint = () => {
       uuid,
       drawingMeta,
       config[connectedChain.id].ercToMint,
-      config[connectedChain.id].DAppRelayAddress,
+      config[connectedChain.id].DAppAddress,
     );
 
     await sendMintingInput(input);

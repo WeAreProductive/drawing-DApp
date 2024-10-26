@@ -16,7 +16,7 @@ const useGraphQL = () => {
     let url = "";
 
     if (config[connectedChain.id]?.graphqlAPIURL) {
-      url = `${config[connectedChain.id].graphqlAPIURL}/graphql`;
+      url = `${config[connectedChain.id].graphqlAPIURL}`;
     } else {
       console.error(
         `No GraphQL interface defined for chain ${connectedChain.id}`,

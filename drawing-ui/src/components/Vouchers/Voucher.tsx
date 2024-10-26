@@ -17,7 +17,7 @@ import { ETHER_TRANSFER_SELECTOR, MINT_SELECTOR } from "../../shared/constants";
 type VoucherProp = {
   voucherData: VoucherExtended;
   drawing: DrawingInputExtended;
-  selector: string;
+  selector?: string;
 };
 
 const config: { [name: string]: Network } = configFile;
@@ -37,7 +37,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
   const [loading, setLoading] = useState(false);
   if (!connectedChain) return;
   const { contracts, executeVoucher } = useRollups(
-    config[connectedChain.id].DAppRelayAddress,
+    config[connectedChain.id].DAppAddress,
   );
 
   const getProof = async (voucher: VoucherExtended) => {
@@ -75,9 +75,9 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
   useEffect(() => {
     const setVoucher = async (voucher: VoucherExtended) => {
       if (contracts) {
-        voucher.executed = await contracts.dappContract.wasVoucherExecuted(
-          BigNumber.from(voucher.input.index),
+        voucher.executed = await contracts.dappContract.wasOutputExecuted(
           BigNumber.from(voucher.index),
+          voucher,
         );
       }
       setVoucherToExecute(voucher);

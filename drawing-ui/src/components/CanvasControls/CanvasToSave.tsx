@@ -37,7 +37,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
-  const { sendInput } = useRollups(config[connectedChain.id].DAppRelayAddress);
+  const { sendInput } = useRollups(config[connectedChain.id].DAppAddress);
   const { getNoticeInput } = useDrawing();
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;

@@ -5,8 +5,7 @@ import { ConnectedChain } from "@web3-onboard/core";
 
 import {
   InputBox__factory,
-  DAppAddressRelay__factory,
-  CartesiDApp__factory,
+  Application__factory,
   ERC721Portal__factory,
   EtherPortal__factory,
 } from "@cartesi/rollups";
@@ -51,9 +50,9 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       );
       const signer = provider.getSigner();
 
-      let dappRelayAddress = "";
-      if (config[chain.id]?.DAppRelayAddress) {
-        dappRelayAddress = config[chain.id].DAppRelayAddress;
+      let DAppAddress = "";
+      if (config[chain.id]?.DAppAddress) {
+        DAppAddress = config[chain.id].DAppAddress;
       } else {
         console.error(
           `No dapp relay address address defined for chain ${chain.id}`,
@@ -89,12 +88,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         alert(`No box ether portal address defined for chain ${chain.id}`);
       }
       // dapp contract
-      const dappContract = CartesiDApp__factory.connect(dappAddress, signer);
-      // relay contract
-      const relayContract = DAppAddressRelay__factory.connect(
-        dappRelayAddress,
-        signer,
-      );
+      const dappContract = Application__factory.connect(dappAddress, signer);
       // input contract
       const inputContract = InputBox__factory.connect(inputBoxAddress, signer);
       const erc721PortalContract = ERC721Portal__factory.connect(
@@ -109,7 +103,6 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       return {
         dappContract,
         signer,
-        relayContract,
         inputContract,
         erc721PortalContract,
         etherPortalContract,
@@ -145,7 +138,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
     // Send the transaction
     try {
       const tx = await contracts.inputContract.addInput(
-        config[connectedChain.id].DAppRelayAddress,
+        config[connectedChain.id].DAppAddress,
         inputBytes,
       );
       toast.success("Transaction Sent");
@@ -272,7 +265,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
     // Send the transaction
     try {
       const tx = await contracts.inputContract.addInput(
-        config[connectedChain.id].DAppRelayAddress,
+        config[connectedChain.id].DAppAddress,
         inputBytes,
       );
       toast.success("Transaction Sent");
@@ -306,8 +299,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       const newVoucherToExecute = { ...voucher };
 
       try {
-        const tx = await contracts.dappContract.executeVoucher(
-          voucher.destination,
+        const tx = await contracts.dappContract.executeOutput(
           voucher.payload,
           voucher.proof,
         );
@@ -317,7 +309,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
 
         if (receipt.events) {
           const event = receipt.events?.find(
-            (e) => e.event === "VoucherExecuted",
+            (e) => e.event === "OutputExecuted",
           );
 
           if (!event) {
@@ -333,8 +325,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
             };
 
           newVoucherToExecute.executed =
-            await contracts.dappContract.wasVoucherExecuted(
-              BigNumber.from(voucher.input.index),
+            await contracts.dappContract.wasOutputExecuted(
               BigNumber.from(voucher.index),
             );
         }

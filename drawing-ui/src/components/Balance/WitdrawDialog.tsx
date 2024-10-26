@@ -75,7 +75,7 @@ const WithdrawDialog = ({ isOpen }: WithdrawDialogType) => {
   const [{ connectedChain }] = useSetChain();
 
   const dappAddress = connectedChain
-    ? config[connectedChain.id].DAppRelayAddress
+    ? config[connectedChain.id].DAppAddress
     : "";
   const { sendWithdrawInput } = useRollups(dappAddress);
   const [openModal, setOpenModal] = useState(false);

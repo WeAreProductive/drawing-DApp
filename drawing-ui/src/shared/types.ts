@@ -1,11 +1,6 @@
 import { Canvas } from "fabric/fabric-impl";
 import { JsonRpcSigner } from "@ethersproject/providers";
-import {
-  InputBox,
-  DAppAddressRelay,
-  CartesiDApp,
-  ERC721Portal,
-} from "@cartesi/rollups";
+import { InputBox, Application, ERC721Portal } from "@cartesi/rollups";
 import { Dispatch, SetStateAction } from "react";
 import { EtherPortal } from "../generated/rollups";
 
@@ -15,7 +10,7 @@ export type Network = {
   rpcUrl: string;
   graphqlAPIURL: string;
   inspectAPIURL: string;
-  DAppRelayAddress: string;
+  DAppAddress: string;
   InputBoxAddress: string;
   Erc721PortalAddress: string;
   etherPortalAddress: string;
@@ -140,9 +135,8 @@ export type DrawingMeta = {
   canvasDimensions: CanvasDimensions;
 };
 export type RollupsContracts = {
-  dappContract: CartesiDApp;
+  dappContract: Application;
   signer: JsonRpcSigner;
-  relayContract: DAppAddressRelay;
   inputContract: InputBox;
   erc721PortalContract: ERC721Portal;
   etherPortalContract: EtherPortal;
