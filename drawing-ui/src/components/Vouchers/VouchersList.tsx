@@ -11,6 +11,8 @@ import {
 import Voucher from "./Voucher";
 import pako from "pako";
 import { useInspect } from "../../hooks/useInspect";
+import { Outputs__factory } from "@cartesi/rollups";
+import { decodeFunctionData, fromHex } from "viem";
 
 const VouchersList = () => {
   const [connectedWallet] = useWallets();
@@ -133,9 +135,23 @@ const VouchersList = () => {
       if (ownerAddress === currentAccount && MINT_SELECTOR == selector) {
         // drawings data
         drawings = notices.edges.map(({ node }: DataNoticeEdge) => {
-          let payload = node?.payload;
+          let payload_data = node?.payload;
+          let payload: string;
           let compressedData;
-          if (payload) {
+          if (payload_data) {
+            const { args } = decodeFunctionData({
+              abi: Outputs__factory.abi,
+              data: payload_data as `0x${string}`,
+            });
+            payload = args[0];
+            let decoder = new TextDecoder("utf8", { fatal: true });
+            try {
+              payload = decoder.decode(
+                fromHex(payload as `0x${string}`, "bytes"),
+              );
+            } catch (e) {
+              payload = payload + " (hex)";
+            }
             try {
               compressedData = ethers.utils.arrayify(payload);
             } catch (e) {
