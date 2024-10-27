@@ -45,7 +45,6 @@ def get_raw_data(query_args, type, page = 1):
     The query type to execute
   page : integer
     Result offset
-    
   Raises
   ------
     Exception 
@@ -67,8 +66,6 @@ def get_raw_data(query_args, type, page = 1):
         statement = statement + "count(*) OVER() AS total_rows " 
         statement = statement + "FROM drawings d "
         statement = statement + "ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
-        logger.info(f"LIMIT {limit}")
-        logger.info(f"Statement {offset}")
         cursor.execute(statement, [limit, offset]) 
         rows = cursor.fetchall() 
         return rows
@@ -191,13 +188,11 @@ def get_drawings(query_args, type, page):
   
   if data_rows: 
     for row in data_rows:   
-      # @TODO handle data based on query type
       # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at
-      logger.info(f" Drawing row {row}")
       current_drawing = {}
       current_drawing['uuid'] = row['uuid']
       current_drawing['owner'] = row['owner']
-      current_drawing['dimensions'] = row['dimensions'] #@TODO json parse maybe
+      current_drawing['dimensions'] = row['dimensions'] 
       current_drawing['private'] = row['private']
       current_drawing['title'] = row['title']
       current_drawing['description'] = row['description']
@@ -228,7 +223,17 @@ def get_drawings(query_args, type, page):
   return result
 
 def get_data(query_args):
-  """ @TODO Document """
+  """ Entry function for retrieving drawing adata.
+  Parameters
+  ----------
+  query_args : list
+    Parameters to be bind in the query statement.
+  Raises
+  ------
+  Returns
+  -------
+    list : drawings data
+  """
   page = 1 # default value
   # decide which get-data handler to use 
   if query_args[0] == 'drawings':
@@ -242,7 +247,6 @@ def get_data(query_args):
     else:
       # paginated, expects 3 elements in query_args
       # ['drawings', 'page', '1']
-      # @TODO count for has next will depend on grouped uuid
       query_type = 'get_all_drawings' 
       page = int(query_args[2])
   elif query_args[0] == 'drawing':
@@ -253,21 +257,42 @@ def get_data(query_args):
   return drawings
 
 def get_drawing_minting_price( uuid ):
-  """ @TODO Document """
+  """ Drawing minting price getter
+    Parameters
+    ----------
+    uuid : string
+      Drawing uuid
+    Raise
+    ------
+    Returns
+    -------
+      number/float: drawing minting price
+    """
   drawing = get_raw_data(['', '', uuid], 'get_drawing_by_uuid')
-  logger.info(drawing)
   return drawing[0]['minting_price']
 
 def get_drawing_contributors( uuid ):
-  """ @TODO Document """
-  contributors = get_raw_data(uuid, 'get_drawing_contributors')
-  return contributors
-
-def create_drawing(data, timestamp): 
-  """ Executes database insert query statement.
+  """ Get unique drawing contributor addresses
   Parameters
   ----------
-   
+  uuid : string
+    Drawing uuid the contributors are retrieved
+  Raises
+  ------
+  Returns
+  -------
+    list : contributor addresses
+  """
+  contributors = get_raw_data(uuid, 'get_drawing_contributors')
+  return contributors
+def save_data(type, query_args) :
+  """ Executes database insert and update query statement.
+  Parameters
+  ----------
+    type: string
+      The type to select the query statement
+    query_args: dict
+      Query parameters to be bind in the query statement
   Raises
   ------
     Exception 
@@ -276,37 +301,87 @@ def create_drawing(data, timestamp):
   -------
     id: int
     The PK of the row created.
+    or void
   """ 
-  uuid = data['uuid']
-  owner = data['owner']
-  dimensions = json.dumps(data['dimensions']) 
-  
-  created_at = timestamp
-  closed_at = get_closed_at(timestamp) 
-  last_updated = timestamp
-  # user input data
-  private = 0
-  if data['userInputData']['private'] == True:
-    private= 1
-  title = data['userInputData']['title']
-  description = data['userInputData']['description']
-  minting_price = data['userInputData']['mintingPrice'] 
   try: 
     conn = sqlite3.connect(db_filename)
     cursor = conn.cursor() 
-   
-    cursor.execute(
-        """
-        INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-        (uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated),
-    )
 
-    conn.commit()
+    match type:
+      case "create_drawing": 
+        # "data": data, "timestamp": timestamp}
+        data = query_args['data']
+        uuid = data['uuid']
+        owner = data['owner']
+        dimensions = json.dumps(data['dimensions']) 
+        # user input data
+        private = 0
+        if data['userInputData']['private'] == True:
+          private= 1
+        title = data['userInputData']['title']
+        description = data['userInputData']['description']
+        minting_price = data['userInputData']['mintingPrice'] 
+        #
+        timestamp = query_args['timestamp']
+        created_at = timestamp
+        closed_at = get_closed_at(timestamp) 
+        last_updated = timestamp
+        cursor.execute(
+            """
+            INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated),
+        )
 
-    id = cursor.lastrowid
-    return id
+        conn.commit()
+        id = cursor.lastrowid
+        return id
+      case "store_drawing_layer":
+        # {"id": id, "sender": sender, "data": data, "timestamp": timestamp}
+        data = query_args['data']
+        parsed_drawing = json.loads(data['drawing'])
+        content = json.dumps(parsed_drawing['content'])
+        dimensions = json.dumps(data['dimensions']) 
+        now = query_args['timestamp']
+        sender = query_args['sender']
+        id = query_args['id']
+
+        cursor.execute(
+          """
+          INSERT INTO layers(painter, drawing_objects, dimensions, drawing_id)
+          VALUES (?, ?, ?, ?)
+          """,
+          (sender, content, dimensions, id),
+        )
+        cursor.execute(
+          """
+            UPDATE drawings
+            SET last_updated = ?
+            WHERE
+            id = ?
+            LIMIT 1;
+            """,
+            (now, id),
+        )
+
+        conn.commit()
+        id = cursor.lastrowid
+        return id
+      case "store_minting_voucher_data":
+        # {"id":data, "sender": sender, "timestamp": timestamp}
+        id = query_args['id'] 
+        sender = query_args['sender']
+        timestamp = query_args['timestamp']
+        cursor.execute(
+          """
+          INSERT INTO mints(minter, created_at, drawing_id)
+          VALUES (?, ?, ?)
+          """,
+          (sender, timestamp, id),
+        )
+        conn.commit()
+        return
 
   except Exception as e: 
     msg = f"Error executing insert statement: {e}" 
@@ -315,68 +390,7 @@ def create_drawing(data, timestamp):
     if conn:
       conn.close()
 
-def store_drawing_layer(id, sender, data, timestamp):
-  parsed_drawing = json.loads(data['drawing'])
-  content = json.dumps(parsed_drawing['content'])
-  dimensions = json.dumps(data['dimensions']) 
-  now = timestamp
 
-  try: 
-    conn = sqlite3.connect(db_filename)
-    cursor = conn.cursor() 
-    
-    cursor.execute(
-        """
-        INSERT INTO layers(painter, drawing_objects, dimensions, drawing_id)
-        VALUES (?, ?, ?, ?)
-        """,
-        (sender, content, dimensions, id),
-    )
-    cursor.execute(
-       """
-        UPDATE drawings
-        SET last_updated = ?
-        WHERE
-        id = ?
-        LIMIT 1;
-        """,
-        (now, id),
-    )
-
-    conn.commit()
-
-    id = cursor.lastrowid
-    return id
-
-  except Exception as e: 
-    msg = f"Error executing insert statement: {e}" 
-    logger.info(f"{msg}")
-  finally:
-    if conn:
-      conn.close()
-
-def store_monting_voucher_data(id, sender, timestamp): 
-
-  try: 
-    conn = sqlite3.connect(db_filename)
-    cursor = conn.cursor() 
-    
-    cursor.execute(
-        """
-        INSERT INTO mints(minter, created_at, drawing_id)
-        VALUES (?, ?, ?)
-        """,
-        (sender, timestamp, id),
-    )
-
-    conn.commit()
-
-  except Exception as e: 
-    msg = f"Error executing insert statement: {e}" 
-    logger.info(f"{msg}")
-  finally:
-    if conn:
-      conn.close()
 
 def store_data(cmd, timestamp, sender, data): 
   """ Routes dra.
@@ -389,21 +403,21 @@ def store_data(cmd, timestamp, sender, data):
       If error arises while execiting the database statement.
   Returns
   -------
-  
+    void
   """
   # prepare data
   if cmd == 'cd' : 
     logger.info(f"Create drawing") 
-    id = create_drawing(data, timestamp)
-    store_drawing_layer(id, sender, data, timestamp) 
+    id = save_data('create_drawing',{"data": data, "timestamp": timestamp})
+    save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}) 
   elif cmd == 'ud' :
     logger.info(f"Update drawing") 
     uuid = data['uuid']
     row = get_raw_data(uuid, 'get_drawing_id')
     logger.info(f"ID {row['id']}")
     id = row['id']
-    store_drawing_layer(id, sender, data, timestamp) 
+    save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}) 
   elif cmd == 'v-d-nft':
     logger.info(f"Store minting-voucher data") 
-    id = data
-    store_monting_voucher_data(id, sender, timestamp) 
+    save_data("store_minting_voucher_data", {"id":data, "sender": sender, "timestamp": timestamp}) 
+
