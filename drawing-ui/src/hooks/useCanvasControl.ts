@@ -25,8 +25,6 @@ export const useCanvasControls = () => {
   }, [currentDrawingData?.owner]);
   useEffect(() => {
     const unixTimestamp = Math.floor(Date.now() / 1000);
-    console.log({ unixTimestamp });
-    console.log(currentDrawingData?.closed_at);
     let shouldCloseDrawing = false;
     if (currentDrawingData?.closed_at >= unixTimestamp) {
       shouldCloseDrawing = true;

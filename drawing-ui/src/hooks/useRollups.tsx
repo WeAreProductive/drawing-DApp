@@ -234,6 +234,8 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setLoading(false);
+      console.log({ receipt });
+      // @TODO handle tx success differently
       if (event?.args?.inputIndex) {
         // clearCanvas(); // manages the dApp state
         toast.success("Transaction Confirmed", {
@@ -308,7 +310,6 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         const receipt = await tx.wait();
 
         newVoucherToExecute.msg = `Minting executed! (tx="${tx.hash}")`;
-
         if (receipt.events) {
           const event = receipt.events?.find(
             (e) => e.event === "VoucherExecuted",
@@ -319,10 +320,11 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
               `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`,
             );
           }
-
-          if (receipt.events.length > 2)
+          if (receipt.events.length > 1)
             newVoucherToExecute.events = {
-              address: receipt.events[1].address,
+              // the smart contrac to mint the nft is not in the receipt anymore
+              // since we're using different portal when minting, not the input box
+              address: config.connectedChain.ercToMint,
               nft_id: BigInt(receipt.events[1].data).toString(),
             };
 
