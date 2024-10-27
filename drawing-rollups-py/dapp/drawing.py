@@ -35,45 +35,38 @@ def decode_json(b):
 ##
 # Core functions 
 
-def mint_erc721_with_string( msg_sender, data ):
-    """ Prepares and requests a MINT NFT voucher.
-        Triggers the execution of the next function that 
-        emmits a notice with the voucher's drawing data.
+def mint_erc721_with_string( msg_sender, data, timestamp ):
+    """ Entry function for -
+            - preparing data for and requests a MINT NFT voucher.
+            - updating drawing contributors balances
+            - preparing data for and emitting a notice
+            - storing minting statistics
     Parameters
     ----------
     msg_sender : str
-    uuid : str
-    erc721_to_mint : str
-        The NFT's smart contract address
-    mint_header : str
-    imageIPFSMeta : str
-    imageBase64 : str
-    drawing_input : str
-    cmd : str
+    data : drawing related data
+    timestamp : outside cartesi macine's request timestamp
+    
     Raises
     ------
+        Exepruion ...
     Returns
     -------
+        void
     """
     logger.info(f"Preparing a VOUCHER for MINTING AN NFT {data}")
-
-    #1 sender should've transfered the minting price 
-    # from its to the wallet virtual instance
-    # in FE
     # check sender wallet virtual/portal deposited balance ...
     minter_eth_balance = wallet.balance_get(msg_sender)  
-    ether_balance = minter_eth_balance.ether_get()
-    # ether_balance = minter_eth_balance.ether_get()
+    ether_balance = minter_eth_balance.ether_get() 
     logger.info(f"Minter balance {ether_balance}")
     minting_price = get_drawing_minting_price(data['uuid'])
-    # contributors = get_drawing_contributors( data['uuid'] ) # list of obj, to access a contributor - iterate and call c['painter']
     parsed_price = to_wei(minting_price, 'ether')
     logger.info(f"Parsed price {parsed_price}")
+
     if parsed_price <= ether_balance : 
         update_creators_balance( data['uuid'], msg_sender, wallet, parsed_price )
         mint_header = clean_header( '0xd0def521' )
-        # mint_header = clean_header( data["selector"] )
-        
+        # mint_header = clean_header( data["selector"] )    
         imageIpfs = data["imageIPFSMeta"]
         data_for_payload = encode(['address', 'string'], [msg_sender, imageIpfs])
         payload = f"0x{(mint_header+data_for_payload).hex()}"
@@ -88,6 +81,7 @@ def mint_erc721_with_string( msg_sender, data ):
         payload = binary2hex(compressed) 
         notice = {"payload": payload}
         send_notice( notice ) 
+        store_data(data['cmd'], timestamp, msg_sender, data['uuid'])
     else :
         raise Exception('Not enough balance to execute the operation')
     
@@ -160,7 +154,7 @@ def handle_advance(data):
     try:
         if sender == ether_portal_address.lower() : 
             payload = data["payload"]
-            msg_sender = payload[:42]  
+            msg_sender = payload[:42] # TODO is equal to sender? sender = data["metadata"]["msg_sender"].lower() 
             logger.info(f"Address {msg_sender}")
             input_data_1 = payload[42:104]
             logger.info(f"input_data 1 {input_data_1}")  
@@ -170,7 +164,7 @@ def handle_advance(data):
                 logger.info(f"input 2 {input_data_2}")
                 str_data = hex_to_str(input_data_2) 
                 json_data = json.loads(str_data) 
-                mint_erc721_with_string( msg_sender, json_data )
+                mint_erc721_with_string( msg_sender, json_data, timestamp )
         else :
             payload = data["payload"]
             decompressed_payload = decompress(payload)

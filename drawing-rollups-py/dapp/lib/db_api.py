@@ -355,6 +355,29 @@ def store_drawing_layer(id, sender, data, timestamp):
     if conn:
       conn.close()
 
+def store_monting_voucher_data(id, sender, timestamp): 
+
+  try: 
+    conn = sqlite3.connect(db_filename)
+    cursor = conn.cursor() 
+    
+    cursor.execute(
+        """
+        INSERT INTO mints(minter, created_at, drawing_id)
+        VALUES (?, ?, ?)
+        """,
+        (sender, timestamp, id),
+    )
+
+    conn.commit()
+
+  except Exception as e: 
+    msg = f"Error executing insert statement: {e}" 
+    logger.info(f"{msg}")
+  finally:
+    if conn:
+      conn.close()
+
 def store_data(cmd, timestamp, sender, data): 
   """ Routes dra.
   Parameters
@@ -372,12 +395,15 @@ def store_data(cmd, timestamp, sender, data):
   if cmd == 'cd' : 
     logger.info(f"Create drawing") 
     id = create_drawing(data, timestamp)
-    
+    store_drawing_layer(id, sender, data, timestamp) 
   elif cmd == 'ud' :
     logger.info(f"Update drawing") 
     uuid = data['uuid']
     row = get_raw_data(uuid, 'get_drawing_id')
     logger.info(f"ID {row['id']}")
     id = row['id']
-  
-  store_drawing_layer(id, sender, data, timestamp) 
+    store_drawing_layer(id, sender, data, timestamp) 
+  elif cmd == 'v-d-nft':
+    logger.info(f"Store minting-voucher data") 
+    id = data
+    store_monting_voucher_data(id, sender, timestamp) 
