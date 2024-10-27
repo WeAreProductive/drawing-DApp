@@ -10,11 +10,14 @@ export type Network = {
   rpcUrl: string;
   graphqlAPIURL: string;
   inspectAPIURL: string;
+  nonceAPIURL: string;
+  inputSubmitAPIURL: string;
   DAppAddress: string;
   InputBoxAddress: string;
   Erc721PortalAddress: string;
   etherPortalAddress: string;
   ercToMint: string;
+  verifyingContract: string;
 };
 
 export type CanvasLimitations = {

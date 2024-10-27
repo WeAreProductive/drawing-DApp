@@ -3990,6 +3990,15 @@
     "@walletconnect/ethereum-provider" "2.17.0"
     cbw-sdk "npm:@coinbase/wallet-sdk@3.9.3"
 
+"@wagmi/core@2.10.4":
+  version "2.10.4"
+  resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-2.10.4.tgz#13113dc5a9817e731671cb7cb457f2571e98aa24"
+  integrity sha512-X/PW4zckkSQ/y4LwkQ5cwLKv551I6kVorH3VsTQghxYt0Vj9K5/XhCCRQg5Q200u6fiUCJ+2WjpmhZu3XYNU9w==
+  dependencies:
+    eventemitter3 "5.0.1"
+    mipd "0.0.5"
+    zustand "4.4.1"
+
 "@wagmi/core@2.14.1":
   version "2.14.1"
   resolved "https://registry.yarnpkg.com/@wagmi/core/-/core-2.14.1.tgz#e6adb8a350cfd7be4ea9c5581768f951c60127de"
@@ -4305,6 +4314,17 @@
     "@web3-onboard/core" "2.23.0"
     use-sync-external-store "1.0.0"
 
+"@web3-onboard/wagmi@^2.0.1":
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/@web3-onboard/wagmi/-/wagmi-2.0.1.tgz#283bbac7aa8817a91aadeb8ee23f5b1cdeae8080"
+  integrity sha512-j/WQ85MaMJzf0MbRMlPh/7xt72u7F6dUifhwjnlr6yWtl56PB5fNgc/LLD0ax923Zd0cRujUvkw4LW8OtRUxbg==
+  dependencies:
+    "@wagmi/core" "2.10.4"
+    "@web3-onboard/common" "^2.4.1"
+    eventemitter3 "^4.0.7"
+    joi "17.9.1"
+    viem "2.12.0"
+
 "@whatwg-node/fetch@^0.9.0", "@whatwg-node/fetch@^0.9.20":
   version "0.9.22"
   resolved "https://registry.yarnpkg.com/@whatwg-node/fetch/-/fetch-0.9.22.tgz#391000e8b9191364d93583477865c02a56e1eaed"
@@ -4372,6 +4392,11 @@ abbrev@1.0.x:
   version "1.0.9"
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.0.9.tgz#91b4792588a7738c25f35dd6f63752a2f8776135"
   integrity sha512-LEyx4aLEC3x6T0UguF6YILf+ntvmOaWsVfENmIW0E9H09vKlLDGelMjjSm0jkDHALj8A8quZ/HapKNigzwge+Q==
+
+abitype@0.9.8:
+  version "0.9.8"
+  resolved "https://registry.yarnpkg.com/abitype/-/abitype-0.9.8.tgz#1f120b6b717459deafd213dfbf3a3dd1bf10ae8c"
+  integrity sha512-puLifILdm+8sjyss4S+fsUN09obiT1g2YW6CtcQF+QDzxR0euzgEB29MZujC6zMk2a6SVmtttq1fc6+YFA7WYQ==
 
 abitype@1.0.0:
   version "1.0.0"
@@ -8386,6 +8411,11 @@ isomorphic-ws@^5.0.0:
   resolved "https://registry.yarnpkg.com/isomorphic-ws/-/isomorphic-ws-5.0.0.tgz#e5529148912ecb9b451b46ed44d53dae1ce04bbf"
   integrity sha512-muId7Zzn9ywDsyXgTIafTry2sV3nySZeUDe6YedVd1Hvuuep5AsIlqK+XefWpYTyJG5e503F2xIuT2lcU6rCSw==
 
+isows@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/isows/-/isows-1.0.3.tgz#93c1cf0575daf56e7120bab5c8c448b0809d0d74"
+  integrity sha512-2cKei4vlmg2cxEjm3wVSqn8pcoRF/LX/wpifuuNquFO4SQmPwarClT+SUCA2lt+l581tTeZIPIZuIDo2jWN1fg==
+
 isows@1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/isows/-/isows-1.0.4.tgz#810cd0d90cc4995c26395d2aa4cfa4037ebdf061"
@@ -9089,6 +9119,13 @@ minizlib@^2.1.1:
   dependencies:
     minipass "^3.0.0"
     yallist "^4.0.0"
+
+mipd@0.0.5:
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/mipd/-/mipd-0.0.5.tgz#367ee796531c23f0631f129038700b1406663aec"
+  integrity sha512-gbKA784D2WKb5H/GtqEv+Ofd1S9Zj+Z/PGDIl1u1QAbswkxD28BQ5bSXQxkeBzPBABg1iDSbiwGG1XqlOxRspA==
+  dependencies:
+    viem "^1.1.4"
 
 mipd@0.0.7:
   version "0.0.7"
@@ -12347,6 +12384,20 @@ viem@2.12.0:
     isows "1.0.4"
     ws "8.13.0"
 
+viem@^1.1.4:
+  version "1.21.4"
+  resolved "https://registry.yarnpkg.com/viem/-/viem-1.21.4.tgz#883760e9222540a5a7e0339809202b45fe6a842d"
+  integrity sha512-BNVYdSaUjeS2zKQgPs+49e5JKocfo60Ib2yiXOWBT6LuVxY1I/6fFX3waEtpXvL1Xn4qu+BVitVtMh9lyThyhQ==
+  dependencies:
+    "@adraffy/ens-normalize" "1.10.0"
+    "@noble/curves" "1.2.0"
+    "@noble/hashes" "1.3.2"
+    "@scure/bip32" "1.3.2"
+    "@scure/bip39" "1.2.1"
+    abitype "0.9.8"
+    isows "1.0.3"
+    ws "8.13.0"
+
 viem@^2.1.1, viem@^2.21.25:
   version "2.21.35"
   resolved "https://registry.yarnpkg.com/viem/-/viem-2.21.35.tgz#418782906554b6409082aa2ccb5f27c77abdf1b1"
@@ -12816,6 +12867,13 @@ zksync-web3@^0.14.3:
   version "0.14.4"
   resolved "https://registry.yarnpkg.com/zksync-web3/-/zksync-web3-0.14.4.tgz#0b70a7e1a9d45cc57c0971736079185746d46b1f"
   integrity sha512-kYehMD/S6Uhe1g434UnaMN+sBr9nQm23Ywn0EUP5BfQCsbjcr3ORuS68PosZw8xUTu3pac7G6YMSnNHk+fwzvg==
+
+zustand@4.4.1:
+  version "4.4.1"
+  resolved "https://registry.yarnpkg.com/zustand/-/zustand-4.4.1.tgz#0cd3a3e4756f21811bd956418fdc686877e8b3b0"
+  integrity sha512-QCPfstAS4EBiTQzlaGP1gmorkh/UL1Leaj2tdj+zZCZ/9bm0WS7sI2wnfD5lpOszFqWJ1DcPnGoY8RDL61uokw==
+  dependencies:
+    use-sync-external-store "1.2.0"
 
 zustand@5.0.0:
   version "5.0.0"
