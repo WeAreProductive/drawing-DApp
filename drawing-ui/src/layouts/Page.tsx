@@ -1,5 +1,6 @@
 import { init, useConnectWallet, useSetChain } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
+import wagmi from "@web3-onboard/wagmi";
 import NetworkConnect from "../components/NetworkConnect";
 import blocknativeIcon from "../icons/blocknative-icon";
 
@@ -19,6 +20,7 @@ init({
   connect: {
     autoConnectAllPreviousWallet: true,
   },
+  wagmi,
   wallets: [injected],
   chains: Object.entries(config).map(([k, v], i) => ({
     id: k,

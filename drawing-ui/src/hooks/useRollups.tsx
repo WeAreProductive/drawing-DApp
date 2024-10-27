@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { ethers, BigNumber } from "ethers";
-import { useSetChain, useWallets } from "@web3-onboard/react";
+import { toHex } from "viem";
+import { useSetChain, useWallets, useWagmiConfig } from "@web3-onboard/react";
 import { ConnectedChain } from "@web3-onboard/core";
+import { signTypedData } from "@web3-onboard/wagmi";
 
 import {
   InputBox__factory,
@@ -24,6 +26,7 @@ import { useCanvasContext } from "../context/CanvasContext";
 
 import configFile from "../config/config.json";
 import { DAPP_STATE } from "../shared/constants";
+import { Account } from "@web3-onboard/core/dist/types";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -31,7 +34,9 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
   const [contracts, setContracts] = useState<RollupsContracts | undefined>();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
-  const [account, setAccount] = useState("0x");
+  const wagmiConfig = useWagmiConfig();
+  const [account, setAccount] = useState<`0x${string}` | undefined>("0x");
+  const [cartesiTxId, setCartesiTxId] = useState<string>("");
 
   const [dappAddress] = useState<string>(dAddress);
 
@@ -43,6 +48,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
     currentDrawingLayer,
     setCurrentDrawingData,
   } = useCanvasContext();
+
   useEffect(() => {
     const connect = async (chain: ConnectedChain) => {
       const provider = new ethers.providers.Web3Provider(
@@ -116,16 +122,88 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       }
     }
   }, [connectedWallet, connectedChain, dappAddress]);
+
   useEffect(() => {
     if (!connectedWallet) return;
     setAccount(connectedWallet.accounts[0].address);
   }, [connectedWallet]);
+
+  const fetchNonceL2 = async (user: any) => {
+    if (!connectedChain) {
+      return null;
+    }
+
+    const response = await fetch(config[connectedChain.id].nonceAPIURL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        msg_sender: user as `0x${string}`,
+        app_contract: dappAddress as `0x${string}`,
+      }),
+    });
+
+    const responseData = await response.json();
+    return responseData.nonce;
+  };
+
+  const submitTransactionL2 = async (fullBody: any) => {
+    if (!connectedChain) {
+      return null;
+    }
+
+    const body = JSON.stringify(fullBody);
+    const response = await fetch(config[connectedChain.id].inputSubmitAPIURL, {
+      method: "POST",
+      body,
+      headers: { "Content-Type": "application/json" },
+    });
+    if (!response.ok) {
+      console.log("submit to L2 failed");
+      throw new Error("submit to L2 failed: " + response.text());
+    } else {
+      return response.json();
+    }
+  };
+
   const sendInput = async (
     strInput: string,
     initDrawingData: DrawingInitialData | null,
   ) => {
-    if (!contracts) return;
+    if (!contracts || !connectedChain || !account || !wagmiConfig) return;
     toast.info("Sending input to rollups...");
+
+    let typedData = {
+      domain: {
+        name: "Cartesi",
+        version: "0.1.0",
+        chainId: BigInt(parseInt(connectedChain.id.substring(2) ?? "0", 16)),
+        verifyingContract: config[connectedChain.id]
+          .verifyingContract as `0x${string}`,
+      } as const,
+      types: {
+        EIP712Domain: [
+          { name: "name", type: "string" },
+          { name: "version", type: "string" },
+          { name: "chainId", type: "uint256" },
+          { name: "verifyingContract", type: "address" },
+        ],
+        CartesiMessage: [
+          { name: "app", type: "address" },
+          { name: "nonce", type: "uint64" },
+          { name: "max_gas_price", type: "uint128" },
+          { name: "data", type: "bytes" },
+        ],
+      } as const,
+      primaryType: "CartesiMessage" as const,
+      message: {
+        app: "0x" as `0x${string}`,
+        nonce: BigInt(0),
+        data: "0x" as `0x${string}`,
+        max_gas_price: BigInt(10),
+      },
+    };
 
     const compressedStr = pako.deflate(strInput);
 
@@ -135,56 +213,83 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       : ethers.utils.toUtf8Bytes(compressedStr);
 
     if (!connectedChain) return;
+
     // Send the transaction
     try {
-      const tx = await contracts.inputContract.addInput(
-        config[connectedChain.id].DAppAddress,
-        inputBytes,
-      );
-      toast.success("Transaction Sent");
-      // Wait for confirmation
-      const receipt = await tx.wait(1);
+      const nonce = await fetchNonceL2(account);
 
-      // Search for the InputAdded event
-      const event = receipt.events?.find((e) => e.event === "InputAdded");
-      setLoading(false);
-      if (event?.args?.inputIndex) {
-        // clearCanvas(); // manages the dApp state
-        toast.success("Transaction Confirmed", {
-          description: `Input added => index: ${event?.args?.inputIndex} `,
+      console.log("Nonde: ", nonce);
+
+      typedData.message = {
+        app: dappAddress as `0x${string}`,
+        nonce: nonce,
+        data: toHex(inputBytes),
+        max_gas_price: BigInt(10),
+      };
+
+      console.log("TData:", typedData);
+
+      try {
+        setCartesiTxId("");
+
+        const signature = await signTypedData(wagmiConfig, {
+          account,
+          ...typedData,
         });
-        setDappState(DAPP_STATE.refetchDrawings); // @TODO this state update is not correct anymore
-        if (currentDrawingData) {
-          const newLogItem = {
-            drawing_objects: JSON.stringify(currentDrawingLayer),
-            painter: account,
-            dimensions: JSON.stringify({
-              width: canvas?.width || 0, // ?? @TODO get from current drawing layer ...
-              height: canvas?.height || 0,
-            }),
-          };
-          if (currentDrawingData?.update_log) {
-            const log = [...currentDrawingData?.update_log, newLogItem];
 
-            setCurrentDrawingData({
-              ...currentDrawingData,
-              update_log: log,
-            });
-          }
-        } else {
-          // init currentDrawingData, @TODO observe
-          setCurrentDrawingData(initDrawingData);
-          window.history.replaceState(
-            null,
-            "Page Title",
-            `/drawing/${initDrawingData?.uuid}`,
-          );
-        }
-      } else {
-        toast.error("Transaction Error 1", {
-          description: `Input not added => index: ${event?.args?.inputIndex} `,
+        const l2data = JSON.parse(
+          JSON.stringify(
+            {
+              typedData,
+              account,
+              signature,
+            },
+            (_, value) =>
+              typeof value === "bigint" ? parseInt(value.toString()) : value, // return everything else unchanged
+          ),
+        );
+
+        const res = await submitTransactionL2(l2data);
+
+        setCartesiTxId(res.id);
+        toast.success("Transaction Sent");
+      } catch (e) {
+        console.log(`${e}`);
+        toast.error("Transaction Error!", {
+          description: `Input not added => ${e}`,
         });
       }
+
+      setLoading(false);
+
+      setDappState(DAPP_STATE.refetchDrawings); // @TODO this state update is not correct anymore
+      if (currentDrawingData) {
+        const newLogItem = {
+          drawing_objects: JSON.stringify(currentDrawingLayer),
+          painter: account,
+          dimensions: JSON.stringify({
+            width: canvas?.width || 0, // ?? @TODO get from current drawing layer ...
+            height: canvas?.height || 0,
+          }),
+        };
+        if (currentDrawingData?.update_log) {
+          const log = [...currentDrawingData?.update_log, newLogItem];
+
+          setCurrentDrawingData({
+            ...currentDrawingData,
+            update_log: log,
+          });
+        }
+      } else {
+        // init currentDrawingData, @TODO observe
+        setCurrentDrawingData(initDrawingData);
+        window.history.replaceState(
+          null,
+          "Page Title",
+          `/drawing/${initDrawingData?.uuid}`,
+        );
+      }
+
       if (canvas) {
         if (!canvas.isDrawingMode) {
           canvas.isDrawingMode = true;
@@ -201,6 +306,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       setLoading(false);
     }
   };
+
   const sendMintingInput = async (inputData: {
     address: string;
     data: string;
@@ -252,6 +358,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       setLoading(false);
     }
   };
+
   const sendWithdrawInput = async (input: string) => {
     if (!contracts) return;
     toast.info("Sending input to rollups...");
@@ -294,6 +401,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       setLoading(false);
     }
   };
+
   const executeVoucher = async (voucher: VoucherExtended) => {
     if (contracts && !!voucher.proof) {
       const newVoucherToExecute = { ...voucher };
@@ -344,6 +452,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       return newVoucherToExecute;
     }
   };
+
   return {
     contracts,
     sendInput,
