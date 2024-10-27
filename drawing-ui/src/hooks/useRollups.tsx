@@ -127,6 +127,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
     if (!connectedWallet) return;
     setAccount(connectedWallet.accounts[0].address);
   }, [connectedWallet]);
+
   const sendInput = async (
     strInput: string,
     initDrawingData: DrawingInitialData | null,
@@ -243,13 +244,6 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
           description: `Input not added => index: ${event?.args?.inputIndex} `,
         });
       }
-      // if (canvas) {
-      //   if (!canvas.isDrawingMode) {
-      //     canvas.isDrawingMode = true;
-      //     canvas.discardActiveObject();
-      //     canvas.renderAll();
-      //   }
-      // }
     } catch (e: any) {
       const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
       toast.error("Transaction Error", {

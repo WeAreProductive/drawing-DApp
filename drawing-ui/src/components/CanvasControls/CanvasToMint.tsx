@@ -43,29 +43,6 @@ const CanvasToMint = () => {
     setDappState(DAPP_STATE.voucherRequest);
 
     const canvasContent = canvas.toJSON(); // or canvas.toObject()
-    // validate before sending the tx @TODO different validation
-
-    // !!!! extracts the !!! currents session !!!! drawing objects using the old and current drawing data
-    // const currentDrawingLayerObjects = prepareDrawingObjectsArrays(
-    //   currentDrawingData,
-    //   canvasContent.objects,
-    // ); // extracts the currents session drawing objects using the old and current drawing data
-    // let canvasData = {
-    //   // svg: base64_encode(canvasSVG), // for validation before minting
-    //   content: currentDrawingLayerObjects,
-    //   // @TODO uuid is missing from validation
-    // };
-
-    // const result = validateInputSize(JSON.stringify(canvasData));
-
-    // if (!result.isValid) {
-    //   toast.error(result.info.message, {
-    //     description: result.info.description,
-    //   });
-    //   setLoading(false);
-    //   return;
-    // }
-
     const canvasDimensions = {
       width: canvas?.width || 0,
       height: canvas?.height || 0,
