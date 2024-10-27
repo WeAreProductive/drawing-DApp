@@ -154,7 +154,7 @@ def handle_advance(data):
     status = "accept"
     payload = None
     sender = data["metadata"]["msg_sender"].lower() 
-    timestamp = data["metadata"]['timestamp'] # outside of the cartesi machine timestamp
+    timestamp = data["metadata"]['block_timestamp'] # outside of the cartesi machine timestamp
     logger.info(f"METADATA {data['metadata']}")
     logger.info(f"METADATA {data}") 
     try:
