@@ -306,6 +306,7 @@ def create_drawing(data, timestamp):
     conn.commit()
 
     id = cursor.lastrowid
+    logger.info(f"Drawing Created #{id}") 
     return id
 
   except Exception as e: 
@@ -320,6 +321,8 @@ def store_drawing_layer(id, sender, data, timestamp):
   content = json.dumps(parsed_drawing['content'])
   dimensions = json.dumps(data['dimensions']) 
   now = timestamp
+
+  logger.info(f"Storing Drawing #{id} Layer: Sender {sender}, Drawing objects: {content}, Dimensions {dimensions}") 
 
   try: 
     conn = sqlite3.connect(db_filename)
@@ -338,7 +341,6 @@ def store_drawing_layer(id, sender, data, timestamp):
         SET last_updated = ?
         WHERE
         id = ?
-        LIMIT 1;
         """,
         (now, id),
     )
