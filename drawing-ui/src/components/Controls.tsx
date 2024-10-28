@@ -82,7 +82,20 @@ const Controls = () => {
 
   return (
     <div className="flex flex-col">
-      <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
+      {currentDrawingData && currentDrawingData.title && (
+        <div className="mb-6">
+          <h1 className="mb-2 text-xl font-semibold">
+            <span className="mr-4 rounded-lg bg-slate-200 px-2 py-1 text-xs font-normal">
+              {currentDrawingData.private ? "private" : "public"}
+            </span>
+            {currentDrawingData.title}
+          </h1>
+          <p className="text-sm text-gray-500">
+            {currentDrawingData.description}
+          </p>
+        </div>
+      )}
+      <div className="flex flex-col items-center gap-4 lg:flex-row">
         {isActiveControl && !drawingIsClosed && (
           <>
             <DrawingControls />

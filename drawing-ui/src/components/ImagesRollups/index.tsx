@@ -16,9 +16,7 @@ const ImagesListRollups = () => {
           </ScrollArea>
         </TabsContent>
         <TabsContent value="password" className="flex">
-          <ScrollArea className="max-h-[calc(100svh-var(--header-height)-120px)]">
-            <DrawingsList drawingsType="all" />
-          </ScrollArea>
+          <DrawingsList drawingsType="all" />
         </TabsContent>
       </Tabs>
     </div>

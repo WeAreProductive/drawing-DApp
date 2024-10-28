@@ -85,6 +85,8 @@ export interface DrawingInput {
 export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   uuid: string;
   owner: `0x${string}`; //last painter's account
+  title?: string;
+  description?: string;
   update_log: any; //@TODO typing?!
   voucher_requested?: boolean;
   date_created?: string; // date-time string
@@ -104,6 +106,9 @@ export type DrawingUserInput = {
 export type DrawingInitialData = {
   uuid: string;
   owner: string;
+  title?: string;
+  private?: 0 | 1;
+  description?: string;
   dimensions: string;
   update_log: UpdateLog;
   userInputData: DrawingUserInput;
