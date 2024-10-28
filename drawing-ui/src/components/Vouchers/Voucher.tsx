@@ -59,7 +59,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
     switch (data.selector) {
       case MINT_SELECTOR:
         return drawing ? (
-          <div className="w-1/2 p-2">
+          <div className="w-1/2 border p-2">
             <CanvasSnapshotLight data={drawing} />
           </div>
         ) : (
