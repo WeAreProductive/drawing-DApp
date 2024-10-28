@@ -1,52 +1,19 @@
 import gql from "graphql-tag";
 import * as Urql from "urql";
 import { VouchersQuery, VouchersQueryVariables } from "../generated/graphql";
-// export const VouchersWithProofDocument = gql`
-//   query vouchers($cursor: String) {
-//     vouchers(first: 10, after: $cursor) {
-//       totalCount
-//       pageInfo {
-//         hasNextPage
-//         endCursor
-//       }
-//       edges {
-//         node {
-//           index
-//           input {
-//             index
-//             notices {
-//               edges {
-//                 node {
-//                   payload
-//                 }
-//               }
-//             }
-//           }
-//           destination
-//           payload
-//           proof {
-//             validity {
-//               inputIndexWithinEpoch
-//               outputIndexWithinInput
-//               outputHashesRootHash
-//               vouchersEpochRootHash
-//               noticesEpochRootHash
-//               machineStateHash
-//               outputHashInOutputHashesSiblings
-//               outputHashesInEpochSiblings
-//             }
-//             context
-//           }
-//         }
-//       }
-//     }
-//   }
-// `;
+// @TODO get all vouchers - optimize with cursor
+// check useVouchersQuery and VouchersDocument
+
 export const VouchersWithProofDocument = gql`
-  query getVouchers {
-    vouchers {
+  query vouchers($cursor: String) {
+    vouchers(first: 10, after: $cursor) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
       edges {
-        voucher: node {
+        node {
           index
           input {
             index

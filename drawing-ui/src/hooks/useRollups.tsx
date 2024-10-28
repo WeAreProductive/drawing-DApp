@@ -346,7 +346,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         )}`;
         console.log(`Could not execute voucher: ${JSON.stringify(e)}`);
       }
-      return newVoucherToExecute;
+      return newVoucherToExecute.executed;
     }
   };
   return {

@@ -62,6 +62,7 @@ export type CanvasContextType = {
 };
 
 export type VoucherExtended = {
+  info: string;
   id?: string;
   index: number;
   destination: string;
@@ -70,7 +71,7 @@ export type VoucherExtended = {
   erc721string?: null | string;
   ownerAddress?: null | string;
   proof?: any;
-  executed?: any;
+  executed?: boolean;
   msg?: string;
   drawingUUID?: string;
   events?: any;
@@ -153,9 +154,7 @@ export type RollupsInteractions = {
   sendInput: (strInput: string, tempDrawingData?: any) => Promise<void>;
   sendMintingInput: (input: any, tempDrawingData?: any) => Promise<void>;
   sendWithdrawInput: (amount: string) => Promise<void>;
-  executeVoucher: (
-    voucher: VoucherExtended,
-  ) => Promise<VoucherExtended | undefined>;
+  executeVoucher: (voucher: VoucherExtended) => Promise<boolean>;
 };
 
 export type Hex = `0x${string}`;

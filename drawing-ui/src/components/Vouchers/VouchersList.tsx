@@ -17,86 +17,8 @@ import {
 import Voucher from "./Voucher";
 import pako from "pako";
 import { useInspect } from "../../hooks/useInspect";
-//   query Vouchers {
-//     vouchers {
-//      edges {
-//        node {
-//          index
-//          input {
-//            index
-//          }
-//          destination
-//          payload
-//          proof {
-//        validity {
-//          inputIndexWithinEpoch
-//          outputIndexWithinInput
-//          outputHashesRootHash
-//          vouchersEpochRootHash
-//          noticesEpochRootHash
-//          machineStateHash
-//          outputHashInOutputHashesSiblings
-//          outputHashesInEpochSiblings
-//        }
-//        context
+import { useVouchersWithProofQuery } from "../../utils/queries";
 
-//          }
-//        }
-
-//      }
-//    }
-//  }
-
-export const VouchersWithProofDocument = gql`
-  query vouchers($cursor: String) {
-    vouchers(first: 10, after: $cursor) {
-      totalCount
-      pageInfo {
-        hasNextPage
-        endCursor
-      }
-      edges {
-        node {
-          index
-          input {
-            index
-            notices {
-              edges {
-                node {
-                  payload
-                }
-              }
-            }
-          }
-          destination
-          payload
-          proof {
-            validity {
-              inputIndexWithinEpoch
-              outputIndexWithinInput
-              outputHashesRootHash
-              vouchersEpochRootHash
-              noticesEpochRootHash
-              machineStateHash
-              outputHashInOutputHashesSiblings
-              outputHashesInEpochSiblings
-            }
-            context
-          }
-        }
-      }
-    }
-  }
-`;
-
-function useVouchersWithProofQuery(
-  options?: Omit<Urql.UseQueryArgs<VouchersQueryVariables>, "query">,
-) {
-  return Urql.useQuery<VouchersQuery, VouchersQueryVariables>({
-    query: VouchersWithProofDocument,
-    ...options,
-  });
-}
 const VouchersList = () => {
   const [connectedWallet] = useWallets();
   const { inspectCall } = useInspect();
@@ -165,14 +87,16 @@ const VouchersList = () => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
+      console.log(node.node.proof);
       // init data
       const n = node.node;
-      let payload = n?.payload; // voucher data
+      const payload = n?.payload; // voucher data
       let inputPayload = n?.input.payload; // ?!
       let info = null;
       let ownerAddress = null;
       let notices = n?.input.notices; // drawing data
       let drawings = [];
+      let payloadSliced = payload;
       // @TODO inputPayload is used for ?!
       if (inputPayload) {
         try {
@@ -184,24 +108,32 @@ const VouchersList = () => {
         inputPayload = "(empty)";
       }
       let selector = "";
-      if (payload) {
+
+      if (payloadSliced) {
         const decoder = new ethers.utils.AbiCoder();
         selector = decoder.decode(["bytes4"], payload)[0];
-        payload = ethers.utils.hexDataSlice(payload, 4);
+        payloadSliced = ethers.utils.hexDataSlice(payload, 4);
         try {
           switch (selector) {
             case MINT_SELECTOR: {
-              const decode = decoder.decode(["address", "string"], payload);
-              payload = `Mint Erc721 - String: ${decode[1]} - Address: ${decode[0]}`;
+              const decode = decoder.decode(
+                ["address", "string"],
+                payloadSliced,
+              );
+              // payload = `Mint Erc721 - String: ${decode[1]} - Address: ${decode[0]}`;
               info = decode[1];
               ownerAddress = decode[0];
               break;
             }
             case ETHER_TRANSFER_SELECTOR: {
               //ether transfer;
-              const decode2 = decoder.decode(["address", "uint256"], payload);
-              payload = `Ether Transfer, amount: ${ethers.utils.formatEther(decode2[1])}`;
-              info: decode2[1];
+              const decode2 = decoder.decode(
+                ["address", "uint256"],
+                payloadSliced,
+              );
+              // payload = `Ether Transfer, amount: ${ethers.utils.formatEther(decode2[1])}`;
+              // info: decode2[1];
+              info = `Ether Transfer, amount: ${ethers.utils.formatEther(decode2[1])}`;
               ownerAddress = decode2[0];
             }
             default: {
@@ -212,7 +144,7 @@ const VouchersList = () => {
           console.log(e);
         }
       } else {
-        payload = "(empty)";
+        payloadSliced = "(empty)";
       }
       // filter only current account's vouchers
       if (ownerAddress === currentAccount) {
