@@ -1,7 +1,13 @@
 import { ethers } from "ethers";
+import gql from "graphql-tag";
+import * as Urql from "urql";
 import { useWallets } from "@web3-onboard/react";
 import { useCallback, useEffect, useState } from "react";
-import { useVouchersQuery } from "../../generated/graphql";
+import {
+  useVouchersQuery,
+  VouchersQuery,
+  VouchersQueryVariables,
+} from "../../generated/graphql";
 import { MINT_SELECTOR, ETHER_TRANSFER_SELECTOR } from "../../shared/constants";
 import {
   VoucherExtended,
@@ -11,12 +17,92 @@ import {
 import Voucher from "./Voucher";
 import pako from "pako";
 import { useInspect } from "../../hooks/useInspect";
+//   query Vouchers {
+//     vouchers {
+//      edges {
+//        node {
+//          index
+//          input {
+//            index
+//          }
+//          destination
+//          payload
+//          proof {
+//        validity {
+//          inputIndexWithinEpoch
+//          outputIndexWithinInput
+//          outputHashesRootHash
+//          vouchersEpochRootHash
+//          noticesEpochRootHash
+//          machineStateHash
+//          outputHashInOutputHashesSiblings
+//          outputHashesInEpochSiblings
+//        }
+//        context
 
+//          }
+//        }
+
+//      }
+//    }
+//  }
+
+export const VouchersWithProofDocument = gql`
+  query vouchers($cursor: String) {
+    vouchers(first: 10, after: $cursor) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      edges {
+        node {
+          index
+          input {
+            index
+            notices {
+              edges {
+                node {
+                  payload
+                }
+              }
+            }
+          }
+          destination
+          payload
+          proof {
+            validity {
+              inputIndexWithinEpoch
+              outputIndexWithinInput
+              outputHashesRootHash
+              vouchersEpochRootHash
+              noticesEpochRootHash
+              machineStateHash
+              outputHashInOutputHashesSiblings
+              outputHashesInEpochSiblings
+            }
+            context
+          }
+        }
+      }
+    }
+  }
+`;
+
+function useVouchersWithProofQuery(
+  options?: Omit<Urql.UseQueryArgs<VouchersQueryVariables>, "query">,
+) {
+  return Urql.useQuery<VouchersQuery, VouchersQueryVariables>({
+    query: VouchersWithProofDocument,
+    ...options,
+  });
+}
 const VouchersList = () => {
   const [connectedWallet] = useWallets();
   const { inspectCall } = useInspect();
   const [cursor, setCursor] = useState<string | null | undefined | null>(null);
-  const [result, reexecuteQuery] = useVouchersQuery({
+
+  const [result, reexecuteQuery] = useVouchersWithProofQuery({
     variables: { cursor },
     pause: true,
   });
@@ -78,7 +164,9 @@ const VouchersList = () => {
   useEffect(() => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
+    console.log(data?.vouchers);
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
+      console.log({ node });
       // console.log(node);
       // init data
       const n = node.node;

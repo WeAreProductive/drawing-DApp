@@ -130,7 +130,6 @@ query vouchersByInput($inputIndex: Int!) {
   }
 }
 
-
 # REPORTS
 
 query report($reportIndex: Int!, $inputIndex: Int!) {

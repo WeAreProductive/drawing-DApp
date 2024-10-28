@@ -41,14 +41,16 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
   );
 
   const getProof = async (voucher: VoucherExtended) => {
+    console.log("get proof");
+    console.log({ voucher });
     setVoucherToFetch([voucher.index, voucher.input.index]);
     reexecuteVoucherQuery({ requestPolicy: "network-only" });
   };
-
+  ({ voucherResult });
   const handleExecuteVoucher = async (voucher: VoucherExtended) => {
     setLoading(true);
     const newVoucherToExecute = await executeVoucher(voucher);
-
+    console.log({ newVoucherToExecute });
     setVoucherToExecute(newVoucherToExecute);
     setLoading(false);
   };
@@ -84,6 +86,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
     };
 
     if (!voucherResult.fetching && voucherResult.data) {
+      console.log(voucherResult.data.voucher);
       setVoucher(voucherResult.data.voucher);
     }
   }, [voucherResult, contracts]);
