@@ -99,3 +99,6 @@ export const CANVAS_DOWNLOAD_FILETYPES = {
   png: "png",
   svg: "svg",
 };
+
+export const zeroHash =
+  "0x0000000000000000000000000000000000000000000000000000000000000000";

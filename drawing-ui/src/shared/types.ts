@@ -157,3 +157,21 @@ export type RollupsInteractions = {
     voucher: VoucherExtended,
   ) => Promise<VoucherExtended | undefined>;
 };
+
+export type Hex = `0x${string}`;
+export type Hash = `0x${string}`;
+export interface Validity {
+  inputIndexWithinEpoch: number;
+  outputIndexWithinInput: number;
+  outputHashesRootHash: Hash;
+  vouchersEpochRootHash: Hash;
+  noticesEpochRootHash: Hash;
+  machineStateHash: Hash;
+  outputHashInOutputHashesSiblings: Hash[];
+  outputHashesInEpochSiblings: Hash[];
+}
+
+export interface Proof {
+  context: Hex;
+  validity: Validity;
+}

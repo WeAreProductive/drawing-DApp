@@ -13,6 +13,7 @@ import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
 import CanvasSnapshotLoader from "../ImagesRollups/CanvasSnapshotLoader";
 import { ETHER_TRANSFER_SELECTOR, MINT_SELECTOR } from "../../shared/constants";
+import ExecuteButton from "./ExecuteButton";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
@@ -97,38 +98,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
         {handleVoucherDisplay(voucherData, drawing)}
 
         <div className="flex w-1/2 flex-row items-center justify-end gap-3">
-          {!voucherToExecute ? (
-            <button
-              className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-              onClick={() => getProof(voucherData)}
-            >
-              Check status
-            </button>
-          ) : (
-            <span
-              key={`${voucherToExecute.input.index}-${voucherToExecute.index}`}
-            >
-              {!voucherToExecute.proof || voucherToExecute.executed ? (
-                <span className="font-medium text-green-700">
-                  {voucherToExecute.executed ? "Voucher executed!" : "Pending"}
-                </span>
-              ) : loading ? (
-                <Button
-                  disabled
-                  className="disabled rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                >
-                  Mint NFT
-                </Button>
-              ) : (
-                <Button
-                  onClick={() => handleExecuteVoucher(voucherToExecute)}
-                  className="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-                >
-                  Mint NFT
-                </Button>
-              )}
-            </span>
-          )}
+          <ExecuteButton voucher={voucherData} />
         </div>
       </div>
 

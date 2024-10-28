@@ -144,7 +144,6 @@ const VouchersList = () => {
    * sees all his emitted vouchers, no new voucher he owns are expected to be seen.
    */
   useEffect(() => {
-    console.log({ result });
     if (result.fetching) return;
     // Set up to refetch in one second, if the query is idle
     // Retrieve vouchers every 1000 ms
@@ -165,10 +164,7 @@ const VouchersList = () => {
   useEffect(() => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
-    console.log(data?.vouchers);
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
-      console.log({ node });
-      // console.log(node);
       // init data
       const n = node.node;
       let payload = n?.payload; // voucher data
@@ -262,7 +258,7 @@ const VouchersList = () => {
           info: info, // voucher core info... @TODO more descriptive name
           ownerAddress: ownerAddress, // voucher
           drawingUUID: drawings && drawings[0] ? drawings[0] : "", // drawing uuid
-          proof: null,
+          proof: n.proof,
           executed: null,
         };
         newVouchers.push(currentVoucher);

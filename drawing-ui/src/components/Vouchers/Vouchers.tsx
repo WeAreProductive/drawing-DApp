@@ -26,8 +26,8 @@ const Vouchers = () => {
         >
           <SheetHeader>
             <SheetTitle>My Vouchers</SheetTitle>
-            {/* <VouchersList /> */}
-            <VouchersView />
+            <VouchersList />
+            {/* <VouchersView /> */}
           </SheetHeader>
         </SheetContent>
       </Sheet>
