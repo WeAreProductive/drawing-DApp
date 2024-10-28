@@ -9,6 +9,7 @@ import {
 } from "../ui/sheet";
 import VouchersList from "./VouchersList";
 import { GraphQLProvider } from "../../context/GraphQLContext";
+import { VouchersView } from "./VouchersView";
 const Vouchers = () => {
   return (
     <GraphQLProvider>
@@ -25,7 +26,8 @@ const Vouchers = () => {
         >
           <SheetHeader>
             <SheetTitle>My Vouchers</SheetTitle>
-            <VouchersList />
+            {/* <VouchersList /> */}
+            <VouchersView />
           </SheetHeader>
         </SheetContent>
       </Sheet>

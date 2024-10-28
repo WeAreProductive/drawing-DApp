@@ -144,6 +144,7 @@ const VouchersList = () => {
    * sees all his emitted vouchers, no new voucher he owns are expected to be seen.
    */
   useEffect(() => {
+    console.log({ result });
     if (result.fetching) return;
     // Set up to refetch in one second, if the query is idle
     // Retrieve vouchers every 1000 ms
