@@ -6,38 +6,27 @@
  * and a NOTICE with the current drawing data
  */
 import { useCanvasContext } from "../../context/CanvasContext";
-import { useSetChain } from "@web3-onboard/react";
 import { Button } from "../ui/button";
 import { Box } from "lucide-react";
-import configFile from "../../config/config.json";
 import { storeAsFiles } from "../../services/canvas";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
-
-const config: { [name: string]: { [name: string]: string } } = configFile;
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 const CanvasToMint = () => {
-  const {
-    canvas,
-    currentDrawingData,
-    setLoading,
-    loading,
-    dappState,
-    setDappState,
-  } = useCanvasContext();
+  const { canvas, currentDrawingData, setLoading, loading, setDappState } =
+    useCanvasContext();
+  const { connectedChain, dappAddress, ercToMintAddress } =
+    useConnectionContext();
   const { getVoucherInput } = useDrawing();
-  const [{ connectedChain }] = useSetChain();
-  if (!connectedChain) return;
-  const { sendMintingInput } = useRollups(
-    config[connectedChain.id].DAppRelayAddress,
-  );
+  const { sendMintingInput } = useRollups();
 
   const handleCanvasToMint = async () => {
-    console.warn("handle canvas to mint");
+    console.warn("Canvas :: handle canvas to mint");
     if (!canvas) return;
     if (!currentDrawingData) return;
-    const { uuid, owner } = currentDrawingData;
+    const { uuid } = currentDrawingData;
     setLoading(true);
     setDappState(DAPP_STATE.voucherRequest);
 
@@ -51,14 +40,16 @@ const CanvasToMint = () => {
       uuid,
       canvasDimensions,
     );
-    if (!drawingMeta) return;
-    if (!connectedChain) return;
+    if (!drawingMeta || !ercToMintAddress || !dappAddress) {
+      console.warn("Get Voucher Input :: required data is missing");
+      return;
+    }
 
     const input = getVoucherInput(
       uuid,
       drawingMeta,
-      config[connectedChain.id].ercToMint,
-      config[connectedChain.id].DAppRelayAddress,
+      ercToMintAddress,
+      dappAddress,
     );
 
     await sendMintingInput(input);
