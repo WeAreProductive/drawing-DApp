@@ -28,13 +28,11 @@ import { DAPP_STATE } from "../shared/constants";
 
 const config: { [name: string]: NetworkConfigType } = configFile;
 
-export const useRollups = (dAddress: string): RollupsInteractions => {
+export const useRollups = (): RollupsInteractions => {
   const [contracts, setContracts] = useState<RollupsContracts | undefined>();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
   const [account, setAccount] = useState("0x");
-
-  const [dappAddress] = useState<string>(dAddress);
 
   const {
     setDappState,
@@ -89,7 +87,10 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         alert(`No box ether portal address defined for chain ${chain.id}`);
       }
       // dapp contract
-      const dappContract = CartesiDApp__factory.connect(dappAddress, signer);
+      const dappContract = CartesiDApp__factory.connect(
+        dappRelayAddress,
+        signer,
+      );
       // relay contract
       const relayContract = DAppAddressRelay__factory.connect(
         dappRelayAddress,
@@ -122,7 +123,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         });
       }
     }
-  }, [connectedWallet, connectedChain, dappAddress]);
+  }, [connectedWallet, connectedChain]);
   useEffect(() => {
     if (!connectedWallet) return;
     setAccount(connectedWallet.accounts[0].address);

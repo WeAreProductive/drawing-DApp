@@ -184,5 +184,8 @@ export type NetworkConfigType = {
   DAppRelayAddress: string;
   InputBoxAddress: string;
   Erc721PortalAddress: string;
+  etherPortalAddress: string;
   ercToMint: string;
 };
+
+export type Address = `0x${string}`;
