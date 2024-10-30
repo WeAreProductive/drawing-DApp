@@ -7,6 +7,7 @@ import {
   SheetTrigger,
 } from "../ui/sheet";
 import VouchersList from "./VouchersList";
+import { GraphQLProvider } from "../../context/GraphQLContext";
 const Vouchers = () => {
   return (
     <Sheet>
@@ -22,7 +23,9 @@ const Vouchers = () => {
       >
         <SheetHeader>
           <SheetTitle>My Vouchers</SheetTitle>
-          <VouchersList />
+          <GraphQLProvider>
+            <VouchersList />
+          </GraphQLProvider>
         </SheetHeader>
       </SheetContent>
     </Sheet>
