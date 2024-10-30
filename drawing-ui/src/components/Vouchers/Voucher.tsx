@@ -39,7 +39,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
    * it becomes the `voucherToExecute`
    */
   const [loading, setLoading] = useState(false); // use for disable button @TODO
-  const [wasExecuted, setWasExecuted] = useState(false); // check on page load and after executeVoucher is run
+  const [wasExecuted, setWasExecuted] = useState<null | boolean>(null); // check on page load and after executeVoucher is run
 
   if (!connectedChain) return;
   const { contracts, executeVoucher } = useRollups(
@@ -93,10 +93,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
   };
 
   useEffect(() => {
-    // if (!voucherResult.fetching && voucherResult.data) {
-    // setVoucher(voucherResult.data.voucher);
     recheckVoucherStatus(voucher);
-    // }
   }, [contracts]);
   return (
     <div className="my-4 flex flex-col justify-between gap-6 border-b-2 pb-4">
@@ -117,12 +114,13 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
               Voucher executed!
             </span>
           )}
-          {voucher.proof && !wasExecuted && (
+          {voucher.proof && wasExecuted === false && (
             <Button
               onClick={handleExecuteVoucher}
               className="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              disabled={loading}
             >
-              Mint NFT
+              {loading ? "Minting" : "Mint"}
             </Button>
           )}
           {/* @TODO add info for NFT minted  */}
