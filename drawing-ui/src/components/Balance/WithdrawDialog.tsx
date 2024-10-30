@@ -98,7 +98,6 @@ const WithdrawDialog = ({ isOpen, handler }: WithdrawDialogType) => {
     sendWithdrawInput(input);
     handler(false); // close modal
   };
-  console.log({ isOpen });
   return (
     <>
       <Modal
