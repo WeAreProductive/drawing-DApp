@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
-import { useWallets } from "@web3-onboard/react";
 
 import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
