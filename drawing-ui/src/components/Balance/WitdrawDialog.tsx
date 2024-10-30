@@ -1,18 +1,12 @@
-import {
-  CustomFlowbiteTheme,
-  Label,
-  Modal,
-  Textarea,
-  TextInput,
-} from "flowbite-react";
+import { CustomFlowbiteTheme, Label, Modal, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
 import { useRollups } from "../../hooks/useRollups";
 import { useSetChain } from "@web3-onboard/react";
 import configFile from "../../config/config.json";
-import { Network } from "../../shared/types";
+import { NetworkConfigType } from "../../shared/types";
 
-const config: { [name: string]: Network } = configFile;
+const config: { [name: string]: NetworkConfigType } = configFile;
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -70,15 +64,16 @@ const customTheme: CustomFlowbiteTheme["modal"] = {
 };
 type WithdrawDialogType = {
   isOpen: boolean;
+  handler: (open: boolean) => void;
 };
-const WithdrawDialog = ({ isOpen }: WithdrawDialogType) => {
+const WithdrawDialog = ({ isOpen, handler }: WithdrawDialogType) => {
   const [{ connectedChain }] = useSetChain();
 
   const dappAddress = connectedChain
     ? config[connectedChain.id].DAppRelayAddress
     : "";
   const { sendWithdrawInput } = useRollups(dappAddress);
-  const [openModal, setOpenModal] = useState(false);
+  const [openModal, setOpenModal] = useState(isOpen);
   const [amount, setAmount] = useState("0");
 
   // //  @TODO - use for input validation https://flowbite-react.com/docs/components/forms
@@ -93,7 +88,7 @@ const WithdrawDialog = ({ isOpen }: WithdrawDialogType) => {
 
   const handleInputSend = () => {
     // @TODO - validate input is as equired
-    setOpenModal(false); // close modal
+
     // if (+amount <= 0) return;
     // the withdrawal is handled in the be
     const input = JSON.stringify({
@@ -101,14 +96,16 @@ const WithdrawDialog = ({ isOpen }: WithdrawDialogType) => {
       cmd: "eth.withdraw",
     });
     sendWithdrawInput(input);
+    handler(false); // close modal
   };
+  console.log({ isOpen });
   return (
     <>
       <Modal
-        show={openModal}
+        show={isOpen}
         size="lg"
         popup
-        onClose={() => setOpenModal(false)}
+        onClose={() => handler(false)}
         // initialFocus={titleInputRef}
         theme={customTheme}
       >
@@ -135,7 +132,7 @@ const WithdrawDialog = ({ isOpen }: WithdrawDialogType) => {
           <DialogButton color="green" onClick={() => handleInputSend()}>
             Withdraw
           </DialogButton>
-          <DialogButton color="red" onClick={() => setOpenModal(false)}>
+          <DialogButton color="red" onClick={() => handler(false)}>
             Decline
           </DialogButton>
         </Modal.Footer>

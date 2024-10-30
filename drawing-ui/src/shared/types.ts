@@ -174,3 +174,15 @@ export interface Proof {
   context: Hex;
   validity: Validity;
 }
+
+export type NetworkConfigType = {
+  token: string;
+  label: string;
+  rpcUrl: string;
+  graphqlAPIURL: string;
+  inspectAPIURL: string;
+  DAppRelayAddress: string;
+  InputBoxAddress: string;
+  Erc721PortalAddress: string;
+  ercToMint: string;
+};

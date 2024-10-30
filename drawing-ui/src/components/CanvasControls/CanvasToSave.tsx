@@ -7,7 +7,11 @@
 import { useSetChain } from "@web3-onboard/react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import configFile from "../../config/config.json";
-import { DrawingUserInput, Network } from "../../shared/types";
+import {
+  DrawingUserInput,
+  Network,
+  NetworkConfigType,
+} from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
@@ -21,7 +25,7 @@ import { DAPP_STATE } from "../../shared/constants";
 import { useState } from "react";
 import InputDialog from "../Drawing/InputDialog";
 
-const config: { [name: string]: Network } = configFile;
+const config: { [name: string]: NetworkConfigType } = configFile;
 
 type CanvasToSaveProp = {
   enabled: boolean;

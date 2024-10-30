@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import pako from "pako";
 import {
   DrawingInitialData,
-  Network,
+  NetworkConfigType,
   RollupsContracts,
   RollupsInteractions,
   VoucherExtended,
@@ -26,7 +26,7 @@ import { useCanvasContext } from "../context/CanvasContext";
 import configFile from "../config/config.json";
 import { DAPP_STATE } from "../shared/constants";
 
-const config: { [name: string]: Network } = configFile;
+const config: { [name: string]: NetworkConfigType } = configFile;
 
 export const useRollups = (dAddress: string): RollupsInteractions => {
   const [contracts, setContracts] = useState<RollupsContracts | undefined>();

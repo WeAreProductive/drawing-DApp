@@ -3,9 +3,9 @@ import { useMemo } from "react";
 import { Client, createClient, Provider } from "urql";
 
 import configFile from "../config/config.json";
-import { Network } from "../shared/types";
+import { NetworkConfigType } from "../shared/types";
 
-const config: { [name: string]: Network } = configFile;
+const config: { [name: string]: NetworkConfigType } = configFile;
 
 const useGraphQL = () => {
   const [{ connectedChain }] = useSetChain();
