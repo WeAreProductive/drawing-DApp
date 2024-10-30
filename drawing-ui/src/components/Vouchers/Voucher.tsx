@@ -1,32 +1,24 @@
 import { BigNumber } from "ethers";
-import { useCallback, useEffect, useState } from "react";
-import { useSetChain } from "@web3-onboard/react";
+import { useEffect, useState } from "react";
 import { useVoucherQuery } from "../../generated/graphql";
 import { useRollups } from "../../hooks/useRollups";
-import configFile from "../../config/config.json";
-import {
-  VoucherExtended,
-  Network,
-  DrawingInputExtended,
-} from "../../shared/types";
+import { VoucherExtended, DrawingInputExtended } from "../../shared/types";
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
 import CanvasSnapshotLoader from "../ImagesRollups/CanvasSnapshotLoader";
 import { ETHER_TRANSFER_SELECTOR, MINT_SELECTOR } from "../../shared/constants";
-import ExecuteButton from "./ExecuteButton";
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
   drawing: DrawingInputExtended;
-  selector: string;
 };
 
-const config: { [name: string]: Network } = configFile;
-
 const Voucher = ({ voucherData, drawing }: VoucherProp) => {
-  const [{ connectedChain }] = useSetChain();
+  const { connectedChain } = useConnectionContext();
   const [voucher, setVoucher] = useState(voucherData);
   const [voucherToFetch, setVoucherToFetch] = useState([0, 0]);
+  const [label, setLabel] = useState("Check status");
   // run on getProof to update voucher proof
   const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({
     variables: {
@@ -40,11 +32,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
    */
   const [loading, setLoading] = useState(false); // use for disable button @TODO
   const [wasExecuted, setWasExecuted] = useState<null | boolean>(null); // check on page load and after executeVoucher is run
-
-  if (!connectedChain) return;
-  const { contracts, executeVoucher } = useRollups(
-    config[connectedChain.id].DAppRelayAddress,
-  );
+  const { contracts, executeVoucher } = useRollups();
 
   const handleVoucherDisplay = (
     data: VoucherExtended,
@@ -89,6 +77,13 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
       proof: voucherResult.data?.voucher.proof, // But override this one
       payload: voucherResult.data?.voucher.payload || "", // But override this one
     });
+    const newlabel = !voucherResult.data?.voucher.proof
+      ? "Waiting for proof ..."
+      : "Proof ready!";
+    setLabel(newlabel);
+    setTimeout(() => {
+      setLabel("Check status");
+    }, 3000);
   };
   useEffect(() => {
     recheckVoucherStatus(voucher);
@@ -105,7 +100,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
               className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               onClick={() => getProof(voucher)}
             >
-              Check status
+              {label}
             </button>
           )}
           {voucher.proof && wasExecuted && (
