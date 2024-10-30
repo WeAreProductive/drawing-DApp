@@ -76,7 +76,6 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
   };
   const handleExecuteVoucher = async () => {
     setLoading(true);
-    console.log({ voucher });
     const newVoucherExecuted = await executeVoucher(voucher);
     setWasExecuted(newVoucherExecuted);
     setLoading(false);

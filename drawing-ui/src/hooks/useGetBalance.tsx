@@ -1,64 +1,40 @@
-import { useSetChain, useWallets } from "@web3-onboard/react";
-import { Network } from "../shared/types";
-import configFile from "../config/config.json";
-import { useEffect, useMemo, useState } from "react";
 import { ethers } from "ethers";
-const config: { [name: string]: Network } = configFile;
 
+import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { zeroAddress } from "../shared/constants";
+
+type Address = `0x${string}`;
+export const balanceKeys = {
+  base: ["balance"] as const,
+  details: () => [...balanceKeys.base, "detail"] as const,
+  detail: (id: Address) => [...balanceKeys.details(), id] as const,
+};
 const createError = (message: string) => Promise.reject(new Error(message));
 
-// HOOKS
+const fetchBalance = async (account?: Address) => {
+  if (account === undefined || account === null) return 0;
 
-export const useGetBalance = () => {
-  const [{ connectedChain }] = useSetChain();
-  const [connectedWallet] = useWallets();
+  const url = `http://localhost:8080/inspect/balance/${account}`;
 
-  const inspectUrl = useMemo(() => {
-    if (!connectedChain) {
-      return null;
-    }
-    let url = "";
+  const response = await fetch(url);
 
-    if (config[connectedChain.id]?.inspectAPIURL) {
-      url = `${config[connectedChain.id].inspectAPIURL}`;
-    } else {
-      console.error(
-        `No inspect interface defined for chain ${connectedChain.id}`,
-      );
-      return null;
-    }
+  if (!response.ok) {
+    return createError(`Network response error - ${response.status}`);
+  }
 
-    if (!url) {
-      return null;
-    }
+  const data = await response.json();
 
-    return url;
-  }, [connectedChain]);
-  const account = useMemo(() => {
-    if (!connectedWallet) {
-      return null;
-    }
-    return connectedWallet.accounts[0].address;
-  }, [connectedWallet]);
-  const fetchBalance = async () => {
-    if (!account) return 0;
-    const url = `${inspectUrl}balance/${account}`;
-    const response = await fetch(url);
-    if (!response.ok) {
-      return createError(`Network response error - ${response.status}`);
-    }
-    const result = await response.json();
-    for (const i in result.reports) {
-      let output = result.reports[i].payload;
-      let data;
-      try {
-        data = ethers.utils.toUtf8String(output);
-      } catch (e) {
-        data = output + " (hex)";
-      }
-      return data;
-    }
-  };
+  // if (data.status === "Exception")
+  //   return createError(hexToString(data.exception_payload));
 
-  return { fetchBalance };
+  const result = ethers.utils.toUtf8String(data.reports[0].payload);
+  return +result;
+};
+export const useGetBalance = (account: Address) => {
+  return useQuery({
+    queryKey: balanceKeys.detail(account ?? zeroAddress),
+    queryFn: () => fetchBalance(account),
+    refetchInterval: 20 * 1000,
+    refetchIntervalInBackground: true,
+  });
 };

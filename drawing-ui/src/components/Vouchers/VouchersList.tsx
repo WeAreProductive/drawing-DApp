@@ -39,7 +39,7 @@ const VouchersList = () => {
     setCurrentAccount(await provider.getSigner().getAddress());
   };
   const fetchImages = async (arg: string[]) => {
-    console.log("Fetching voucher images ...");
+    console.warn("Fetching voucher images ...");
     if (arg.length) {
       // remove duplicate uuids
       const filteredArg = arg.filter((v, i, a) => a.indexOf(v) == i);
@@ -87,7 +87,6 @@ const VouchersList = () => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
-      console.log(node.node.proof);
       // init data
       const n = node.node;
       const payload = n?.payload; // voucher data

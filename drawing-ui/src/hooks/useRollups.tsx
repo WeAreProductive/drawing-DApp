@@ -234,7 +234,6 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       // Search for the InputAdded event
       const event = receipt.events?.find((e) => e.event === "InputAdded");
       setLoading(false);
-      console.log({ receipt });
       // @TODO handle tx success differently
       if (event?.args?.inputIndex) {
         // clearCanvas(); // manages the dApp state
@@ -344,7 +343,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         newVoucherToExecute.msg = `Could not execute voucher: ${JSON.stringify(
           e,
         )}`;
-        console.log(`Could not execute voucher: ${JSON.stringify(e)}`);
+        console.error(`Could not execute voucher: ${JSON.stringify(e)}`);
       }
       return newVoucherToExecute.executed;
     }

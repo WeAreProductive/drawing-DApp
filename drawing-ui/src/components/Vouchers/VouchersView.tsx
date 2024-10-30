@@ -229,7 +229,6 @@ export const VouchersView = () => {
   const [uuids, setUuids] = useState<string[]>([]);
   const { data } = result;
   // const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
-  console.log({ result });
   // if (fetching) {
   //   return <p>Loading ...</p>;
   // }

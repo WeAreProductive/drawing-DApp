@@ -35,7 +35,7 @@ const CanvasToMint = () => {
   );
 
   const handleCanvasToMint = async () => {
-    console.log("handle canvas to mint");
+    console.warn("handle canvas to mint");
     if (!canvas) return;
     if (!currentDrawingData) return;
     const { uuid, owner } = currentDrawingData;

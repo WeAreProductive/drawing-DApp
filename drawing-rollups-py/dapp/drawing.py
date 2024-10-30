@@ -182,6 +182,7 @@ def handle_inspect(request):
     if query_args[0] == 'balance':
         user_address = query_args[1]
         eth_balance = get_balance(user_address, True)
+        logger.info(f"ETH BALANCE {eth_balance}")
         payload = str2hex(str(eth_balance))
         send_report({"payload": payload})  
     else :

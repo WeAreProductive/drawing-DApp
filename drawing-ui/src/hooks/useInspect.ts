@@ -6,6 +6,7 @@ import configFile from "../config/config.json";
 import { useMemo } from "react";
 import { ethers } from "ethers";
 import pako from "pako";
+import { handleCompressedResponse, handlePlainResponse } from "../utils";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -37,37 +38,24 @@ export const useInspect = () => {
    * @param queryStr
    * @return notices OutputPayload[]
    */
-  const inspectCall = async (queryStr: string) => {
+  const inspectCall = async (queryStr: string, type: string = "compressed") => {
     if (!inspectUrl) return;
     const response = await fetch(`${inspectUrl}${queryStr}`);
     if (response.status == 200) {
       const result = await response.json();
       for (const i in result.reports) {
+        // @TODO refractor to abstract the result
         let output = result.reports[i].payload;
-        let compressedData;
-        if (output) {
-          try {
-            compressedData = ethers.utils.arrayify(output);
-          } catch (e) {
-            console.log(e);
-          }
-        } else {
-          output = "(empty)";
-        }
-        if (compressedData) {
-          try {
-            const drawingsData = pako.inflate(compressedData, {
-              to: "string",
-            });
-            return JSON.parse(drawingsData);
-          } catch (e) {
-            console.log(e);
-          }
+        switch (type) {
+          case "compressed":
+            return handleCompressedResponse(output);
+          default:
+            return handlePlainResponse(output);
         }
       }
     } else {
       const errMessage = JSON.stringify(await response.text());
-      console.log(errMessage);
+      console.error(errMessage);
     }
   };
   return { inspectCall };
