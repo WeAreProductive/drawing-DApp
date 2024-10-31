@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import CanvasControls from "../components/CanvasControls";
 import DrawingControls from "./DrawingControls/DrawingControls";
 import CanvasObjectsControl from "./CanvasObjectsControl";
@@ -9,7 +9,6 @@ import {
   DrawingInitialData,
   DrawingInputExtended,
 } from "../shared/types";
-import { useWallets } from "@web3-onboard/react";
 import { useCanvasControls } from "../hooks/useCanvasControl";
 
 const Controls = () => {
@@ -82,6 +81,9 @@ const Controls = () => {
 
   return (
     <div className="flex flex-col">
+      <div className="my-3 text-right text-sm font-semibold">
+        XX:XX:XX until ready to MINT
+      </div>
       <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
         {isActiveControl && !drawingIsClosed && (
           <>
