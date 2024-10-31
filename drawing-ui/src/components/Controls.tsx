@@ -10,6 +10,7 @@ import {
   DrawingInputExtended,
 } from "../shared/types";
 import { useCanvasControls } from "../hooks/useCanvasControl";
+import CountdownTimer from "./Drawing/CountdownTimer";
 
 const Controls = () => {
   const {
@@ -81,9 +82,7 @@ const Controls = () => {
 
   return (
     <div className="flex flex-col">
-      <div className="my-3 text-right text-sm font-semibold">
-        XX:XX:XX until ready to MINT
-      </div>
+      <CountdownTimer />
       <div className="flex flex-col items-center justify-between gap-4 lg:flex-row">
         {isActiveControl && !drawingIsClosed && (
           <>
