@@ -15,10 +15,13 @@ const CountdownTimer = () => {
     const formatted = `${days.toString().padStart(2, "0")}d ${hours.toString().padStart(2, "0")}h ${minutes.toString().padStart(2, "0")}m ${seconds.toString().padStart(2, "0")}s`;
     return formatted;
   };
-
   useEffect(() => {
-    if (!currentDrawingData) return;
-    setEventTime(currentDrawingData.closed_at);
+    if (!currentDrawingData) {
+      setEventTime("");
+      setTimeRemainingLabel("");
+    } else {
+      setEventTime(currentDrawingData.closed_at);
+    }
   }, [currentDrawingData]);
 
   useEffect(() => {
@@ -38,7 +41,7 @@ const CountdownTimer = () => {
 
       return () => clearInterval(countdownInterval);
     }
-  }, [eventTime, timeRemainingLabel]);
+  }, [eventTime, timeRemainingLabel, currentDrawingData]);
   return (
     <div className="my-3 text-right text-sm font-semibold">
       {timeRemainingLabel ? `${timeRemainingLabel} until ready to MINT` : ""}

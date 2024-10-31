@@ -9,7 +9,6 @@ const config: { [name: string]: NetworkConfigType } = configFile;
 
 const useGraphQL = () => {
   const [{ connectedChain }] = useSetChain();
-  console.log(connectedChain);
   return useMemo<Client | null>(() => {
     if (!connectedChain) {
       return null;

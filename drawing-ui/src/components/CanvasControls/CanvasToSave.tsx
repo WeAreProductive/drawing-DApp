@@ -12,13 +12,18 @@ import { Button } from "../ui/button";
 import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
 
-import { validateInputSize, prepareDrawingObjectsArrays } from "../../utils";
+import {
+  validateInputSize,
+  prepareDrawingObjectsArrays,
+  hoursToTimestamp,
+} from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
 import { useState } from "react";
 import InputDialog from "../Drawing/InputDialog";
 import { useConnectionContext } from "../../context/ConnectionContext";
+import moment from "moment";
 
 type CanvasToSaveProp = {
   enabled: boolean;
@@ -42,6 +47,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     description: "",
     mintingPrice: "",
     private: false,
+    open: 0,
   });
   const saveDrawing = async () => {
     setDappState(DAPP_STATE.canvasSave);
@@ -74,9 +80,14 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
         width: canvas?.width || 0,
         height: canvas?.height || 0,
       };
+      // @TODO - add open in inputValues !!!!
+      // !!!!
+      const closedAt = moment().unix() + hoursToTimestamp(3); // convert to seconds
+
       const initCanvasData = {
         uuid: uuid,
         owner: account,
+        closed_at: closedAt,
         update_log: [
           {
             drawing_objects: JSON.stringify(currentDrawingLayer),

@@ -102,6 +102,7 @@ export type DrawingUserInput = {
   description: string;
   mintingPrice: string;
   private: boolean;
+  open: number;
 };
 // @TODO combine DrawingInitial & DrawingInputExtended & DrawingInput
 export type DrawingInitialData = {

@@ -259,16 +259,22 @@ export const handleCompressedResponse = (output: `0x${string}`) => {
   return data;
 };
 export const handlePlainResponse = (output: `0x${string}`) => {
-  console.log({ output });
   let data = null;
   if (output) {
     try {
       data = ethers.utils.toUtf8String(output);
-      console.log({ data });
       return data;
     } catch (e) {
       console.error(e);
     }
   }
   return data;
+};
+/**
+ * Converts given hours to seconds
+ * @param hours number
+ * @returns number
+ */
+export const hoursToTimestamp = (hours: number) => {
+  return hours * 60 * 60;
 };
