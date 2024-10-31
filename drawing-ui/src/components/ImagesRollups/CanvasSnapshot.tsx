@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import DrawingPreview from "./DrawingPreview";
 import DrawingStepsPreview from "./DrawingStepsPreview";
 import { Layers, MinusCircle } from "lucide-react";
+import { useCanvasControls } from "../../hooks/useCanvasControl";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
@@ -12,6 +13,7 @@ type CanvasSnapshotProp = {
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { owner, uuid, update_log, dimensions } = src;
+  const { drawingIsClosed } = useCanvasControls();
   const [showSteps, setShowSteps] = useState(false);
   const [showLabel, setShowLabel] = useState(true);
   const snapShotJson = useMemo(
@@ -25,7 +27,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   };
   const parsedDimensions = JSON.parse(dimensions);
   return (
-    <div className="p-2 border rounded-lg bg-background">
+    <div className="rounded-lg border bg-background p-2">
       <Link to={`/drawing/${uuid}`} reloadDocument>
         <div>
           <DrawingPreview
@@ -39,6 +41,9 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       <span className="block text-xs">ID: {uuid}</span>
       <span className="block text-xs">
         <b>{src.private ? "private" : "public"}</b>
+      </span>
+      <span className="block text-xs">
+        {drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"}
       </span>
       <span
         onClick={handleShowSteps}
