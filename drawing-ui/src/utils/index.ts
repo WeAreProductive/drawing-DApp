@@ -23,7 +23,7 @@ export const sliceAccountStr = (str: string | undefined) => {
   if (!str) return;
   const len = str.length;
   const start = str.slice(0, 3);
-  const end = str.slice(len - 5, len - 1);
+  const end = str.slice(len - 5, len);
   return `${start}...${end}`;
 };
 
