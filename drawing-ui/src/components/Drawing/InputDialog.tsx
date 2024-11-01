@@ -84,10 +84,7 @@ const InputDialog = ({
   const [switch1, setSwitch1] = useState(false);
   const { setLoading } = useCanvasContext();
   //  @TODO - use for input validation https://flowbite-react.com/docs/components/forms
-  // const titleInputRef = useRef<HTMLInputElement>(null);
-  // useEffect(() => {
-  //   setOpenModal(isOpen);
-  // }, [isOpen]);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -118,6 +115,11 @@ const InputDialog = ({
     openHandler(false);
     setLoading(false);
   };
+  const validateInput = () => {
+    // title - required
+    // mintingPrice > 0, required
+    // open > 0, required
+  };
   return (
     <>
       <Modal
@@ -125,7 +127,7 @@ const InputDialog = ({
         size="lg"
         popup
         onClose={handleCloseDialog}
-        // initialFocus={titleInputRef}
+        initialFocus={titleInputRef}
         theme={customTheme}
       >
         <Modal.Header />
@@ -138,7 +140,7 @@ const InputDialog = ({
               <Label htmlFor="title" value="Drawing title" className="mb-4" />
               <TextInput
                 id="title"
-                // ref={titleInputRef}
+                ref={titleInputRef}
                 placeholder="Drawing title ..."
                 // required
                 onChange={(e) => handleInputChange(e, "title")}
