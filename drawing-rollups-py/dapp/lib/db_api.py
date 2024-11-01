@@ -7,8 +7,7 @@ logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
 db_filename = 'drawing.db'  
-limit = 8
-drawing_is_enabled = 1 # days
+limit = 8 
 # helpers - move to utils.py
 def get_query_offset(page):
   """ Calculates the OFFSET parameter in query statements.
@@ -28,9 +27,9 @@ def get_query_offset(page):
       offset = (page -1) * limit 
   return offset
 
-def get_closed_at(now):
-  # days * hours * min *s
-  seconds_period = drawing_is_enabled*24*60*60
+def get_closed_at(now, end):
+  # hours * min * s
+  seconds_period = int(end)*60*60
   closed_at = seconds_period + now
   logger.info(f"Expires at {datetime.fromtimestamp(closed_at)}")
   return closed_at
@@ -321,10 +320,11 @@ def save_data(type, query_args) :
         title = data['userInputData']['title']
         description = data['userInputData']['description']
         minting_price = data['userInputData']['mintingPrice'] 
+        open = data['userInputData']['open'] # in hours
         #
         timestamp = query_args['timestamp']
         created_at = timestamp
-        closed_at = get_closed_at(timestamp) 
+        closed_at = get_closed_at(timestamp, open) 
         last_updated = timestamp
         cursor.execute(
             """
