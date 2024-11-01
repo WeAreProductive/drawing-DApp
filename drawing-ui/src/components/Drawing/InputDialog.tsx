@@ -96,7 +96,6 @@ const InputDialog = ({
 }: InputDialogType) => {
   const [switch1, setSwitch1] = useState(false);
   const { setLoading } = useCanvasContext();
-  //  @TODO - use for input validation https://flowbite-react.com/docs/components/forms
   const titleInputRef = useRef<HTMLInputElement>(null);
   const [fieldValidation, setFieldValidation] = useState(validationInit);
 
@@ -104,7 +103,6 @@ const InputDialog = ({
     e: React.ChangeEvent<HTMLInputElement>,
     inputName: string,
   ) => {
-    // @TODO add validation for string length before updating the state
     setInputValues({
       ...inputValues,
       [inputName]: e.target.value,
@@ -127,7 +125,6 @@ const InputDialog = ({
     });
   };
   const handleInputSend = () => {
-    // @TODO - validate input is as equired
     const isValid = validateInput();
     if (!isValid) return;
     // close modal
@@ -146,7 +143,6 @@ const InputDialog = ({
     let isValidInput = true;
     for (let name in inputValues) {
       if (Object.hasOwn(validationRules, name)) {
-        console.log({ name });
         validationRules[name].forEach((rule: string) => {
           if (rule == "gt0") {
             if (+inputValues[name] < 1 || isNaN(inputValues[name])) {
