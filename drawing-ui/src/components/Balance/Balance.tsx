@@ -17,7 +17,6 @@ export const Balance = () => {
       {hasBalance ? (
         <button onClick={() => manageWithdraw(true)}>Withdraw</button>
       ) : null}
-      <button onClick={() => manageWithdraw(true)}>Withdraw</button>
       <WithdrawDialog isOpen={openDialog} handler={manageWithdraw} />
     </>
   );
