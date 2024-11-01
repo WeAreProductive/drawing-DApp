@@ -5,7 +5,7 @@ import {
   Textarea,
   TextInput,
 } from "flowbite-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import DialogToggleSwitch from "../ui/formDialog/toggleSwitch";
@@ -66,6 +66,27 @@ const customTheme: CustomFlowbiteTheme["modal"] = {
     popup: "border-t",
   },
 };
+const validationRules = {
+  required: "required",
+  gtzero: "gtzero",
+};
+const validationInit = {
+  title: {
+    valid: true,
+    helperText: "",
+    rules: [validationRules.required],
+  },
+  mintingPrice: {
+    valid: true,
+    helperText: "",
+    rules: [validationRules.required, validationRules.gtzero],
+  },
+  open: {
+    valid: true,
+    helperText: "",
+    rules: [validationRules.required, validationRules.gtzero],
+  },
+};
 type InputDialogType = {
   isOpen: boolean;
   setInputValues: React.Dispatch<React.SetStateAction<DrawingUserInput>>;
@@ -80,11 +101,11 @@ const InputDialog = ({
   inputValues,
   action,
 }: InputDialogType) => {
-  // const [openModal, setOpenModal] = useState(false);
   const [switch1, setSwitch1] = useState(false);
   const { setLoading } = useCanvasContext();
   //  @TODO - use for input validation https://flowbite-react.com/docs/components/forms
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const [fieldValidation, setFieldValidation] = useState(validationInit);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -95,6 +116,18 @@ const InputDialog = ({
       ...inputValues,
       [inputName]: e.target.value,
     });
+    // reset validation
+    if (fieldValidation[inputName]) {
+      const updatedValue = {
+        isValid: true,
+        helperText: "",
+        rules: fieldValidation[inputName].rules,
+      };
+      setFieldValidation((fieldValidation) => ({
+        ...fieldValidation,
+        [inputName]: updatedValue,
+      }));
+    }
   };
   const handleSwitch = () => {
     // handle switch display
@@ -107,19 +140,66 @@ const InputDialog = ({
   };
   const handleInputSend = () => {
     // @TODO - validate input is as equired
+    const isValid = validateInput();
+    if (!isValid) return;
     // close modal
     openHandler(false);
     action();
+    // reset validation to initial state
+    setFieldValidation(validationInit);
   };
   const handleCloseDialog = () => {
     openHandler(false);
     setLoading(false);
+    // reset validation to initial state
+    setFieldValidation(validationInit);
   };
   const validateInput = () => {
-    // title - required
-    // mintingPrice > 0, required
-    // open > 0, required
+    let isValidInput = true;
+    for (let fieldName in inputValues) {
+      const fieldAttr = fieldValidation[fieldName];
+      let isValid = true;
+      let helperText = "";
+      if (fieldAttr) {
+        if (!fieldAttr.rules) return;
+
+        fieldAttr.rules.forEach((rule) => {
+          switch (rule) {
+            case "required":
+              if (!inputValues[fieldName].toString().trim()) {
+                isValid = false;
+                helperText = `The field is required!`;
+                isValidInput = false;
+              }
+              break;
+            case "gtzero":
+              if (
+                +inputValues[fieldName] < 1 ||
+                isNaN(inputValues[fieldName])
+              ) {
+                isValid = false;
+                helperText = `Value must be greater than 0!`;
+                isValidInput = false;
+              }
+              break;
+          }
+        });
+
+        const updatedValue = {
+          isValid,
+          helperText,
+          rules: fieldAttr.rules,
+        };
+        setFieldValidation((fieldValidation) => ({
+          ...fieldValidation,
+          [fieldName]: updatedValue,
+        }));
+      }
+    }
+
+    return isValidInput;
   };
+  console.log(fieldValidation);
   return (
     <>
       <Modal
@@ -137,13 +217,20 @@ const InputDialog = ({
               Give us more info about your drawing:
             </h3>
             <div className="my-2 flex flex-col">
-              <Label htmlFor="title" value="Drawing title" className="mb-4" />
+              <Label
+                htmlFor="title"
+                value="Drawing title"
+                className="mb-4"
+                color={fieldValidation.title.valid ? "" : "failure"}
+              />
               <TextInput
                 id="title"
                 ref={titleInputRef}
                 placeholder="Drawing title ..."
-                // required
                 onChange={(e) => handleInputChange(e, "title")}
+                required
+                color={fieldValidation.title.valid ? "" : "failure"}
+                helperText={fieldValidation.title.helperText}
               />
             </div>
             <div className="my-2 flex flex-col">
@@ -163,27 +250,37 @@ const InputDialog = ({
             </div>
             <div className="flex">
               <div className="my-2 flex flex-col">
-                <Label htmlFor="price" value="Minting Price" className="mb-4" />
+                <Label
+                  htmlFor="mintingPrice"
+                  value="Minting Price"
+                  className="mb-4"
+                  color={fieldValidation.mintingPrice.valid ? "" : "failure"}
+                />
                 <TextInput
                   id="mintingPrice"
                   placeholder="0"
-                  // required
+                  required
                   addon="ETH"
                   onChange={(e) => handleInputChange(e, "mintingPrice")}
+                  color={fieldValidation.mintingPrice.valid ? "" : "failure"}
+                  helperText={fieldValidation.mintingPrice.helperText}
                 />
               </div>
               <div className="m-2 flex flex-col">
                 <Label
-                  htmlFor="price"
+                  htmlFor="open"
                   value="Open for drawing"
                   className="mb-4"
+                  color={fieldValidation.open.valid ? "" : "failure"}
                 />
                 <TextInput
                   id="open"
                   placeholder="0"
-                  // required
+                  required
                   addon="Hours"
                   onChange={(e) => handleInputChange(e, "open")}
+                  color={fieldValidation.open.valid ? "" : "failure"}
+                  helperText={fieldValidation.open.helperText}
                 />
               </div>
             </div>
