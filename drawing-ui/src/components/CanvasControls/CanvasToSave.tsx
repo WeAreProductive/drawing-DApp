@@ -51,6 +51,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   });
   const saveDrawing = async () => {
     setDappState(DAPP_STATE.canvasSave);
+
     if (!canvas) return;
     const canvasContent = canvas?.toJSON(); // or canvas.toObject()
     // !!!! extracts the !!! currents session !!!! drawing objects using the old and current drawing data
@@ -82,8 +83,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       };
       // @TODO - add open in inputValues !!!!
       // !!!!
-      const closedAt = moment().unix() + hoursToTimestamp(3); // convert to seconds
-
+      const closedAt = moment().unix() + hoursToTimestamp(inputValues.open); // converted in seconds
       const initCanvasData = {
         uuid: uuid,
         owner: account,
@@ -132,6 +132,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       </Button>
       <InputDialog
         isOpen={isOpen}
+        openHandler={setIsOpenModal}
         inputValues={inputValues}
         setInputValues={setInputValues}
         action={() => saveDrawing()}

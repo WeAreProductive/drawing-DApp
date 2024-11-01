@@ -10,6 +10,7 @@ import DialogButton from "../ui/formDialog/button";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import DialogToggleSwitch from "../ui/formDialog/toggleSwitch";
 import { DrawingUserInput } from "../../shared/types";
+import { useCanvasContext } from "../../context/CanvasContext";
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -70,20 +71,23 @@ type InputDialogType = {
   setInputValues: React.Dispatch<React.SetStateAction<DrawingUserInput>>;
   inputValues: DrawingUserInput;
   action: () => Promise<void>;
+  openHandler: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const InputDialog = ({
   isOpen,
+  openHandler,
   setInputValues,
   inputValues,
   action,
 }: InputDialogType) => {
-  const [openModal, setOpenModal] = useState(false);
+  // const [openModal, setOpenModal] = useState(false);
   const [switch1, setSwitch1] = useState(false);
+  const { setLoading } = useCanvasContext();
   //  @TODO - use for input validation https://flowbite-react.com/docs/components/forms
   // const titleInputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    setOpenModal(isOpen);
-  }, [isOpen]);
+  // useEffect(() => {
+  //   setOpenModal(isOpen);
+  // }, [isOpen]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -107,16 +111,20 @@ const InputDialog = ({
   const handleInputSend = () => {
     // @TODO - validate input is as equired
     // close modal
-    setOpenModal(false);
+    openHandler(false);
     action();
+  };
+  const handleCloseDialog = () => {
+    openHandler(false);
+    setLoading(false);
   };
   return (
     <>
       <Modal
-        show={openModal}
+        show={isOpen}
         size="lg"
         popup
-        onClose={() => setOpenModal(false)}
+        onClose={handleCloseDialog}
         // initialFocus={titleInputRef}
         theme={customTheme}
       >
@@ -126,7 +134,7 @@ const InputDialog = ({
             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
               Give us more info about your drawing:
             </h3>
-            <div className="flex flex-col my-2">
+            <div className="my-2 flex flex-col">
               <Label htmlFor="title" value="Drawing title" className="mb-4" />
               <TextInput
                 id="title"
@@ -136,7 +144,7 @@ const InputDialog = ({
                 onChange={(e) => handleInputChange(e, "title")}
               />
             </div>
-            <div className="flex flex-col my-2">
+            <div className="my-2 flex flex-col">
               <Label
                 htmlFor="description"
                 value="Drawing description(optional)"
@@ -151,17 +159,33 @@ const InputDialog = ({
                 onChange={(e) => handleInputChange(e, "description")}
               ></Textarea>
             </div>
-            <div className="flex flex-col my-2">
-              <Label htmlFor="price" value="Minting Price" className="mb-4" />
-              <TextInput
-                id="mintingPrice"
-                placeholder="0"
-                // required
-                addon="ETH"
-                onChange={(e) => handleInputChange(e, "mintingPrice")}
-              />
+            <div className="flex">
+              <div className="my-2 flex flex-col">
+                <Label htmlFor="price" value="Minting Price" className="mb-4" />
+                <TextInput
+                  id="mintingPrice"
+                  placeholder="0"
+                  // required
+                  addon="ETH"
+                  onChange={(e) => handleInputChange(e, "mintingPrice")}
+                />
+              </div>
+              <div className="m-2 flex flex-col">
+                <Label
+                  htmlFor="price"
+                  value="Open for drawing"
+                  className="mb-4"
+                />
+                <TextInput
+                  id="open"
+                  placeholder="0"
+                  // required
+                  addon="Hours"
+                  onChange={(e) => handleInputChange(e, "open")}
+                />
+              </div>
             </div>
-            <div className="flex items-start gap-4 my-2">
+            <div className="my-2 flex items-start gap-4">
               <Label value="Private drawing" className="self-center" />
               <DialogToggleSwitch checked={switch1} onChange={handleSwitch} />
             </div>
@@ -172,7 +196,7 @@ const InputDialog = ({
           <DialogButton color="green" onClick={() => handleInputSend()}>
             Continue
           </DialogButton>
-          <DialogButton color="red" onClick={() => setOpenModal(false)}>
+          <DialogButton color="red" onClick={handleCloseDialog}>
             Decline
           </DialogButton>
         </Modal.Footer>
