@@ -148,7 +148,7 @@ const InputDialog = ({
             if (+inputValues[name] < 1 || isNaN(inputValues[name])) {
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
-                [name]: { valid: false, msg: "Value must be greater than 0!" },
+                [name]: { valid: false, msg: validationErrMsg.gt0 },
               }));
               console.log("Value must be greater than 0!");
               isValidInput = false;
@@ -159,7 +159,7 @@ const InputDialog = ({
               console.log("string empty");
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
-                [name]: { valid: false, msg: "The field is required!" },
+                [name]: { valid: false, msg: validationErrMsg.required },
               }));
               isValidInput = false;
             }
@@ -185,7 +185,7 @@ const InputDialog = ({
             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
               Give us more info about your drawing:
             </h3>
-            <div className="my-2 flex flex-col">
+            <div className="flex flex-col my-2">
               <Label
                 htmlFor="title"
                 value="Drawing title"
@@ -202,7 +202,7 @@ const InputDialog = ({
                 helperText={fieldValidation.title.msg}
               />
             </div>
-            <div className="my-2 flex flex-col">
+            <div className="flex flex-col my-2">
               <Label
                 htmlFor="description"
                 value="Drawing description(optional)"
@@ -218,7 +218,7 @@ const InputDialog = ({
               ></Textarea>
             </div>
             <div className="flex">
-              <div className="my-2 flex flex-col">
+              <div className="flex flex-col my-2">
                 <Label
                   htmlFor="mintingPrice"
                   value="Minting Price"
@@ -235,7 +235,7 @@ const InputDialog = ({
                   helperText={fieldValidation.mintingPrice.msg}
                 />
               </div>
-              <div className="m-2 flex flex-col">
+              <div className="flex flex-col m-2">
                 <Label
                   htmlFor="open"
                   value="Open for drawing"
@@ -253,7 +253,7 @@ const InputDialog = ({
                 />
               </div>
             </div>
-            <div className="my-2 flex items-start gap-4">
+            <div className="flex items-start gap-4 my-2">
               <Label value="Private drawing" className="self-center" />
               <DialogToggleSwitch checked={switch1} onChange={handleSwitch} />
             </div>
