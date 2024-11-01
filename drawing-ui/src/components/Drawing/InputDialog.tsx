@@ -67,25 +67,18 @@ const customTheme: CustomFlowbiteTheme["modal"] = {
   },
 };
 const validationRules = {
-  required: "required",
-  gtzero: "gtzero",
+  title: ["required"],
+  mintingPrice: ["required", "gt0"],
+  open: ["required", "gt0"],
+};
+const validationErrMsg = {
+  required: "The field is required!",
+  gt0: "Value must be greater than 0!",
 };
 const validationInit = {
-  title: {
-    valid: true,
-    helperText: "",
-    rules: [validationRules.required],
-  },
-  mintingPrice: {
-    valid: true,
-    helperText: "",
-    rules: [validationRules.required, validationRules.gtzero],
-  },
-  open: {
-    valid: true,
-    helperText: "",
-    rules: [validationRules.required, validationRules.gtzero],
-  },
+  title: { valid: true, msg: "" },
+  mintingPrice: { valid: true, msg: "" },
+  open: { valid: true, msg: "" },
 };
 type InputDialogType = {
   isOpen: boolean;
@@ -117,15 +110,10 @@ const InputDialog = ({
       [inputName]: e.target.value,
     });
     // reset validation
-    if (fieldValidation[inputName]) {
-      const updatedValue = {
-        isValid: true,
-        helperText: "",
-        rules: fieldValidation[inputName].rules,
-      };
+    if (Object.hasOwn(fieldValidation, inputName)) {
       setFieldValidation((fieldValidation) => ({
         ...fieldValidation,
-        [inputName]: updatedValue,
+        [inputName]: { valid: true },
       }));
     }
   };
@@ -156,50 +144,35 @@ const InputDialog = ({
   };
   const validateInput = () => {
     let isValidInput = true;
-    for (let fieldName in inputValues) {
-      const fieldAttr = fieldValidation[fieldName];
-      let isValid = true;
-      let helperText = "";
-      if (fieldAttr) {
-        if (!fieldAttr.rules) return;
-
-        fieldAttr.rules.forEach((rule) => {
-          switch (rule) {
-            case "required":
-              if (!inputValues[fieldName].toString().trim()) {
-                isValid = false;
-                helperText = `The field is required!`;
-                isValidInput = false;
-              }
-              break;
-            case "gtzero":
-              if (
-                +inputValues[fieldName] < 1 ||
-                isNaN(inputValues[fieldName])
-              ) {
-                isValid = false;
-                helperText = `Value must be greater than 0!`;
-                isValidInput = false;
-              }
-              break;
+    for (let name in inputValues) {
+      if (Object.hasOwn(validationRules, name)) {
+        console.log({ name });
+        validationRules[name].forEach((rule: string) => {
+          if (rule == "gt0") {
+            if (+inputValues[name] < 1 || isNaN(inputValues[name])) {
+              setFieldValidation((fieldValidation) => ({
+                ...fieldValidation,
+                [name]: { valid: false, msg: "Value must be greater than 0!" },
+              }));
+              console.log("Value must be greater than 0!");
+              isValidInput = false;
+            }
+          }
+          if (rule == "required") {
+            if (!inputValues[name].toString().trim()) {
+              console.log("string empty");
+              setFieldValidation((fieldValidation) => ({
+                ...fieldValidation,
+                [name]: { valid: false, msg: "The field is required!" },
+              }));
+              isValidInput = false;
+            }
           }
         });
-
-        const updatedValue = {
-          isValid,
-          helperText,
-          rules: fieldAttr.rules,
-        };
-        setFieldValidation((fieldValidation) => ({
-          ...fieldValidation,
-          [fieldName]: updatedValue,
-        }));
       }
     }
-
     return isValidInput;
   };
-  console.log(fieldValidation);
   return (
     <>
       <Modal
@@ -230,7 +203,7 @@ const InputDialog = ({
                 onChange={(e) => handleInputChange(e, "title")}
                 required
                 color={fieldValidation.title.valid ? "" : "failure"}
-                helperText={fieldValidation.title.helperText}
+                helperText={fieldValidation.title.msg}
               />
             </div>
             <div className="my-2 flex flex-col">
@@ -263,7 +236,7 @@ const InputDialog = ({
                   addon="ETH"
                   onChange={(e) => handleInputChange(e, "mintingPrice")}
                   color={fieldValidation.mintingPrice.valid ? "" : "failure"}
-                  helperText={fieldValidation.mintingPrice.helperText}
+                  helperText={fieldValidation.mintingPrice.msg}
                 />
               </div>
               <div className="m-2 flex flex-col">
@@ -280,7 +253,7 @@ const InputDialog = ({
                   addon="Hours"
                   onChange={(e) => handleInputChange(e, "open")}
                   color={fieldValidation.open.valid ? "" : "failure"}
-                  helperText={fieldValidation.open.helperText}
+                  helperText={fieldValidation.open.msg}
                 />
               </div>
             </div>
