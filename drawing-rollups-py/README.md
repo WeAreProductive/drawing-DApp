@@ -12,7 +12,7 @@ This DApp's back-end is written in Python, so to run it in your machine you need
 
 Then in order to start the back-end, run the following commands in a dedicated terminal:
 
-```shell 
+```shell
 
 cd dapp
 python3 ./sqlite.py
@@ -35,7 +35,7 @@ After that, you can interact with the application normally as explained in the R
 
 Keep in mind that vouchers cannot be executed when the dApp is running in a development mode.
 
-# inspect requests - endpoints and response
+# inspect requests - endpoints and response @TODO update!!!
 
 /drawings/all - returns all drawings grouped by uuid with pagination
 
@@ -56,3 +56,41 @@ Keep in mind that vouchers cannot be executed when the dApp is running in a deve
 # /drawings/uuids/{uuids}/ query_args: [drawings, uuids, {uuids}]
 
 # /drawing/uuid/{uuids}/ query_args: [drawing, uuid, {uuid}]
+
+# Database
+
+@TODO - describe old tables
+
+## tables
+
+### drawings
+
+id
+uuid
+owner
+dimensions
+.... @TODO add missing columns
+minting_price `set for a drawing or get from a contest`
+...
+(new) contest_id FK refers to `contests id(PK)`
+
+### layers
+
+### mints
+
+id  
+minter
+created_at (minting voucher request timestamp)
+drawing_id drawing_id FK refers to `drawings (id)`
+
+### contests
+
+id
+owner `the address that created the contest`
+title
+description
+active_from `set as date in FE and converted to unixtimestamp(seconds)`
+active_to `same as active_from(timestamp)` `can create and contribute to existing drawings`
+minting_active `period for minting after active_to ends, set in Hours in FE and converted to seconds(timestamp)`
+(contest) minting_price ? hardcoded, visible st FE?
+created_at `timestamp when the record is created`
