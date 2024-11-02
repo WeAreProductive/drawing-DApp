@@ -1,5 +1,5 @@
 const CreateDrawingToContest = () => {
-  return <button>Create Drawign</button>;
+  return <button>Create Drawing</button>;
 };
 
 export default CreateDrawingToContest;

@@ -7,7 +7,7 @@ const CreateContest = () => {
     <Page>
       <div className="grid gap-4">
         <h1>Create New Contest</h1>
-        <div className="p-6 rounded-xl bg-card">
+        <div className="flex p-6 rounded-xl">
           <ContestInput />
           <CreateDrawingToContest />
         </div>
