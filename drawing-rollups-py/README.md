@@ -45,6 +45,8 @@ Keep in mind that vouchers cannot be executed when the dApp is running in a deve
 
 /drawing/{uuid} - returns a single drawing data for the given uuid
 
+# drawings
+
 # /drawings (page=1) query_args: [drawings]
 
 # /drawings/page/33 (page=33) query_args: [drawings, page, 33]
@@ -56,6 +58,14 @@ Keep in mind that vouchers cannot be executed when the dApp is running in a deve
 # /drawings/uuids/{uuids}/ query_args: [drawings, uuids, {uuids}]
 
 # /drawing/uuid/{uuids}/ query_args: [drawing, uuid, {uuid}]
+
+# contests
+
+# /contests/page/33 (page=33) query_args: [contests, page, 33] `get all contest, with pagination`
+
+# /contests/{id} query_args: [contests, id] `get contest by id`
+
+# /contests/create/{contest_data} query_args: [contests, create, contest_data] `create new contest, contest_data is a json stringified dictionary`
 
 # Database
 
@@ -86,7 +96,7 @@ drawing_id drawing_id FK refers to `drawings (id)`
 ### contests
 
 id
-owner `the address that created the contest`
+created_by `the address that created the contest`
 title
 description
 active_from `set as date in FE and converted to unixtimestamp(seconds)`

@@ -7,11 +7,10 @@ import traceback
 import json 
 from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
-from lib.db_api import store_data, get_data, get_drawing_minting_price, get_drawing_contributors 
+from lib.db_api import store_data, get_data, get_drawing_minting_price, get_drawing_contributors, create_contest 
 from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdraw_tokens
 import cartesi_wallet.wallet as Wallet
-from cartesi_wallet.util import hex_to_str
-# from web3 import Web3
+from cartesi_wallet.util import hex_to_str 
 from eth_utils import to_wei, from_wei
 
 logging.basicConfig(level="INFO")
@@ -179,11 +178,18 @@ def handle_inspect(request):
     query_str = hex2str(request['payload'])
     logger.info(f"Received inspect request data {query_str}")
     query_args = query_str.split('/')
+    logger.info(f"REQUEST {request}")
     if query_args[0] == 'balance':
         user_address = query_args[1]
         eth_balance = get_balance(user_address, True)
         logger.info(f"ETH BALANCE {eth_balance}")
         payload = str2hex(str(eth_balance))
+        send_report({"payload": payload}) 
+    elif query_args[0] == 'contests':
+        if query_args[1] == 'create' :
+            # @TODO add timestamp
+            create_contest(query_args) 
+        payload = str2hex(str(query_args))
         send_report({"payload": payload})  
     else :
         data = get_data(query_args)

@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { DrawingInputExtended } from "../../shared/types";
 import CanvasSnapshot from "./CanvasSnapshot";
-import { useWallets } from "@web3-onboard/react";
 import { useInspect } from "../../hooks/useInspect";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { useConnectionContext } from "../../context/ConnectionContext";
@@ -95,14 +94,14 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     initDrawingsData();
   }, [dappState, account, drawingsType]);
   return (
-    <div className="-mx-1 flex flex-wrap">
+    <div className="flex flex-wrap -mx-1">
       {drawings && drawings.length > 0 ? (
         drawings.map((drawing, i) => {
           try {
             return i === drawings.length - 1 ? (
               <div
                 key={`${drawing.uuid}`}
-                className="last-element w-1/2 p-2"
+                className="w-1/2 p-2 last-element"
                 ref={setLastElement}
               >
                 <CanvasSnapshot src={drawing} />

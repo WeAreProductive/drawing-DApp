@@ -1,15 +1,9 @@
 import { useRef, useState } from "react";
-import {
-  Button,
-  Datepicker,
-  Label,
-  Spinner,
-  Textarea,
-  TextInput,
-} from "flowbite-react";
+import { Button, Label, Textarea, TextInput } from "flowbite-react";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import InputDatepicker from "../ui/formDialog/inputDatepicker";
 import ButtonSpinner from "../ui/formDialog/buttonSpinner";
+import { useInspect } from "../../hooks/useInspect";
 
 const validationErrMsg = {
   required: "The field is required!",
@@ -37,11 +31,13 @@ const initialInput = {
   mintingOpen: 1,
 };
 
-const ContestInput = () => {
+const ContestCreateInput = () => {
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const { inspectCall } = useInspect();
   const [fieldValidation, setFieldValidation] = useState(validationInit);
   const [inputValues, setInputValues] = useState<any>(initialInput);
   const [loading, setLoading] = useState(false);
+
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     inputName: string,
@@ -59,16 +55,33 @@ const ContestInput = () => {
     }
   };
   // @TODO
-  const validateInput = () => {};
+  const validateInput = () => {
+    return true;
+  };
   const handleReset = () => {
     setInputValues(initialInput);
   };
-  const handleSubmit = () => {
+  const createContest = async () => {
+    console.warn("Creating new contest ...");
+    // @TODO - update dapp states console.warn(dappState);
+    const contestData = JSON.stringify(inputValues);
+
+    const queryString = `contests/create/${contestData}`;
+    const data = await inspectCall(queryString, "plain");
+    console.log(data);
+    setLoading(false);
+  };
+  const handleSubmit = async () => {
     // @TODO validate fields
-    // send input
+    const isValid = validateInput();
+    if (!isValid) return;
+
     setLoading(true);
-    // display loading
-    // display success toast
+
+    // send input
+    const result = await createContest();
+    // @TODO display success toast
+    setInputValues(initialInput);
   };
   return (
     <div>
@@ -170,4 +183,4 @@ const ContestInput = () => {
     </div>
   );
 };
-export default ContestInput;
+export default ContestCreateInput;

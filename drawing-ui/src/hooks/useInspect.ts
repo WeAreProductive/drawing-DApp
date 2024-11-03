@@ -42,7 +42,6 @@ export const useInspect = () => {
     if (response.status == 200) {
       const result = await response.json();
       for (const i in result.reports) {
-        // @TODO refractor to abstract the result
         let output = result.reports[i].payload;
         switch (type) {
           case "compressed":
