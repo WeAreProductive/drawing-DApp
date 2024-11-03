@@ -1,9 +1,10 @@
 import { useRef, useState } from "react";
-import { Button, Label, Textarea, TextInput } from "flowbite-react";
+import { Button, Datepicker, Label, Textarea, TextInput } from "flowbite-react";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import InputDatepicker from "../ui/formDialog/inputDatepicker";
 import ButtonSpinner from "../ui/formDialog/buttonSpinner";
 import { useInspect } from "../../hooks/useInspect";
+import moment from "moment";
 
 const validationErrMsg = {
   required: "The field is required!",
@@ -39,12 +40,29 @@ const ContestCreateInput = () => {
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
     inputName: string,
   ) => {
     setInputValues({
       ...inputValues,
       [inputName]: e.target.value,
+    });
+    // reset validation
+    if (Object.hasOwn(fieldValidation, inputName)) {
+      setFieldValidation((fieldValidation) => ({
+        ...fieldValidation,
+        [inputName]: { valid: true },
+      }));
+    }
+  };
+  const handleDateSelected = (date: Date, inputName: string) => {
+    const toMoment = moment(date).format();
+    const unixTimestamp = moment(toMoment).unix();
+    setInputValues({
+      ...inputValues,
+      [inputName]: unixTimestamp,
     });
     // reset validation
     if (Object.hasOwn(fieldValidation, inputName)) {
@@ -62,7 +80,7 @@ const ContestCreateInput = () => {
     setInputValues(initialInput);
   };
   const createContest = async () => {
-    console.warn("Creating new contest ...");
+    console.warn("CONTEST :: Creating new contest ...");
     // @TODO - update dapp states console.warn(dappState);
     const contestData = JSON.stringify(inputValues);
 
@@ -83,6 +101,7 @@ const ContestCreateInput = () => {
     // @TODO display success toast
     setInputValues(initialInput);
   };
+
   return (
     <div>
       <div className="p-10 space-y-6 bg-card">
@@ -92,14 +111,14 @@ const ContestCreateInput = () => {
         <div className="flex flex-col my-2">
           <Label
             htmlFor="title"
-            value="Drawing title"
+            value="Contest title"
             className="mb-4"
             color={fieldValidation.title.valid ? "" : "failure"}
           />
           <TextInput
             id="title"
             ref={titleInputRef}
-            placeholder="Drawing title ..."
+            placeholder="Contest title ..."
             onChange={(e) => handleInputChange(e, "title")}
             required
             value={inputValues.title}
@@ -127,21 +146,28 @@ const ContestCreateInput = () => {
           <Label
             htmlFor="activeFrom"
             value="Contest is active"
-            className="mb-4"
             color={fieldValidation.activeFrom.valid ? "" : "failure"}
           />
           <div className="flex gap-2 m-2">
-            <div className="w-1/2">
-              {/* @TODO add minDate = now */}
+            <div>
+              <Label
+                value="from"
+                color={fieldValidation.activeFrom.valid ? "" : "failure"}
+              />
               <InputDatepicker
-                addon="From"
-                onChange={(e) => handleInputChange(e, "activeFrom")}
+                name="activeFrom"
+                onChange={(date) => handleDateSelected(date, "activeFrom")}
               />
             </div>
-            <div className="w-1/2">
+            <div>
+              <Label
+                htmlFor="activeTo"
+                value="to"
+                color={fieldValidation.activeFrom.valid ? "" : "failure"}
+              />
               <InputDatepicker
-                addon="To"
-                onChange={(e) => handleInputChange(e, "activeFrom")}
+                name="activeTo"
+                onChange={(date) => handleDateSelected(date, "activeTo")}
               />
             </div>
           </div>

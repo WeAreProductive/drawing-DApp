@@ -8,6 +8,7 @@ module.exports = {
     "./layouts/**/*.{ts,tsx}",
     "./app/**/*.{ts,tsx}",
     "./src/**/*.{ts,tsx}",
+    "../node_modules/tailwind-datepicker-react/dist/**/*.js",
   ],
   prefix: "",
   theme: {
