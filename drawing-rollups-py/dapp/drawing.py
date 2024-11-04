@@ -7,7 +7,8 @@ import traceback
 import json 
 from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
-from lib.db_api import store_data, get_data, get_drawing_minting_price, get_drawing_contributors, create_contest 
+from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors
+from lib.db.contests import create_contest
 from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdraw_tokens
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str 

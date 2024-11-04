@@ -1,39 +1,15 @@
 import sqlite3 
 import logging
-import json   
-from datetime import datetime
+import json    
+
+from lib.db.utils import get_closed_at, get_query_offset
 
 logging.basicConfig(level="INFO")
-logger = logging.getLogger(__name__)
-# @TODO - separate drawings and contests
-db_filename = 'drawing.db'  
-limit = 8 
-contest_minting_price = 1
-# helpers - move to utils.py
-def get_query_offset(page):
-  """ Calculates the OFFSET parameter in query statements.
-  Parameters
-  ----------
-  page : string 
-    
-  Raises
-  ------
-  Returns
-  -------
-    offset: number
-  """
-  offset = 0
-  if page:
-    if page > 0:
-      offset = (page -1) * limit 
-  return offset
+logger = logging.getLogger(__name__) 
 
-def get_closed_at(now, end):
-  # hours * min * s
-  seconds_period = int(end)*60*60
-  closed_at = seconds_period + now
-  logger.info(f"Expires at {datetime.fromtimestamp(closed_at)}")
-  return closed_at
+db_filename = 'drawing.db'  
+
+limit = 8 
     
 def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.
@@ -421,42 +397,4 @@ def store_data(cmd, timestamp, sender, data):
   elif cmd == 'v-d-nft':
     logger.info(f"Store minting-voucher data") 
     save_data("store_minting_voucher_data", {"id":data, "sender": sender, "timestamp": timestamp}) 
-
-  
-def create_contest(data):
- 
-  try: 
-    conn = sqlite3.connect(db_filename)
-    cursor = conn.cursor()  
-    #  [contests, create, contest_data] 
-    contest = json.loads(data[2])
-    created_by = contest['created_by']
-    created_at = contest['created_at']
-    #
-    contest_data = contest['data']
-    logger.info(f"Contest data {contest_data}")
-    title = contest_data['title']
-    description = contest_data['description']
-    active_from = contest_data['activeFrom']
-    active_to = contest_data['activeTo']
-    minting_active = contest_data['mintingOpen'] 
-    logger.info(f"DATA {contest}")
-    cursor.execute(
-        """
-        INSERT INTO contests(created_by, title, description, minting_price, active_from, active_to, minting_active, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-        (created_by, title, description, contest_minting_price, active_from, active_to, minting_active, created_at)
-    )
-
-    conn.commit()
-    id = cursor.lastrowid
-    return id 
-  except Exception as e: 
-    msg = f"Error executing insert statement: {e}" 
-    logger.info(f"{msg}")
-  finally:
-    if conn:
-      conn.close()
-  return False
 
