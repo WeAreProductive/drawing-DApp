@@ -187,7 +187,6 @@ def handle_inspect(request):
         send_report({"payload": payload}) 
     elif query_args[0] == 'contests':
         if query_args[1] == 'create' :
-            # @TODO add timestamp
             create_contest(query_args) 
         payload = str2hex(str(query_args))
         send_report({"payload": payload})  

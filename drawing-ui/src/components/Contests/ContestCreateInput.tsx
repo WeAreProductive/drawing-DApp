@@ -5,6 +5,10 @@ import InputDatepicker from "../ui/formDialog/inputDatepicker";
 import ButtonSpinner from "../ui/formDialog/buttonSpinner";
 import { useInspect } from "../../hooks/useInspect";
 import moment from "moment";
+import { useConnectionContext } from "../../context/ConnectionContext";
+import { dateToTimestamp } from "../../utils";
+
+const now = moment().utc();
 
 const validationErrMsg = {
   required: "The field is required!",
@@ -20,20 +24,21 @@ const validationRules = {
 };
 const validationInit = {
   title: { valid: true, msg: "" },
-  activeFrom: { valid: true, msg: "" },
+  activeFrom: { valid: true, msg: now },
   activeTo: { valid: true, msg: "" },
   mintingOpen: { valid: true, msg: "" },
 };
 const initialInput = {
   title: "",
   description: "",
-  activeFrom: "", // @TODO set to now
-  activeTo: "", // @TODO set to now+1
+  activeFrom: now, // @TODO set to now
+  activeTo: now, // @TODO set to now+1
   mintingOpen: 1,
 };
 
 const ContestCreateInput = () => {
   const titleInputRef = useRef<HTMLInputElement>(null);
+  const { account } = useConnectionContext();
   const { inspectCall } = useInspect();
   const [fieldValidation, setFieldValidation] = useState(validationInit);
   const [inputValues, setInputValues] = useState<any>(initialInput);
@@ -58,11 +63,9 @@ const ContestCreateInput = () => {
     }
   };
   const handleDateSelected = (date: Date, inputName: string) => {
-    const toMoment = moment(date).format();
-    const unixTimestamp = moment(toMoment).unix();
     setInputValues({
       ...inputValues,
-      [inputName]: unixTimestamp,
+      [inputName]: date,
     });
     // reset validation
     if (Object.hasOwn(fieldValidation, inputName)) {
@@ -77,17 +80,30 @@ const ContestCreateInput = () => {
     return true;
   };
   const handleReset = () => {
+    console.log(initialInput);
     setInputValues(initialInput);
   };
   const createContest = async () => {
     console.warn("CONTEST :: Creating new contest ...");
     // @TODO - update dapp states console.warn(dappState);
-    const contestData = JSON.stringify(inputValues);
+    const toMoment = moment().format();
+    const unixTimestamp = moment(toMoment).unix();
+    const contest_data = {
+      data: {
+        ...inputValues,
+        activeFrom: dateToTimestamp(inputValues.activeFrom),
+        activeTo: dateToTimestamp(inputValues.activeTo),
+      },
+      created_by: account,
+      created_at: unixTimestamp,
+    };
+    const contestData = JSON.stringify(contest_data);
 
     const queryString = `contests/create/${contestData}`;
     const data = await inspectCall(queryString, "plain");
     console.log(data);
     setLoading(false);
+    setInputValues(initialInput);
   };
   const handleSubmit = async () => {
     // @TODO validate fields
@@ -157,6 +173,7 @@ const ContestCreateInput = () => {
               <InputDatepicker
                 name="activeFrom"
                 onChange={(date) => handleDateSelected(date, "activeFrom")}
+                value={inputValues.activeFrom}
               />
             </div>
             <div>
@@ -168,6 +185,7 @@ const ContestCreateInput = () => {
               <InputDatepicker
                 name="activeTo"
                 onChange={(date) => handleDateSelected(date, "activeTo")}
+                value={inputValues.activeTo}
               />
             </div>
           </div>

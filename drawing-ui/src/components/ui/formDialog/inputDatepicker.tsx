@@ -2,16 +2,18 @@ import { useState } from "react";
 import moment from "moment";
 import Datepicker from "tailwind-datepicker-react";
 
-// @TODO in UTC
-const now = moment().utc().format("YY-m-d"); // @TODO check formatting
+const now = moment().utc(); // @TODO check formatting
+console.log(now);
 // https://www.npmjs.com/package/tailwind-datepicker-react
 
 const InputDatepicker = ({
   onChange,
   name,
+  value,
 }: {
   onChange: (date: Date) => void;
   name: string;
+  value: any;
 }) => {
   const [show, setShow] = useState(false);
   const options = {
@@ -53,6 +55,7 @@ const InputDatepicker = ({
         onChange={onChange}
         show={show}
         setShow={handleClose}
+        value={value}
       />
     </div>
   );
