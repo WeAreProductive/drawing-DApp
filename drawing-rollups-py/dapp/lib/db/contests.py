@@ -1,15 +1,98 @@
 import sqlite3 
 import logging
 import json   
-from datetime import datetime
+from lib.db.utils import get_query_offset
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
-# get_raw_data, get_data
+
 db_filename = 'drawing.db'  
 
+limit = 8
 contest_minting_price = 1
 
+def get_raw_data(query_args, type, page = 1):
+  """ Executes database query statement.
+  Parameters
+  ----------
+  
+  Raises
+  ------
+    Exception  
+  Returns
+  -------
+    
+  """
+  conn = None 
+  try :
+    conn = sqlite3.connect(db_filename) 
+    conn.row_factory = sqlite3.Row # receive named results
+    cursor = conn.cursor() 
+    match type:
+      case "get_all_contests": 
+        print("get_all_contests") 
+        #
+        offset = get_query_offset(page)  
+        statement = "SELECT * "
+        statement = statement + "FROM contests c "
+        statement = statement + "ORDER BY d.created_at DESC LIMIT ? OFFSET ?"
+        cursor.execute(statement, [limit, offset]) 
+        rows = cursor.fetchall() 
+        return rows 
+
+  except Exception as e: 
+    msg = f"Error executing statement: {e}" 
+    logger.info(f"{msg}")
+
+  finally:
+    if conn:
+      conn.close()
+
+# retrieve data
+def get_contests(query_args, type, page): 
+  """ Retrieves requested contest data.
+  Parameters
+  ----------
+   
+  Raises
+  ------
+  Returns
+  -------
+  """
+  result = {}
+  contests = [] # all contests array result 
+  data_rows = get_raw_data(query_args, type, page) 
+  
+  
+  logger.info(f"Contests {data_rows}")
+    
+  return result
+
+# router
+def get_contest_data(query_args):
+  """ Entry function for retrieving contest adata.
+  Parameters
+  ----------
+  query_args : list
+    Parameters to be bind in the query statement.
+  Raises
+  ------
+  Returns
+  -------
+    list : contest data
+  """
+  page = 1 # default value
+  # decide which get-data handler to use 
+  if query_args[0] == 'contests':
+      # paginated, expects 3 elements in query_args
+      # ['contests', 'page', '1']
+      query_type = 'get_all_contests' 
+      if len(query_args == 3 ):
+        page = int(query_args[2])
+  contests = get_contests(query_args, query_type, page) 
+  return contests
+
+# store data
 def create_contest(data):
   try: 
     conn = sqlite3.connect(db_filename)
