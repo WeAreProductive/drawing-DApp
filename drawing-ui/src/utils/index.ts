@@ -264,6 +264,7 @@ export const handlePlainResponse = (output: `0x${string}`) => {
   if (output) {
     try {
       data = ethers.utils.toUtf8String(output);
+      console.log({ data });
       return data;
     } catch (e) {
       console.error(e);
@@ -282,5 +283,10 @@ export const hoursToTimestamp = (hours: number) => {
 
 export const dateToTimestamp = (date: null | string) => {
   const toMoment = date ? moment(date).format() : moment().format();
+  return moment(toMoment).unix();
+};
+
+export const nowUnixTimestamp = () => {
+  const toMoment = moment().format();
   return moment(toMoment).unix();
 };

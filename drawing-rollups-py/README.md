@@ -61,7 +61,9 @@ Keep in mind that vouchers cannot be executed when the dApp is running in a deve
 
 # contests
 
-# /contests/page/33 (page=33) query_args: [contests, page, 33] `get all contest, with pagination`
+## /contests/page/{33}/{type}/{timestamp} (page=33) query_args: [contests, page, 33, type, timestamp] `get contests by type, with pagination`
+
+type and timestamp are optional (case get all contests - active, inactice, and future)
 
 # /contests/{id} query_args: [contests, id] `get contest by id`
 
