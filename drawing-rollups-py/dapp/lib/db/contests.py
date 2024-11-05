@@ -84,6 +84,7 @@ def get_contests(query_args, query_type, page, timestamp):
   Returns
   -------
   """  
+  result = {}
   contests = [] # all contests array result 
   data_rows = get_raw_data(query_args, query_type, page, timestamp)   
   
@@ -102,8 +103,9 @@ def get_contests(query_args, query_type, page, timestamp):
       current_contest['created_at'] = row['created_at']
 
       contests.append(current_contest)  
-    
-  return contests
+  # @TODO has_next page
+  result['contests'] = contests 
+  return result
 
 # router
 def get_query_type(contest_type):
@@ -141,7 +143,7 @@ def get_contest_data(query_args):
             
   contests = get_contests(query_args, query_type, page, timestamp) 
   logger.info(f"CONTESTS {contests}")
-  return contests
+  return json.dumps(contests)
 
 # store data
 def create_contest(data):

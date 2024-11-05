@@ -2,8 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { useInspect } from "../../hooks/useInspect";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { nowUnixTimestamp } from "../../utils";
+import Contest from "./Contest";
 
 // @TODO define contest type
+// @TODO display single contest
+// @TODO check timestamp saved because of inactive/active/future contests
 // @TODO define/update dappStates
 // @TODO contests create validation
 // @TODO after save info messages
@@ -59,9 +62,10 @@ const ContestsList = ({ contestType }: { contestType: string }) => {
     queryString = `contests/page/1/${contestType}/${now}`;
     const data = await inspectCall(queryString, "plain");
     console.log(data);
-    // const { next_page, contests } = data;
-    // setContests(contests);
-    // setPage(next_page);
+    const { next_page, contests } = JSON.parse(data);
+    console.log({ contests });
+    setContests(contests);
+    setPage(next_page);
     setIsLoading(false);
   };
   // };
@@ -77,9 +81,9 @@ const ContestsList = ({ contestType }: { contestType: string }) => {
     let queryString = "";
     queryString = `contests/page/${page}/${contestType}/${now}`;
     const data = await inspectCall(queryString);
-    // const { next_page, contests } = data;
-    // if (contests) setContests((prevItems) => [...prevItems, ...contests]);
-    // setPage(next_page);
+    const { next_page, contests } = JSON.parse(data);
+    if (contests) setContests((prevItems) => [...prevItems, ...contests]);
+    setPage(next_page);
     setIsLoading(false);
   };
 
@@ -89,19 +93,19 @@ const ContestsList = ({ contestType }: { contestType: string }) => {
   return (
     <div className="flex flex-wrap -mx-1">
       {contests && contests.length > 0 ? (
-        contests.map((contests, i) => {
+        contests.map((contest, i) => {
           try {
             return i === contests.length - 1 ? (
               <div
-                key={i} // @TODO replace with real data
+                key={contest.id} // @TODO replace with real data
                 className="w-1/2 p-2 last-element"
                 ref={setLastElement}
               >
-                contest
+                <Contest data={contest} />
               </div>
             ) : (
-              <div key={i} className="w-1/2 p-2">
-                contest
+              <div key={contest.id} className="w-1/2 p-2">
+                <Contest data={contest} />
               </div>
             );
           } catch (e) {
