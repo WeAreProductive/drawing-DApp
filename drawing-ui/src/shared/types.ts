@@ -60,6 +60,7 @@ export type CanvasContextType = {
 };
 
 export type VoucherExtended = {
+  info: string;
   id?: string;
   index: number;
   destination: string;
@@ -155,7 +156,22 @@ export type RollupsInteractions = {
   sendInput: (strInput: string, tempDrawingData?: any) => Promise<void>;
   sendMintingInput: (input: any, tempDrawingData?: any) => Promise<void>;
   sendWithdrawInput: (amount: string) => Promise<void>;
-  executeVoucher: (
-    voucher: VoucherExtended,
-  ) => Promise<VoucherExtended | undefined>;
+  executeVoucher: (voucher: VoucherExtended) => Promise<boolean>;
 };
+
+export type Hex = `0x${string}`;
+export type Hash = `0x${string}`;
+export interface Validity {
+  inputIndexWithinEpoch: number;
+  outputIndexWithinInput: number;
+  outputHashesRootHash: Hash;
+  vouchersEpochRootHash: Hash;
+  noticesEpochRootHash: Hash;
+  machineStateHash: Hash;
+  outputHashInOutputHashesSiblings: Hash[];
+  outputHashesInEpochSiblings: Hash[];
+}
+export interface Proof {
+  context: Hex;
+  validity: Validity;
+}

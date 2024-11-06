@@ -1,7 +1,13 @@
 import { ethers } from "ethers";
+import gql from "graphql-tag";
+import * as Urql from "urql";
 import { useWallets } from "@web3-onboard/react";
 import { useCallback, useEffect, useState } from "react";
-import { useVouchersQuery } from "../../generated/graphql";
+import {
+  useVouchersQuery,
+  VouchersQuery,
+  VouchersQueryVariables,
+} from "../../generated/graphql";
 import { MINT_SELECTOR, ETHER_TRANSFER_SELECTOR } from "../../shared/constants";
 import {
   VoucherExtended,
@@ -11,12 +17,14 @@ import {
 import Voucher from "./Voucher";
 import pako from "pako";
 import { useInspect } from "../../hooks/useInspect";
+import { useVouchersWithProofQuery } from "../../utils/queries";
 
 const VouchersList = () => {
   const [connectedWallet] = useWallets();
   const { inspectCall } = useInspect();
   const [cursor, setCursor] = useState<string | null | undefined | null>(null);
-  const [result, reexecuteQuery] = useVouchersQuery({
+
+  const [result, reexecuteQuery] = useVouchersWithProofQuery({
     variables: { cursor },
     pause: true,
   });
@@ -79,15 +87,16 @@ const VouchersList = () => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
-      // console.log(node);
+      console.log(node.node.proof);
       // init data
       const n = node.node;
-      let payload = n?.payload; // voucher data
+      const payload = n?.payload; // voucher data
       let inputPayload = n?.input.payload; // ?!
       let info = null;
       let ownerAddress = null;
       let notices = n?.input.notices; // drawing data
       let drawings = [];
+      let payloadSliced = payload;
       // @TODO inputPayload is used for ?!
       if (inputPayload) {
         try {
@@ -99,24 +108,34 @@ const VouchersList = () => {
         inputPayload = "(empty)";
       }
       let selector = "";
-      if (payload) {
+
+      if (payloadSliced) {
         const decoder = new ethers.utils.AbiCoder();
         selector = decoder.decode(["bytes4"], payload)[0];
-        payload = ethers.utils.hexDataSlice(payload, 4);
+        payloadSliced = ethers.utils.hexDataSlice(payload, 4);
         try {
           switch (selector) {
             case MINT_SELECTOR: {
-              const decode = decoder.decode(["address", "string"], payload);
-              payload = `Mint Erc721 - String: ${decode[1]} - Address: ${decode[0]}`;
+              const decode = decoder.decode(
+                ["address", "string"],
+                payloadSliced,
+              );
+              // payload = `Mint Erc721 - String: ${decode[1]} - Address: ${decode[0]}`;
               info = decode[1];
               ownerAddress = decode[0];
               break;
             }
             case ETHER_TRANSFER_SELECTOR: {
               //ether transfer;
-              const decode2 = decoder.decode(["address", "uint256"], payload);
-              payload = `Ether Transfer, amount: ${ethers.utils.formatEther(decode2[1])}`;
-              info: decode2[1];
+              const decode2 = decoder.decode(
+                ["address", "uint256"],
+                payloadSliced,
+              );
+              // payload = `Ether Transfer, amount: ${ethers.utils.formatEther(decode2[1])}`;
+              // info: decode2[1];
+              info = `Ether Transfer, amount: ${ethers.utils.formatEther(
+                decode2[1],
+              )}`;
               ownerAddress = decode2[0];
             }
             default: {
@@ -127,7 +146,7 @@ const VouchersList = () => {
           console.log(e);
         }
       } else {
-        payload = "(empty)";
+        payloadSliced = "(empty)";
       }
       // filter only current account's vouchers
       if (ownerAddress === currentAccount) {
@@ -160,6 +179,7 @@ const VouchersList = () => {
             }
           });
         }
+
         // curent voucher data
         // @TODO revise voucher data
         const currentVoucher = {
@@ -172,7 +192,7 @@ const VouchersList = () => {
           info: info, // voucher core info... @TODO more descriptive name
           ownerAddress: ownerAddress, // voucher
           drawingUUID: drawings && drawings[0] ? drawings[0] : "", // drawing uuid
-          proof: null,
+          proof: n.proof,
           executed: null,
         };
         newVouchers.push(currentVoucher);
