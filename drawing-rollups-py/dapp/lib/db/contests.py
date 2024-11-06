@@ -159,8 +159,8 @@ def create_contest(data):
     logger.info(f"Contest data {contest_data}")
     title = contest_data['title']
     description = contest_data['description']
-    active_from = contest_data['activeFrom']
-    active_to = contest_data['activeTo']
+    active_from = contest_data['active_from']
+    active_to = contest_data['active_to']
     minting_active = contest_data['mintingOpen'] 
     logger.info(f"DATA {contest}")
     cursor.execute(

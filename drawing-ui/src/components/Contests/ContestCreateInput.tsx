@@ -19,21 +19,21 @@ const validationErrMsg = {
 };
 const validationRules = {
   title: ["required"],
-  activeFrom: ["required", "gtNow"],
-  activeTo: ["required", "gtDate"],
+  active_from: ["required", "gtNow"],
+  active_to: ["required", "gtDate"],
   mintingOpen: ["required", "gt0"],
 };
 const validationInit = {
   title: { valid: true, msg: "" },
-  activeFrom: { valid: true, msg: now },
-  activeTo: { valid: true, msg: "" },
+  active_from: { valid: true, msg: now },
+  active_to: { valid: true, msg: "" },
   mintingOpen: { valid: true, msg: "" },
 };
 const initialInput = {
   title: "",
   description: "",
-  activeFrom: now, // @TODO set to now
-  activeTo: now, // @TODO set to now+1
+  active_from: now, // @TODO set to now
+  active_to: now, // @TODO set to now+1
   mintingOpen: 1,
 };
 
@@ -91,8 +91,8 @@ const ContestCreateInput = () => {
     const contest_data = {
       data: {
         ...inputValues,
-        activeFrom: dateToTimestamp(inputValues.activeFrom),
-        activeTo: dateToTimestamp(inputValues.activeTo),
+        active_from: dateToTimestamp(inputValues.active_from),
+        active_to: dateToTimestamp(inputValues.active_to),
       },
       created_by: account,
       created_at: unixTimestamp,
@@ -160,32 +160,32 @@ const ContestCreateInput = () => {
         </div>
         <div className="flex flex-col">
           <Label
-            htmlFor="activeFrom"
+            htmlFor="active_from"
             value="Contest is active"
-            color={fieldValidation.activeFrom.valid ? "" : "failure"}
+            color={fieldValidation.active_from.valid ? "" : "failure"}
           />
           <div className="m-2 flex gap-2">
             <div>
               <Label
                 value="from"
-                color={fieldValidation.activeFrom.valid ? "" : "failure"}
+                color={fieldValidation.active_from.valid ? "" : "failure"}
               />
               <InputDatepicker
-                name="activeFrom"
-                onChange={(date) => handleDateSelected(date, "activeFrom")}
-                value={inputValues.activeFrom}
+                name="active_from"
+                onChange={(date) => handleDateSelected(date, "active_from")}
+                value={inputValues.active_from}
               />
             </div>
             <div>
               <Label
-                htmlFor="activeTo"
+                htmlFor="active_to"
                 value="to"
-                color={fieldValidation.activeFrom.valid ? "" : "failure"}
+                color={fieldValidation.active_from.valid ? "" : "failure"}
               />
               <InputDatepicker
-                name="activeTo"
-                onChange={(date) => handleDateSelected(date, "activeTo")}
-                value={inputValues.activeTo}
+                name="active_to"
+                onChange={(date) => handleDateSelected(date, "active_to")}
+                value={inputValues.active_to}
               />
             </div>
           </div>

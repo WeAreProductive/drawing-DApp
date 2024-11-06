@@ -195,8 +195,8 @@ export type Address = `0x${string}`;
 export interface ContestInitType {
   title: string;
   description: string;
-  activeFrom: Moment | string | null;
-  activeTo: Moment | string | null;
+  active_from: Moment | string | null;
+  active_to: Moment | string | null;
   mintingOpen: number;
 }
 export interface ContestType extends ContestInitType {
