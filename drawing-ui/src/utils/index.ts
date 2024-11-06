@@ -280,13 +280,28 @@ export const handlePlainResponse = (output: `0x${string}`) => {
 export const hoursToTimestamp = (hours: number) => {
   return hours * 60 * 60;
 };
-
+/**
+ * Converts given date
+ * to timestamp
+ */
 export const dateToTimestamp = (date: null | string | Moment) => {
   const toMoment = date ? moment(date).format() : moment().format();
   return moment(toMoment).unix();
 };
-
+/**
+ * Now as unix timestamp
+ * @returns seconds
+ */
 export const nowUnixTimestamp = () => {
   const toMoment = moment().format();
   return moment(toMoment).unix();
+};
+
+/**
+ * Converts timestamp
+ * to date
+ */
+export const timestampToDate = (value: number) => {
+  console.log({ value });
+  return moment.unix(value).format("MM/DD/YYYY");
 };
