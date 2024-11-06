@@ -48,6 +48,17 @@ def init_sqlite_database():
                 )
                """
             )
+        cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS mints (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    minter VARCHAR NOT NULL,
+                    created_at VARCHAR NOT NULL,
+                    drawing_id INTEGER NOT NULL,
+                    FOREIGN KEY (drawing_id) REFERENCES drawings(id)
+                )
+               """
+            )
         conn.commit()
         print('Database created successfully!')
     except sqlite3.Error as e:
