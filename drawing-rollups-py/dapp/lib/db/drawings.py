@@ -296,7 +296,7 @@ def save_data(type, query_args) :
           private= 1
         title = data['userInputData']['title']
         description = data['userInputData']['description']
-        minting_price = data['userInputData']['mintingPrice'] 
+        minting_price = data['userInputData']['minting_price'] 
         open = data['userInputData']['open'] # in hours
         #
         timestamp = query_args['timestamp']

@@ -8,8 +8,8 @@ const Contest = ({ data }: { data: ContestType }) => {
     created_by,
     active_from,
     active_to,
-    mintingOpen,
-    mintingPrice,
+    minting_active,
+    minting_price,
     drawings,
   } = data;
   return (
@@ -26,9 +26,9 @@ const Contest = ({ data }: { data: ContestType }) => {
         active to: {timestampToDate(Number(active_to))}
       </span>
       <span className="block text-xs">
-        minting is Open for: {mintingOpen} hours
+        minting is Open for: {minting_active} hours
       </span>
-      <span className="block text-xs">minting price: {mintingPrice} </span>
+      <span className="block text-xs">minting price: {minting_price} </span>
       <span className="block text-xs">
         Number of drawings:{" "}
         {drawings && drawings.length > 0 ? drawings.length : 0}{" "}

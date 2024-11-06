@@ -161,7 +161,7 @@ def create_contest(data):
     description = contest_data['description']
     active_from = contest_data['active_from']
     active_to = contest_data['active_to']
-    minting_active = contest_data['mintingOpen'] 
+    minting_active = contest_data['minting_active'] 
     logger.info(f"DATA {contest}")
     cursor.execute(
         """

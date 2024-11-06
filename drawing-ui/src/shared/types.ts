@@ -197,11 +197,11 @@ export interface ContestInitType {
   description: string;
   active_from: Moment | string | null;
   active_to: Moment | string | null;
-  mintingOpen: number;
+  minting_active: number;
 }
 export interface ContestType extends ContestInitType {
   id: string;
-  mintingPrice: number;
+  minting_price: number;
   created_by: Address;
   drawings?: null | DrawingInputExtended[];
 }

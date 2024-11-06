@@ -21,20 +21,20 @@ const validationRules = {
   title: ["required"],
   active_from: ["required", "gtNow"],
   active_to: ["required", "gtDate"],
-  mintingOpen: ["required", "gt0"],
+  minting_active: ["required", "gt0"],
 };
 const validationInit = {
   title: { valid: true, msg: "" },
   active_from: { valid: true, msg: now },
   active_to: { valid: true, msg: "" },
-  mintingOpen: { valid: true, msg: "" },
+  minting_active: { valid: true, msg: "" },
 };
 const initialInput = {
   title: "",
   description: "",
   active_from: now, // @TODO set to now
   active_to: now, // @TODO set to now+1
-  mintingOpen: 1,
+  minting_active: 1,
 };
 
 const ContestCreateInput = () => {
@@ -81,7 +81,6 @@ const ContestCreateInput = () => {
     return true;
   };
   const handleReset = () => {
-    console.log(initialInput);
     setInputValues(initialInput);
   };
   const createContest = async () => {
@@ -101,7 +100,6 @@ const ContestCreateInput = () => {
 
     const queryString = `contests/create/${contestData}`;
     const data = await inspectCall(queryString, "plain");
-    console.log(data);
     setLoading(false);
     setInputValues(initialInput);
   };
@@ -192,20 +190,20 @@ const ContestCreateInput = () => {
         </div>
         <div className="m-2 flex flex-col">
           <Label
-            htmlFor="mintingOpen"
+            htmlFor="minting_active"
             value="Minting is active for"
             className="mb-4"
-            color={fieldValidation.mintingOpen.valid ? "" : "failure"}
+            color={fieldValidation.minting_active.valid ? "" : "failure"}
           />
           <TextInput
-            id="mintingOpen"
+            id="minting_active"
             placeholder="0"
             required
             addon="Hours"
-            value={inputValues.mintingOpen}
-            onChange={(e) => handleInputChange(e, "mintingOpen")}
-            color={fieldValidation.mintingOpen.valid ? "" : "failure"}
-            helperText={fieldValidation.mintingOpen.msg}
+            value={inputValues.minting_active}
+            onChange={(e) => handleInputChange(e, "minting_active")}
+            color={fieldValidation.minting_active.valid ? "" : "failure"}
+            helperText={fieldValidation.minting_active.msg}
           />
         </div>
         <div className="m-2 flex flex-wrap gap-4">

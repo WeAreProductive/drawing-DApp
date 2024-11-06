@@ -68,7 +68,7 @@ const customTheme: CustomFlowbiteTheme["modal"] = {
 };
 const validationRules = {
   title: ["required"],
-  mintingPrice: ["required", "gt0"],
+  minting_price: ["required", "gt0"],
   open: ["required", "gt0"],
 };
 const validationErrMsg = {
@@ -77,7 +77,7 @@ const validationErrMsg = {
 };
 const validationInit = {
   title: { valid: true, msg: "" },
-  mintingPrice: { valid: true, msg: "" },
+  minting_price: { valid: true, msg: "" },
   open: { valid: true, msg: "" },
 };
 type InputDialogType = {
@@ -185,7 +185,7 @@ const InputDialog = ({
             <h3 className="text-xl font-medium text-gray-900 dark:text-white">
               Give us more info about your drawing:
             </h3>
-            <div className="flex flex-col my-2">
+            <div className="my-2 flex flex-col">
               <Label
                 htmlFor="title"
                 value="Drawing title"
@@ -202,7 +202,7 @@ const InputDialog = ({
                 helperText={fieldValidation.title.msg}
               />
             </div>
-            <div className="flex flex-col my-2">
+            <div className="my-2 flex flex-col">
               <Label
                 htmlFor="description"
                 value="Drawing description(optional)"
@@ -218,24 +218,24 @@ const InputDialog = ({
               ></Textarea>
             </div>
             <div className="flex">
-              <div className="flex flex-col my-2">
+              <div className="my-2 flex flex-col">
                 <Label
-                  htmlFor="mintingPrice"
+                  htmlFor="minting_price"
                   value="Minting Price"
                   className="mb-4"
-                  color={fieldValidation.mintingPrice.valid ? "" : "failure"}
+                  color={fieldValidation.minting_price.valid ? "" : "failure"}
                 />
                 <TextInput
-                  id="mintingPrice"
+                  id="minting_price"
                   placeholder="0"
                   required
                   addon="ETH"
-                  onChange={(e) => handleInputChange(e, "mintingPrice")}
-                  color={fieldValidation.mintingPrice.valid ? "" : "failure"}
-                  helperText={fieldValidation.mintingPrice.msg}
+                  onChange={(e) => handleInputChange(e, "minting_price")}
+                  color={fieldValidation.minting_price.valid ? "" : "failure"}
+                  helperText={fieldValidation.minting_price.msg}
                 />
               </div>
-              <div className="flex flex-col m-2">
+              <div className="m-2 flex flex-col">
                 <Label
                   htmlFor="open"
                   value="Open for drawing"
@@ -253,7 +253,7 @@ const InputDialog = ({
                 />
               </div>
             </div>
-            <div className="flex items-start gap-4 my-2">
+            <div className="my-2 flex items-start gap-4">
               <Label value="Private drawing" className="self-center" />
               <DialogToggleSwitch checked={switch1} onChange={handleSwitch} />
             </div>

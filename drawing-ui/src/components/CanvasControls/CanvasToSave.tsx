@@ -45,7 +45,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const [inputValues, setInputValues] = useState<DrawingUserInput>({
     title: "",
     description: "",
-    mintingPrice: "",
+    minting_price: "",
     private: false,
     open: 0,
   });
