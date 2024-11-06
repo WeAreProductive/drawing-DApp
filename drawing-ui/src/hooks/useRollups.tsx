@@ -342,13 +342,6 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
           description: `Input not added => index: ${event?.args?.inputIndex} `,
         });
       }
-      // if (canvas) {
-      //   if (!canvas.isDrawingMode) {
-      //     canvas.isDrawingMode = true;
-      //     canvas.discardActiveObject();
-      //     canvas.renderAll();
-      //   }
-      // }
     } catch (e: any) {
       const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
       toast.error("Transaction Error", {
@@ -426,9 +419,11 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
             );
           }
 
-          if (receipt.events.length > 2)
+          if (receipt.events.length > 1)
             newVoucherToExecute.events = {
-              address: receipt.events[1].address,
+              // the smart contrac to mint the nft is not in the receipt anymore
+              // since we're using different portal when minting, not the input box
+              address: config.connectedChain.ercToMint,
               nft_id: BigInt(receipt.events[1].data).toString(),
             };
 

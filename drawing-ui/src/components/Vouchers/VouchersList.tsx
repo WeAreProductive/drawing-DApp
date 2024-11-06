@@ -11,8 +11,6 @@ import {
 import Voucher from "./Voucher";
 import pako from "pako";
 import { useInspect } from "../../hooks/useInspect";
-import { Outputs__factory } from "@cartesi/rollups";
-import { decodeFunctionData, fromHex } from "viem";
 
 const VouchersList = () => {
   const [connectedWallet] = useWallets();
@@ -132,67 +130,55 @@ const VouchersList = () => {
         payload = "(empty)";
       }
       // filter only current account's vouchers
-      if (ownerAddress === currentAccount && MINT_SELECTOR == selector) {
-        // drawings data
-        drawings = notices.edges.map(({ node }: DataNoticeEdge) => {
-          let payload_data = node?.payload;
-          let payload: string;
-          let compressedData;
-          if (payload_data) {
-            const { args } = decodeFunctionData({
-              abi: Outputs__factory.abi,
-              data: payload_data as `0x${string}`,
-            });
-            payload = args[0];
-            let decoder = new TextDecoder("utf8", { fatal: true });
-            try {
-              payload = decoder.decode(
-                fromHex(payload as `0x${string}`, "bytes"),
-              );
-            } catch (e) {
-              payload = payload + " (hex)";
+      if (ownerAddress === currentAccount) {
+        if (MINT_SELECTOR == selector) {
+          // drawings data
+          drawings = notices.edges.map(({ node }: DataNoticeEdge) => {
+            let payload = node?.payload;
+            let compressedData;
+            if (payload) {
+              try {
+                compressedData = ethers.utils.arrayify(payload);
+              } catch (e) {
+                console.log(e);
+              }
+            } else {
+              payload = "(empty)";
             }
-            try {
-              compressedData = ethers.utils.arrayify(payload);
-            } catch (e) {
-              console.log(e);
+            if (compressedData) {
+              try {
+                const drawingData = pako.inflate(compressedData, {
+                  to: "string",
+                });
+                const data = JSON.parse(drawingData);
+                const { uuid } = data;
+                // last drawing layer, !uuid!, owner, ... at the time the voucher was requested
+                return uuid;
+              } catch (e) {
+                console.log(e);
+              }
             }
-          } else {
-            payload = "(empty)";
-          }
-          if (compressedData) {
-            try {
-              const drawingData = pako.inflate(compressedData, {
-                to: "string",
-              });
-              const data = JSON.parse(drawingData);
-              const { uuid } = data;
-              // last drawing layer, !uuid!, owner, ... at the time the voucher was requested
-              return uuid;
-            } catch (e) {
-              console.log(e);
-            }
-          }
-        });
-      }
-      // curent voucher data
-      // @TODO revise voucher data
-      const currentVoucher = {
-        id: `${n?.id}`, // voucher
-        selector,
-        index: n?.index, // voucher
-        destination: `${n?.destination ?? ""}`, // voucher
-        payload: `${payload}`, // voucher
-        input: n ? { index: n.input.index, payload: inputPayload } : {}, // voucher
-        info: info, // voucher core info... @TODO more descriptive name
-        ownerAddress: ownerAddress, // voucher
-        drawingUUID: drawings && drawings[0] ? drawings[0] : "", // drawing uuid
-        proof: null,
-        executed: null,
-      };
-      newVouchers.push(currentVoucher);
-      if (drawings.length && drawings[0]) {
-        uuids.push(drawings[0]);
+          });
+        }
+        // curent voucher data
+        // @TODO revise voucher data
+        const currentVoucher = {
+          id: `${n?.id}`, // voucher
+          selector,
+          index: n?.index, // voucher
+          destination: `${n?.destination ?? ""}`, // voucher
+          payload: `${payload}`, // voucher
+          input: n ? { index: n.input.index, payload: inputPayload } : {}, // voucher
+          info: info, // voucher core info... @TODO more descriptive name
+          ownerAddress: ownerAddress, // voucher
+          drawingUUID: drawings && drawings[0] ? drawings[0] : "", // drawing uuid
+          proof: null,
+          executed: null,
+        };
+        newVouchers.push(currentVoucher);
+        if (drawings.length && drawings[0]) {
+          uuids.push(drawings[0]);
+        }
       }
     });
     // @TODO sort by index
@@ -208,7 +194,6 @@ const VouchersList = () => {
     );
     fetchImages(uuids);
   }, [uuids]);
-  console.log({ myVouchers });
   return (
     <div>
       {myVouchers && myVouchers.length > 0 ? (

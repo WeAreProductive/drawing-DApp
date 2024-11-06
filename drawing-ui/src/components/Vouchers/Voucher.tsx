@@ -88,44 +88,45 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
     }
   }, [voucherResult, contracts]);
 
-  console.log(voucherData);
   return (
-    <div className="my-4 flex justify-between gap-6 border-b-2 pb-4">
-      {handleVoucherDisplay(voucherData, drawing)}
+    <div className="my-4 flex flex-col justify-between gap-6 border-b-2 pb-4">
+      <div className="flex">
+        {handleVoucherDisplay(voucherData, drawing)}
 
-      <div className="flex flex-row items-center gap-3">
-        <button
-          className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          onClick={() => getProof(voucherData)}
-        >
-          Check status
-        </button>
-
-        {voucherToExecute && (
-          <span
-            key={`${voucherToExecute.input.index}-${voucherToExecute.index}`}
-          >
-            {!voucherToExecute.proof || voucherToExecute.executed ? (
-              <span className="font-medium text-green-700">
-                {voucherToExecute.executed ? "NFT already minted!" : "Pending"}
-              </span>
-            ) : loading ? (
-              <Button
-                disabled
-                className="disabled rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-              >
-                Mint NFT
-              </Button>
-            ) : (
-              <Button
-                onClick={() => handleExecuteVoucher(voucherToExecute)}
-                className="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-              >
-                Mint NFT
-              </Button>
-            )}
-          </span>
-        )}
+        <div className="flex w-1/2 flex-row items-center justify-end gap-3">
+          {!voucherToExecute ? (
+            <button
+              className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              onClick={() => getProof(voucherData)}
+            >
+              Check status
+            </button>
+          ) : (
+            <span
+              key={`${voucherToExecute.input.index}-${voucherToExecute.index}`}
+            >
+              {!voucherToExecute.proof || voucherToExecute.executed ? (
+                <span className="font-medium text-green-700">
+                  {voucherToExecute.executed ? "Voucher executed!" : "Pending"}
+                </span>
+              ) : loading ? (
+                <Button
+                  disabled
+                  className="disabled rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                >
+                  Mint NFT
+                </Button>
+              ) : (
+                <Button
+                  onClick={() => handleExecuteVoucher(voucherToExecute)}
+                  className="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+                >
+                  Mint NFT
+                </Button>
+              )}
+            </span>
+          )}
+        </div>
       </div>
 
       {voucherToExecute && voucherToExecute.msg && (
