@@ -11,6 +11,7 @@ import Header from "../components/Header";
 import { Network } from "../shared/types";
 import { useEffect, useState } from "react";
 import { Ban } from "lucide-react";
+import { useConnectionContext } from "../context/ConnectionContext";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -52,8 +53,7 @@ type Props = {
 };
 
 export default function Page({ children }: Props) {
-  const [{ wallet }] = useConnectWallet();
-  const [{ connectedChain }] = useSetChain();
+  const { wallet, connectedChain } = useConnectionContext();
   const [isSupportedNetwork, setIsSupportedNetwork] = useState(true);
 
   const SupportedNetworks = () => {

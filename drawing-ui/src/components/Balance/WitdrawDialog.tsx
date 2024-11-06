@@ -70,7 +70,7 @@ const WithdrawDialog = ({ isOpen, handler }: WithdrawDialogType) => {
   const [{ connectedChain }] = useSetChain();
 
   const dappAddress = connectedChain
-    ? config[connectedChain.id].DAppRelayAddress
+    ? config[connectedChain.id].DAppAddress
     : "";
   const { sendWithdrawInput } = useRollups(dappAddress);
   const [openModal, setOpenModal] = useState(isOpen);
@@ -98,7 +98,6 @@ const WithdrawDialog = ({ isOpen, handler }: WithdrawDialogType) => {
     sendWithdrawInput(input);
     handler(false); // close modal
   };
-  console.log({ isOpen });
   return (
     <>
       <Modal
