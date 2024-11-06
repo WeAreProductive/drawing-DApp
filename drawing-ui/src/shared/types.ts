@@ -8,6 +8,7 @@ import {
 } from "@cartesi/rollups";
 import { Dispatch, SetStateAction } from "react";
 import { EtherPortal } from "../generated/rollups";
+import { Moment } from "moment";
 
 export type Network = {
   token: string;
@@ -190,3 +191,17 @@ export type NetworkConfigType = {
 };
 
 export type Address = `0x${string}`;
+
+export interface ContestInitType {
+  title: string;
+  description: string;
+  activeFrom: Moment | string | null;
+  activeTo: Moment | string | null;
+  mintingOpen: number;
+}
+export interface ContestType extends ContestInitType {
+  id: string;
+  mintingPrice: number;
+  created_by: Address;
+  drawings?: null | DrawingInputExtended[];
+}

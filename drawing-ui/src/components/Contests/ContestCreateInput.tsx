@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Button, Datepicker, Label, Textarea, TextInput } from "flowbite-react";
+import { Button, Label, Textarea, TextInput } from "flowbite-react";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import InputDatepicker from "../ui/formDialog/inputDatepicker";
 import ButtonSpinner from "../ui/formDialog/buttonSpinner";
@@ -7,6 +7,7 @@ import { useInspect } from "../../hooks/useInspect";
 import moment from "moment";
 import { useConnectionContext } from "../../context/ConnectionContext";
 import { dateToTimestamp, nowUnixTimestamp } from "../../utils";
+import { ContestInitType } from "../../shared/types";
 
 const now = moment().utc();
 
@@ -41,7 +42,7 @@ const ContestCreateInput = () => {
   const { account } = useConnectionContext();
   const { inspectCall } = useInspect();
   const [fieldValidation, setFieldValidation] = useState(validationInit);
-  const [inputValues, setInputValues] = useState<any>(initialInput);
+  const [inputValues, setInputValues] = useState<ContestInitType>(initialInput);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (
@@ -119,11 +120,11 @@ const ContestCreateInput = () => {
 
   return (
     <div>
-      <div className="p-10 space-y-6 bg-card">
+      <div className="space-y-6 bg-card p-10">
         <h3 className="text-xl font-medium text-gray-900 dark:text-white">
           Create contest
         </h3>
-        <div className="flex flex-col my-2">
+        <div className="my-2 flex flex-col">
           <Label
             htmlFor="title"
             value="Contest title"
@@ -141,7 +142,7 @@ const ContestCreateInput = () => {
             helperText={fieldValidation.title.msg}
           />
         </div>
-        <div className="flex flex-col my-2">
+        <div className="my-2 flex flex-col">
           <Label
             htmlFor="description"
             value="Drawing description(optional)"
@@ -163,7 +164,7 @@ const ContestCreateInput = () => {
             value="Contest is active"
             color={fieldValidation.activeFrom.valid ? "" : "failure"}
           />
-          <div className="flex gap-2 m-2">
+          <div className="m-2 flex gap-2">
             <div>
               <Label
                 value="from"
@@ -189,7 +190,7 @@ const ContestCreateInput = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col m-2">
+        <div className="m-2 flex flex-col">
           <Label
             htmlFor="mintingOpen"
             value="Minting is active for"
@@ -207,7 +208,7 @@ const ContestCreateInput = () => {
             helperText={fieldValidation.mintingOpen.msg}
           />
         </div>
-        <div className="flex flex-wrap gap-4 m-2">
+        <div className="m-2 flex flex-wrap gap-4">
           <Button color="blue" onClick={handleReset}>
             Reset
           </Button>

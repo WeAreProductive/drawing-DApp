@@ -3,8 +3,8 @@ import { useInspect } from "../../hooks/useInspect";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { nowUnixTimestamp } from "../../utils";
 import Contest from "./Contest";
+import { ContestType } from "../../shared/types";
 
-// @TODO define contest type
 // @TODO display single contest
 // @TODO check timestamp saved because of inactive/active/future contests
 // @TODO define/update dappStates
@@ -13,7 +13,7 @@ import Contest from "./Contest";
 const ContestsList = ({ contestType }: { contestType: string }) => {
   const { dappState } = useCanvasContext();
   const { inspectCall } = useInspect();
-  const [contests, setContests] = useState<any[]>([]);
+  const [contests, setContests] = useState<ContestType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState({
     error: false,
@@ -91,14 +91,14 @@ const ContestsList = ({ contestType }: { contestType: string }) => {
     initContestsData();
   }, [dappState, contestType]);
   return (
-    <div className="flex flex-wrap -mx-1">
+    <div className="-mx-1 flex flex-wrap">
       {contests && contests.length > 0 ? (
         contests.map((contest, i) => {
           try {
             return i === contests.length - 1 ? (
               <div
                 key={contest.id} // @TODO replace with real data
-                className="w-1/2 p-2 last-element"
+                className="last-element w-1/2 p-2"
                 ref={setLastElement}
               >
                 <Contest data={contest} />

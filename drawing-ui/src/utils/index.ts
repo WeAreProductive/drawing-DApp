@@ -14,7 +14,7 @@ import {
   DrawingInputExtended,
   DrawingObject,
 } from "../shared/types";
-import moment from "moment";
+import moment, { Moment } from "moment";
 
 export const srcToJson = (src: string) => {
   return src.replace(".png", ".json");
@@ -281,7 +281,7 @@ export const hoursToTimestamp = (hours: number) => {
   return hours * 60 * 60;
 };
 
-export const dateToTimestamp = (date: null | string) => {
+export const dateToTimestamp = (date: null | string | Moment) => {
   const toMoment = date ? moment(date).format() : moment().format();
   return moment(toMoment).unix();
 };

@@ -1,4 +1,6 @@
-const Contest = ({ data }: any) => {
+import { ContestType } from "../../shared/types";
+
+const Contest = ({ data }: { data: ContestType }) => {
   return (
     <>
       <div>{data.title}</div>
