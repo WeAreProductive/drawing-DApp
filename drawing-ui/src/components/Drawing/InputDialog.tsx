@@ -10,6 +10,7 @@ import DialogButton from "../ui/formDialog/button";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import DialogToggleSwitch from "../ui/formDialog/toggleSwitch";
 import { DrawingUserInput } from "../../shared/types";
+import { useCanvasContext } from "../../context/CanvasContext";
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -70,20 +71,20 @@ type InputDialogType = {
   setInputValues: React.Dispatch<React.SetStateAction<DrawingUserInput>>;
   inputValues: DrawingUserInput;
   action: () => Promise<void>;
+  openHandler: React.Dispatch<React.SetStateAction<boolean>>;
 };
 const InputDialog = ({
   isOpen,
+  openHandler,
   setInputValues,
   inputValues,
   action,
 }: InputDialogType) => {
-  const [openModal, setOpenModal] = useState(false);
+  // const [openModal, setOpenModal] = useState(false);
   const [switch1, setSwitch1] = useState(false);
+  const { setLoading } = useCanvasContext();
   //  @TODO - use for input validation https://flowbite-react.com/docs/components/forms
-  // const titleInputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    setOpenModal(isOpen);
-  }, [isOpen]);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -107,17 +108,26 @@ const InputDialog = ({
   const handleInputSend = () => {
     // @TODO - validate input is as equired
     // close modal
-    setOpenModal(false);
+    openHandler(false);
     action();
+  };
+  const handleCloseDialog = () => {
+    openHandler(false);
+    setLoading(false);
+  };
+  const validateInput = () => {
+    // title - required
+    // mintingPrice > 0, required
+    // open > 0, required
   };
   return (
     <>
       <Modal
-        show={openModal}
+        show={isOpen}
         size="lg"
         popup
-        onClose={() => setOpenModal(false)}
-        // initialFocus={titleInputRef}
+        onClose={handleCloseDialog}
+        initialFocus={titleInputRef}
         theme={customTheme}
       >
         <Modal.Header />
@@ -130,7 +140,7 @@ const InputDialog = ({
               <Label htmlFor="title" value="Drawing title" className="mb-4" />
               <TextInput
                 id="title"
-                // ref={titleInputRef}
+                ref={titleInputRef}
                 placeholder="Drawing title ..."
                 // required
                 onChange={(e) => handleInputChange(e, "title")}
@@ -151,15 +161,31 @@ const InputDialog = ({
                 onChange={(e) => handleInputChange(e, "description")}
               ></Textarea>
             </div>
-            <div className="my-2 flex flex-col">
-              <Label htmlFor="price" value="Minting Price" className="mb-4" />
-              <TextInput
-                id="mintingPrice"
-                placeholder="0"
-                // required
-                addon="ETH"
-                onChange={(e) => handleInputChange(e, "mintingPrice")}
-              />
+            <div className="flex">
+              <div className="my-2 flex flex-col">
+                <Label htmlFor="price" value="Minting Price" className="mb-4" />
+                <TextInput
+                  id="mintingPrice"
+                  placeholder="0"
+                  // required
+                  addon="ETH"
+                  onChange={(e) => handleInputChange(e, "mintingPrice")}
+                />
+              </div>
+              <div className="m-2 flex flex-col">
+                <Label
+                  htmlFor="price"
+                  value="Open for drawing"
+                  className="mb-4"
+                />
+                <TextInput
+                  id="open"
+                  placeholder="0"
+                  // required
+                  addon="Hours"
+                  onChange={(e) => handleInputChange(e, "open")}
+                />
+              </div>
             </div>
             <div className="my-2 flex items-start gap-4">
               <Label value="Private drawing" className="self-center" />
@@ -172,7 +198,7 @@ const InputDialog = ({
           <DialogButton color="green" onClick={() => handleInputSend()}>
             Continue
           </DialogButton>
-          <DialogButton color="red" onClick={() => setOpenModal(false)}>
+          <DialogButton color="red" onClick={handleCloseDialog}>
             Decline
           </DialogButton>
         </Modal.Footer>
