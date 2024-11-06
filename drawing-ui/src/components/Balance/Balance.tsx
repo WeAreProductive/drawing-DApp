@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import WithdrawDialog from "./WithdrawDialog";
-import { useWallets } from "@web3-onboard/react";
 import { useGetBalance } from "../../hooks/useGetBalance";
 import { useConnectionContext } from "../../context/ConnectionContext";
 

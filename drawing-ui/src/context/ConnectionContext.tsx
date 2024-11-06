@@ -16,6 +16,7 @@ type ConnectionContextType = {
   connectedWallet: any; // @TODO fix typing
   account: `0x${string}` | null;
   dappAddress: Address | null;
+  ercToMintAddress: Address | null;
 };
 const initialConnectionContext = {
   connectedChain: null,
@@ -23,6 +24,7 @@ const initialConnectionContext = {
   connectedWallet: null,
   account: null,
   dappAddress: null,
+  ercToMintAddress: null,
 };
 const ConnectionContext = createContext<ConnectionContextType>(
   initialConnectionContext,
@@ -46,7 +48,10 @@ export const ConnectionContextProvider = ({ children }: Props) => {
   const [connectedWallet] = useWallets();
   const account = connectedWallet?.accounts[0].address;
   const dappAddress = connectedChain
-    ? config[connectedChain.id].DAppRelayAddress
+    ? config[connectedChain.id].DAppAddress
+    : null;
+  const ercToMintAddress = connectedChain
+    ? config[connectedChain.id].ercToMint
     : null;
   // const [canvas, setCanvas] = useState<Canvas | null>(null);
   // const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
@@ -78,6 +83,7 @@ export const ConnectionContextProvider = ({ children }: Props) => {
     connectedWallet,
     account,
     dappAddress,
+    ercToMintAddress,
     // canvasOptions,
     // setOptions,
     // dappState,

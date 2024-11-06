@@ -1,6 +1,6 @@
 import { useCanvasContext } from "../context/CanvasContext";
 import { COMMANDS, ETHER_TRANSFER_SELECTOR } from "../shared/constants";
-import { DrawingMeta, DrawingObject, Network } from "../shared/types";
+import { Address, DrawingMeta, DrawingObject, Network } from "../shared/types";
 import configFile from "../config/config.json";
 import { useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
@@ -51,8 +51,8 @@ export const useDrawing = () => {
   const getVoucherInput = (
     uuid: string,
     drawingMeta: DrawingMeta,
-    ercToMint: string,
-    address: string, //DAppAddress
+    ercToMint: Address,
+    address: Address, //dappAddress
   ) => {
     // @TODO VoucherMintPayloadType
     let voucherMintPayload: any;
