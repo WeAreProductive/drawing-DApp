@@ -11,12 +11,11 @@ import { Button } from "../ui/button";
 import { Box } from "lucide-react";
 import configFile from "../../config/config.json";
 import { storeAsFiles } from "../../services/canvas";
-import { Network } from "../../shared/types";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
 
-const config: { [name: string]: Network } = configFile;
+const config: { [name: string]: { [name: string]: string } } = configFile;
 
 const CanvasToMint = () => {
   const {

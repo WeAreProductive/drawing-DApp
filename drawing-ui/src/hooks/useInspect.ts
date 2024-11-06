@@ -4,8 +4,6 @@ import { Network } from "../shared/types";
 
 import configFile from "../config/config.json";
 import { useMemo } from "react";
-import { ethers } from "ethers";
-import pako from "pako";
 import { handleCompressedResponse, handlePlainResponse } from "../utils";
 
 const config: { [name: string]: Network } = configFile;

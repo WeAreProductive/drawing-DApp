@@ -1,7 +1,13 @@
 import { ethers } from "ethers";
 
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { zeroAddress } from "../shared/constants";
+import { useSetChain } from "@web3-onboard/react";
+import { useMemo } from "react";
+
+import configFile from "../config/config.json";
+
+const config: { [name: string]: { [name: string]: string } } = configFile;
 
 type Address = `0x${string}`;
 export const balanceKeys = {
@@ -11,10 +17,10 @@ export const balanceKeys = {
 };
 const createError = (message: string) => Promise.reject(new Error(message));
 
-const fetchBalance = async (account?: Address) => {
-  if (account === undefined || account === null) return 0;
+const fetchBalance = async (inspectUrl: string, account?: Address) => {
+  if (account === undefined || account === null || !inspectUrl) return 0;
 
-  const url = `http://localhost:8080/inspect/balance/${account}`;
+  const url = `${inspectUrl}balance/${account}`;
 
   const response = await fetch(url);
 
@@ -31,9 +37,32 @@ const fetchBalance = async (account?: Address) => {
   return +result;
 };
 export const useGetBalance = (account: Address) => {
+  const [{ connectedChain }] = useSetChain();
+  const inspectUrl = useMemo(() => {
+    if (!connectedChain) {
+      return null;
+    }
+    let url = "";
+
+    if (config[connectedChain.id]?.inspectAPIURL) {
+      url = `${config[connectedChain.id].inspectAPIURL}`;
+    } else {
+      console.error(
+        `No inspect interface defined for chain ${connectedChain.id}`,
+      );
+      return null;
+    }
+
+    if (!url) {
+      return null;
+    }
+
+    return url;
+  }, [connectedChain]);
+
   return useQuery({
     queryKey: balanceKeys.detail(account ?? zeroAddress),
-    queryFn: () => fetchBalance(account),
+    queryFn: () => fetchBalance(inspectUrl, account),
     refetchInterval: 20 * 1000,
     refetchIntervalInBackground: true,
   });

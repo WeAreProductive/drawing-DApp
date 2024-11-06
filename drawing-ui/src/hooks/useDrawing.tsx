@@ -1,19 +1,7 @@
 import { useCanvasContext } from "../context/CanvasContext";
-import {
-  COMMANDS,
-  DAPP_STATE,
-  ETHER_TRANSFER_SELECTOR,
-  MINT_SELECTOR,
-} from "../shared/constants";
-import {
-  CanvasDimensions,
-  DrawingInput,
-  DrawingMeta,
-  DrawingObject,
-  Network,
-} from "../shared/types";
+import { COMMANDS, ETHER_TRANSFER_SELECTOR } from "../shared/constants";
+import { DrawingMeta, DrawingObject, Network } from "../shared/types";
 import configFile from "../config/config.json";
-import { v4 as uuidv4 } from "uuid";
 import { useWallets } from "@web3-onboard/react";
 import { ethers } from "ethers";
 

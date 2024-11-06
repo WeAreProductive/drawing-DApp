@@ -111,6 +111,7 @@ export type DrawingInitialData = {
   private?: 0 | 1;
   description?: string;
   dimensions: string;
+  minting_price: any;
   update_log: UpdateLog;
   userInputData: DrawingUserInput;
 };
