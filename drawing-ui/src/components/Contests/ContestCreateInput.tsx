@@ -91,8 +91,8 @@ const ContestCreateInput = () => {
     const contest_data = {
       data: {
         ...inputValues,
-        active_from: dateToTimestamp(inputValues.active_from),
-        active_to: dateToTimestamp(inputValues.active_to),
+        active_from: dateToTimestamp(inputValues.active_from, "startOf"),
+        active_to: dateToTimestamp(inputValues.active_to, "endOf"),
       },
       created_by: account,
       created_at: unixTimestamp,

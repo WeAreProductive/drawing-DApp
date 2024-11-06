@@ -5,7 +5,6 @@ import { nowUnixTimestamp } from "../../utils";
 import Contest from "./Contest";
 import { ContestType } from "../../shared/types";
 
-// @TODO display single contest
 // @TODO check timestamp saved because of inactive/active/future contests
 // @TODO define/update dappStates
 // @TODO contests create validation
@@ -61,9 +60,7 @@ const ContestsList = ({ contestType }: { contestType: string }) => {
     let queryString = "";
     queryString = `contests/page/1/${contestType}/${now}`;
     const data = await inspectCall(queryString, "plain");
-    console.log(data);
     const { next_page, contests } = JSON.parse(data);
-    console.log({ contests });
     setContests(contests);
     setPage(next_page);
     setIsLoading(false);

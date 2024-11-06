@@ -3,7 +3,6 @@ import moment from "moment";
 import Datepicker from "tailwind-datepicker-react";
 
 const now = moment().utc(); // @TODO check formatting
-console.log(now);
 // https://www.npmjs.com/package/tailwind-datepicker-react
 
 const InputDatepicker = ({

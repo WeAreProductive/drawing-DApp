@@ -2,7 +2,6 @@ import { ContestType } from "../../shared/types";
 import { sliceAccountStr, timestampToDate } from "../../utils";
 
 const Contest = ({ data }: { data: ContestType }) => {
-  console.log({ data });
   const {
     title,
     description,
