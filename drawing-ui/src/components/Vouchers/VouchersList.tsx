@@ -1,13 +1,5 @@
 import { ethers } from "ethers";
-import gql from "graphql-tag";
-import * as Urql from "urql";
-import { useWallets } from "@web3-onboard/react";
 import { useCallback, useEffect, useState } from "react";
-import {
-  useVouchersQuery,
-  VouchersQuery,
-  VouchersQueryVariables,
-} from "../../generated/graphql";
 import { MINT_SELECTOR, ETHER_TRANSFER_SELECTOR } from "../../shared/constants";
 import {
   VoucherExtended,
@@ -18,9 +10,10 @@ import Voucher from "./Voucher";
 import pako from "pako";
 import { useInspect } from "../../hooks/useInspect";
 import { useVouchersWithProofQuery } from "../../utils/queries";
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 const VouchersList = () => {
-  const [connectedWallet] = useWallets();
+  const { account } = useConnectionContext();
   const { inspectCall } = useInspect();
   const [cursor, setCursor] = useState<string | null | undefined | null>(null);
 
@@ -28,16 +21,11 @@ const VouchersList = () => {
     variables: { cursor },
     pause: true,
   });
-  const [currentAccount, setCurrentAccount] = useState("");
   const [myVouchers, setMyVouchers] = useState<VoucherExtended[]>([]);
   const [drawings, setDrawings] = useState<DrawingInputExtended[]>([]);
   const [uuids, setUuids] = useState<string[]>([]);
   const { data } = result;
-  const provider = new ethers.providers.Web3Provider(connectedWallet.provider);
 
-  const signer = async () => {
-    setCurrentAccount(await provider.getSigner().getAddress());
-  };
   const fetchImages = async (arg: string[]) => {
     console.warn("Fetching voucher images ...");
     if (arg.length) {
@@ -56,9 +44,7 @@ const VouchersList = () => {
     },
     [drawings],
   );
-  useEffect(() => {
-    signer();
-  }, []);
+  useEffect(() => {}, [account]);
   /**
    * Reexecuting query if the component
    * is accessed before vouchers are emition is finished.
@@ -87,6 +73,8 @@ const VouchersList = () => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
+      console.log(data);
+      console.log(account);
       // init data
       const n = node.node;
       const payload = n?.payload; // voucher data
@@ -132,9 +120,7 @@ const VouchersList = () => {
               );
               // payload = `Ether Transfer, amount: ${ethers.utils.formatEther(decode2[1])}`;
               // info: decode2[1];
-              info = `Ether Transfer, amount: ${ethers.utils.formatEther(
-                decode2[1],
-              )}`;
+              info = `Ether Transfer, amount: ${ethers.utils.formatEther(decode2[1])}`;
               ownerAddress = decode2[0];
             }
             default: {
@@ -148,7 +134,7 @@ const VouchersList = () => {
         payloadSliced = "(empty)";
       }
       // filter only current account's vouchers
-      if (ownerAddress === currentAccount) {
+      if (ownerAddress.toLowerCase() === account?.toLowerCase()) {
         if (MINT_SELECTOR == selector) {
           // drawings data
           drawings = notices.edges.map(({ node }: DataNoticeEdge) => {
@@ -180,7 +166,7 @@ const VouchersList = () => {
         }
 
         // curent voucher data
-        // @TODO revise voucher data
+        // @TODO revise voucher data and fix types
         const currentVoucher = {
           id: `${n?.id}`, // voucher
           selector,
@@ -206,7 +192,7 @@ const VouchersList = () => {
       setMyVouchers([...newVouchers, ...myVouchers]);
       if (uuids.length) setUuids(uuids);
     }
-  }, [data]);
+  }, [data, account]);
   useEffect(() => {
     console.log(
       "Fetch new voucher's images data...when new vouchers are available ...",

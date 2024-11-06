@@ -53,29 +53,6 @@ export const ConnectionContextProvider = ({ children }: Props) => {
   const ercToMintAddress = connectedChain
     ? config[connectedChain.id].ercToMint
     : null;
-  // const [canvas, setCanvas] = useState<Canvas | null>(null);
-  // const [canvasOptions, setOptions] = useState<CanvasOptions>(initialOptions);
-  // const [dappState, setDappState] = useState<string>(DAPP_STATE.canvasInit);
-  // const [currentDrawingData, setCurrentDrawingData] = useState<
-  //   DrawingInputExtended | null | DrawingInitialData
-  // >(null);
-
-  // // array of objects belonging to the last drawing layer
-  // const [currentDrawingLayer, setCurrentDrawingLayer] = useState<
-  //   DrawingObject[] | null
-  // >(null);
-  // // array of objects popped from the current drawing layer with UNDO feat
-  // const [redoObjectsArr, setRedoObjectsArr] = useState<DrawingObject[]>([]);
-  // const [loading, setLoading] = useState(false);
-  // const clearCanvas = useCallback(() => {
-  //   if (!canvas) return;
-  //   canvas.clear();
-  //   canvas.setBackgroundColor(
-  //     INITIAL_DRAWING_OPTIONS.backgroundColor,
-  //     canvas.renderAll.bind(canvas),
-  //   );
-  //   setDappState(DAPP_STATE.canvasClear);
-  // }, [canvas]);
 
   const value = {
     connectedChain,
@@ -84,19 +61,6 @@ export const ConnectionContextProvider = ({ children }: Props) => {
     account,
     dappAddress,
     ercToMintAddress,
-    // canvasOptions,
-    // setOptions,
-    // dappState,
-    // setDappState,
-    // currentDrawingData,
-    // setCurrentDrawingData,
-    // clearCanvas,
-    // currentDrawingLayer,
-    // setCurrentDrawingLayer,
-    // redoObjectsArr,
-    // setRedoObjectsArr,
-    // loading,
-    // setLoading,
   };
   return (
     <ConnectionContext.Provider value={value}>

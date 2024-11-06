@@ -5,7 +5,6 @@ import Browse from "./views/Browse";
 import ErrorPage from "./views/Error";
 import { Toaster } from "./components/ui/sonner";
 import { ConnectionContextProvider } from "./context/ConnectionContext";
-import { GraphQLProvider } from "./context/GraphQLContext";
 import { CanvasContextProvider } from "./context/CanvasContext";
 
 const router = createBrowserRouter([
@@ -37,12 +36,10 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <>
     <ConnectionContextProvider>
-      <GraphQLProvider>
-        <CanvasContextProvider>
-          <RouterProvider router={router} />
-          <Toaster position="top-center" />
-        </CanvasContextProvider>
-      </GraphQLProvider>
+      <CanvasContextProvider>
+        <RouterProvider router={router} />
+        <Toaster position="top-center" />
+      </CanvasContextProvider>
     </ConnectionContextProvider>
   </>,
 );

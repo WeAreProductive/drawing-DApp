@@ -1,6 +1,5 @@
 import { BigNumber } from "ethers";
-import { useCallback, useEffect, useState } from "react";
-import { useSetChain } from "@web3-onboard/react";
+import { useEffect, useState } from "react";
 import { useVoucherQuery } from "../../generated/graphql";
 import { useRollups } from "../../hooks/useRollups";
 import { VoucherExtended, DrawingInputExtended } from "../../shared/types";
@@ -8,17 +7,18 @@ import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
 import CanvasSnapshotLoader from "../ImagesRollups/CanvasSnapshotLoader";
 import { ETHER_TRANSFER_SELECTOR, MINT_SELECTOR } from "../../shared/constants";
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
   drawing: DrawingInputExtended;
-  selector?: string;
 };
 
 const Voucher = ({ voucherData, drawing }: VoucherProp) => {
-  const [{ connectedChain }] = useSetChain();
+  const { connectedChain } = useConnectionContext();
   const [voucher, setVoucher] = useState(voucherData);
   const [voucherToFetch, setVoucherToFetch] = useState([0, 0]);
+  const [label, setLabel] = useState("Check status");
   // run on getProof to update voucher proof
   const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({
     variables: {
@@ -32,8 +32,6 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
    */
   const [loading, setLoading] = useState(false); // use for disable button @TODO
   const [wasExecuted, setWasExecuted] = useState<null | boolean>(null); // check on page load and after executeVoucher is run
-
-  if (!connectedChain) return;
   const { contracts, executeVoucher } = useRollups();
 
   const handleVoucherDisplay = (
@@ -55,7 +53,6 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
         break;
     }
   };
-
   const recheckVoucherStatus = async (voucher: any) => {
     if (contracts) {
       const result = await contracts.dappContract.wasOutputExecuted(
@@ -79,12 +76,17 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
       proof: voucherResult.data?.voucher.proof, // But override this one
       payload: voucherResult.data?.voucher.payload || "", // But override this one
     });
+    const newlabel = !voucherResult.data?.voucher.proof
+      ? "Waiting for proof ..."
+      : "Proof ready!";
+    setLabel(newlabel);
+    setTimeout(() => {
+      setLabel("Check status");
+    }, 3000);
   };
-
   useEffect(() => {
     recheckVoucherStatus(voucher);
   }, [contracts]);
-
   return (
     <div className="my-4 flex flex-col justify-between gap-6 border-b-2 pb-4">
       <div className="flex">
@@ -97,7 +99,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
               className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
               onClick={() => getProof(voucher)}
             >
-              Check status
+              {label}
             </button>
           )}
           {voucher.proof && wasExecuted && (
@@ -109,13 +111,14 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
             <Button
               onClick={handleExecuteVoucher}
               className="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              disabled={loading}
             >
               {loading ? "Minting" : "Mint"}
             </Button>
           )}
           {/* @TODO add info for NFT minted  */}
           {/* {voucherToExecute && voucherToExecute.msg && (
-          <div className="mt-3 text-sm">
+        <div className="mt-3 text-sm">
           {loading ? (
             <span>Minting NFT, please wait...</span>
           ) : (
