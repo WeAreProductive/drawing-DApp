@@ -176,3 +176,5 @@ export interface Proof {
   context: Hex;
   validity: Validity;
 }
+
+export type Address = `0x${string}`;

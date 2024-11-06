@@ -2,11 +2,6 @@ import { CustomFlowbiteTheme, Label, Modal, TextInput } from "flowbite-react";
 import { useEffect, useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
 import { useRollups } from "../../hooks/useRollups";
-import { useSetChain } from "@web3-onboard/react";
-import configFile from "../../config/config.json";
-import { Network } from "../../shared/types";
-
-const config: { [name: string]: Network } = configFile;
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -67,12 +62,7 @@ type WithdrawDialogType = {
   handler: (open: boolean) => void;
 };
 const WithdrawDialog = ({ isOpen, handler }: WithdrawDialogType) => {
-  const [{ connectedChain }] = useSetChain();
-
-  const dappAddress = connectedChain
-    ? config[connectedChain.id].DAppAddress
-    : "";
-  const { sendWithdrawInput } = useRollups(dappAddress);
+  const { sendWithdrawInput } = useRollups();
   const [openModal, setOpenModal] = useState(isOpen);
   const [amount, setAmount] = useState("0");
 

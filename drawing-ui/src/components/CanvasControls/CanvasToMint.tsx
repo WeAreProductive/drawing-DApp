@@ -29,9 +29,7 @@ const CanvasToMint = () => {
   const { getVoucherInput } = useDrawing();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
-  const { sendMintingInput } = useRollups(
-    config[connectedChain.id].DAppAddress,
-  );
+  const { sendMintingInput } = useRollups();
 
   const handleCanvasToMint = async () => {
     console.warn("handle canvas to mint");

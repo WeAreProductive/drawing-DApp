@@ -3,12 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useSetChain } from "@web3-onboard/react";
 import { useVoucherQuery } from "../../generated/graphql";
 import { useRollups } from "../../hooks/useRollups";
-import configFile from "../../config/config.json";
-import {
-  VoucherExtended,
-  Network,
-  DrawingInputExtended,
-} from "../../shared/types";
+import { VoucherExtended, DrawingInputExtended } from "../../shared/types";
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
 import CanvasSnapshotLoader from "../ImagesRollups/CanvasSnapshotLoader";
@@ -19,8 +14,6 @@ type VoucherProp = {
   drawing: DrawingInputExtended;
   selector?: string;
 };
-
-const config: { [name: string]: Network } = configFile;
 
 const Voucher = ({ voucherData, drawing }: VoucherProp) => {
   const [{ connectedChain }] = useSetChain();
@@ -41,9 +34,7 @@ const Voucher = ({ voucherData, drawing }: VoucherProp) => {
   const [wasExecuted, setWasExecuted] = useState<null | boolean>(null); // check on page load and after executeVoucher is run
 
   if (!connectedChain) return;
-  const { contracts, executeVoucher } = useRollups(
-    config[connectedChain.id].DAppAddress,
-  );
+  const { contracts, executeVoucher } = useRollups();
 
   const handleVoucherDisplay = (
     data: VoucherExtended,

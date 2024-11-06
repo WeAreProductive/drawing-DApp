@@ -30,7 +30,7 @@ import { Account } from "@web3-onboard/core/dist/types";
 
 const config: { [name: string]: Network } = configFile;
 
-export const useRollups = (dAddress: string): RollupsInteractions => {
+export const useRollups = (): RollupsInteractions => {
   const [contracts, setContracts] = useState<RollupsContracts | undefined>();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
@@ -38,7 +38,9 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
   const [account, setAccount] = useState<`0x${string}` | undefined>("0x");
   const [cartesiTxId, setCartesiTxId] = useState<string>("");
 
-  const [dappAddress] = useState<string>(dAddress);
+  const dappAddress = connectedChain
+    ? config[connectedChain.id].DAppAddress
+    : null;
 
   const {
     setDappState,
@@ -56,9 +58,9 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
       );
       const signer = provider.getSigner();
 
-      let DAppAddress = "";
+      let dappAddress = "";
       if (config[chain.id]?.DAppAddress) {
-        DAppAddress = config[chain.id].DAppAddress;
+        dappAddress = config[chain.id].DAppAddress;
       } else {
         console.error(
           `No dapp relay address address defined for chain ${chain.id}`,
@@ -121,7 +123,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         });
       }
     }
-  }, [connectedWallet, connectedChain, dappAddress]);
+  }, [connectedWallet, connectedChain]);
 
   useEffect(() => {
     if (!connectedWallet) return;

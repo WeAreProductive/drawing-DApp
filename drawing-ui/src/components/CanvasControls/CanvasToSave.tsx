@@ -6,7 +6,6 @@
  */
 import { useSetChain } from "@web3-onboard/react";
 import { useCanvasContext } from "../../context/CanvasContext";
-import configFile from "../../config/config.json";
 import { DrawingUserInput, Network } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -20,8 +19,6 @@ import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
 import { useState } from "react";
 import InputDialog from "../Drawing/InputDialog";
-
-const config: { [name: string]: Network } = configFile;
 
 type CanvasToSaveProp = {
   enabled: boolean;
@@ -37,7 +34,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   } = useCanvasContext();
   const [{ connectedChain }] = useSetChain();
   if (!connectedChain) return;
-  const { sendInput } = useRollups(config[connectedChain.id].DAppAddress);
+  const { sendInput } = useRollups();
   const { getNoticeInput } = useDrawing();
   const [connectedWallet] = useWallets();
   const account = connectedWallet.accounts[0].address;

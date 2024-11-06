@@ -4,12 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import { zeroAddress } from "../shared/constants";
 import { useSetChain } from "@web3-onboard/react";
 import { useMemo } from "react";
+import { Address } from "../shared/types";
 
 import configFile from "../config/config.json";
 
 const config: { [name: string]: { [name: string]: string } } = configFile;
 
-type Address = `0x${string}`;
 export const balanceKeys = {
   base: ["balance"] as const,
   details: () => [...balanceKeys.base, "detail"] as const,
@@ -36,7 +36,7 @@ const fetchBalance = async (inspectUrl: string, account?: Address) => {
   const result = ethers.utils.toUtf8String(data.reports[0].payload);
   return +result;
 };
-export const useGetBalance = (account: Address) => {
+export const useGetBalance = (account: Address | null) => {
   const [{ connectedChain }] = useSetChain();
   const inspectUrl = useMemo(() => {
     if (!connectedChain) {
