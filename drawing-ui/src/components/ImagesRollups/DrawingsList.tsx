@@ -52,8 +52,8 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   }, [lastElement, dappState]);
 
   const initDrawingsData = async () => {
-    console.log("Init drawing data ...");
-    console.log(`Dapp state ${dappState}`);
+    console.warn("Init drawing data ...");
+    console.warn(`Dapp state ${dappState}`);
     setFetch(false);
     setIsLoading(true);
 
@@ -71,10 +71,10 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   };
   // };
   const fetchData = async () => {
-    console.log("entering fetch ...");
-    console.log(dappState);
+    console.warn("entering fetch ...");
+    console.warn(dappState);
     // if (dappState == DAPP_STATE.refetchDrawings) {
-    console.log(`Fetching more drawings - page: ${page}`);
+    console.warn(`Fetching more drawings - page: ${page}`);
     if (page == 0 || page == undefined) return;
     setIsLoading(true);
     setFetch(false);
@@ -115,7 +115,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
               </div>
             );
           } catch (e) {
-            console.log(e);
+            console.error(e);
           }
         })
       ) : (

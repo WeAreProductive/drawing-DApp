@@ -35,7 +35,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
     try {
       if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath, { recursive: true });
-        console.log(`Directory created successfully`);
+        console.warn(`Directory created successfully`);
       }
       const { width, height } = req.body.canvasDimensions;
       const canvas = new fabric.Canvas(null, { width: width, height: height });
@@ -91,7 +91,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
             file: buffer,
           });
 
-          console.log("IPFS IMG: ", imageIPFS.data.ipfsHash);
+          console.warn("IPFS IMG: ", imageIPFS.data.ipfsHash);
 
           const metaData = JSON.stringify({
             name: "Cartesi Drawing Canvas NFT",
@@ -120,7 +120,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
         }
       );
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   } else {
     res.send(

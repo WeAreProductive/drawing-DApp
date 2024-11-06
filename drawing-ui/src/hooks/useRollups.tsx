@@ -442,7 +442,7 @@ export const useRollups = (dAddress: string): RollupsInteractions => {
         newVoucherToExecute.msg = `Could not execute voucher: ${JSON.stringify(
           e,
         )}`;
-        console.log(`Could not execute voucher: ${JSON.stringify(e)}`);
+        console.error(`Could not execute voucher: ${JSON.stringify(e)}`);
       }
       return newVoucherToExecute.executed;
     }

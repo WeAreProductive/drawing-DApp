@@ -235,3 +235,40 @@ export const getCursorSvg = (
 
   return cursor;
 };
+
+export const handleCompressedResponse = (output: `0x${string}`) => {
+  let data;
+  let compressedData;
+  if (output) {
+    try {
+      compressedData = ethers.utils.arrayify(output);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  if (compressedData) {
+    try {
+      data = pako.inflate(compressedData, {
+        to: "string",
+      });
+      return JSON.parse(data);
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return data;
+};
+export const handlePlainResponse = (output: `0x${string}`) => {
+  console.log({ output });
+  let data = null;
+  if (output) {
+    try {
+      data = ethers.utils.toUtf8String(output);
+      console.log({ data });
+      return data;
+    } catch (e) {
+      console.error(e);
+    }
+  }
+  return data;
+};
