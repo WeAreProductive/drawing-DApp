@@ -73,8 +73,6 @@ const VouchersList = () => {
     let uuids: string[] = [];
     let newVouchers: VoucherExtended[] = [];
     data?.vouchers.edges.forEach((node: { node: VoucherExtended }) => {
-      console.log(data);
-      console.log(account);
       // init data
       const n = node.node;
       const payload = n?.payload; // voucher data
@@ -128,7 +126,7 @@ const VouchersList = () => {
             }
           }
         } catch (e) {
-          console.log(e);
+          console.error(e);
         }
       } else {
         payloadSliced = "(empty)";
@@ -144,7 +142,7 @@ const VouchersList = () => {
               try {
                 compressedData = ethers.utils.arrayify(payload);
               } catch (e) {
-                console.log(e);
+                console.error(e);
               }
             } else {
               payload = "(empty)";
@@ -159,7 +157,7 @@ const VouchersList = () => {
                 // last drawing layer, !uuid!, owner, ... at the time the voucher was requested
                 return uuid;
               } catch (e) {
-                console.log(e);
+                console.error(e);
               }
             }
           });

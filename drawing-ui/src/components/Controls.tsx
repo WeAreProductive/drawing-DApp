@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import CanvasControls from "../components/CanvasControls";
 import DrawingControls from "./DrawingControls/DrawingControls";
 import CanvasObjectsControl from "./CanvasObjectsControl";
@@ -9,8 +9,8 @@ import {
   DrawingInitialData,
   DrawingInputExtended,
 } from "../shared/types";
-import { useWallets } from "@web3-onboard/react";
 import { useCanvasControls } from "../hooks/useCanvasControl";
+import CountdownTimer from "./Drawing/CountdownTimer";
 
 const Controls = () => {
   const {
@@ -82,6 +82,7 @@ const Controls = () => {
 
   return (
     <div className="flex flex-col">
+      <CountdownTimer />
       {currentDrawingData && currentDrawingData.title && (
         <div className="mb-6">
           <h1 className="mb-2 text-xl font-semibold">

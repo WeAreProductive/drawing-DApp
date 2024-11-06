@@ -3,6 +3,7 @@ import { DrawingInputExtended } from "../../shared/types";
 import { sliceAccountStr, snapShotJsonfromLog } from "../../utils";
 import { useMemo } from "react";
 import DrawingPreview from "./DrawingPreview";
+import { useCanvasControls } from "../../hooks/useCanvasControl";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
@@ -10,6 +11,7 @@ type CanvasSnapshotProp = {
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { owner, uuid, update_log, dimensions, title } = src;
+  const { drawingIsClosed } = useCanvasControls();
   const snapShotJson = useMemo(
     () => snapShotJsonfromLog(update_log),
     [update_log],
@@ -31,6 +33,9 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
           {src.private ? "private" : "public"}
         </span>{" "}
         {title}
+      </div>
+      <div className="text-xs">
+        {drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"}
       </div>
       <div className="text-xs">Owner: {sliceAccountStr(owner)}</div>
       <div></div>

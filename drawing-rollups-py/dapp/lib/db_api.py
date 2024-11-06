@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 db_filename = 'drawing.db'  
 limit = 8
-drawing_is_enabled = 7 # days
+drawing_is_enabled = 1 # days
 # helpers - move to utils.py
 def get_query_offset(page):
   """ Calculates the OFFSET parameter in query statements.
