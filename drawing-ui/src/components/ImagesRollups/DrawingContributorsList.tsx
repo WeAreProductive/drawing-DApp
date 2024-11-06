@@ -1,11 +1,18 @@
-import { Key } from "react";
+import { Key, useEffect } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
 import DrawingPreview from "./DrawingPreview";
 import { UpdateLogItem } from "../../shared/types";
 import { sliceAccountStr } from "../../utils";
+import { useParams } from "react-router-dom";
 
 const DrawingContributorsList = () => {
-  const { currentDrawingData } = useCanvasContext();
+  const { uuid } = useParams();
+  const { currentDrawingData, setCurrentDrawingData } = useCanvasContext();
+  useEffect(() => {
+    if (!uuid) {
+      setCurrentDrawingData(null);
+    }
+  }, []);
   return (
     currentDrawingData && (
       <div className="rounded-xl bg-card p-6">

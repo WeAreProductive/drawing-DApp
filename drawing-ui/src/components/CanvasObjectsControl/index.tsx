@@ -1,4 +1,3 @@
-import { useCanvasControls } from "../../hooks/useCanvasControl";
 import ModeControl from "./ModeControl";
 import RemoveControl from "./RemoveControl";
 

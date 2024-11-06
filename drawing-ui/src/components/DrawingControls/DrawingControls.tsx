@@ -1,4 +1,3 @@
-import { useCanvasControls } from "../../hooks/useCanvasControl";
 import BrushControl from "./BrushControl";
 import ColorControl from "./ColorControl";
 import LineWidthControl from "./LineWidthControl";

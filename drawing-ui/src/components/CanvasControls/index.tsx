@@ -4,7 +4,6 @@ import CanvasToSave from "./CanvasToSave";
 import CanvasUndo from "./CanvasUndo";
 import CanvasRedo from "./CanvasRedo";
 import CanvasDownload from "./CanvasDownload";
-import { useCanvasContext } from "../../context/CanvasContext";
 import { useCanvasControls } from "../../hooks/useCanvasControl";
 
 type CanvasControlsProp = {

@@ -1,14 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import { DrawingInputExtended } from "../../shared/types";
 import CanvasSnapshot from "./CanvasSnapshot";
-import { useWallets } from "@web3-onboard/react";
 import { useInspect } from "../../hooks/useInspect";
 import { useCanvasContext } from "../../context/CanvasContext";
+import { useConnectionContext } from "../../context/ConnectionContext";
+
 type DrawingsListProp = {
   drawingsType: string;
 };
+
 const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
-  const [connectedWallet] = useWallets();
+  const { account } = useConnectionContext();
   const { dappState } = useCanvasContext();
   const { inspectCall } = useInspect();
   const [drawings, setDrawings] = useState<DrawingInputExtended[]>([]);
@@ -21,7 +23,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
 
   const [lastElement, setLastElement] = useState(null);
   const [fetch, setFetch] = useState(false);
-  const account = connectedWallet.accounts[0].address;
+
   const observer = useRef(
     new IntersectionObserver((entries) => {
       const first = entries[0];
@@ -31,11 +33,13 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
       }
     }),
   );
+
   useEffect(() => {
     if (fetch) {
       fetchData();
     }
   }, [fetch, page]);
+
   useEffect(() => {
     const currentElement = lastElement;
     const currentObserver = observer.current;
@@ -73,7 +77,6 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
   const fetchData = async () => {
     console.warn("entering fetch ...");
     console.warn(dappState);
-    // if (dappState == DAPP_STATE.refetchDrawings) {
     console.warn(`Fetching more drawings - page: ${page}`);
     if (page == 0 || page == undefined) return;
     setIsLoading(true);
@@ -90,7 +93,6 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     if (drawings) setDrawings((prevItems) => [...prevItems, ...drawings]);
     setPage(next_page);
     setIsLoading(false);
-    // }
   };
 
   useEffect(() => {
