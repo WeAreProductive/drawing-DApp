@@ -357,7 +357,6 @@ def save_data(type, query_args) :
             SET last_updated = ?
             WHERE
             id = ?
-            LIMIT 1;
             """,
             (now, id),
         )
