@@ -43,9 +43,6 @@ const InputDatepicker = ({
       year: "numeric",
     },
   });
-  const inputClassNames = validation.valid
-    ? ""
-    : "text-red-900 bg-red-50 border-red-500";
 
   useEffect(() => {
     setOptions((prevState) => ({

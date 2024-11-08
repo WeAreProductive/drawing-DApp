@@ -141,7 +141,6 @@ const ContestCreateInput = () => {
     setInputValues(initialInput);
   };
   const handleSubmit = async () => {
-    // @TODO validate fields
     const isValid = validateInput();
     if (!isValid) return;
 
@@ -174,8 +173,13 @@ const ContestCreateInput = () => {
             required
             value={inputValues.title}
             color={fieldValidation.title.valid ? "" : "failure"}
-            helperText={fieldValidation.title.msg}
           />
+          {/* Display error message */}
+          {!fieldValidation.title.valid && fieldValidation.title.msg && (
+            <p className="mt-1 text-sm text-red-900">
+              {fieldValidation.title.msg}
+            </p>
+          )}
         </div>
         <div className="my-2 flex flex-col">
           <Label
@@ -242,8 +246,14 @@ const ContestCreateInput = () => {
             value={inputValues.minting_active}
             onChange={(e) => handleInputChange(e, "minting_active")}
             color={fieldValidation.minting_active.valid ? "" : "failure"}
-            helperText={fieldValidation.minting_active.msg}
           />
+          {/* Display error message */}
+          {!fieldValidation.minting_active.valid &&
+            fieldValidation.minting_active.msg && (
+              <p className="mt-1 text-sm text-red-900">
+                {fieldValidation.minting_active.msg}
+              </p>
+            )}
         </div>
         <div className="m-2 flex flex-wrap gap-4">
           <Button color="blue" onClick={handleReset}>
