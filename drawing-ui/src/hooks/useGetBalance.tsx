@@ -6,6 +6,7 @@ import { useSetChain } from "@web3-onboard/react";
 import { useMemo } from "react";
 
 import configFile from "../config/config.json";
+import { Address } from "../shared/types";
 
 const config: { [name: string]: { [name: string]: string } } = configFile;
 
@@ -16,7 +17,10 @@ export const balanceKeys = {
 };
 const createError = (message: string) => Promise.reject(new Error(message));
 
-const fetchBalance = async (inspectUrl: string, account?: Address) => {
+const fetchBalance = async (
+  inspectUrl: string | null,
+  account: Address | undefined | null,
+) => {
   if (account === undefined || account === null || !inspectUrl) return 0;
 
   const url = `${inspectUrl}balance/${account}`;

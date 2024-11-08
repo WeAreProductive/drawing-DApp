@@ -1,5 +1,6 @@
 import type { CustomFlowbiteTheme } from "flowbite-react";
 import { TextInput } from "flowbite-react";
+import { ChangeEventHandler } from "react";
 
 const customTheme: CustomFlowbiteTheme["textInput"] = {
   base: "flex",
@@ -52,6 +53,38 @@ const customTheme: CustomFlowbiteTheme["textInput"] = {
   },
 };
 
-export default function DialogTextinput({ id }: { id: string }) {
-  return <TextInput theme={customTheme} id={id} />;
+export default function DialogTextinput({
+  id,
+  placeholder,
+  addon,
+  value,
+  color,
+  onChange,
+  validation,
+}: {
+  id: string;
+  placeholder: string;
+  addon: string;
+  value: string | number;
+  color: string;
+  onChange: ChangeEventHandler<HTMLInputElement>;
+  validation: { valid: boolean; msg: string } | null | undefined;
+}) {
+  return (
+    <>
+      <TextInput
+        theme={customTheme}
+        id={id}
+        placeholder={placeholder}
+        addon={addon}
+        value={value}
+        color={color}
+        onChange={onChange}
+      />
+      {/* Display error message */}
+      {!validation?.valid && validation?.msg && (
+        <p className="mt-1 text-sm text-red-900">{validation.msg}</p>
+      )}
+    </>
+  );
 }

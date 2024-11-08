@@ -8,9 +8,10 @@ import moment from "moment";
 import { useConnectionContext } from "../../context/ConnectionContext";
 import { dateToTimestamp, nowUnixTimestamp } from "../../utils";
 import { ContestInitType } from "../../shared/types";
+import DialogTextinput from "../ui/formDialog/textInput";
 
 const now = moment().utc();
-
+// @TODO fix typing
 const validationErrMsg = {
   required: "The field is required!",
   gt0: "Value must be greater than 0!",
@@ -151,7 +152,6 @@ const ContestCreateInput = () => {
     // @TODO display success toast
     setInputValues(initialInput);
   };
-  console.log({ fieldValidation });
   return (
     <div>
       <div className="space-y-6 bg-card p-10">
@@ -165,21 +165,15 @@ const ContestCreateInput = () => {
             className="mb-4"
             color={fieldValidation.title.valid ? "" : "failure"}
           />
-          <TextInput
+          <DialogTextinput
             id="title"
             ref={titleInputRef}
             placeholder="Contest title ..."
-            onChange={(e) => handleInputChange(e, "title")}
-            required
             value={inputValues.title}
+            onChange={(e) => handleInputChange(e, "title")}
             color={fieldValidation.title.valid ? "" : "failure"}
+            validation={fieldValidation.title}
           />
-          {/* Display error message */}
-          {!fieldValidation.title.valid && fieldValidation.title.msg && (
-            <p className="mt-1 text-sm text-red-900">
-              {fieldValidation.title.msg}
-            </p>
-          )}
         </div>
         <div className="my-2 flex flex-col">
           <Label
@@ -238,22 +232,15 @@ const ContestCreateInput = () => {
             className="mb-4"
             color={fieldValidation.minting_active.valid ? "" : "failure"}
           />
-          <TextInput
+          <DialogTextinput
             id="minting_active"
-            placeholder="0"
-            required
+            placeholder="1"
             addon="Hours"
             value={inputValues.minting_active}
             onChange={(e) => handleInputChange(e, "minting_active")}
             color={fieldValidation.minting_active.valid ? "" : "failure"}
+            validation={fieldValidation.minting_active}
           />
-          {/* Display error message */}
-          {!fieldValidation.minting_active.valid &&
-            fieldValidation.minting_active.msg && (
-              <p className="mt-1 text-sm text-red-900">
-                {fieldValidation.minting_active.msg}
-              </p>
-            )}
         </div>
         <div className="m-2 flex flex-wrap gap-4">
           <Button color="blue" onClick={handleReset}>
