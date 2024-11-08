@@ -15,12 +15,12 @@ const validationErrMsg = {
   required: "The field is required!",
   gt0: "Value must be greater than 0!",
   gtNow: "Select date greater than now!",
-  gtFrom: "Select date greater than From date!",
+  gtDate: "Select date after 'from' date!",
 };
 const validationRules = {
   title: ["required"],
-  active_from: ["required", "gtNow"],
-  active_to: ["required", "gtDate"],
+  active_from: ["required"],
+  active_to: ["required", "gtDate:active_from"],
   minting_active: ["required", "gt0"],
 };
 const validationInit = {
@@ -32,8 +32,8 @@ const validationInit = {
 const initialInput = {
   title: "",
   description: "",
-  active_from: now, // @TODO set to now
-  active_to: now, // @TODO set to now+1
+  active_from: now,
+  active_to: now,
   minting_active: 1,
 };
 
@@ -76,16 +76,53 @@ const ContestCreateInput = () => {
       }));
     }
   };
-  // @TODO
   const validateInput = () => {
-    return true;
+    let isValidInput = true;
+    for (let name in inputValues) {
+      if (Object.hasOwn(validationRules, name)) {
+        validationRules[name].forEach((rule: string) => {
+          if (rule == "gt0") {
+            if (+inputValues[name] < 1 || isNaN(inputValues[name])) {
+              setFieldValidation((fieldValidation) => ({
+                ...fieldValidation,
+                [name]: { valid: false, msg: validationErrMsg.gt0 },
+              }));
+              console.log(`Validation error :: ${validationErrMsg.gt0}`);
+              isValidInput = false;
+            }
+          }
+          if (rule.includes("gtDate")) {
+            const validationArgs = rule.split(":");
+            if (inputValues[name] <= inputValues[validationArgs[1]]) {
+              setFieldValidation((fieldValidation) => ({
+                ...fieldValidation,
+                [name]: { valid: false, msg: validationErrMsg.gtDate },
+              }));
+              console.log(`Validation error :: ${validationErrMsg.gtDate}`);
+              isValidInput = false;
+            }
+          }
+          if (rule == "required") {
+            if (!inputValues[name].toString().trim()) {
+              setFieldValidation((fieldValidation) => ({
+                ...fieldValidation,
+                [name]: { valid: false, msg: validationErrMsg.required },
+              }));
+              console.log(`Validation error :: ${validationErrMsg.required}`);
+              isValidInput = false;
+            }
+          }
+        });
+      }
+    }
+    return isValidInput;
   };
   const handleReset = () => {
     setInputValues(initialInput);
+    setFieldValidation(validationInit);
   };
   const createContest = async () => {
     console.warn("CONTEST :: Creating new contest ...");
-    // @TODO - update dapp states console.warn(dappState);
     const unixTimestamp = nowUnixTimestamp();
     const contest_data = {
       data: {
@@ -115,7 +152,7 @@ const ContestCreateInput = () => {
     // @TODO display success toast
     setInputValues(initialInput);
   };
-
+  console.log({ fieldValidation });
   return (
     <div>
       <div className="space-y-6 bg-card p-10">
@@ -172,18 +209,20 @@ const ContestCreateInput = () => {
                 name="active_from"
                 onChange={(date) => handleDateSelected(date, "active_from")}
                 value={inputValues.active_from}
+                validation={fieldValidation.active_from}
               />
             </div>
             <div>
               <Label
                 htmlFor="active_to"
                 value="to"
-                color={fieldValidation.active_from.valid ? "" : "failure"}
+                color={fieldValidation.active_to.valid ? "" : "failure"}
               />
               <InputDatepicker
                 name="active_to"
                 onChange={(date) => handleDateSelected(date, "active_to")}
                 value={inputValues.active_to}
+                validation={fieldValidation.active_to}
               />
             </div>
           </div>
