@@ -1,10 +1,10 @@
 import { useRef, useState } from "react";
-import { Button, Label, Textarea, TextInput } from "flowbite-react";
+import { Button, Label, Textarea } from "flowbite-react";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import InputDatepicker from "../ui/formDialog/inputDatepicker";
 import ButtonSpinner from "../ui/formDialog/buttonSpinner";
 import { useInspect } from "../../hooks/useInspect";
-import moment from "moment";
+import moment, { Moment } from "moment";
 import { useConnectionContext } from "../../context/ConnectionContext";
 import { dateToTimestamp, nowUnixTimestamp } from "../../utils";
 import { ContestInitType } from "../../shared/types";
@@ -18,7 +18,8 @@ const validationErrMsg = {
   gtNow: "Select date greater than now!",
   gtDate: "Select date after 'from' date!",
 };
-const validationRules = {
+
+const validationRules: { [key: string]: string[] } = {
   title: ["required"],
   active_from: ["required"],
   active_to: ["required", "gtDate:active_from"],
@@ -64,7 +65,7 @@ const ContestCreateInput = () => {
       }));
     }
   };
-  const handleDateSelected = (date: Date, inputName: string) => {
+  const handleDateSelected = (date: Moment, inputName: string) => {
     setInputValues({
       ...inputValues,
       [inputName]: date,
@@ -83,7 +84,7 @@ const ContestCreateInput = () => {
       if (Object.hasOwn(validationRules, name)) {
         validationRules[name].forEach((rule: string) => {
           if (rule == "gt0") {
-            if (+inputValues[name] < 1 || isNaN(inputValues[name])) {
+            if (!inputValues[name] || +inputValues[name] < 1) {
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.gt0 },
@@ -93,7 +94,12 @@ const ContestCreateInput = () => {
           }
           if (rule.includes("gtDate")) {
             const validationArgs = rule.split(":");
-            if (inputValues[name] <= inputValues[validationArgs[1]]) {
+            const compareTo = validationArgs[1];
+            if (!inputValues[compareTo]) return;
+            if (
+              inputValues[name] &&
+              inputValues[name] <= inputValues[compareTo]
+            ) {
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.gtDate },
@@ -102,7 +108,7 @@ const ContestCreateInput = () => {
             }
           }
           if (rule == "required") {
-            if (!inputValues[name].toString().trim()) {
+            if (!inputValues[name]?.toString().trim()) {
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.required },

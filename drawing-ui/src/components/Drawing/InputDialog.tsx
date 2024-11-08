@@ -61,7 +61,7 @@ const customTheme: CustomFlowbiteTheme["modal"] = {
     popup: "border-t",
   },
 };
-const validationRules = {
+const validationRules: { [key: string]: string[] } = {
   title: ["required"],
   minting_price: ["required", "gt0"],
   open: ["required", "gt0"],
@@ -140,7 +140,7 @@ const InputDialog = ({
       if (Object.hasOwn(validationRules, name)) {
         validationRules[name].forEach((rule: string) => {
           if (rule == "gt0") {
-            if (+inputValues[name] < 1 || isNaN(inputValues[name])) {
+            if (+inputValues[name] < 1) {
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.gt0 },

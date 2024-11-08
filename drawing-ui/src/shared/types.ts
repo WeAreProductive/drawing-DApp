@@ -104,6 +104,7 @@ export type DrawingUserInput = {
   mintingPrice: string;
   private: boolean;
   open: number;
+  [key: string]: string | boolean | number;
 };
 // @TODO combine DrawingInitial & DrawingInputExtended & DrawingInput
 export type DrawingInitialData = {
@@ -198,6 +199,13 @@ export interface ContestInitType {
   active_from: Moment | string | null;
   active_to: Moment | string | null;
   minting_active: number;
+  [key: string]:
+    | Moment
+    | string
+    | number
+    | null
+    | DrawingInputExtended[]
+    | undefined;
 }
 export interface ContestType extends ContestInitType {
   id: string;
