@@ -1,16 +1,11 @@
-import {
-  CustomFlowbiteTheme,
-  Label,
-  Modal,
-  Textarea,
-  TextInput,
-} from "flowbite-react";
+import { CustomFlowbiteTheme, Label, Modal, Textarea } from "flowbite-react";
 import { useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import DialogToggleSwitch from "../ui/formDialog/toggleSwitch";
 import { DrawingUserInput } from "../../shared/types";
 import { useCanvasContext } from "../../context/CanvasContext";
+import DialogTextinput from "../ui/formDialog/textInput";
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -150,13 +145,11 @@ const InputDialog = ({
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.gt0 },
               }));
-              console.log("Value must be greater than 0!");
               isValidInput = false;
             }
           }
           if (rule == "required") {
             if (!inputValues[name].toString().trim()) {
-              console.log("string empty");
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.required },
@@ -192,14 +185,16 @@ const InputDialog = ({
                 className="mb-4"
                 color={fieldValidation.title.valid ? "" : "failure"}
               />
-              <TextInput
+              <DialogTextinput
                 id="title"
                 ref={titleInputRef}
                 placeholder="Drawing title ..."
-                onChange={(e) => handleInputChange(e, "title")}
-                required
+                value={inputValues.title}
                 color={fieldValidation.title.valid ? "" : "failure"}
-                helperText={fieldValidation.title.msg}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  handleInputChange(e, "title")
+                }
+                validation={fieldValidation.title}
               />
             </div>
             <div className="my-2 flex flex-col">
@@ -225,14 +220,14 @@ const InputDialog = ({
                   className="mb-4"
                   color={fieldValidation.minting_price.valid ? "" : "failure"}
                 />
-                <TextInput
+                <DialogTextinput
                   id="minting_price"
                   placeholder="0"
-                  required
                   addon="ETH"
-                  onChange={(e) => handleInputChange(e, "minting_price")}
+                  value={inputValues.mintingPrice}
                   color={fieldValidation.minting_price.valid ? "" : "failure"}
-                  helperText={fieldValidation.minting_price.msg}
+                  onChange={(e) => handleInputChange(e, "minting_price")}
+                  validation={fieldValidation.minting_price}
                 />
               </div>
               <div className="m-2 flex flex-col">
@@ -242,14 +237,14 @@ const InputDialog = ({
                   className="mb-4"
                   color={fieldValidation.open.valid ? "" : "failure"}
                 />
-                <TextInput
+                <DialogTextinput
                   id="open"
                   placeholder="0"
-                  required
                   addon="Hours"
-                  onChange={(e) => handleInputChange(e, "open")}
+                  value={inputValues.open}
                   color={fieldValidation.open.valid ? "" : "failure"}
-                  helperText={fieldValidation.open.msg}
+                  onChange={(e) => handleInputChange(e, "open")}
+                  validation={fieldValidation.open}
                 />
               </div>
             </div>

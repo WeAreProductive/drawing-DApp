@@ -88,7 +88,6 @@ const ContestCreateInput = () => {
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.gt0 },
               }));
-              console.log(`Validation error :: ${validationErrMsg.gt0}`);
               isValidInput = false;
             }
           }
@@ -99,7 +98,6 @@ const ContestCreateInput = () => {
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.gtDate },
               }));
-              console.log(`Validation error :: ${validationErrMsg.gtDate}`);
               isValidInput = false;
             }
           }
@@ -109,7 +107,6 @@ const ContestCreateInput = () => {
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.required },
               }));
-              console.log(`Validation error :: ${validationErrMsg.required}`);
               isValidInput = false;
             }
           }
