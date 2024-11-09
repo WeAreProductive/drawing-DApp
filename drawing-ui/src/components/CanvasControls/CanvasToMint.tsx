@@ -19,10 +19,14 @@ const CanvasToMint = () => {
     useCanvasContext();
   const { connectedChain, dappAddress, ercToMintAddress } =
     useConnectionContext();
-  const { getVoucherInput } = useDrawing();
-  const { sendMintingInput } = useRollups();
+  //const { getVoucherInput } = useDrawing();
+  //const { sendMintingInput } = useRollups();
 
   const handleCanvasToMint = async () => {
+    alert(
+      "Minting is currently unavailable. This feature will be released later.",
+    );
+    /*
     console.warn("Canvas :: handle canvas to mint");
     if (!canvas) return;
     if (!currentDrawingData) return;
@@ -54,11 +58,12 @@ const CanvasToMint = () => {
 
     await sendMintingInput(input);
     setLoading(false);
+    */
   };
   return connectedChain ? (
     <Button variant={"outline"} onClick={handleCanvasToMint} disabled={loading}>
       <Box size={18} className="mr-2" strokeWidth={1.5} />
-      {loading ? " Queuing NFT for minting..." : " Save & Mint NFT"}
+      {loading ? " Queuing NFT for minting..." : "Mint NFT"}
     </Button>
   ) : null;
 };
