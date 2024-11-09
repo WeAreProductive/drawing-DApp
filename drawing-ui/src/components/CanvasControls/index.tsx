@@ -29,7 +29,7 @@ const CanvasControls = ({
         </>
       )}
       {drawingIsClosed && <CanvasToMint enabled={enabled} />}
-      <CanvasReset />
+      {!drawingIsClosed && <CanvasReset />}
       <CanvasDownload canDownload={canDownload} />
     </div>
   );

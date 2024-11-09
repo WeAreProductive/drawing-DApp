@@ -11,6 +11,7 @@ import {
 } from "../shared/types";
 import { useCanvasControls } from "../hooks/useCanvasControl";
 import CountdownTimer from "./Drawing/CountdownTimer";
+import CanvasShare from "./CanvasControls/CanvasShare";
 
 const Controls = () => {
   const {
@@ -117,8 +118,11 @@ const Controls = () => {
           canUndo={canUndo}
           canRedo={canRedo}
           // @TODO will depend on
-          canDownload={!!currentDrawingLayer?.length}
+          canDownload={currentDrawingData ? true : false}
         />
+        {currentDrawingData && (
+          <CanvasShare currentDrawingData={currentDrawingData} />
+        )}
       </div>
       <div
         className={`mt-3 text-center text-sm ${currentResult.info.type === "warning" ? "text-orange-500" : currentResult.info.type === "error" ? "font-semibold text-red-500" : ""}`}

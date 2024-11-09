@@ -133,7 +133,6 @@ const FabricJSCanvas = () => {
           currentDrawingData?.dimensions,
         ).width;
         const currentDrawingCanvasRatio = size / parseInt(currentDrawingWidth);
-        console.log("Ratio", currentDrawingCanvasRatio);
         canvas.setZoom(currentDrawingCanvasRatio);
       }
 

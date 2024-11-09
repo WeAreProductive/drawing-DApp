@@ -32,7 +32,7 @@ const DrawingContributorsList = () => {
                     dimensions={dimensions ? JSON.parse(dimensions) : ""}
                     snapShotJson={snapShotJson}
                   />
-                  Painter: {sliceAccountStr(painter)}
+                  Contributor: {sliceAccountStr(painter)}
                 </div>
               );
             },
