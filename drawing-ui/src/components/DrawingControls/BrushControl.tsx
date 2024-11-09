@@ -8,7 +8,6 @@ import {
 import { getCursorSvg } from "../../utils";
 import { Button } from "../ui/button";
 import { Pencil, SprayCan } from "lucide-react";
-import { toast } from "sonner";
 
 const BrushControl = () => {
   const { canvas, canvasOptions, setOptions } = useCanvasContext();
@@ -17,9 +16,6 @@ const BrushControl = () => {
   const toggleBrush = () => {
     if (!canvas) return;
     if (!sprayEnabled) {
-      toast.error(
-        "The Spray will dramatically increase the drawing/input size!",
-      );
       setOptions({ ...canvasOptions, cursorType: CANVAS_CURSOR_TYPES.spray }); // update in context
       canvas.freeDrawingBrush = new fabric["SprayBrush"](canvas);
       const brush = canvas.freeDrawingBrush;
