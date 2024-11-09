@@ -102,9 +102,6 @@ export default function Page({ children }: Props) {
     }
   }, [connectedChain, wallet]);
 
-  console.log("Chain:", connectedChain);
-  console.log("Supported:", isSupportedNetwork);
-
   return (
     <div className="flex h-svh flex-col overflow-auto bg-muted">
       {wallet && isSupportedNetwork && <Header />}
