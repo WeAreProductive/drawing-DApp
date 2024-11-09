@@ -1,4 +1,5 @@
 export const BASE_API_URL = import.meta.env.VITE_BASE_API_URL;
+export const GA4_ID = import.meta.env.VITE_GA4_ID;
 
 export const API_ENDPOINTS = {
   canvasesStore: "canvases/store",

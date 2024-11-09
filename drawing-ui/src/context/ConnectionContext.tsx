@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { useConnectWallet, useSetChain, useWallets } from "@web3-onboard/react";
 import { ConnectedChain, WalletState } from "@web3-onboard/core";
 import { Address, Network } from "../shared/types";
@@ -46,17 +46,18 @@ export const ConnectionContextProvider = ({ children }: Props) => {
   const [{ connectedChain }] = useSetChain();
   const [{ wallet }] = useConnectWallet();
   const [connectedWallet] = useWallets();
-  const account = connectedWallet?.accounts[0].address;
-  const dappAddress = connectedChain
-    ? config[connectedChain.id]?.DAppAddress
-      ? config[connectedChain.id].DAppAddress
-      : null
-    : null;
-  const ercToMintAddress = connectedChain
-    ? config[connectedChain.id]?.ercToMint
-      ? config[connectedChain.id].ercToMint
-      : null
-    : null;
+
+  const [account, setAccount] = useState<Address | null>(null);
+  const [dappAddress, setDappAddress] = useState<string | null>(null);
+  const [ercToMintAddress, setErcToMintAddress] = useState<string | null>(null);
+
+  useEffect(() => {
+    setAccount(connectedWallet?.accounts[0].address);
+    if (connectedChain && config[connectedChain.id]?.DAppAddress)
+      setDappAddress(config[connectedChain.id].DAppAddress);
+    if (connectedChain && config[connectedChain.id]?.ercToMint)
+      setErcToMintAddress(config[connectedChain.id].ercToMint);
+  }, [wallet, connectedChain]);
 
   const value = {
     connectedChain,

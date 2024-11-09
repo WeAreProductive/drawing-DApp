@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { init, useConnectWallet, useSetChain } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import wagmi from "@web3-onboard/wagmi";
@@ -9,10 +10,11 @@ import "../App.css";
 import configFile from "../config/config.json";
 import Header from "../components/Header";
 import { Network } from "../shared/types";
-import { useEffect, useState } from "react";
 import { Ban } from "lucide-react";
 import { useConnectionContext } from "../context/ConnectionContext";
 import NetworkWelcome from "../components/NetworkWelcome";
+import ReactGA from "react-ga4";
+import { GA4_ID } from "../shared/constants";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -58,6 +60,15 @@ export default function Page({ children }: Props) {
   const [isSupportedNetwork, setIsSupportedNetwork] = useState(false);
 
   const SupportedNetworks = () => {
+    useEffect(() => {
+      ReactGA.initialize(GA4_ID);
+      ReactGA.send({
+        hitType: "pageview",
+        page: window.location.pathname,
+        title: "Unsupported Chain",
+      });
+    }, []);
+
     return (
       <div className="mt-16 flex flex-col items-center">
         <NetworkWelcome />
@@ -87,8 +98,12 @@ export default function Page({ children }: Props) {
   useEffect(() => {
     if (connectedChain) {
       if (config[connectedChain.id]) setIsSupportedNetwork(true);
+      else setIsSupportedNetwork(false);
     }
   }, [connectedChain, wallet]);
+
+  console.log("Chain:", connectedChain);
+  console.log("Supported:", isSupportedNetwork);
 
   return (
     <div className="flex h-svh flex-col overflow-auto bg-muted">
