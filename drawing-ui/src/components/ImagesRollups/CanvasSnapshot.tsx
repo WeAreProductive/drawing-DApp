@@ -35,7 +35,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         {title}
       </div>
       <div className="text-xs">
-        {drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"}
+        {/*drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"*/}
       </div>
       <div className="text-xs">Owner: {sliceAccountStr(owner)}</div>
       <div></div>

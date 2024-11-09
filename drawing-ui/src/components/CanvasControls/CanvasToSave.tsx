@@ -123,12 +123,14 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   return (
     <>
       <Button
-        variant={"outline"}
+        variant={"default"}
         onClick={handleCanvasToSave}
         disabled={!connectedChain || !enabled}
       >
-        <Save size={18} className="mr-2" strokeWidth={1.5} />
-        {dappState == DAPP_STATE.canvasSave ? "Saving..." : "Save"}
+        <Save size={18} strokeWidth={1.5} />
+        <span className="ml-2 hidden lg:inline-block">
+          {dappState == DAPP_STATE.canvasSave ? "Saving..." : "Save Drawing"}
+        </span>
       </Button>
       <InputDialog
         isOpen={isOpen}

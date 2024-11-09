@@ -12,6 +12,7 @@ import { Network } from "../shared/types";
 import { useEffect, useState } from "react";
 import { Ban } from "lucide-react";
 import { useConnectionContext } from "../context/ConnectionContext";
+import NetworkWelcome from "../components/NetworkWelcome";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -54,12 +55,13 @@ type Props = {
 
 export default function Page({ children }: Props) {
   const { wallet, connectedChain } = useConnectionContext();
-  const [isSupportedNetwork, setIsSupportedNetwork] = useState(true);
+  const [isSupportedNetwork, setIsSupportedNetwork] = useState(false);
 
   const SupportedNetworks = () => {
     return (
-      <div className="flex flex-col items-center">
-        <div>
+      <div className="mt-16 flex flex-col items-center">
+        <NetworkWelcome />
+        <div className="mt-8">
           <Ban size={48} className="mr-2" strokeWidth={2} color="#c91d1d" />
         </div>
         <div>
@@ -84,14 +86,13 @@ export default function Page({ children }: Props) {
 
   useEffect(() => {
     if (connectedChain) {
-      if (!config[connectedChain?.id]) setIsSupportedNetwork(false);
-      else setIsSupportedNetwork(true);
+      if (config[connectedChain.id]) setIsSupportedNetwork(true);
     }
-  }, [connectedChain?.id]);
+  }, [connectedChain, wallet]);
 
   return (
     <div className="flex h-svh flex-col overflow-auto bg-muted">
-      <Header />
+      {wallet && isSupportedNetwork && <Header />}
       <div className="container max-w-none">
         {wallet ? (
           isSupportedNetwork ? (

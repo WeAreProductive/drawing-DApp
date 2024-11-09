@@ -48,10 +48,14 @@ export const ConnectionContextProvider = ({ children }: Props) => {
   const [connectedWallet] = useWallets();
   const account = connectedWallet?.accounts[0].address;
   const dappAddress = connectedChain
-    ? config[connectedChain.id].DAppAddress
+    ? config[connectedChain.id]?.DAppAddress
+      ? config[connectedChain.id].DAppAddress
+      : null
     : null;
   const ercToMintAddress = connectedChain
-    ? config[connectedChain.id].ercToMint
+    ? config[connectedChain.id]?.ercToMint
+      ? config[connectedChain.id].ercToMint
+      : null
     : null;
 
   const value = {

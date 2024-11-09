@@ -8,7 +8,7 @@ import {
 const CanvasShare = (currentDrawingData) => {
   return (
     <div className="flex flex-row items-center gap-2">
-      <span className="text-sm">Share:</span>
+      <span className="hidden text-sm xl:inline-block">Share:</span>
       <TwitterShareButton
         title={`Hey, check out my DrawingCanvas ${currentDrawingData.currentDrawingData.title}!`}
         url={window.location.href}

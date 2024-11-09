@@ -14,8 +14,10 @@ const Header = () => {
       {connectedWallet && (
         <>
           <Vouchers />
-          <div className="mx-3 ml-6 flex items-center gap-6 text-sm font-semibold">
-            <Link to="/browse">Browse Drawings</Link>
+          <div className="mx-3 ml-6 flex items-center gap-4 text-sm font-semibold md:gap-6">
+            <Link to="/browse">
+              Browse <span className="hidden sm:inline-block">Drawings</span>
+            </Link>
             <QueryClientProvider client={queryClient}>
               <Balance />
             </QueryClientProvider>

@@ -5,7 +5,7 @@ const Browse = () => {
   return (
     <>
       <Page>
-        <div className="rounded-xl bg-card p-6">
+        <div className="mb-6 rounded-xl bg-card p-6">
           <ImagesListRollups />
         </div>
       </Page>
