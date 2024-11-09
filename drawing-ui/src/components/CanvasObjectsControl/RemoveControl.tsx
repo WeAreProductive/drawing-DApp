@@ -25,7 +25,7 @@ const RemoveControl = ({ enabled }: RemoveControlProp) => {
       disabled={!enabled}
     >
       <Eraser size={18} className="mr-1" strokeWidth={1.5} />
-      Remove Selected
+      <span className="hidden xl:inline-block">Remove Selected</span>
     </Button>
   );
 };

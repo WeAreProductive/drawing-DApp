@@ -7,6 +7,8 @@ import { getCursorSvg, snapShotJsonfromLog } from "../utils";
 import { useInspect } from "../hooks/useInspect";
 import { useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
+import ReactGA from "react-ga4";
+import { GA4_ID } from "../shared/constants";
 import "react-toastify/dist/ReactToastify.css";
 
 const FabricJSCanvas = () => {
@@ -150,6 +152,23 @@ const FabricJSCanvas = () => {
       window.removeEventListener("resize", resizeCanvas);
     };
   }, [canvasWrapperEl.current, canvas, currentDrawingData]);
+
+  useEffect(() => {
+    ReactGA.initialize(GA4_ID);
+    if (!currentDrawingData) {
+      ReactGA.send({
+        hitType: "pageview",
+        page: "/drawing/",
+        title: "New Drawing",
+      });
+    } else {
+      ReactGA.send({
+        hitType: "pageview",
+        page: "/drawing/" + currentDrawingData.uuid,
+        title: "Drawing " + currentDrawingData.title + " viewed",
+      });
+    }
+  }, [currentDrawingData]);
 
   return (
     <div ref={canvasWrapperEl} className="flex justify-center">

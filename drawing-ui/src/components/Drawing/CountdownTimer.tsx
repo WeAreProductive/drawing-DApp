@@ -42,9 +42,9 @@ const CountdownTimer = () => {
     }
   }, [eventTime, timeRemainingLabel, currentDrawingData]);
   return (
-    <div className="my-3 text-right text-sm font-semibold">
+    <span className="text-sm font-semibold sm:ml-4">
       {timeRemainingLabel ? `${timeRemainingLabel} until ready to MINT` : ""}
-    </div>
+    </span>
   );
 };
 

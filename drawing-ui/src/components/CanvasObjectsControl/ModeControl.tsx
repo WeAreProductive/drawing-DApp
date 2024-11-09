@@ -48,7 +48,7 @@ const ModeControl = ({ enabled }: ModeControlProp) => {
       {selectionEnabled ? (
         <>
           <SquarePen size={18} className="mr-1" strokeWidth={1.5} />
-          Draw
+          <span className="hidden xl:inline-block">Draw</span>
         </>
       ) : (
         <>
@@ -57,7 +57,7 @@ const ModeControl = ({ enabled }: ModeControlProp) => {
             className="mr-1"
             strokeWidth={1.5}
           />
-          Select
+          <span className="hidden xl:inline-block">Select</span>
         </>
       )}
     </Button>

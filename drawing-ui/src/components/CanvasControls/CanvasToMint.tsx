@@ -24,7 +24,7 @@ const CanvasToMint = () => {
 
   const handleCanvasToMint = async () => {
     alert(
-      "Minting is currently unavailable. This feature will be released later.",
+      "Minting is currently unavailable. This feature will be released soon. Stay tuned!",
     );
     /*
     console.warn("Canvas :: handle canvas to mint");

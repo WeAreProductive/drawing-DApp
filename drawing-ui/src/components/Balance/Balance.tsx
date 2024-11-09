@@ -12,12 +12,12 @@ export const Balance = () => {
     setOpenDialog(open);
   };
   return (
-    <>
-      Balance (ETH): {data}
+    <div>
+      Balance<span className="ml-1 hidden md:inline-block">(ETH)</span>: {data}
       {hasBalance ? (
         <button onClick={() => manageWithdraw(true)}>Withdraw</button>
       ) : null}
       <WithdrawDialog isOpen={openDialog} handler={manageWithdraw} />
-    </>
+    </div>
   );
 };

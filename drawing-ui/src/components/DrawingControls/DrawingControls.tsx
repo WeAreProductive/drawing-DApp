@@ -3,7 +3,7 @@ import ColorControl from "./ColorControl";
 import LineWidthControl from "./LineWidthControl";
 const DrawingControls = () => {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-1">
       <ColorControl />
       <LineWidthControl />
       <BrushControl />

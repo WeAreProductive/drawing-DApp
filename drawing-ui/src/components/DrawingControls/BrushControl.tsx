@@ -69,14 +69,16 @@ const BrushControl = () => {
   };
 
   return (
-    <Button variant={"outline"} onClick={toggleBrush}>
+    <Button variant={"outline"} onClick={toggleBrush} className="ml-2">
       {canvasOptions.cursorType === CANVAS_CURSOR_TYPES.circle ? (
         <>
-          <SprayCan size={18} className="mr-1" strokeWidth={1.5} /> Spray
+          <SprayCan size={18} className="mr-1" strokeWidth={1.5} />
+          <span className="hidden xl:inline-block">Spray</span>
         </>
       ) : (
         <>
-          <Pencil size={18} className="mr-1" strokeWidth={1.5} /> Pencil
+          <Pencil size={18} className="mr-1" strokeWidth={1.5} />
+          <span className="hidden xl:inline-block">Pencil</span>
         </>
       )}
     </Button>

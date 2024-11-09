@@ -14,7 +14,7 @@ const Vouchers = () => {
       <SheetTrigger>
         <div className="flex items-center gap-2 text-sm font-semibold">
           <Menu strokeWidth={1.5} className="h-6 w-6" />
-          My NFTs
+          <span className="hidden sm:inline-block">My NFTs</span>
         </div>
       </SheetTrigger>
       <SheetContent

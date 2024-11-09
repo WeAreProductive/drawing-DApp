@@ -4,6 +4,7 @@ import { toHex } from "viem";
 import { useSetChain, useWallets, useWagmiConfig } from "@web3-onboard/react";
 import { ConnectedChain } from "@web3-onboard/core";
 import { signTypedData } from "@web3-onboard/wagmi";
+import { useConnectionContext } from "../context/ConnectionContext";
 
 import {
   InputBox__factory,
@@ -34,13 +35,10 @@ export const useRollups = (): RollupsInteractions => {
   const [contracts, setContracts] = useState<RollupsContracts | undefined>();
   const [{ connectedChain }] = useSetChain();
   const [connectedWallet] = useWallets();
+  const { dappAddress } = useConnectionContext();
   const wagmiConfig = useWagmiConfig();
   const [account, setAccount] = useState<`0x${string}` | undefined>("0x");
   const [cartesiTxId, setCartesiTxId] = useState<string>("");
-
-  const dappAddress = connectedChain
-    ? config[connectedChain.id].DAppAddress
-    : null;
 
   const {
     setDappState,
@@ -83,7 +81,6 @@ export const useRollups = (): RollupsInteractions => {
         console.error(
           `No erc721 portal address address defined for chain ${chain.id}`,
         );
-        alert(`No box erc721 portal address defined for chain ${chain.id}`);
       }
       // @TODO check the address in config
       let etherPortalAddress = "";
@@ -93,7 +90,6 @@ export const useRollups = (): RollupsInteractions => {
         console.error(
           `No Ether portal address address defined for chain ${chain.id}`,
         );
-        alert(`No box ether portal address defined for chain ${chain.id}`);
       }
       // dapp contract
       const dappContract = Application__factory.connect(dappAddress, signer);
@@ -162,7 +158,7 @@ export const useRollups = (): RollupsInteractions => {
       headers: { "Content-Type": "application/json" },
     });
     if (!response.ok) {
-      console.log("submit to L2 failed");
+      console.error("submit to L2 failed");
       throw new Error("submit to L2 failed: " + response.text());
     } else {
       return response.json();
@@ -252,7 +248,7 @@ export const useRollups = (): RollupsInteractions => {
         setCartesiTxId(res.id);
         toast.success("Transaction Sent");
       } catch (e) {
-        console.log(`${e}`);
+        console.error(`${e}`);
         toast.error("Transaction Error!", {
           description: `Input not added => ${e}`,
         });

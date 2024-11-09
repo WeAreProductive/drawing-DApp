@@ -83,23 +83,24 @@ const Controls = () => {
 
   return (
     <div className="flex flex-col items-start">
-      <CountdownTimer />
       {currentDrawingData && currentDrawingData.title && (
-        <div className="mb-6">
-          <h1 className="mb-2 text-xl font-semibold">
-            <span className="mr-4 rounded-lg bg-slate-200 px-2 py-1 text-xs font-normal">
+        <div className="mb-2 xl:mb-4">
+          <h1 className="mb-2 inline-block text-xl font-semibold">
+            <span className="mr-2 rounded-lg bg-slate-200 px-2 py-1 text-xs font-normal xl:mr-3">
               {currentDrawingData.private ? "private" : "public"}
             </span>
             {currentDrawingData.title}
           </h1>
-          <p className="text-sm text-gray-500">
-            {currentDrawingData.description}
-          </p>
+          {currentDrawingData.description && (
+            <p className="ml-4 inline-block text-sm text-gray-500">
+              {currentDrawingData.description}
+            </p>
+          )}
         </div>
       )}
-      <div className="flex w-full flex-col items-center gap-4 lg:flex-row">
+      <div className="flex w-full flex-col items-center gap-2 md:flex-row md:gap-1">
         {isActiveControl && !drawingIsClosed && (
-          <>
+          <div className="flex flex-col items-center gap-2 md:!flex-row md:gap-1">
             <DrawingControls />
             <CanvasObjectsControl
               enabled={
@@ -107,28 +108,31 @@ const Controls = () => {
                 !!currentDrawingLayer?.length &&
                 !loading
               }
+              canUndo={canUndo}
+              canRedo={canRedo}
             />
-          </>
+          </div>
         )}
-
-        <CanvasControls
-          enabled={
-            currentResult.isValid && !!currentDrawingLayer?.length && !loading
-          }
-          canUndo={canUndo}
-          canRedo={canRedo}
-          // @TODO will depend on
-          canDownload={currentDrawingData ? true : false}
-        />
-        {currentDrawingData && (
-          <CanvasShare currentDrawingData={currentDrawingData} />
-        )}
+        <div className="flex grow flex-row justify-end gap-4">
+          <CanvasControls
+            enabled={
+              currentResult.isValid && !!currentDrawingLayer?.length && !loading
+            }
+            // @TODO will depend on
+            canDownload={currentDrawingData ? true : false}
+          />
+          {currentDrawingData && (
+            <CanvasShare currentDrawingData={currentDrawingData} />
+          )}
+        </div>
       </div>
       <div
-        className={`mt-3 text-center text-sm ${currentResult.info.type === "warning" ? "text-orange-500" : currentResult.info.type === "error" ? "font-semibold text-red-500" : ""}`}
+        className={`mt-3 w-full text-center text-sm ${currentResult.info.type === "warning" ? "text-orange-500" : currentResult.info.type === "error" ? "font-semibold text-red-500" : ""}`}
       >
         {currentResult.info.size} {currentResult.info.message}{" "}
         {currentResult.info.description}
+        <br className="sm:hidden" />
+        <CountdownTimer />
       </div>
     </div>
   );
