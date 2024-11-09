@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric"; // v5
 import { useCanvasContext } from "../context/CanvasContext";
 import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../shared/constants";
+import { DrawingInputExtended } from "../shared/types";
 import { getCursorSvg, snapShotJsonfromLog } from "../utils";
 import { useInspect } from "../hooks/useInspect";
 import { useParams } from "react-router-dom";
@@ -30,13 +31,13 @@ const FabricJSCanvas = () => {
   const {
     canvas,
     setDappState,
+    currentDrawingData,
     setCurrentDrawingData,
     setRedoObjectsArr,
     setCurrentDrawingLayer,
     setCanvas,
     canvasOptions,
   } = useCanvasContext();
-  // const { owner, uuid, update_log, dimensions } = src;
   const initCurrentDrawing = async (uuid: string) => {
     const queryStr = `drawing/uuid/${uuid}`;
     const drawingData = await inspectCall(queryStr);
@@ -127,6 +128,15 @@ const FabricJSCanvas = () => {
         height: size,
       });
 
+      if (currentDrawingData?.dimensions) {
+        var currentDrawingWidth = JSON.parse(
+          currentDrawingData?.dimensions,
+        ).width;
+        const currentDrawingCanvasRatio = size / parseInt(currentDrawingWidth);
+        console.log("Ratio", currentDrawingCanvasRatio);
+        canvas.setZoom(currentDrawingCanvasRatio);
+      }
+
       canvas.setWidth(size);
       canvas.setHeight(size);
 
@@ -140,10 +150,10 @@ const FabricJSCanvas = () => {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [canvasWrapperEl.current, canvas]);
+  }, [canvasWrapperEl.current, canvas, currentDrawingData]);
 
   return (
-    <div ref={canvasWrapperEl} className="mb-16 flex justify-center">
+    <div ref={canvasWrapperEl} className="flex justify-center">
       <div className="bg-card shadow-sm">
         <canvas
           ref={canvasEl}
