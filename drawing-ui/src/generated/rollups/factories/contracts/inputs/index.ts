@@ -2,6 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export { IInputBox__factory } from "./IInputBox__factory";
-export { IInputRelay__factory } from "./IInputRelay__factory";
 export { InputBox__factory } from "./InputBox__factory";
-export { InputRelay__factory } from "./InputRelay__factory";

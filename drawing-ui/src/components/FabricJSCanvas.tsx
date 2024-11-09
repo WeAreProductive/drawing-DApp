@@ -1,22 +1,66 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { fabric } from "fabric"; // v5
 import { useCanvasContext } from "../context/CanvasContext";
-import { INITIAL_DRAWING_OPTIONS } from "../shared/constants";
+import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../shared/constants";
+import { DrawingInputExtended } from "../shared/types";
+import { getCursorSvg, snapShotJsonfromLog } from "../utils";
+import { useInspect } from "../hooks/useInspect";
+import { useParams } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const FabricJSCanvas = () => {
   const canvasWrapperEl = useRef<HTMLDivElement>(null);
   const canvasEl = useRef(null);
-  const { canvas, setCanvas, canvasOptions } = useCanvasContext();
+  // temp error HandHelpingIcon, @TODO remove
+  const notify = (message: string) => {
+    toast.error(message, {
+      position: "top-center",
+      autoClose: false,
+      hideProgressBar: true,
+      closeOnClick: true,
+      pauseOnHover: false,
+      draggable: false,
+      progress: undefined,
+      theme: "light",
+      onClose: () => (location.href = "/drawing"),
+    });
+  };
+  const { inspectCall } = useInspect();
+  const { uuid } = useParams();
+  const {
+    canvas,
+    setDappState,
+    currentDrawingData,
+    setCurrentDrawingData,
+    setRedoObjectsArr,
+    setCurrentDrawingLayer,
+    setCanvas,
+    canvasOptions,
+  } = useCanvasContext();
+  const initCurrentDrawing = async (uuid: string) => {
+    const queryStr = `drawing/uuid/${uuid}`;
+    const drawingData = await inspectCall(queryStr);
+    const { drawings } = drawingData;
+    if (!canvas) return;
+    if (drawings && drawings.length) {
+      const { update_log } = drawings[0];
+
+      const snapShotJson = snapShotJsonfromLog(update_log);
+      // //fabricjs.com/fabric-intro-part-3#serialization
+      canvas.loadFromJSON(snapShotJson);
+      setDappState(DAPP_STATE.drawingUpdate);
+      setCurrentDrawingData(drawings[0]);
+      setRedoObjectsArr([]);
+      setCurrentDrawingLayer([]);
+    } else {
+      // temp error handling with toaster
+      notify(`The drawing you're trying to load doesn't exist!`);
+    }
+  };
 
   useEffect(() => {
-    const options = {
-      isDrawingMode: true,
-      backgroundColor: INITIAL_DRAWING_OPTIONS.backgroundColor,
-      selectionColor: canvasOptions.color,
-      selectionLineWidth: canvasOptions.lineWidth,
-    };
-    const canvas = new fabric.Canvas(canvasEl.current, options);
-
+    const canvas = new fabric.Canvas(canvasEl.current, INITIAL_DRAWING_OPTIONS);
     // make the fabric.Canvas instance available to your app
     setCanvas(canvas);
     return () => {
@@ -24,37 +68,28 @@ const FabricJSCanvas = () => {
       canvas.dispose();
     };
   }, []);
+  useEffect(() => {
+    if (!uuid) return;
+    initCurrentDrawing(uuid);
+  }, [canvas]);
 
   useEffect(() => {
     if (canvas) {
       const brush = canvas.freeDrawingBrush;
+      // const brush = canvas.freeDrawingBrush;
       const brushSize =
         canvasOptions.lineWidth || INITIAL_DRAWING_OPTIONS.minBrushWidth;
       brush.color = canvasOptions.color;
       brush.width = brushSize;
-
-      const getDrawCursor = () => {
-        const circle = `
-          <svg
-            height="${brushSize}"
-            fill="${canvasOptions.color}"
-            viewBox="0 0 ${brushSize * 2} ${brushSize * 2}"
-            width="${brushSize}"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="50%"
-              cy="50%"
-              r="${brushSize}" 
-            />
-          </svg>
-        `;
-
-        return `data:image/svg+xml;base64,${window.btoa(circle)}`;
+      // get cursor by context cursor type
+      const getDrawCursor = (cursorType: string) => {
+        const cursor = getCursorSvg(brushSize, canvasOptions.color, cursorType);
+        if (!cursor) return;
+        return `data:image/svg+xml;base64,${window.btoa(cursor)}`;
       };
 
       // set custom cursor
-      const cursor = `url(${getDrawCursor()}) ${brushSize / 2} ${
+      const cursor = `url(${getDrawCursor(canvasOptions.cursorType)}) ${brushSize / 2} ${
         brushSize / 2
       }, crosshair`;
 
@@ -70,6 +105,7 @@ const FabricJSCanvas = () => {
       if (!canvasWrapperEl.current || !canvas) return;
 
       const { top } = canvasWrapperEl.current.getBoundingClientRect();
+
       const PADDING = 24;
       const wHeight = window.innerHeight;
       const wWidth = window.innerWidth;
@@ -82,17 +118,23 @@ const FabricJSCanvas = () => {
         ) -
         PADDING * 2;
 
-      const availableHeight = wHeight - top - PADDING;
-
-      var size = Math.min(availableWidth, availableHeight);
-
-      if (size > INITIAL_DRAWING_OPTIONS.canvasWidth)
-        size = INITIAL_DRAWING_OPTIONS.canvasWidth;
+      const size =
+        availableWidth > INITIAL_DRAWING_OPTIONS.canvasWidth
+          ? INITIAL_DRAWING_OPTIONS.canvasWidth
+          : availableWidth;
 
       canvas.setDimensions({
         width: size,
         height: size,
       });
+
+      if (currentDrawingData?.dimensions) {
+        var currentDrawingWidth = JSON.parse(
+          currentDrawingData?.dimensions,
+        ).width;
+        const currentDrawingCanvasRatio = size / parseInt(currentDrawingWidth);
+        canvas.setZoom(currentDrawingCanvasRatio);
+      }
 
       canvas.setWidth(size);
       canvas.setHeight(size);
@@ -107,18 +149,28 @@ const FabricJSCanvas = () => {
     return () => {
       window.removeEventListener("resize", resizeCanvas);
     };
-  }, [canvasWrapperEl.current, canvas]);
+  }, [canvasWrapperEl.current, canvas, currentDrawingData]);
 
   return (
-    <div
-      ref={canvasWrapperEl}
-      className="flex justify-center bg-card shadow-sm"
-    >
-      <canvas
-        ref={canvasEl}
-        width={canvasOptions.canvasWidth}
-        height={canvasOptions.canvasHeight}
-      />
+    <div ref={canvasWrapperEl} className="flex justify-center">
+      <div className="bg-card shadow-sm">
+        <canvas
+          ref={canvasEl}
+          width={canvasOptions.canvasWidth}
+          height={canvasOptions.canvasHeight}
+        />
+        {/* @TODO remove, temp error handling */}
+        <ToastContainer
+          position="top-center"
+          autoClose={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss={false}
+          draggable={false}
+          theme="light"
+        />
+      </div>
     </div>
   );
 };

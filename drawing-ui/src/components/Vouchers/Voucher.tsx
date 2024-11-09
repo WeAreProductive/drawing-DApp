@@ -1,161 +1,123 @@
 import { BigNumber } from "ethers";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { useSetChain } from "@web3-onboard/react";
 import { useVoucherQuery } from "../../generated/graphql";
 import { useRollups } from "../../hooks/useRollups";
-import configFile from "../../config/config.json";
-import { VoucherExtended, Network } from "../../shared/types";
+import { VoucherExtended, DrawingInputExtended } from "../../shared/types";
 import { Button } from "../ui/button";
 import CanvasSnapshotLight from "../ImagesRollups/CanvasSnapshotLight";
-import { decode as base64_decode } from "base-64";
+import CanvasSnapshotLoader from "../ImagesRollups/CanvasSnapshotLoader";
+import { ETHER_TRANSFER_SELECTOR, MINT_SELECTOR } from "../../shared/constants";
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 type VoucherProp = {
   voucherData: VoucherExtended;
+  drawing: DrawingInputExtended;
 };
 
-const config: { [name: string]: Network } = configFile;
-
-const Voucher = ({ voucherData }: VoucherProp) => {
-  const [{ connectedChain }] = useSetChain();
+const Voucher = ({ voucherData, drawing }: VoucherProp) => {
+  const { connectedChain } = useConnectionContext();
+  const [voucher, setVoucher] = useState(voucherData);
   const [voucherToFetch, setVoucherToFetch] = useState([0, 0]);
+  const [label, setLabel] = useState("Check status");
+  // run on getProof to update voucher proof
   const [voucherResult, reexecuteVoucherQuery] = useVoucherQuery({
     variables: {
       voucherIndex: voucherToFetch[0],
       inputIndex: voucherToFetch[1],
     },
   });
+  /**
+   * once voucher has proof - on page load or after getProof is run
+   * it becomes the `voucherToExecute`
+   */
+  const [loading, setLoading] = useState(false); // use for disable button @TODO
+  const [wasExecuted, setWasExecuted] = useState<null | boolean>(null); // check on page load and after executeVoucher is run
+  const { contracts, executeVoucher } = useRollups();
 
-  const [voucherToExecute, setVoucherToExecute] = useState<VoucherExtended>();
-
-  const [loading, setLoading] = useState(false);
-  if (!connectedChain) return;
-  const rollups = useRollups(config[connectedChain.id].DAppRelayAddress);
-
+  const handleVoucherDisplay = (
+    data: VoucherExtended,
+    drawing: DrawingInputExtended,
+  ) => {
+    switch (data.selector) {
+      case MINT_SELECTOR:
+        return drawing ? (
+          <div className="w-1/2 border p-2">
+            <CanvasSnapshotLight data={drawing} />
+          </div>
+        ) : (
+          <CanvasSnapshotLoader />
+        );
+      case ETHER_TRANSFER_SELECTOR:
+        return <div className="w-1/2 p-2">{data.info}</div>;
+      default:
+        break;
+    }
+  };
+  const recheckVoucherStatus = async (voucher: any) => {
+    if (contracts) {
+      const result = await contracts.dappContract.wasOutputExecuted(
+        BigNumber.from(voucher.index),
+      );
+      setWasExecuted(result);
+    }
+  };
+  const handleExecuteVoucher = async () => {
+    setLoading(true);
+    const newVoucherExecuted = await executeVoucher(voucher);
+    setWasExecuted(newVoucherExecuted);
+    setLoading(false);
+  };
   const getProof = async (voucher: VoucherExtended) => {
     setVoucherToFetch([voucher.index, voucher.input.index]);
     reexecuteVoucherQuery({ requestPolicy: "network-only" });
+    // @TODO add message if proof is still falsy - as a button label or toast or dissapearing message
+    setVoucher({
+      ...voucher, // Copy the old fields
+      proof: voucherResult.data?.voucher.proof, // But override this one
+      payload: voucherResult.data?.voucher.payload || "", // But override this one
+    });
+    const newlabel = !voucherResult.data?.voucher.proof
+      ? "Waiting for proof ..."
+      : "Proof ready!";
+    setLabel(newlabel);
+    setTimeout(() => {
+      setLabel("Check status");
+    }, 3000);
   };
-
-  const executeVoucher = async (voucher: VoucherExtended) => {
-    if (rollups && !!voucher.proof) {
-      setLoading(true);
-      const newVoucherToExecute = { ...voucher };
-
-      try {
-        const tx = await rollups.dappContract.executeVoucher(
-          voucher.destination,
-          voucher.payload,
-          voucher.proof,
-        );
-        const receipt = await tx.wait();
-
-        newVoucherToExecute.msg = `Minting executed! (tx="${tx.hash}")`;
-
-        if (receipt.events) {
-          const event = receipt.events?.find(
-            (e) => e.event === "VoucherExecuted",
-          );
-
-          if (!event) {
-            throw new Error(
-              `InputAdded event not found in receipt of transaction ${receipt.transactionHash}`,
-            );
-          }
-
-          if (receipt.events.length > 2)
-            newVoucherToExecute.events = {
-              address: receipt.events[1].address,
-              nft_id: BigInt(receipt.events[1].data).toString(),
-            };
-
-          newVoucherToExecute.executed =
-            await rollups.dappContract.wasVoucherExecuted(
-              BigNumber.from(voucher.input.index),
-              BigNumber.from(voucher.index),
-            );
-        }
-        setLoading(false);
-      } catch (e: any) {
-        const reason = e.hasOwnProperty("reason") ? e.reason : "MetaMask error";
-        toast.error("Transaction Error", {
-          description: `Could not execute voucher => ${reason}`,
-        });
-        // full error info
-        newVoucherToExecute.msg = `Could not execute voucher: ${JSON.stringify(
-          e,
-        )}`;
-        console.log(`Could not execute voucher: ${JSON.stringify(e)}`);
-      }
-
-      setVoucherToExecute(newVoucherToExecute);
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    const setVoucher = async (voucher: VoucherExtended) => {
-      if (rollups) {
-        voucher.executed = await rollups.dappContract.wasVoucherExecuted(
-          BigNumber.from(voucher.input.index),
-          BigNumber.from(voucher.index),
-        );
-      }
-      setVoucherToExecute(voucher);
-    };
-
-    if (!voucherResult.fetching && voucherResult.data) {
-      setVoucher(voucherResult.data.voucher);
-    }
-  }, [voucherResult, rollups]);
-
+    recheckVoucherStatus(voucher);
+  }, [contracts]);
   return (
-    <div className="my-4 flex flex-col gap-6 border-b-2 pb-4">
-      {voucherData.drawing && (
-        <div className="w-1/2 p-2">
-          <CanvasSnapshotLight
-            data={voucherData.drawing}
-            // src={base64_decode(JSON.parse(voucherData.drawing).svg)}
-          />
-        </div>
-      )}
+    <div className="my-4 flex flex-col justify-between gap-6 border-b-2 pb-4">
+      <div className="flex">
+        {handleVoucherDisplay(voucher, drawing)}
 
-      <div className="flex flex-row items-center gap-3">
-        <button
-          className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-          onClick={() => getProof(voucherData)}
-        >
-          Check status
-        </button>
-
-        {voucherToExecute && (
-          <span
-            key={`${voucherToExecute.input.index}-${voucherToExecute.index}`}
-          >
-            {!voucherToExecute.proof || voucherToExecute.executed ? (
-              <span className="font-medium text-green-700">
-                {voucherToExecute.executed ? "NFT already minted!" : "Pending"}
-              </span>
-            ) : loading ? (
-              <Button
-                disabled
-                className="disabled rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-              >
-                Mint NFT
-              </Button>
-            ) : (
-              <Button
-                onClick={() => executeVoucher(voucherToExecute)}
-                className="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
-              >
-                Mint NFT
-              </Button>
-            )}
-          </span>
-        )}
-      </div>
-
-      {voucherToExecute && voucherToExecute.msg && (
+        <div className="flex w-1/2 flex-row items-center justify-end gap-3">
+          {/* @TODO check proof */}
+          {!voucher.proof && (
+            <button
+              className="rounded-lg bg-blue-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              onClick={() => getProof(voucher)}
+            >
+              {label}
+            </button>
+          )}
+          {voucher.proof && wasExecuted && (
+            <span className="font-medium text-green-700">
+              Voucher executed!
+            </span>
+          )}
+          {voucher.proof && wasExecuted === false && (
+            <Button
+              onClick={handleExecuteVoucher}
+              className="rounded-lg bg-green-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+              disabled={loading}
+            >
+              {loading ? "Minting" : "Mint"}
+            </Button>
+          )}
+          {/* @TODO add info for NFT minted  */}
+          {/* {voucherToExecute && voucherToExecute.msg && (
         <div className="mt-3 text-sm">
           {loading ? (
             <span>Minting NFT, please wait...</span>
@@ -178,9 +140,9 @@ const Voucher = ({ voucherData }: VoucherProp) => {
                 </>
               )}
             </>
-          )}
+          )} */}
         </div>
-      )}
+      </div>
     </div>
   );
 };

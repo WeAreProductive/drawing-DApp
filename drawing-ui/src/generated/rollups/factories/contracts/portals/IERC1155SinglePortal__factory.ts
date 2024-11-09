@@ -14,32 +14,32 @@ const _abi = [
     inputs: [
       {
         internalType: "contract IERC1155",
-        name: "_token",
+        name: "token",
         type: "address",
       },
       {
         internalType: "address",
-        name: "_dapp",
+        name: "appContract",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "_tokenId",
+        name: "tokenId",
         type: "uint256",
       },
       {
         internalType: "uint256",
-        name: "_value",
+        name: "value",
         type: "uint256",
       },
       {
         internalType: "bytes",
-        name: "_baseLayerData",
+        name: "baseLayerData",
         type: "bytes",
       },
       {
         internalType: "bytes",
-        name: "_execLayerData",
+        name: "execLayerData",
         type: "bytes",
       },
     ],

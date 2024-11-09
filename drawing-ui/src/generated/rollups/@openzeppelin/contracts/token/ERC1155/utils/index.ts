@@ -2,4 +2,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { ERC1155Holder } from "./ERC1155Holder";
-export type { ERC1155Receiver } from "./ERC1155Receiver";

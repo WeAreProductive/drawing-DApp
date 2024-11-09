@@ -29,44 +29,27 @@ import type {
 
 export interface AuthorityInterface extends utils.Interface {
   functions: {
-    "getClaim(address,bytes)": FunctionFragment;
-    "getHistory()": FunctionFragment;
-    "join()": FunctionFragment;
-    "migrateHistoryToConsensus(address)": FunctionFragment;
+    "getEpochLength()": FunctionFragment;
     "owner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "setHistory(address)": FunctionFragment;
-    "submitClaim(bytes)": FunctionFragment;
+    "submitClaim(address,uint256,bytes32)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "withdrawERC20Tokens(address,address,uint256)": FunctionFragment;
+    "wasClaimAccepted(address,bytes32)": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "getClaim"
-      | "getHistory"
-      | "join"
-      | "migrateHistoryToConsensus"
+      | "getEpochLength"
       | "owner"
       | "renounceOwnership"
-      | "setHistory"
       | "submitClaim"
       | "transferOwnership"
-      | "withdrawERC20Tokens"
+      | "wasClaimAccepted"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "getClaim",
-    values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getHistory",
+    functionFragment: "getEpochLength",
     values?: undefined
-  ): string;
-  encodeFunctionData(functionFragment: "join", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "migrateHistoryToConsensus",
-    values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
@@ -74,31 +57,24 @@ export interface AuthorityInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "setHistory",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "submitClaim",
-    values: [PromiseOrValue<BytesLike>]
+    values: [
+      PromiseOrValue<string>,
+      PromiseOrValue<BigNumberish>,
+      PromiseOrValue<BytesLike>
+    ]
   ): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "withdrawERC20Tokens",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    functionFragment: "wasClaimAccepted",
+    values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
 
-  decodeFunctionResult(functionFragment: "getClaim", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "getHistory", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "join", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "migrateHistoryToConsensus",
+    functionFragment: "getEpochLength",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -106,7 +82,6 @@ export interface AuthorityInterface extends utils.Interface {
     functionFragment: "renounceOwnership",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "setHistory", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "submitClaim",
     data: BytesLike
@@ -116,38 +91,45 @@ export interface AuthorityInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "withdrawERC20Tokens",
+    functionFragment: "wasClaimAccepted",
     data: BytesLike
   ): Result;
 
   events: {
-    "ApplicationJoined(address)": EventFragment;
-    "NewHistory(address)": EventFragment;
+    "ClaimAcceptance(address,uint256,bytes32)": EventFragment;
+    "ClaimSubmission(address,address,uint256,bytes32)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "ApplicationJoined"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "NewHistory"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ClaimAcceptance"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "ClaimSubmission"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 }
 
-export interface ApplicationJoinedEventObject {
-  application: string;
+export interface ClaimAcceptanceEventObject {
+  appContract: string;
+  lastProcessedBlockNumber: BigNumber;
+  claim: string;
 }
-export type ApplicationJoinedEvent = TypedEvent<
-  [string],
-  ApplicationJoinedEventObject
+export type ClaimAcceptanceEvent = TypedEvent<
+  [string, BigNumber, string],
+  ClaimAcceptanceEventObject
 >;
 
-export type ApplicationJoinedEventFilter =
-  TypedEventFilter<ApplicationJoinedEvent>;
+export type ClaimAcceptanceEventFilter = TypedEventFilter<ClaimAcceptanceEvent>;
 
-export interface NewHistoryEventObject {
-  history: string;
+export interface ClaimSubmissionEventObject {
+  submitter: string;
+  appContract: string;
+  lastProcessedBlockNumber: BigNumber;
+  claim: string;
 }
-export type NewHistoryEvent = TypedEvent<[string], NewHistoryEventObject>;
+export type ClaimSubmissionEvent = TypedEvent<
+  [string, string, BigNumber, string],
+  ClaimSubmissionEventObject
+>;
 
-export type NewHistoryEventFilter = TypedEventFilter<NewHistoryEvent>;
+export type ClaimSubmissionEventFilter = TypedEventFilter<ClaimSubmissionEvent>;
 
 export interface OwnershipTransferredEventObject {
   previousOwner: string;
@@ -189,273 +171,156 @@ export interface Authority extends BaseContract {
 
   functions: {
     /**
-     * Get a claim from the current history.         The encoding of `_proofContext` might vary depending on the         implementation of the current history contract.
-     * @param _dapp The DApp address
-     * @param _proofContext Data for retrieving the desired claim
+     * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+     * Get the epoch length, in number of base layer blocks.
      */
-    getClaim(
-      _dapp: PromiseOrValue<string>,
-      _proofContext: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[string, BigNumber, BigNumber]>;
+    getEpochLength(overrides?: CallOverrides): Promise<[BigNumber]>;
 
-    /**
-     * Get the current history contract.
-     */
-    getHistory(overrides?: CallOverrides): Promise<[string]>;
-
-    /**
-     * Emits an `ApplicationJoined` event with the message sender.
-     */
-    join(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    /**
-     * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-     * Transfer ownership over the current history contract to `_consensus`.
-     * @param _consensus The new owner of the current history contract
-     */
-    migrateHistoryToConsensus(
-      _consensus: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    /**
-     * Returns the address of the current owner.
-     */
     owner(overrides?: CallOverrides): Promise<[string]>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.
-     */
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     /**
-     * Emits a `NewHistory` event.      Can only be called by the `Authority` owner.
-     * Make `Authority` point to another history contract.
-     * @param _history The new history contract
-     */
-    setHistory(
-      _history: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    /**
-     * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-     * Submits a claim to the current history contract.         The encoding of `_claimData` might vary depending on the         implementation of the current history contract.
-     * @param _claimData Data for submitting a claim
+     * Fires a `ClaimSubmission` event and a `ClaimAcceptance` event.Can only be called by the owner.
+     * Submit a claim.
+     * @param appContract The application contract address
+     * @param claim The output Merkle root hash
+     * @param lastProcessedBlockNumber The number of the last processed block
      */
     submitClaim(
-      _claimData: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+      claim: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     /**
-     * Can only be called by the `Authority` owner.
-     * Transfer some amount of ERC-20 tokens to a recipient.
-     * @param _amount The amount of tokens to be withdrawn
-     * @param _recipient The recipient address
-     * @param _token The token contract
+     * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
      */
-    withdrawERC20Tokens(
-      _token: PromiseOrValue<string>,
-      _recipient: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+    wasClaimAccepted(
+      appContract: PromiseOrValue<string>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
   };
 
   /**
-   * Get a claim from the current history.         The encoding of `_proofContext` might vary depending on the         implementation of the current history contract.
-   * @param _dapp The DApp address
-   * @param _proofContext Data for retrieving the desired claim
+   * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+   * Get the epoch length, in number of base layer blocks.
    */
-  getClaim(
-    _dapp: PromiseOrValue<string>,
-    _proofContext: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<[string, BigNumber, BigNumber]>;
+  getEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
 
-  /**
-   * Get the current history contract.
-   */
-  getHistory(overrides?: CallOverrides): Promise<string>;
-
-  /**
-   * Emits an `ApplicationJoined` event with the message sender.
-   */
-  join(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  /**
-   * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-   * Transfer ownership over the current history contract to `_consensus`.
-   * @param _consensus The new owner of the current history contract
-   */
-  migrateHistoryToConsensus(
-    _consensus: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  /**
-   * Returns the address of the current owner.
-   */
   owner(overrides?: CallOverrides): Promise<string>;
 
-  /**
-   * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.
-   */
   renounceOwnership(
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   /**
-   * Emits a `NewHistory` event.      Can only be called by the `Authority` owner.
-   * Make `Authority` point to another history contract.
-   * @param _history The new history contract
-   */
-  setHistory(
-    _history: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  /**
-   * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-   * Submits a claim to the current history contract.         The encoding of `_claimData` might vary depending on the         implementation of the current history contract.
-   * @param _claimData Data for submitting a claim
+   * Fires a `ClaimSubmission` event and a `ClaimAcceptance` event.Can only be called by the owner.
+   * Submit a claim.
+   * @param appContract The application contract address
+   * @param claim The output Merkle root hash
+   * @param lastProcessedBlockNumber The number of the last processed block
    */
   submitClaim(
-    _claimData: PromiseOrValue<BytesLike>,
+    appContract: PromiseOrValue<string>,
+    lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+    claim: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  /**
-   * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-   */
   transferOwnership(
     newOwner: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   /**
-   * Can only be called by the `Authority` owner.
-   * Transfer some amount of ERC-20 tokens to a recipient.
-   * @param _amount The amount of tokens to be withdrawn
-   * @param _recipient The recipient address
-   * @param _token The token contract
+   * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+   * @param appContract The application contract address
+   * @param claim The root of the Merkle tree of outputs
    */
-  withdrawERC20Tokens(
-    _token: PromiseOrValue<string>,
-    _recipient: PromiseOrValue<string>,
-    _amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  wasClaimAccepted(
+    appContract: PromiseOrValue<string>,
+    claim: PromiseOrValue<BytesLike>,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
 
   callStatic: {
     /**
-     * Get a claim from the current history.         The encoding of `_proofContext` might vary depending on the         implementation of the current history contract.
-     * @param _dapp The DApp address
-     * @param _proofContext Data for retrieving the desired claim
+     * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+     * Get the epoch length, in number of base layer blocks.
      */
-    getClaim(
-      _dapp: PromiseOrValue<string>,
-      _proofContext: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[string, BigNumber, BigNumber]>;
+    getEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
 
-    /**
-     * Get the current history contract.
-     */
-    getHistory(overrides?: CallOverrides): Promise<string>;
-
-    /**
-     * Emits an `ApplicationJoined` event with the message sender.
-     */
-    join(overrides?: CallOverrides): Promise<void>;
-
-    /**
-     * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-     * Transfer ownership over the current history contract to `_consensus`.
-     * @param _consensus The new owner of the current history contract
-     */
-    migrateHistoryToConsensus(
-      _consensus: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    /**
-     * Returns the address of the current owner.
-     */
     owner(overrides?: CallOverrides): Promise<string>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.
-     */
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
     /**
-     * Emits a `NewHistory` event.      Can only be called by the `Authority` owner.
-     * Make `Authority` point to another history contract.
-     * @param _history The new history contract
-     */
-    setHistory(
-      _history: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    /**
-     * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-     * Submits a claim to the current history contract.         The encoding of `_claimData` might vary depending on the         implementation of the current history contract.
-     * @param _claimData Data for submitting a claim
+     * Fires a `ClaimSubmission` event and a `ClaimAcceptance` event.Can only be called by the owner.
+     * Submit a claim.
+     * @param appContract The application contract address
+     * @param claim The output Merkle root hash
+     * @param lastProcessedBlockNumber The number of the last processed block
      */
     submitClaim(
-      _claimData: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+      claim: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     /**
-     * Can only be called by the `Authority` owner.
-     * Transfer some amount of ERC-20 tokens to a recipient.
-     * @param _amount The amount of tokens to be withdrawn
-     * @param _recipient The recipient address
-     * @param _token The token contract
+     * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
      */
-    withdrawERC20Tokens(
-      _token: PromiseOrValue<string>,
-      _recipient: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
+    wasClaimAccepted(
+      appContract: PromiseOrValue<string>,
+      claim: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
-    ): Promise<void>;
+    ): Promise<boolean>;
   };
 
   filters: {
-    "ApplicationJoined(address)"(
-      application?: null
-    ): ApplicationJoinedEventFilter;
-    ApplicationJoined(application?: null): ApplicationJoinedEventFilter;
+    "ClaimAcceptance(address,uint256,bytes32)"(
+      appContract?: PromiseOrValue<string> | null,
+      lastProcessedBlockNumber?: null,
+      claim?: null
+    ): ClaimAcceptanceEventFilter;
+    ClaimAcceptance(
+      appContract?: PromiseOrValue<string> | null,
+      lastProcessedBlockNumber?: null,
+      claim?: null
+    ): ClaimAcceptanceEventFilter;
 
-    "NewHistory(address)"(history?: null): NewHistoryEventFilter;
-    NewHistory(history?: null): NewHistoryEventFilter;
+    "ClaimSubmission(address,address,uint256,bytes32)"(
+      submitter?: PromiseOrValue<string> | null,
+      appContract?: PromiseOrValue<string> | null,
+      lastProcessedBlockNumber?: null,
+      claim?: null
+    ): ClaimSubmissionEventFilter;
+    ClaimSubmission(
+      submitter?: PromiseOrValue<string> | null,
+      appContract?: PromiseOrValue<string> | null,
+      lastProcessedBlockNumber?: null,
+      claim?: null
+    ): ClaimSubmissionEventFilter;
 
     "OwnershipTransferred(address,address)"(
       previousOwner?: PromiseOrValue<string> | null,
@@ -469,179 +334,89 @@ export interface Authority extends BaseContract {
 
   estimateGas: {
     /**
-     * Get a claim from the current history.         The encoding of `_proofContext` might vary depending on the         implementation of the current history contract.
-     * @param _dapp The DApp address
-     * @param _proofContext Data for retrieving the desired claim
+     * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+     * Get the epoch length, in number of base layer blocks.
      */
-    getClaim(
-      _dapp: PromiseOrValue<string>,
-      _proofContext: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+    getEpochLength(overrides?: CallOverrides): Promise<BigNumber>;
 
-    /**
-     * Get the current history contract.
-     */
-    getHistory(overrides?: CallOverrides): Promise<BigNumber>;
-
-    /**
-     * Emits an `ApplicationJoined` event with the message sender.
-     */
-    join(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    /**
-     * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-     * Transfer ownership over the current history contract to `_consensus`.
-     * @param _consensus The new owner of the current history contract
-     */
-    migrateHistoryToConsensus(
-      _consensus: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    /**
-     * Returns the address of the current owner.
-     */
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.
-     */
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * Emits a `NewHistory` event.      Can only be called by the `Authority` owner.
-     * Make `Authority` point to another history contract.
-     * @param _history The new history contract
-     */
-    setHistory(
-      _history: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    /**
-     * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-     * Submits a claim to the current history contract.         The encoding of `_claimData` might vary depending on the         implementation of the current history contract.
-     * @param _claimData Data for submitting a claim
+     * Fires a `ClaimSubmission` event and a `ClaimAcceptance` event.Can only be called by the owner.
+     * Submit a claim.
+     * @param appContract The application contract address
+     * @param claim The output Merkle root hash
+     * @param lastProcessedBlockNumber The number of the last processed block
      */
     submitClaim(
-      _claimData: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+      claim: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * Can only be called by the `Authority` owner.
-     * Transfer some amount of ERC-20 tokens to a recipient.
-     * @param _amount The amount of tokens to be withdrawn
-     * @param _recipient The recipient address
-     * @param _token The token contract
+     * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
      */
-    withdrawERC20Tokens(
-      _token: PromiseOrValue<string>,
-      _recipient: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    wasClaimAccepted(
+      appContract: PromiseOrValue<string>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     /**
-     * Get a claim from the current history.         The encoding of `_proofContext` might vary depending on the         implementation of the current history contract.
-     * @param _dapp The DApp address
-     * @param _proofContext Data for retrieving the desired claim
+     * The epoch number of a block is defined as the integer division of the block number by the epoch length.
+     * Get the epoch length, in number of base layer blocks.
      */
-    getClaim(
-      _dapp: PromiseOrValue<string>,
-      _proofContext: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
+    getEpochLength(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    /**
-     * Get the current history contract.
-     */
-    getHistory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    /**
-     * Emits an `ApplicationJoined` event with the message sender.
-     */
-    join(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    /**
-     * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-     * Transfer ownership over the current history contract to `_consensus`.
-     * @param _consensus The new owner of the current history contract
-     */
-    migrateHistoryToConsensus(
-      _consensus: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    /**
-     * Returns the address of the current owner.
-     */
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    /**
-     * Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.
-     */
     renounceOwnership(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * Emits a `NewHistory` event.      Can only be called by the `Authority` owner.
-     * Make `Authority` point to another history contract.
-     * @param _history The new history contract
-     */
-    setHistory(
-      _history: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    /**
-     * Can only be called by the `Authority` owner,      and the `Authority` contract must have ownership over      its current history contract.
-     * Submits a claim to the current history contract.         The encoding of `_claimData` might vary depending on the         implementation of the current history contract.
-     * @param _claimData Data for submitting a claim
+     * Fires a `ClaimSubmission` event and a `ClaimAcceptance` event.Can only be called by the owner.
+     * Submit a claim.
+     * @param appContract The application contract address
+     * @param claim The output Merkle root hash
+     * @param lastProcessedBlockNumber The number of the last processed block
      */
     submitClaim(
-      _claimData: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      lastProcessedBlockNumber: PromiseOrValue<BigNumberish>,
+      claim: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    /**
-     * Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.
-     */
     transferOwnership(
       newOwner: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * Can only be called by the `Authority` owner.
-     * Transfer some amount of ERC-20 tokens to a recipient.
-     * @param _amount The amount of tokens to be withdrawn
-     * @param _recipient The recipient address
-     * @param _token The token contract
+     * Check if an output Merkle root hash was ever accepted by the consensus for a particular application.
+     * @param appContract The application contract address
+     * @param claim The root of the Merkle tree of outputs
      */
-    withdrawERC20Tokens(
-      _token: PromiseOrValue<string>,
-      _recipient: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    wasClaimAccepted(
+      appContract: PromiseOrValue<string>,
+      claim: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };
 }

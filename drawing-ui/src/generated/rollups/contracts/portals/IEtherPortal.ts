@@ -81,55 +81,55 @@ export interface IEtherPortal extends BaseContract {
 
   functions: {
     /**
-     * All the value sent through this function is forwarded to the DApp.      If the transfer fails, `EtherTransferFailed` error is raised.
-     * Transfer Ether to a DApp and add an input to the DApp's input box to signal such operation. All the value sent through this function is forwarded to the DApp.
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
+     * Any Ether sent through this function will be forwarded to the application contract.      If the transfer fails, an `EtherTransferFailed` error will be raised.
+     * Transfer Ether to an application contract and add an input to the application's input box to signal such operation.
+     * @param appContract The application contract address
+     * @param execLayerData Additional data to be interpreted by the execution layer
      */
     depositEther(
-      _dapp: PromiseOrValue<string>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<[string]>;
   };
 
   /**
-   * All the value sent through this function is forwarded to the DApp.      If the transfer fails, `EtherTransferFailed` error is raised.
-   * Transfer Ether to a DApp and add an input to the DApp's input box to signal such operation. All the value sent through this function is forwarded to the DApp.
-   * @param _dapp The address of the DApp
-   * @param _execLayerData Additional data to be interpreted by the execution layer
+   * Any Ether sent through this function will be forwarded to the application contract.      If the transfer fails, an `EtherTransferFailed` error will be raised.
+   * Transfer Ether to an application contract and add an input to the application's input box to signal such operation.
+   * @param appContract The application contract address
+   * @param execLayerData Additional data to be interpreted by the execution layer
    */
   depositEther(
-    _dapp: PromiseOrValue<string>,
-    _execLayerData: PromiseOrValue<BytesLike>,
+    appContract: PromiseOrValue<string>,
+    execLayerData: PromiseOrValue<BytesLike>,
     overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   /**
-   * Get the input box used by this input relay.
+   * Get the input box used by this portal.
    */
   getInputBox(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     /**
-     * All the value sent through this function is forwarded to the DApp.      If the transfer fails, `EtherTransferFailed` error is raised.
-     * Transfer Ether to a DApp and add an input to the DApp's input box to signal such operation. All the value sent through this function is forwarded to the DApp.
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
+     * Any Ether sent through this function will be forwarded to the application contract.      If the transfer fails, an `EtherTransferFailed` error will be raised.
+     * Transfer Ether to an application contract and add an input to the application's input box to signal such operation.
+     * @param appContract The application contract address
+     * @param execLayerData Additional data to be interpreted by the execution layer
      */
     depositEther(
-      _dapp: PromiseOrValue<string>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<string>;
   };
@@ -138,38 +138,38 @@ export interface IEtherPortal extends BaseContract {
 
   estimateGas: {
     /**
-     * All the value sent through this function is forwarded to the DApp.      If the transfer fails, `EtherTransferFailed` error is raised.
-     * Transfer Ether to a DApp and add an input to the DApp's input box to signal such operation. All the value sent through this function is forwarded to the DApp.
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
+     * Any Ether sent through this function will be forwarded to the application contract.      If the transfer fails, an `EtherTransferFailed` error will be raised.
+     * Transfer Ether to an application contract and add an input to the application's input box to signal such operation.
+     * @param appContract The application contract address
+     * @param execLayerData Additional data to be interpreted by the execution layer
      */
     depositEther(
-      _dapp: PromiseOrValue<string>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     /**
-     * All the value sent through this function is forwarded to the DApp.      If the transfer fails, `EtherTransferFailed` error is raised.
-     * Transfer Ether to a DApp and add an input to the DApp's input box to signal such operation. All the value sent through this function is forwarded to the DApp.
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
+     * Any Ether sent through this function will be forwarded to the application contract.      If the transfer fails, an `EtherTransferFailed` error will be raised.
+     * Transfer Ether to an application contract and add an input to the application's input box to signal such operation.
+     * @param appContract The application contract address
+     * @param execLayerData Additional data to be interpreted by the execution layer
      */
     depositEther(
-      _dapp: PromiseOrValue<string>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };

@@ -1,16 +1,36 @@
 import CanvasReset from "./CanvasReset";
-import CanvasToJSON from "./CanvasToJSON";
-import CanvasToSVG from "./CanvasToSVG";
+import CanvasToMint from "./CanvasToMint";
+import CanvasToSave from "./CanvasToSave";
+import CanvasUndo from "./CanvasUndo";
+import CanvasRedo from "./CanvasRedo";
+import CanvasDownload from "./CanvasDownload";
+import { useCanvasControls } from "../../hooks/useCanvasControl";
 
 type CanvasControlsProp = {
   enabled: boolean;
+  canUndo: boolean;
+  canRedo: boolean;
+  canDownload: boolean;
 };
-const CanvasControls = ({ enabled }: CanvasControlsProp) => {
+const CanvasControls = ({
+  enabled,
+  canUndo,
+  canRedo,
+  canDownload,
+}: CanvasControlsProp) => {
+  const { isActiveControl, drawingIsClosed } = useCanvasControls();
   return (
     <div className="flex gap-2">
-      <CanvasReset />
-      <CanvasToSVG enabled={enabled} />
-      <CanvasToJSON enabled={enabled} />
+      {isActiveControl && !drawingIsClosed && (
+        <>
+          <CanvasUndo canUndo={canUndo} />
+          <CanvasRedo canRedo={canRedo} />
+          <CanvasToSave enabled={enabled} />
+        </>
+      )}
+      {drawingIsClosed && <CanvasToMint enabled={enabled} />}
+      {!drawingIsClosed && <CanvasReset />}
+      <CanvasDownload canDownload={canDownload} />
     </div>
   );
 };

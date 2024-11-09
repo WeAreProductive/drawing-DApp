@@ -1,5 +1,6 @@
 import { init, useConnectWallet, useSetChain } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
+import wagmi from "@web3-onboard/wagmi";
 import NetworkConnect from "../components/NetworkConnect";
 import blocknativeIcon from "../icons/blocknative-icon";
 
@@ -10,6 +11,7 @@ import Header from "../components/Header";
 import { Network } from "../shared/types";
 import { useEffect, useState } from "react";
 import { Ban } from "lucide-react";
+import { useConnectionContext } from "../context/ConnectionContext";
 
 const config: { [name: string]: Network } = configFile;
 
@@ -19,6 +21,7 @@ init({
   connect: {
     autoConnectAllPreviousWallet: true,
   },
+  wagmi,
   wallets: [injected],
   chains: Object.entries(config).map(([k, v], i) => ({
     id: k,
@@ -50,8 +53,7 @@ type Props = {
 };
 
 export default function Page({ children }: Props) {
-  const [{ wallet }] = useConnectWallet();
-  const [{ connectedChain }] = useSetChain();
+  const { wallet, connectedChain } = useConnectionContext();
   const [isSupportedNetwork, setIsSupportedNetwork] = useState(true);
 
   const SupportedNetworks = () => {

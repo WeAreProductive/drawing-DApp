@@ -11,3 +11,5 @@ export { IERC1155SinglePortal__factory } from "./IERC1155SinglePortal__factory";
 export { IERC20Portal__factory } from "./IERC20Portal__factory";
 export { IERC721Portal__factory } from "./IERC721Portal__factory";
 export { IEtherPortal__factory } from "./IEtherPortal__factory";
+export { IPortal__factory } from "./IPortal__factory";
+export { Portal__factory } from "./Portal__factory";

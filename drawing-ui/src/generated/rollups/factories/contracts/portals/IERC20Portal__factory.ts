@@ -11,25 +11,30 @@ import type {
 
 const _abi = [
   {
+    inputs: [],
+    name: "ERC20TransferFailed",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "contract IERC20",
-        name: "_token",
+        name: "token",
         type: "address",
       },
       {
         internalType: "address",
-        name: "_dapp",
+        name: "appContract",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "_amount",
+        name: "value",
         type: "uint256",
       },
       {
         internalType: "bytes",
-        name: "_execLayerData",
+        name: "execLayerData",
         type: "bytes",
       },
     ],

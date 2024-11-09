@@ -11,15 +11,20 @@ import type {
 
 const _abi = [
   {
+    inputs: [],
+    name: "EtherTransferFailed",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "address",
-        name: "_dapp",
+        name: "appContract",
         type: "address",
       },
       {
         internalType: "bytes",
-        name: "_execLayerData",
+        name: "execLayerData",
         type: "bytes",
       },
     ],

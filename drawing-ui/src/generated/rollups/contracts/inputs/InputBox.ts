@@ -62,20 +62,19 @@ export interface InputBoxInterface extends utils.Interface {
   ): Result;
 
   events: {
-    "InputAdded(address,uint256,address,bytes)": EventFragment;
+    "InputAdded(address,uint256,bytes)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "InputAdded"): EventFragment;
 }
 
 export interface InputAddedEventObject {
-  dapp: string;
-  inputIndex: BigNumber;
-  sender: string;
+  appContract: string;
+  index: BigNumber;
   input: string;
 }
 export type InputAddedEvent = TypedEvent<
-  [string, BigNumber, string, string],
+  [string, BigNumber, string],
   InputAddedEventObject
 >;
 
@@ -109,188 +108,186 @@ export interface InputBox extends BaseContract {
 
   functions: {
     /**
-     * MUST fire an `InputAdded` event accordingly.      Input larger than machine limit will raise `InputSizeExceedsLimit` error.
-     * Add an input to a DApp's input box.
-     * @param _dapp The address of the DApp
-     * @param _input The contents of the input
+     * MUST fire an `InputAdded` event.
+     * Send an input to an application.
+     * @param appContract The application contract address
+     * @param payload The input payload
      */
     addInput(
-      _dapp: PromiseOrValue<string>,
-      _input: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     /**
-     * `_index` MUST be in the interval `[0,n)` where `n` is the number of      inputs in the DApp's input box. See the `getNumberOfInputs` function.
-     * Get the hash of an input in a DApp's input box.
-     * @param _dapp The address of the DApp
-     * @param _index The index of the input in the DApp's input box
+     * The provided index must be valid.
+     * Get the hash of an input in an application's input box.
+     * @param appContract The application contract address
+     * @param index The input index
      */
     getInputHash(
-      _dapp: PromiseOrValue<string>,
-      _index: PromiseOrValue<BigNumberish>,
+      appContract: PromiseOrValue<string>,
+      index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
     /**
-     * Get the number of inputs in a DApp's input box.
-     * @param _dapp The address of the DApp
+     * Get the number of inputs sent to an application.
+     * @param appContract The application contract address
      */
     getNumberOfInputs(
-      _dapp: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
   };
 
   /**
-   * MUST fire an `InputAdded` event accordingly.      Input larger than machine limit will raise `InputSizeExceedsLimit` error.
-   * Add an input to a DApp's input box.
-   * @param _dapp The address of the DApp
-   * @param _input The contents of the input
+   * MUST fire an `InputAdded` event.
+   * Send an input to an application.
+   * @param appContract The application contract address
+   * @param payload The input payload
    */
   addInput(
-    _dapp: PromiseOrValue<string>,
-    _input: PromiseOrValue<BytesLike>,
+    appContract: PromiseOrValue<string>,
+    payload: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   /**
-   * `_index` MUST be in the interval `[0,n)` where `n` is the number of      inputs in the DApp's input box. See the `getNumberOfInputs` function.
-   * Get the hash of an input in a DApp's input box.
-   * @param _dapp The address of the DApp
-   * @param _index The index of the input in the DApp's input box
+   * The provided index must be valid.
+   * Get the hash of an input in an application's input box.
+   * @param appContract The application contract address
+   * @param index The input index
    */
   getInputHash(
-    _dapp: PromiseOrValue<string>,
-    _index: PromiseOrValue<BigNumberish>,
+    appContract: PromiseOrValue<string>,
+    index: PromiseOrValue<BigNumberish>,
     overrides?: CallOverrides
   ): Promise<string>;
 
   /**
-   * Get the number of inputs in a DApp's input box.
-   * @param _dapp The address of the DApp
+   * Get the number of inputs sent to an application.
+   * @param appContract The application contract address
    */
   getNumberOfInputs(
-    _dapp: PromiseOrValue<string>,
+    appContract: PromiseOrValue<string>,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
 
   callStatic: {
     /**
-     * MUST fire an `InputAdded` event accordingly.      Input larger than machine limit will raise `InputSizeExceedsLimit` error.
-     * Add an input to a DApp's input box.
-     * @param _dapp The address of the DApp
-     * @param _input The contents of the input
+     * MUST fire an `InputAdded` event.
+     * Send an input to an application.
+     * @param appContract The application contract address
+     * @param payload The input payload
      */
     addInput(
-      _dapp: PromiseOrValue<string>,
-      _input: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<string>;
 
     /**
-     * `_index` MUST be in the interval `[0,n)` where `n` is the number of      inputs in the DApp's input box. See the `getNumberOfInputs` function.
-     * Get the hash of an input in a DApp's input box.
-     * @param _dapp The address of the DApp
-     * @param _index The index of the input in the DApp's input box
+     * The provided index must be valid.
+     * Get the hash of an input in an application's input box.
+     * @param appContract The application contract address
+     * @param index The input index
      */
     getInputHash(
-      _dapp: PromiseOrValue<string>,
-      _index: PromiseOrValue<BigNumberish>,
+      appContract: PromiseOrValue<string>,
+      index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<string>;
 
     /**
-     * Get the number of inputs in a DApp's input box.
-     * @param _dapp The address of the DApp
+     * Get the number of inputs sent to an application.
+     * @param appContract The application contract address
      */
     getNumberOfInputs(
-      _dapp: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   filters: {
-    "InputAdded(address,uint256,address,bytes)"(
-      dapp?: PromiseOrValue<string> | null,
-      inputIndex?: PromiseOrValue<BigNumberish> | null,
-      sender?: null,
+    "InputAdded(address,uint256,bytes)"(
+      appContract?: PromiseOrValue<string> | null,
+      index?: PromiseOrValue<BigNumberish> | null,
       input?: null
     ): InputAddedEventFilter;
     InputAdded(
-      dapp?: PromiseOrValue<string> | null,
-      inputIndex?: PromiseOrValue<BigNumberish> | null,
-      sender?: null,
+      appContract?: PromiseOrValue<string> | null,
+      index?: PromiseOrValue<BigNumberish> | null,
       input?: null
     ): InputAddedEventFilter;
   };
 
   estimateGas: {
     /**
-     * MUST fire an `InputAdded` event accordingly.      Input larger than machine limit will raise `InputSizeExceedsLimit` error.
-     * Add an input to a DApp's input box.
-     * @param _dapp The address of the DApp
-     * @param _input The contents of the input
+     * MUST fire an `InputAdded` event.
+     * Send an input to an application.
+     * @param appContract The application contract address
+     * @param payload The input payload
      */
     addInput(
-      _dapp: PromiseOrValue<string>,
-      _input: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * `_index` MUST be in the interval `[0,n)` where `n` is the number of      inputs in the DApp's input box. See the `getNumberOfInputs` function.
-     * Get the hash of an input in a DApp's input box.
-     * @param _dapp The address of the DApp
-     * @param _index The index of the input in the DApp's input box
+     * The provided index must be valid.
+     * Get the hash of an input in an application's input box.
+     * @param appContract The application contract address
+     * @param index The input index
      */
     getInputHash(
-      _dapp: PromiseOrValue<string>,
-      _index: PromiseOrValue<BigNumberish>,
+      appContract: PromiseOrValue<string>,
+      index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     /**
-     * Get the number of inputs in a DApp's input box.
-     * @param _dapp The address of the DApp
+     * Get the number of inputs sent to an application.
+     * @param appContract The application contract address
      */
     getNumberOfInputs(
-      _dapp: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     /**
-     * MUST fire an `InputAdded` event accordingly.      Input larger than machine limit will raise `InputSizeExceedsLimit` error.
-     * Add an input to a DApp's input box.
-     * @param _dapp The address of the DApp
-     * @param _input The contents of the input
+     * MUST fire an `InputAdded` event.
+     * Send an input to an application.
+     * @param appContract The application contract address
+     * @param payload The input payload
      */
     addInput(
-      _dapp: PromiseOrValue<string>,
-      _input: PromiseOrValue<BytesLike>,
+      appContract: PromiseOrValue<string>,
+      payload: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * `_index` MUST be in the interval `[0,n)` where `n` is the number of      inputs in the DApp's input box. See the `getNumberOfInputs` function.
-     * Get the hash of an input in a DApp's input box.
-     * @param _dapp The address of the DApp
-     * @param _index The index of the input in the DApp's input box
+     * The provided index must be valid.
+     * Get the hash of an input in an application's input box.
+     * @param appContract The application contract address
+     * @param index The input index
      */
     getInputHash(
-      _dapp: PromiseOrValue<string>,
-      _index: PromiseOrValue<BigNumberish>,
+      appContract: PromiseOrValue<string>,
+      index: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     /**
-     * Get the number of inputs in a DApp's input box.
-     * @param _dapp The address of the DApp
+     * Get the number of inputs sent to an application.
+     * @param appContract The application contract address
      */
     getNumberOfInputs(
-      _dapp: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
   };

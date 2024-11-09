@@ -1,0 +1,3 @@
+requests == 2.31.0
+eth-abi == 4.2.1 
+cartesi-wallet == 0.0.4

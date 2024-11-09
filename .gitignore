@@ -2,10 +2,12 @@
 node_modules/  
 .env
 .turbo
-drawing-api/public/
-TODO.md
+drawing-api/public/ 
+todo.txt
  
-drawing-py/dapp/.venv
-drawing-py/deployments/
-drawing-py/.sunodo
-drawing-py/dapp/protobuf_models/__pycache__/
+drawing-rollups-py/.chain.env*
+drawing-rollups-py/dapp/.venv
+drawing-rollups-py/.cartesi 
+drawing-rollups-py/dapp/drawing.db
+drawing-rollups-py/dapp/lib/__pycache__/ 
+drawing-rollups-py/dapp/drawing.db

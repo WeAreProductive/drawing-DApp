@@ -35,10 +35,10 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
     try {
       if (!fs.existsSync(fullPath)) {
         fs.mkdirSync(fullPath, { recursive: true });
-        console.log(`Directory created successfully`);
+        console.warn(`Directory created successfully`);
       }
-
-      const canvas = new fabric.Canvas(null, { width: 600, height: 600 });
+      const { width, height } = req.body.canvasDimensions;
+      const canvas = new fabric.Canvas(null, { width: width, height: height });
       canvas.loadFromJSON(
         JSON.stringify({ objects: req.body.image }),
         async function () {
@@ -68,17 +68,18 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           );
 
           canvas.renderAll();
-
-          const generatedSVG = canvas.toSVG({
-            viewBox: {
-              x: 0,
-              y: 0,
-              width: canvas.width || 0,
-              height: canvas.height || 0,
-            },
-            width: canvas.width || 0,
-            height: canvas.height || 0,
-          });
+          // const offsetX = (canvas.width * 1.05) / 2 || 0;
+          // const offsetY = (canvas.height * 1.05) / 2 || 0;
+          // const generatedSVG = canvas.toSVG({
+          //   viewBox: {
+          //     x: -offsetX,
+          //     y: -offsetY,
+          //     width: canvas.width * 1.05 || 0,
+          //     height: canvas.height * 1.05 || 0,
+          //   },
+          //   width: canvas.width * 1.05 || 0,
+          //   height: canvas.height * 1.05 || 0,
+          // });
 
           const generatedBase64 = canvas
             .toDataURL({ format: "png" })
@@ -90,7 +91,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
             file: buffer,
           });
 
-          console.log("IPFS IMG: ", imageIPFS.data.ipfsHash);
+          console.warn("IPFS IMG: ", imageIPFS.data.ipfsHash);
 
           const metaData = JSON.stringify({
             name: "Cartesi Drawing Canvas NFT",
@@ -109,8 +110,9 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
           res.send(
             JSON.stringify({
               success: true,
-              base64out: base64.encode(generatedSVG), // Encoded image
+              // base64out: base64.encode(generatedSVG), // Encoded image
               ipfsHash: metaIPFS.data.ipfsHash,
+              canvasDimensions: { width: width, height: height },
             })
           );
 
@@ -118,7 +120,7 @@ app.post(API_ENDPOINTS.canvasStore, async (req, res) => {
         }
       );
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   } else {
     res.send(

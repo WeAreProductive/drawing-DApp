@@ -52,7 +52,7 @@ cartesi build
 From the project `root` directory run
 
 ```shell
-cd drawing-rollups-js
+cd drawing-rollups-py
 cartesi run
 ```
 

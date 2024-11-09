@@ -1,57 +1,44 @@
-import { fabric } from "fabric";
-import { useCanvasContext } from "../../context/CanvasContext";
-import { DAPP_STATE, INITIAL_DRAWING_OPTIONS } from "../../shared/constants";
+import { Link } from "react-router-dom";
 import { DrawingInputExtended } from "../../shared/types";
-import { sliceAccountStr } from "../../utils";
+import { sliceAccountStr, snapShotJsonfromLog } from "../../utils";
 import { useMemo } from "react";
-import { decode as base64_decode } from "base-64";
-import pako from "pako";
+import DrawingPreview from "./DrawingPreview";
+import { useCanvasControls } from "../../hooks/useCanvasControl";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
 };
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
-  const { canvas, setDappState, setCurrentDrawingData } = useCanvasContext();
-  const { drawing, owner, uuid } = src;
-  const drawingObj = JSON.parse(drawing);
-
-  const loadCanvasFromImage = async () => {
-    if (!canvas) return;
-    canvas.clear();
-
-    fabric.loadSVGFromString(
-      base64_decode(drawingObj.svg),
-      function (objects, options) {
-        var obj = fabric.util.groupSVGElements(objects, options);
-        obj.set({
-          left: 0,
-          top: 0,
-          scaleX: canvas.width && obj.width ? canvas.width / obj.width : 1,
-          scaleY: canvas.height && obj.height ? canvas.height / obj.height : 1,
-        });
-
-        canvas.add(obj).renderAll();
-      },
-    );
-
-    setDappState(DAPP_STATE.drawingUpdate);
-    setCurrentDrawingData(src);
-  };
-
-  const drawingPreview = useMemo(() => {
-    const svg = new Blob([base64_decode(drawingObj.svg)], {
-      type: "image/svg+xml",
-    });
-    const url = URL.createObjectURL(svg);
-    return <img src={url} alt="drawing preview" />;
-  }, [drawing]);
-
+  const { owner, uuid, update_log, dimensions, title } = src;
+  const { drawingIsClosed } = useCanvasControls();
+  const snapShotJson = useMemo(
+    () => snapShotJsonfromLog(update_log),
+    [update_log],
+  );
+  const parsedDimensions = JSON.parse(dimensions);
   return (
-    <div className="rounded-lg border bg-background p-2">
-      <div onClick={loadCanvasFromImage}>{drawingPreview}</div>
-      <span className="block text-xs">Owner: {sliceAccountStr(owner)}</span>
-      <span className="block text-xs">ID: {uuid}</span>
+    <div className="flex flex-col gap-2 rounded-lg border bg-background p-2">
+      <Link to={`/drawing/${uuid}`} reloadDocument>
+        <div>
+          <DrawingPreview
+            dimensions={parsedDimensions}
+            snapShotJson={snapShotJson}
+          />
+        </div>
+      </Link>
+
+      <div className="text-lg font-semibold">
+        <span className="rounded-lg bg-slate-200 px-2 py-1 text-xs font-normal">
+          {src.private ? "private" : "public"}
+        </span>{" "}
+        {title}
+      </div>
+      <div className="text-xs">
+        {drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"}
+      </div>
+      <div className="text-xs">Owner: {sliceAccountStr(owner)}</div>
+      <div></div>
     </div>
   );
 };

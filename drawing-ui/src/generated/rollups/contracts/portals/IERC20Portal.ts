@@ -87,64 +87,64 @@ export interface IERC20Portal extends BaseContract {
 
   functions: {
     /**
-     * Transfer ERC-20 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must allow the portal to withdraw at least `_amount` tokens from their account beforehand, by calling the `approve` function in the token contract.
-     * @param _amount The amount of tokens to be transferred
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-20 token contract
+     * Transfer ERC-20 tokens to an application contract and add an input to the application's input box to signal such operation. The caller must allow the portal to withdraw at least `value` tokens from their account beforehand, by calling the `approve` function in the token contract.
+     * @param appContract The application contract address
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-20 token contract
+     * @param value The amount of tokens to be transferred
      */
     depositERC20Tokens(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<[string]>;
   };
 
   /**
-   * Transfer ERC-20 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must allow the portal to withdraw at least `_amount` tokens from their account beforehand, by calling the `approve` function in the token contract.
-   * @param _amount The amount of tokens to be transferred
-   * @param _dapp The address of the DApp
-   * @param _execLayerData Additional data to be interpreted by the execution layer
-   * @param _token The ERC-20 token contract
+   * Transfer ERC-20 tokens to an application contract and add an input to the application's input box to signal such operation. The caller must allow the portal to withdraw at least `value` tokens from their account beforehand, by calling the `approve` function in the token contract.
+   * @param appContract The application contract address
+   * @param execLayerData Additional data to be interpreted by the execution layer
+   * @param token The ERC-20 token contract
+   * @param value The amount of tokens to be transferred
    */
   depositERC20Tokens(
-    _token: PromiseOrValue<string>,
-    _dapp: PromiseOrValue<string>,
-    _amount: PromiseOrValue<BigNumberish>,
-    _execLayerData: PromiseOrValue<BytesLike>,
+    token: PromiseOrValue<string>,
+    appContract: PromiseOrValue<string>,
+    value: PromiseOrValue<BigNumberish>,
+    execLayerData: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   /**
-   * Get the input box used by this input relay.
+   * Get the input box used by this portal.
    */
   getInputBox(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     /**
-     * Transfer ERC-20 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must allow the portal to withdraw at least `_amount` tokens from their account beforehand, by calling the `approve` function in the token contract.
-     * @param _amount The amount of tokens to be transferred
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-20 token contract
+     * Transfer ERC-20 tokens to an application contract and add an input to the application's input box to signal such operation. The caller must allow the portal to withdraw at least `value` tokens from their account beforehand, by calling the `approve` function in the token contract.
+     * @param appContract The application contract address
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-20 token contract
+     * @param value The amount of tokens to be transferred
      */
     depositERC20Tokens(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<string>;
   };
@@ -153,44 +153,44 @@ export interface IERC20Portal extends BaseContract {
 
   estimateGas: {
     /**
-     * Transfer ERC-20 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must allow the portal to withdraw at least `_amount` tokens from their account beforehand, by calling the `approve` function in the token contract.
-     * @param _amount The amount of tokens to be transferred
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-20 token contract
+     * Transfer ERC-20 tokens to an application contract and add an input to the application's input box to signal such operation. The caller must allow the portal to withdraw at least `value` tokens from their account beforehand, by calling the `approve` function in the token contract.
+     * @param appContract The application contract address
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-20 token contract
+     * @param value The amount of tokens to be transferred
      */
     depositERC20Tokens(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     /**
-     * Transfer ERC-20 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must allow the portal to withdraw at least `_amount` tokens from their account beforehand, by calling the `approve` function in the token contract.
-     * @param _amount The amount of tokens to be transferred
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-20 token contract
+     * Transfer ERC-20 tokens to an application contract and add an input to the application's input box to signal such operation. The caller must allow the portal to withdraw at least `value` tokens from their account beforehand, by calling the `approve` function in the token contract.
+     * @param appContract The application contract address
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-20 token contract
+     * @param value The amount of tokens to be transferred
      */
     depositERC20Tokens(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _amount: PromiseOrValue<BigNumberish>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      value: PromiseOrValue<BigNumberish>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };

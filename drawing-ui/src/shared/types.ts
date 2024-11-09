@@ -1,4 +1,8 @@
 import { Canvas } from "fabric/fabric-impl";
+import { JsonRpcSigner } from "@ethersproject/providers";
+import { InputBox, Application, ERC721Portal } from "@cartesi/rollups";
+import { Dispatch, SetStateAction } from "react";
+import { EtherPortal } from "../generated/rollups";
 
 export type Network = {
   token: string;
@@ -6,10 +10,14 @@ export type Network = {
   rpcUrl: string;
   graphqlAPIURL: string;
   inspectAPIURL: string;
-  DAppRelayAddress: string;
+  nonceAPIURL: string;
+  inputSubmitAPIURL: string;
+  DAppAddress: string;
   InputBoxAddress: string;
   Erc721PortalAddress: string;
+  etherPortalAddress: string;
   ercToMint: string;
+  verifyingContract: string;
 };
 
 export type CanvasLimitations = {
@@ -27,6 +35,7 @@ export type CanvasOptions = {
   lineWidth: number;
   canvasWidth: number;
   canvasHeight: number;
+  cursorType: string;
 };
 
 export type CanvasContextType = {
@@ -36,14 +45,22 @@ export type CanvasContextType = {
   setOptions: React.Dispatch<CanvasOptions>;
   dappState: string;
   setDappState: React.Dispatch<string>;
-  currentDrawingData: null | DrawingInput;
-  setCurrentDrawingData: React.Dispatch<null | DrawingInput>;
+  currentDrawingData: null | DrawingInputExtended | DrawingInitialData;
+  setCurrentDrawingData: React.Dispatch<
+    null | DrawingInputExtended | DrawingInitialData
+  >;
+
   clearCanvas: () => void;
-  // svgStrLength: number;
-  // setSvgStrLength: React.Dispatch<number>;
+  currentDrawingLayer: null | DrawingObject[];
+  setCurrentDrawingLayer: React.Dispatch<DrawingObject[]>;
+  redoObjectsArr: DrawingObject[];
+  setRedoObjectsArr: React.Dispatch<DrawingObject[]>;
+  loading: boolean;
+  setLoading: Dispatch<SetStateAction<boolean>>;
 };
 
 export type VoucherExtended = {
+  info: string;
   id?: string;
   index: number;
   destination: string;
@@ -54,28 +71,61 @@ export type VoucherExtended = {
   proof?: any;
   executed?: any;
   msg?: string;
-  drawing?: string;
+  drawingUUID?: string;
   events?: any;
+  selector?: string;
+};
+// sent Drawings data
+export interface DrawingInput {
+  drawing: string;
+  dimensions: CanvasDimensions;
+}
+// @TODO typing?
+
+// received Drawings data
+export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
+  uuid: string;
+  owner: `0x${string}`; //last painter's account
+  title?: string;
+  description?: string;
+  update_log: any; //@TODO typing?!
+  voucher_requested?: boolean;
+  date_created?: string; // date-time string
+  last_updated?: string;
+  closed_at?: string;
+  dimensions: string;
+  minting_price: any;
+  private: 0 | 1;
+}
+export type DrawingUserInput = {
+  title: string;
+  description: string;
+  mintingPrice: string;
+  private: boolean;
+  open: number;
+};
+// @TODO combine DrawingInitial & DrawingInputExtended & DrawingInput
+export type DrawingInitialData = {
+  uuid: string;
+  owner: string;
+  title?: string;
+  private?: 0 | 1;
+  description?: string;
+  dimensions: string;
+  minting_price: any;
+  update_log: UpdateLog;
+  userInputData: DrawingUserInput;
 };
 
-export interface DrawingInput {
-  drawing: string; // svg's json string
-}
-
-export interface DrawingInputExtended extends DrawingInput {
-  id: string; // creator's account - timestamp
-  uuid: string;
-  date_created: string; // date-time string
-  last_updated: null | string; // last update date-time string
-  owner: string; //last painter's account
-  update_log: {
-    date_updated: string;
-    painter: string;
-    action: string;
-  }[];
-  drawing: string; // svg's json string
-  voucher_requested: boolean;
-}
+export type DrawingObject = { [key: string]: any };
+export type UpdateLogItem = {
+  date_updated?: string;
+  painter?: string;
+  action?: string;
+  drawing_objects: string;
+  dimensions?: string;
+};
+export type UpdateLog = UpdateLogItem[];
 
 export type DataNoticeEdge = {
   __typename?: "NoticeEdge" | undefined;
@@ -89,3 +139,43 @@ export type DataNoticeEdge = {
     };
   };
 };
+export type CanvasDimensions = { width: number; height: number };
+export type DrawingMeta = {
+  success: boolean;
+  ipfsHash: string;
+  canvasDimensions: CanvasDimensions;
+};
+export type RollupsContracts = {
+  dappContract: Application;
+  signer: JsonRpcSigner;
+  inputContract: InputBox;
+  erc721PortalContract: ERC721Portal;
+  etherPortalContract: EtherPortal;
+};
+
+export type RollupsInteractions = {
+  contracts?: RollupsContracts;
+  sendInput: (strInput: string, tempDrawingData?: any) => Promise<void>;
+  sendMintingInput: (input: any, tempDrawingData?: any) => Promise<void>;
+  sendWithdrawInput: (amount: string) => Promise<void>;
+  executeVoucher: (voucher: VoucherExtended) => Promise<boolean>;
+};
+
+export type Hex = `0x${string}`;
+export type Hash = `0x${string}`;
+export interface Validity {
+  inputIndexWithinEpoch: number;
+  outputIndexWithinInput: number;
+  outputHashesRootHash: Hash;
+  vouchersEpochRootHash: Hash;
+  noticesEpochRootHash: Hash;
+  machineStateHash: Hash;
+  outputHashInOutputHashesSiblings: Hash[];
+  outputHashesInEpochSiblings: Hash[];
+}
+export interface Proof {
+  context: Hex;
+  validity: Validity;
+}
+
+export type Address = `0x${string}`;

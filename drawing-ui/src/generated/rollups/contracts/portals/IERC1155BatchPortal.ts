@@ -89,79 +89,79 @@ export interface IERC1155BatchPortal extends BaseContract {
 
   functions: {
     /**
-     * Please make sure `_tokenIds` and `_values` have the same length.
-     * Transfer a batch of ERC-1155 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-1155 token contract
-     * @param _tokenIds The identifiers of the tokens being transferred
-     * @param _values Transfer amounts per token type
+     * Please make sure the arrays `tokenIds` and `values` have the same length.
+     * Transfer a batch of ERC-1155 tokens of multiple types to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-1155 token contract
+     * @param tokenIds The identifiers of the tokens being transferred
+     * @param values Transfer amounts per token type
      */
     depositBatchERC1155Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenIds: PromiseOrValue<BigNumberish>[],
-      _values: PromiseOrValue<BigNumberish>[],
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      values: PromiseOrValue<BigNumberish>[],
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<[string]>;
   };
 
   /**
-   * Please make sure `_tokenIds` and `_values` have the same length.
-   * Transfer a batch of ERC-1155 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-   * @param _baseLayerData Additional data to be interpreted by the base layer
-   * @param _dapp The address of the DApp
-   * @param _execLayerData Additional data to be interpreted by the execution layer
-   * @param _token The ERC-1155 token contract
-   * @param _tokenIds The identifiers of the tokens being transferred
-   * @param _values Transfer amounts per token type
+   * Please make sure the arrays `tokenIds` and `values` have the same length.
+   * Transfer a batch of ERC-1155 tokens of multiple types to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+   * @param appContract The application contract address
+   * @param baseLayerData Additional data to be interpreted by the base layer
+   * @param execLayerData Additional data to be interpreted by the execution layer
+   * @param token The ERC-1155 token contract
+   * @param tokenIds The identifiers of the tokens being transferred
+   * @param values Transfer amounts per token type
    */
   depositBatchERC1155Token(
-    _token: PromiseOrValue<string>,
-    _dapp: PromiseOrValue<string>,
-    _tokenIds: PromiseOrValue<BigNumberish>[],
-    _values: PromiseOrValue<BigNumberish>[],
-    _baseLayerData: PromiseOrValue<BytesLike>,
-    _execLayerData: PromiseOrValue<BytesLike>,
+    token: PromiseOrValue<string>,
+    appContract: PromiseOrValue<string>,
+    tokenIds: PromiseOrValue<BigNumberish>[],
+    values: PromiseOrValue<BigNumberish>[],
+    baseLayerData: PromiseOrValue<BytesLike>,
+    execLayerData: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   /**
-   * Get the input box used by this input relay.
+   * Get the input box used by this portal.
    */
   getInputBox(overrides?: CallOverrides): Promise<string>;
 
   callStatic: {
     /**
-     * Please make sure `_tokenIds` and `_values` have the same length.
-     * Transfer a batch of ERC-1155 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-1155 token contract
-     * @param _tokenIds The identifiers of the tokens being transferred
-     * @param _values Transfer amounts per token type
+     * Please make sure the arrays `tokenIds` and `values` have the same length.
+     * Transfer a batch of ERC-1155 tokens of multiple types to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-1155 token contract
+     * @param tokenIds The identifiers of the tokens being transferred
+     * @param values Transfer amounts per token type
      */
     depositBatchERC1155Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenIds: PromiseOrValue<BigNumberish>[],
-      _values: PromiseOrValue<BigNumberish>[],
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      values: PromiseOrValue<BigNumberish>[],
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<string>;
   };
@@ -170,54 +170,54 @@ export interface IERC1155BatchPortal extends BaseContract {
 
   estimateGas: {
     /**
-     * Please make sure `_tokenIds` and `_values` have the same length.
-     * Transfer a batch of ERC-1155 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-1155 token contract
-     * @param _tokenIds The identifiers of the tokens being transferred
-     * @param _values Transfer amounts per token type
+     * Please make sure the arrays `tokenIds` and `values` have the same length.
+     * Transfer a batch of ERC-1155 tokens of multiple types to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-1155 token contract
+     * @param tokenIds The identifiers of the tokens being transferred
+     * @param values Transfer amounts per token type
      */
     depositBatchERC1155Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenIds: PromiseOrValue<BigNumberish>[],
-      _values: PromiseOrValue<BigNumberish>[],
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      values: PromiseOrValue<BigNumberish>[],
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
   populateTransaction: {
     /**
-     * Please make sure `_tokenIds` and `_values` have the same length.
-     * Transfer a batch of ERC-1155 tokens to a DApp and add an input to the DApp's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
-     * @param _baseLayerData Additional data to be interpreted by the base layer
-     * @param _dapp The address of the DApp
-     * @param _execLayerData Additional data to be interpreted by the execution layer
-     * @param _token The ERC-1155 token contract
-     * @param _tokenIds The identifiers of the tokens being transferred
-     * @param _values Transfer amounts per token type
+     * Please make sure the arrays `tokenIds` and `values` have the same length.
+     * Transfer a batch of ERC-1155 tokens of multiple types to an application contract and add an input to the application's input box to signal such operation. The caller must enable approval for the portal to manage all of their tokens beforehand, by calling the `setApprovalForAll` function in the token contract.
+     * @param appContract The application contract address
+     * @param baseLayerData Additional data to be interpreted by the base layer
+     * @param execLayerData Additional data to be interpreted by the execution layer
+     * @param token The ERC-1155 token contract
+     * @param tokenIds The identifiers of the tokens being transferred
+     * @param values Transfer amounts per token type
      */
     depositBatchERC1155Token(
-      _token: PromiseOrValue<string>,
-      _dapp: PromiseOrValue<string>,
-      _tokenIds: PromiseOrValue<BigNumberish>[],
-      _values: PromiseOrValue<BigNumberish>[],
-      _baseLayerData: PromiseOrValue<BytesLike>,
-      _execLayerData: PromiseOrValue<BytesLike>,
+      token: PromiseOrValue<string>,
+      appContract: PromiseOrValue<string>,
+      tokenIds: PromiseOrValue<BigNumberish>[],
+      values: PromiseOrValue<BigNumberish>[],
+      baseLayerData: PromiseOrValue<BytesLike>,
+      execLayerData: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     /**
-     * Get the input box used by this input relay.
+     * Get the input box used by this portal.
      */
     getInputBox(overrides?: CallOverrides): Promise<PopulatedTransaction>;
   };

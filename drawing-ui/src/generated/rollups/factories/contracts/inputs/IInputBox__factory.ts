@@ -11,25 +11,40 @@ import type {
 
 const _abi = [
   {
+    inputs: [
+      {
+        internalType: "address",
+        name: "appContract",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "inputLength",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxInputLength",
+        type: "uint256",
+      },
+    ],
+    name: "InputTooLarge",
+    type: "error",
+  },
+  {
     anonymous: false,
     inputs: [
       {
         indexed: true,
         internalType: "address",
-        name: "dapp",
+        name: "appContract",
         type: "address",
       },
       {
         indexed: true,
         internalType: "uint256",
-        name: "inputIndex",
+        name: "index",
         type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "address",
-        name: "sender",
-        type: "address",
       },
       {
         indexed: false,
@@ -45,12 +60,12 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "_dapp",
+        name: "appContract",
         type: "address",
       },
       {
         internalType: "bytes",
-        name: "_input",
+        name: "payload",
         type: "bytes",
       },
     ],
@@ -69,12 +84,12 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "_dapp",
+        name: "appContract",
         type: "address",
       },
       {
         internalType: "uint256",
-        name: "_index",
+        name: "index",
         type: "uint256",
       },
     ],
@@ -93,7 +108,7 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "_dapp",
+        name: "appContract",
         type: "address",
       },
     ],
