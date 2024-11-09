@@ -94,11 +94,10 @@ export default function Page({ children }: Props) {
   };
 
   useEffect(() => {
-    if (connectedChain) {
-      if (config[connectedChain.id]) setIsSupportedNetwork(true);
-      else setIsSupportedNetwork(false);
-    }
-  }, [connectedChain, wallet]);
+    setIsSupportedNetwork(
+      connectedChain && config[connectedChain.id] ? true : false,
+    );
+  }, [connectedChain]);
 
   return (
     <div className="flex h-svh flex-col overflow-auto bg-muted">

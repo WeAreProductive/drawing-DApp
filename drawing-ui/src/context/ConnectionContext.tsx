@@ -47,9 +47,19 @@ export const ConnectionContextProvider = ({ children }: Props) => {
   const [{ wallet }] = useConnectWallet();
   const [connectedWallet] = useWallets();
 
-  const [account, setAccount] = useState<Address | null>(null);
-  const [dappAddress, setDappAddress] = useState<string | null>(null);
-  const [ercToMintAddress, setErcToMintAddress] = useState<string | null>(null);
+  const [account, setAccount] = useState<Address | null>(
+    connectedWallet?.accounts[0].address,
+  );
+  const [dappAddress, setDappAddress] = useState<string | null>(
+    connectedChain && config[connectedChain.id]?.DAppAddress
+      ? config[connectedChain.id].DAppAddress
+      : "null",
+  );
+  const [ercToMintAddress, setErcToMintAddress] = useState<string | null>(
+    connectedChain && config[connectedChain.id]?.ercToMint
+      ? config[connectedChain.id].ercToMint
+      : "null",
+  );
 
   useEffect(() => {
     setAccount(connectedWallet?.accounts[0].address);
@@ -57,7 +67,7 @@ export const ConnectionContextProvider = ({ children }: Props) => {
       setDappAddress(config[connectedChain.id].DAppAddress);
     if (connectedChain && config[connectedChain.id]?.ercToMint)
       setErcToMintAddress(config[connectedChain.id].ercToMint);
-  }, [wallet, connectedChain]);
+  }, [connectedChain]);
 
   const value = {
     connectedChain,
