@@ -33,12 +33,10 @@ init({
     rpcUrl: v.rpcUrl,
   })),
   appMetadata: {
-    name: "Drawing DApp",
+    name: "DrawingCanvas",
     icon: blocknativeIcon,
-    description: "Demo app for Cartesi Rollups",
-    recommendedInjectedWallets: [
-      { name: "MetaMask", url: "https://metamask.io" },
-    ],
+    description:
+      "Drawing Canvas: A digital space for onchain creativity, where users can create collaborative artwork, co-monetize drawings with NFTs, enter contests, and have fun.",
   },
   accountCenter: {
     desktop: {
