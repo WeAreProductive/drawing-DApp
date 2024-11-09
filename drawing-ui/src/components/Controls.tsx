@@ -81,7 +81,7 @@ const Controls = () => {
   }, [redoObjectsArr]);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col items-start">
       <CountdownTimer />
       {currentDrawingData && currentDrawingData.title && (
         <div className="mb-6">
