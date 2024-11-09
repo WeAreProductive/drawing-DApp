@@ -105,13 +105,13 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
             return i === drawings.length - 1 ? (
               <div
                 key={`${drawing.uuid}`}
-                className="last-element w-1/4 p-2"
+                className="last-element w-full p-2 lg:w-1/4"
                 ref={setLastElement}
               >
                 <CanvasSnapshot src={drawing} />
               </div>
             ) : (
-              <div key={`${drawing.uuid}-${i}`} className="w-1/4 p-2">
+              <div key={`${drawing.uuid}-${i}`} className="w-full p-2 lg:w-1/4">
                 <CanvasSnapshot src={drawing} />
               </div>
             );

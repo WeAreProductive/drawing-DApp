@@ -8,7 +8,7 @@ const Draw = () => {
     <>
       <Page>
         <div className="grid gap-4">
-          <div className="grid gap-4 xl:grid-cols-[1fr,var(--sidebar-width)]">
+          <div className="mb-16 grid gap-4 xl:grid-cols-[1fr,var(--sidebar-width)]">
             <div className="w-full">
               <div className="sticky top-4 flex flex-col gap-4">
                 <Controls />

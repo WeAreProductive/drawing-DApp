@@ -15,7 +15,7 @@ const DrawingContributorsList = () => {
   }, []);
   return (
     currentDrawingData && (
-      <div className="rounded-xl bg-card p-6">
+      <div className="rounded-xl bg-slate-200 p-6">
         <h3 className="mb-2 font-semibold">Contributions:</h3>
         <div className="-mx-1 flex flex-wrap">
           {currentDrawingData.update_log.map(
@@ -27,7 +27,7 @@ const DrawingContributorsList = () => {
                 objects: parsedElement,
               });
               return (
-                <div key={idx} className="m-1 border p-2">
+                <div key={idx} className="m-1 border bg-card p-2">
                   <DrawingPreview
                     dimensions={dimensions ? JSON.parse(dimensions) : ""}
                     snapShotJson={snapShotJson}

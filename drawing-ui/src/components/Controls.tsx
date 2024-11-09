@@ -96,7 +96,7 @@ const Controls = () => {
           </p>
         </div>
       )}
-      <div className="flex flex-col items-center gap-4 lg:flex-row">
+      <div className="flex w-full flex-col items-center gap-4 lg:flex-row">
         {isActiveControl && !drawingIsClosed && (
           <>
             <DrawingControls />
