@@ -220,16 +220,12 @@ export const useRollups = (): RollupsInteractions => {
     try {
       const nonce = await fetchNonceL2(account);
 
-      console.log("Nonde: ", nonce);
-
       typedData.message = {
         app: dappAddress as `0x${string}`,
         nonce: nonce,
         data: toHex(inputBytes),
         max_gas_price: BigInt(10),
       };
-
-      console.log("TData:", typedData);
 
       try {
         setCartesiTxId("");

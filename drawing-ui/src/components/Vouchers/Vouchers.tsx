@@ -22,7 +22,7 @@ const Vouchers = () => {
         className="overflow-y-auto sm:w-[640px] sm:max-w-full"
       >
         <SheetHeader>
-          <SheetTitle>My Vouchers</SheetTitle>
+          <SheetTitle>My NFTs</SheetTitle>
           <GraphQLProvider>
             <VouchersList />
           </GraphQLProvider>

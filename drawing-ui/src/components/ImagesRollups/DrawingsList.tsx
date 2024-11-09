@@ -28,7 +28,6 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     new IntersectionObserver((entries) => {
       const first = entries[0];
       if (first.isIntersecting) {
-        console.log("is intersecting ...");
         setFetch(true);
       }
     }),

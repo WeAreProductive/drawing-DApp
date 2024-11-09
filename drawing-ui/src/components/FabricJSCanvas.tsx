@@ -104,6 +104,7 @@ const FabricJSCanvas = () => {
       if (!canvasWrapperEl.current || !canvas) return;
 
       const { top } = canvasWrapperEl.current.getBoundingClientRect();
+
       const PADDING = 24;
       const wHeight = window.innerHeight;
       const wWidth = window.innerWidth;
@@ -116,12 +117,10 @@ const FabricJSCanvas = () => {
         ) -
         PADDING * 2;
 
-      const availableHeight = wHeight - top - PADDING;
-
-      var size = Math.min(availableWidth, availableHeight);
-
-      if (size > INITIAL_DRAWING_OPTIONS.canvasWidth)
-        size = INITIAL_DRAWING_OPTIONS.canvasWidth;
+      const size =
+        availableWidth > INITIAL_DRAWING_OPTIONS.canvasWidth
+          ? INITIAL_DRAWING_OPTIONS.canvasWidth
+          : availableWidth;
 
       canvas.setDimensions({
         width: size,
@@ -144,8 +143,8 @@ const FabricJSCanvas = () => {
   }, [canvasWrapperEl.current, canvas]);
 
   return (
-    <div ref={canvasWrapperEl} className="flex justify-center">
-      <div className="shadow-sm bg-card">
+    <div ref={canvasWrapperEl} className="mb-16 flex justify-center">
+      <div className="bg-card shadow-sm">
         <canvas
           ref={canvasEl}
           width={canvasOptions.canvasWidth}

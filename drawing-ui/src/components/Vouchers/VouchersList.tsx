@@ -192,9 +192,6 @@ const VouchersList = () => {
     }
   }, [data, account]);
   useEffect(() => {
-    console.log(
-      "Fetch new voucher's images data...when new vouchers are available ...",
-    );
     fetchImages(uuids);
   }, [uuids]);
   return (
