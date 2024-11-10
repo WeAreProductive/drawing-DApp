@@ -1,22 +1,30 @@
 import { useEffect, useState } from "react";
-import { init, useConnectWallet, useSetChain } from "@web3-onboard/react";
+import { init } from "@web3-onboard/react";
+import metamaskSDK from "@web3-onboard/metamask";
 import injectedModule from "@web3-onboard/injected-wallets";
 import wagmi from "@web3-onboard/wagmi";
-import NetworkConnect from "../components/NetworkConnect";
-import blocknativeIcon from "../icons/blocknative-icon";
-
-import "../App.css";
-
+import { useConnectionContext } from "../context/ConnectionContext";
+import drawingCanvasLogo from "../icons/drawingcanvas-logo";
 import configFile from "../config/config.json";
 import Header from "../components/Header";
 import { Network } from "../shared/types";
 import { Ban } from "lucide-react";
-import { useConnectionContext } from "../context/ConnectionContext";
 import NetworkWelcome from "../components/NetworkWelcome";
+import NetworkConnect from "../components/NetworkConnect";
 import ReactGA from "react-ga4";
 import { GA4_ID } from "../shared/constants";
+import "../App.css";
 
 const config: { [name: string]: Network } = configFile;
+
+const metamaskSDKWallet = metamaskSDK({
+  options: {
+    extensionOnly: false,
+    dappMetadata: {
+      name: "DrawingCanvas",
+    },
+  },
+});
 
 const injected = injectedModule();
 
@@ -25,7 +33,7 @@ init({
     autoConnectAllPreviousWallet: true,
   },
   wagmi,
-  wallets: [injected],
+  wallets: [metamaskSDKWallet, injected],
   chains: Object.entries(config).map(([k, v], i) => ({
     id: k,
     token: v.token,
@@ -34,7 +42,7 @@ init({
   })),
   appMetadata: {
     name: "DrawingCanvas",
-    icon: blocknativeIcon,
+    icon: drawingCanvasLogo,
     description:
       "Drawing Canvas: A digital space for onchain creativity, where users can create collaborative artwork, co-monetize drawings with NFTs, enter contests, and have fun.",
   },
@@ -99,11 +107,13 @@ export default function Page({ children }: Props) {
     );
   }, [connectedChain]);
 
+  console.log("Connected Chain:", connectedChain);
+
   return (
     <div className="flex h-svh flex-col overflow-auto bg-muted">
       {wallet && isSupportedNetwork && <Header />}
       <div className="container max-w-none">
-        {wallet ? (
+        {connectedChain ? (
           isSupportedNetwork ? (
             children
           ) : (
