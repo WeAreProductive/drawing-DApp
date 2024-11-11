@@ -40,7 +40,7 @@ def init_sqlite_database():
                 uuid VARCHAR NOT NULL,
                 owner VARCHAR NOT NULL,
                 dimensions VARCHAR NOT NULL,
-                private INTEGER,
+                is_private INTEGER,
                 title VARCHR NOT NULL,
                 description TEXT,
                 minting_price FLOAT NOT NULL,

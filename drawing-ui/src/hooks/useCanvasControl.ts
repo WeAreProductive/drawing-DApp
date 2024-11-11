@@ -13,7 +13,7 @@ export const useCanvasControls = () => {
   const account = connectedWallet.accounts[0].address;
   useEffect(() => {
     if (!currentDrawingData) return;
-    if (currentDrawingData.private == 0) {
+    if (currentDrawingData.is_private == 0) {
       // we don't care about the owner if drawing is public
       setIsActiveControl(true);
     } else {

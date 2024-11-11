@@ -38,7 +38,7 @@ def get_raw_data(query_args, type, page = 1):
       case "get_all_drawings": 
         print("get_all_drawings") 
         offset = get_query_offset(page)  
-        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
         statement = statement + "count(*) OVER() AS total_rows " 
         statement = statement + "FROM drawings d "
         statement = statement + "ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
@@ -51,7 +51,7 @@ def get_raw_data(query_args, type, page = 1):
         owner = query_args[2] 
         offset = get_query_offset(page) 
         # get all drawings where I am the owner(the first painter) or where(I am a contributor and not the owner) 
-        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
         statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE (d.owner LIKE ?) "
         statement = statement + "OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
         statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )"
@@ -64,7 +64,7 @@ def get_raw_data(query_args, type, page = 1):
       
       case "get_drawing_by_uuid":
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
-        statement = "SELECT id, uuid, owner, dimensions, private, title, description, minting_price, closed_at "
+        statement = "SELECT id, uuid, owner, dimensions, is_private, title, description, minting_price, closed_at "
         statement = statement + "FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall() 
@@ -80,7 +80,7 @@ def get_raw_data(query_args, type, page = 1):
       
       case "get_drawings_by_uuid":
         uuids = json.loads(query_args[2])
-        statement = "SELECT id, uuid, owner, dimensions, private, title, description, minting_price, closed_at, last_updated "
+        statement = "SELECT id, uuid, owner, dimensions, is_private, title, description, minting_price, closed_at, last_updated "
         statement = statement + "FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ")"   
         cursor.execute(statement, uuids)
         rows = cursor.fetchall() 
@@ -164,12 +164,12 @@ def get_drawings(query_args, type, page):
   
   if data_rows: 
     for row in data_rows:   
-      # d.uuid, d.owner, d.dimensions, d.private, d.title, d.description, d.minting_price, d.closed_at
+      # d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at
       current_drawing = {}
       current_drawing['uuid'] = row['uuid']
       current_drawing['owner'] = row['owner']
       current_drawing['dimensions'] = row['dimensions'] 
-      current_drawing['private'] = row['private']
+      current_drawing['is_private'] = row['is_private']
       current_drawing['title'] = row['title']
       current_drawing['description'] = row['description']
       current_drawing['minting_price'] = row['minting_price']
@@ -291,9 +291,9 @@ def save_data(type, query_args) :
         owner = data['owner']
         dimensions = json.dumps(data['dimensions']) 
         # user input data
-        private = 0
-        if data['userInputData']['private'] == True:
-          private= 1
+        is_private = 0
+        if data['userInputData']['is_private'] == True:
+          is_private= 1
         title = data['userInputData']['title']
         description = data['userInputData']['description']
         minting_price = data['userInputData']['minting_price'] 
@@ -307,10 +307,10 @@ def save_data(type, query_args) :
         last_updated = timestamp
         cursor.execute(
             """
-            INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated, contest_id)
+            INSERT INTO drawings(uuid, owner, dimensions, is_private, title, description, minting_price, created_at, closed_at, last_updated, contest_id)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated, contest_id),
+            (uuid, owner, dimensions, is_private, title, description, minting_price, created_at, closed_at, last_updated, contest_id),
         )
 
         conn.commit()

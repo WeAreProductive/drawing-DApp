@@ -96,13 +96,13 @@ export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   closed_at?: string;
   dimensions: string;
   minting_price: any;
-  private: 0 | 1;
+  is_private: 0 | 1;
 }
 export type DrawingUserInput = {
   title: { value: string; isReadOnly: boolean };
   description: { value: string; isReadOnly: boolean };
   minting_price: { value: string; isReadOnly: boolean };
-  private: { value: boolean; isReadOnly: boolean };
+  is_private: { value: boolean; isReadOnly: boolean };
   open: { value: number; isReadOnly: boolean };
   [key: string]: { value: string | boolean | number; isReadOnly: boolean };
 };

@@ -40,7 +40,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       <span className="block text-xs">Owner: {sliceAccountStr(owner)}</span>
       <span className="block text-xs">ID: {uuid}</span>
       <span className="block text-xs">
-        <b>{src.private ? "private" : "public"}</b>
+        <b>{src.is_private ? "is_private" : "public"}</b>
       </span>
       <span className="block text-xs">
         {drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"}

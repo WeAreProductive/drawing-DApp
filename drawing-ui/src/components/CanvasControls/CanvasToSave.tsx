@@ -35,7 +35,7 @@ const initialInputValues = {
   title: { value: "", isReadOnly: false },
   description: { value: "", isReadOnly: false },
   minting_price: { value: "", isReadOnly: false },
-  private: { value: false, isReadOnly: false },
+  is_private: { value: false, isReadOnly: false },
   open: { value: 0, isReadOnly: false },
   contest: { value: 0, isReadOnly: false },
 };
@@ -82,15 +82,24 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     }
 
     const uuid = currentDrawingData ? currentDrawingData.uuid : currentUuid;
-
-    const strInput = getNoticeInput(uuid, canvasData, inputValues);
+    const { title, description, minting_price, is_private, open, contest } =
+      inputValues;
+    const userInput = {
+      title: title.value,
+      description: description.value,
+      minting_price: minting_price.value,
+      is_private: is_private.value,
+      open: open.value,
+      contest: contest.value,
+    };
+    const strInput = getNoticeInput(uuid, canvasData, userInput);
 
     if (!currentDrawingData) {
       const canvasDimensions = {
         width: canvas?.width || 0,
         height: canvas?.height || 0,
       };
-      const closedAt = moment().unix() + hoursToTimestamp(inputValues.open); // converted in seconds
+      const closedAt = moment().unix() + hoursToTimestamp(open.value); // converted in seconds
       const initCanvasData = {
         uuid: uuid,
         owner: account,
@@ -135,7 +144,8 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     queryString = `contests/page/${page}/incompleted/${now}`;
     const data = await inspectCall(queryString, "plain");
     const { next_page, contests } = JSON.parse(data);
-    if (contests) setContests((prevItems) => [...prevItems, ...contests]);
+    // @TODO handle pagination when more contests are available?
+    if (contests) setContests(contests);
   };
   useEffect(() => {
     fetchContests();

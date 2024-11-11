@@ -154,7 +154,7 @@ const InputDialog = ({
     // handle isPrivate value
     setInputValues({
       ...inputValues,
-      ["private"]: !switch1, // @TODO
+      ["is_private"]: !switch1, // @TODO
     });
   };
   const handleInputSend = () => {
