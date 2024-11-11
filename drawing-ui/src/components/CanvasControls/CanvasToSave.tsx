@@ -32,12 +32,12 @@ type CanvasToSaveProp = {
   enabled: boolean;
 };
 const initialInputValues = {
-  title: "",
-  description: "",
-  minting_price: "",
-  private: false,
-  open: 0,
-  contest: 0,
+  title: { value: "", isReadOnly: false },
+  description: { value: "", isReadOnly: false },
+  minting_price: { value: "", isReadOnly: false },
+  private: { value: false, isReadOnly: false },
+  open: { value: 0, isReadOnly: false },
+  contest: { value: 0, isReadOnly: false },
 };
 const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const {

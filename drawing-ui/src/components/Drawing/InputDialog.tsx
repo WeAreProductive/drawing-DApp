@@ -106,8 +106,10 @@ const InputDialog = ({
   ) => {
     setInputValues({
       ...inputValues,
-      [inputName]: e.target.value,
+      [inputName]: { value: e.target.value, isReadOnly: false },
     });
+    // @TODO if inputName == 'contest' => update minting price and open from the contest, set the fields to read only
+    // if is contest and value < 1 minting price and open are not readonly and data are returned to initial state
     // reset validation
     if (Object.hasOwn(fieldValidation, inputName)) {
       setFieldValidation((fieldValidation) => ({
@@ -122,7 +124,7 @@ const InputDialog = ({
     // handle isPrivate value
     setInputValues({
       ...inputValues,
-      ["private"]: !switch1,
+      ["private"]: !switch1, // @TODO
     });
   };
   const handleInputSend = () => {
@@ -146,7 +148,7 @@ const InputDialog = ({
       if (Object.hasOwn(validationRules, name)) {
         validationRules[name].forEach((rule: string) => {
           if (rule == "gt0") {
-            if (+inputValues[name] < 1) {
+            if (+inputValues[name].value < 1) {
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.gt0 },
@@ -155,7 +157,7 @@ const InputDialog = ({
             }
           }
           if (rule == "required") {
-            if (!inputValues[name].toString().trim()) {
+            if (!inputValues[name].value.toString().trim()) {
               setFieldValidation((fieldValidation) => ({
                 ...fieldValidation,
                 [name]: { valid: false, msg: validationErrMsg.required },
@@ -195,7 +197,8 @@ const InputDialog = ({
                 id="title"
                 ref={titleInputRef}
                 placeholder="Drawing title ..."
-                value={inputValues.title}
+                value={inputValues.title.value}
+                isReadOnly={inputValues.title.isReadOnly}
                 color={fieldValidation.title.valid ? "" : "failure"}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                   handleInputChange(e, "title")
@@ -215,7 +218,8 @@ const InputDialog = ({
                 className="p-2"
                 id="description"
                 placeholder="Drawing description..."
-                value={inputValues.description}
+                value={inputValues.description.value}
+                readOnly={inputValues.description.isReadOnly}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                   handleInputChange(e, "description")
                 }
@@ -230,7 +234,7 @@ const InputDialog = ({
                 />
                 <SelectInput
                   id="contest"
-                  value={inputValues.contest}
+                  value={inputValues.contest.value}
                   data={contests}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleInputChange(e, "contest")
@@ -252,7 +256,8 @@ const InputDialog = ({
                   id="minting_price"
                   placeholder="0"
                   addon="ETH"
-                  value={inputValues.minting_price}
+                  value={inputValues.minting_price.value}
+                  isReadonly={inputValues.minting_price.isReadOnly}
                   color={fieldValidation.minting_price.valid ? "" : "failure"}
                   onChange={(e) => handleInputChange(e, "minting_price")}
                   validation={fieldValidation.minting_price}
@@ -269,7 +274,8 @@ const InputDialog = ({
                   id="open"
                   placeholder="0"
                   addon="Hours"
-                  value={inputValues.open}
+                  value={inputValues.open.value}
+                  isReadonly={inputValues.open.isReadOnly}
                   color={fieldValidation.open.valid ? "" : "failure"}
                   onChange={(e) => handleInputChange(e, "open")}
                   validation={fieldValidation.open}
@@ -278,6 +284,8 @@ const InputDialog = ({
             </div>
             <div className="my-2 flex items-start gap-4">
               <Label value="Private drawing" className="self-center" />
+              {/* @TODO set to public without option to change if attached to */}
+              {/* contest */}
               <DialogToggleSwitch checked={switch1} onChange={handleSwitch} />
             </div>
           </div>

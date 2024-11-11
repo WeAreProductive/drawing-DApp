@@ -61,6 +61,7 @@ export default function DialogTextinput({
   color,
   onChange,
   validation,
+  isReadonly = false,
 }: {
   id: string;
   placeholder: string;
@@ -69,6 +70,7 @@ export default function DialogTextinput({
   color: string;
   onChange: ChangeEventHandler<HTMLInputElement>;
   validation: { valid: boolean; msg: string } | null | undefined;
+  isReadonly: boolean;
 }) {
   return (
     <>
@@ -80,6 +82,7 @@ export default function DialogTextinput({
         value={value}
         color={color}
         onChange={onChange}
+        readOnly={isReadonly}
       />
       {/* Display error message */}
       {!validation?.valid && validation?.msg && (
