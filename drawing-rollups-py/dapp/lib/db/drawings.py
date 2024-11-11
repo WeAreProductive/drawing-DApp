@@ -298,6 +298,8 @@ def save_data(type, query_args) :
         description = data['userInputData']['description']
         minting_price = data['userInputData']['minting_price'] 
         open = data['userInputData']['open'] # in hours
+        logger.info(f"OPEN {open}")
+        contest_id = data['userInputData']['contest'] # 0 or number > 0
         #
         timestamp = query_args['timestamp']
         created_at = timestamp
@@ -305,10 +307,10 @@ def save_data(type, query_args) :
         last_updated = timestamp
         cursor.execute(
             """
-            INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO drawings(uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated, contest_id)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             """,
-            (uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated),
+            (uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated, contest_id),
         )
 
         conn.commit()
@@ -359,19 +361,6 @@ def save_data(type, query_args) :
         )
         conn.commit()
         return
-      case "add_drawing_to_contest":
-        # save_data('add_drawing_to_contest',{"contest_id": int(data['userInputData']['contest']), "drawing_id": id}) 
-        contest_id = query_args['contest_id'] 
-        drawing_id = query_args['drawing_id'] 
-        cursor.execute(
-          """
-          INSERT INTO contests_drawings(contest_id, drawing_id)
-          VALUES (?, ?)
-          """,
-          (contest_id, drawing_id),
-        )
-        conn.commit()
-        return
 
   except Exception as e: 
     msg = f"Error executing insert statement: {e}" 
@@ -402,8 +391,6 @@ def store_data(cmd, timestamp, sender, data):
     save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}) 
     logger.info(f"CREATE DRAWING DATA {data}")
     logger.info(f"CREATE DRAWING DATA ID {id}")
-    if int(data['userInputData']['contest']) > 0:
-      save_data('add_drawing_to_contest',{"contest_id": int(data['userInputData']['contest']), "drawing_id": id}) 
   elif cmd == 'ud' :
     logger.info(f"Update drawing") 
     uuid = data['uuid']
