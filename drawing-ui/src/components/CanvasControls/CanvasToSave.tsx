@@ -55,6 +55,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     minting_price: "",
     private: false,
     open: 0,
+    contest: 0,
   });
   const saveDrawing = async () => {
     setDappState(DAPP_STATE.canvasSave);
@@ -139,7 +140,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   useEffect(() => {
     fetchContests();
   }, [isOpen]);
-  console.log({ contests });
+  console.log({ inputValues });
   return (
     <>
       <Button
@@ -156,6 +157,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
         inputValues={inputValues}
         setInputValues={setInputValues}
         action={() => saveDrawing()}
+        contests={contests}
       />
     </>
   );

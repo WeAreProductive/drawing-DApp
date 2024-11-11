@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import DialogToggleSwitch from "../ui/formDialog/toggleSwitch";
-import { DrawingUserInput } from "../../shared/types";
+import { ContestType, DrawingUserInput } from "../../shared/types";
 import { useCanvasContext } from "../../context/CanvasContext";
 import DialogTextinput from "../ui/formDialog/textInput";
+import { SelectInput } from "../ui/formDialog/selectInput";
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -81,6 +82,7 @@ type InputDialogType = {
   inputValues: DrawingUserInput;
   action: () => Promise<void>;
   openHandler: React.Dispatch<React.SetStateAction<boolean>>;
+  contests: ContestType[];
 };
 const InputDialog = ({
   isOpen,
@@ -88,6 +90,7 @@ const InputDialog = ({
   setInputValues,
   inputValues,
   action,
+  contests,
 }: InputDialogType) => {
   const [switch1, setSwitch1] = useState(false);
   const { setLoading } = useCanvasContext();
@@ -95,7 +98,10 @@ const InputDialog = ({
   const [fieldValidation, setFieldValidation] = useState(validationInit);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLSelectElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
     inputName: string,
   ) => {
     setInputValues({
@@ -209,9 +215,28 @@ const InputDialog = ({
                 className="p-2"
                 id="description"
                 placeholder="Drawing description..."
-                onChange={(e) => handleInputChange(e, "description")}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  handleInputChange(e, "description")
+                }
               ></Textarea>
             </div>
+            {contests ? (
+              <div className="my-2 flex flex-col">
+                <Label
+                  htmlFor="description"
+                  value="Attach the drawing to a contests:"
+                  className="mb-4"
+                />
+                <SelectInput
+                  id="contest"
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
+                    handleInputChange(e, "contest")
+                  }
+                />
+              </div>
+            ) : (
+              ""
+            )}
             <div className="flex">
               <div className="my-2 flex flex-col">
                 <Label
