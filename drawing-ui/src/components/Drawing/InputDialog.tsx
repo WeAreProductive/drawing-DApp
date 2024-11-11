@@ -117,7 +117,12 @@ const InputDialog = ({
             value: selectedContest[0] ? selectedContest[0].minting_active : 0,
             isReadOnly: selectedContest[0] ? true : false,
           },
+          ["is_private"]: {
+            value: false,
+            isReadOnly: false,
+          },
         });
+        setSwitch1(false);
         break;
 
       default:
@@ -149,12 +154,14 @@ const InputDialog = ({
     }
   };
   const handleSwitch = () => {
+    console.log(inputValues.contest.value);
+    if (inputValues.contest.value != 0) return;
     // handle switch display
     setSwitch1(!switch1);
     // handle isPrivate value
     setInputValues({
       ...inputValues,
-      ["is_private"]: !switch1, // @TODO
+      ["is_private"]: { value: !switch1, isReadOnly: false }, // @TODO
     });
   };
   const handleInputSend = () => {
@@ -200,6 +207,7 @@ const InputDialog = ({
     }
     return isValidInput;
   };
+
   return (
     <>
       <Modal

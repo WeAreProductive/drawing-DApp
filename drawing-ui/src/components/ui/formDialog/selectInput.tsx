@@ -15,7 +15,7 @@ export function SelectInput({
 }) {
   return (
     <Select id={id} onChange={onChange} value={value}>
-      <option>----</option>
+      <option value="0">----</option>
       {data && data.length > 0
         ? data.map(({ title, id }) => {
             return <option value={id}>{title}</option>;
