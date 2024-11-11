@@ -229,6 +229,7 @@ const InputDialog = ({
                 />
                 <SelectInput
                   id="contest"
+                  data={contests}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleInputChange(e, "contest")
                   }
