@@ -31,6 +31,14 @@ import { useInspect } from "../../hooks/useInspect";
 type CanvasToSaveProp = {
   enabled: boolean;
 };
+const initialInputValues = {
+  title: "",
+  description: "",
+  minting_price: "",
+  private: false,
+  open: 0,
+  contest: 0,
+};
 const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const {
     canvas,
@@ -48,14 +56,8 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const [isOpen, setIsOpenModal] = useState(false);
   const [contests, setContests] = useState<[] | ContestType[]>([]);
   const [page, setPage] = useState(1);
-  const [inputValues, setInputValues] = useState<DrawingUserInput>({
-    title: "",
-    description: "",
-    minting_price: "",
-    private: false,
-    open: 0,
-    contest: 0,
-  });
+  const [inputValues, setInputValues] =
+    useState<DrawingUserInput>(initialInputValues);
   const saveDrawing = async () => {
     setDappState(DAPP_STATE.canvasSave);
 
@@ -109,6 +111,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     } else {
       await sendInput(strInput);
     }
+    setInputValues(initialInputValues);
   };
 
   const handleCanvasToSave = async () => {
