@@ -96,7 +96,34 @@ const InputDialog = ({
   const { setLoading } = useCanvasContext();
   const titleInputRef = useRef<HTMLInputElement>(null);
   const [fieldValidation, setFieldValidation] = useState(validationInit);
+  const handleDependantFields = (type: string, value: number | string) => {
+    switch (type) {
+      case "contest":
+        // returns single element arr, minting_active, minting_price
+        const selectedContest = contests.filter((el) => {
+          return el.id == value;
+        });
+        setInputValues({
+          ...inputValues,
+          ["contest"]: {
+            value: value ? value : 0,
+            isReadOnly: false,
+          },
+          ["minting_price"]: {
+            value: selectedContest[0] ? selectedContest[0].minting_price : "",
+            isReadOnly: selectedContest[0] ? true : false,
+          },
+          ["open"]: {
+            value: selectedContest[0] ? selectedContest[0].minting_active : 0,
+            isReadOnly: selectedContest[0] ? true : false,
+          },
+        });
+        break;
 
+      default:
+        break;
+    }
+  };
   const handleInputChange = (
     e:
       | React.ChangeEvent<HTMLInputElement>
@@ -110,6 +137,9 @@ const InputDialog = ({
     });
     // @TODO if inputName == 'contest' => update minting price and open from the contest, set the fields to read only
     // if is contest and value < 1 minting price and open are not readonly and data are returned to initial state
+    if (inputName == "contest") {
+      handleDependantFields("contest", e.target.value);
+    }
     // reset validation
     if (Object.hasOwn(fieldValidation, inputName)) {
       setFieldValidation((fieldValidation) => ({
