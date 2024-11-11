@@ -90,8 +90,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
         width: canvas?.width || 0,
         height: canvas?.height || 0,
       };
-      // @TODO - add open in inputValues !!!!
-      // !!!!
       const closedAt = moment().unix() + hoursToTimestamp(inputValues.open); // converted in seconds
       const initCanvasData = {
         uuid: uuid,
@@ -142,7 +140,6 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   useEffect(() => {
     fetchContests();
   }, [isOpen]);
-  console.log({ inputValues });
   return (
     <>
       <Button

@@ -6,13 +6,15 @@ export function SelectInput({
   id,
   data,
   onChange,
+  value,
 }: {
   id: string;
   data: ContestType[];
   onChange: ChangeEventHandler<HTMLSelectElement>;
+  value: string;
 }) {
   return (
-    <Select id={id} onChange={onChange}>
+    <Select id={id} onChange={onChange} value={value}>
       <option>----</option>
       {data && data.length > 0
         ? data.map(({ title, id }) => {

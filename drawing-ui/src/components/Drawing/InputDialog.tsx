@@ -215,6 +215,7 @@ const InputDialog = ({
                 className="p-2"
                 id="description"
                 placeholder="Drawing description..."
+                value={inputValues.description}
                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                   handleInputChange(e, "description")
                 }
@@ -229,6 +230,7 @@ const InputDialog = ({
                 />
                 <SelectInput
                   id="contest"
+                  value={inputValues.contest}
                   data={contests}
                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
                     handleInputChange(e, "contest")
