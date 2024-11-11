@@ -1,5 +1,5 @@
 import { CustomFlowbiteTheme, Label, Modal, Textarea } from "flowbite-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import DialogButton from "../ui/formDialog/button";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import DialogToggleSwitch from "../ui/formDialog/toggleSwitch";
@@ -224,7 +224,7 @@ const InputDialog = ({
                   id="minting_price"
                   placeholder="0"
                   addon="ETH"
-                  value={inputValues.mintingPrice}
+                  value={inputValues.minting_price}
                   color={fieldValidation.minting_price.valid ? "" : "failure"}
                   onChange={(e) => handleInputChange(e, "minting_price")}
                   validation={fieldValidation.minting_price}

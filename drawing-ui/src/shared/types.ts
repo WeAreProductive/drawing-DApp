@@ -101,7 +101,7 @@ export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
 export type DrawingUserInput = {
   title: string;
   description: string;
-  mintingPrice: string;
+  minting_price: string;
   private: boolean;
   open: number;
   [key: string]: string | boolean | number;

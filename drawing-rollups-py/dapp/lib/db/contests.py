@@ -63,7 +63,18 @@ def get_raw_data(query_args, query_type, page, timestamp):
         statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?"
         cursor.execute(statement, [timestamp, limit, offset]) 
         rows = cursor.fetchall() 
-        return rows   
+        return rows 
+      case "get_incompleted_contests":  
+        print("get_incompleted_contests") 
+        #
+        offset = get_query_offset(page)  
+        statement = "SELECT * "
+        statement = statement + "FROM contests c "
+        statement = statement + "WHERE c.active_to > ? " 
+        statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?"
+        cursor.execute(statement, [timestamp, limit, offset]) 
+        rows = cursor.fetchall() 
+        return rows 
 
   except Exception as e: 
     msg = f"Error executing statement: {e}" 
@@ -116,6 +127,8 @@ def get_query_type(contest_type):
       return "get_future_contests"
     case "completed": 
       return "get_completed_contests" 
+    case "incompleted":
+      return 'get_incompleted_contests' # active and future
     
 def get_contest_data(query_args):
   """ Entry function for retrieving contest adata.

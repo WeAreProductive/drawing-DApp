@@ -5,12 +5,13 @@
  * the current drawing data
  */
 
-import { useCanvasContext } from "../../context/CanvasContext";
-import { DrawingUserInput } from "../../shared/types";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
 import { Save } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import moment from "moment";
+import { useCanvasContext } from "../../context/CanvasContext";
+import { ContestType, DrawingUserInput } from "../../shared/types";
+import { Button } from "../ui/button";
 
 import {
   validateInputSize,
@@ -20,10 +21,12 @@ import {
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputDialog from "../Drawing/InputDialog";
 import { useConnectionContext } from "../../context/ConnectionContext";
-import moment from "moment";
+
+import { nowUnixTimestamp } from "../../utils";
+import { useInspect } from "../../hooks/useInspect";
 
 type CanvasToSaveProp = {
   enabled: boolean;
@@ -40,8 +43,12 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const { connectedChain, account, connectedWallet } = useConnectionContext();
   const { sendInput } = useRollups();
   const { getNoticeInput } = useDrawing();
+  const { inspectCall } = useInspect();
   const currentUuid = uuidv4();
-  const [isOpen, setIsOpenModal] = useState(false);
+  const [isOpen, setIsOpenModal] = useState(true);
+  // const [isOpen, setIsOpenModal] = useState(false);
+  const [contests, setContests] = useState<[] | ContestType[]>([]);
+  const [page, setPage] = useState(1);
   const [inputValues, setInputValues] = useState<DrawingUserInput>({
     title: "",
     description: "",
@@ -119,7 +126,20 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
       saveDrawing();
     }
   };
-
+  const fetchContests = async () => {
+    if (!isOpen) return;
+    console.warn("Fetch contests data :: ...");
+    const now = nowUnixTimestamp();
+    let queryString = "";
+    queryString = `contests/page/${page}/incompleted/${now}`;
+    const data = await inspectCall(queryString, "plain");
+    const { next_page, contests } = JSON.parse(data);
+    if (contests) setContests((prevItems) => [...prevItems, ...contests]);
+  };
+  useEffect(() => {
+    fetchContests();
+  }, [isOpen]);
+  console.log({ contests });
   return (
     <>
       <Button
