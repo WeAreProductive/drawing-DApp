@@ -1,0 +1,34 @@
+# fly.toml app configuration file generated for drawingcanvas-nonode on 2024-11-08T23:47:34-03:00
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'drawingcanvas-nonode-storage'
+primary_region = 'ams'
+
+[build]
+  dockerfile = 'app-nonode.dockerfile'
+
+[http_service]
+  internal_port = 80
+  force_https = true
+  auto_stop_machines = 'off'
+  auto_start_machines = false
+  min_machines_running = 1
+  processes = ['app']
+
+[[vm]]
+  size = 'shared-cpu-1x'
+  memory = '2gb'
+  cpu_kind = 'shared'
+  cpus = 1
+
+[[metrics]]
+  port = 9000
+  path = '/metrics'
+  https = false
+
+[mounts]
+  source = "drawingstorage" # volumes can be attached to one vm only
+  destination = "/mnt"
+  initial_size = "20gb" # choose how big 
