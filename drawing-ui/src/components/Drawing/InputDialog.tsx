@@ -220,7 +220,7 @@ const InputDialog = ({
                 }
               ></Textarea>
             </div>
-            {contests ? (
+            {contests && contests.length > 0 ? (
               <div className="my-2 flex flex-col">
                 <Label
                   htmlFor="description"

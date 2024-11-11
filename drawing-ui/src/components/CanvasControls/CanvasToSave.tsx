@@ -45,8 +45,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const { getNoticeInput } = useDrawing();
   const { inspectCall } = useInspect();
   const currentUuid = uuidv4();
-  const [isOpen, setIsOpenModal] = useState(true);
-  // const [isOpen, setIsOpenModal] = useState(false);
+  const [isOpen, setIsOpenModal] = useState(false);
   const [contests, setContests] = useState<[] | ContestType[]>([]);
   const [page, setPage] = useState(1);
   const [inputValues, setInputValues] = useState<DrawingUserInput>({

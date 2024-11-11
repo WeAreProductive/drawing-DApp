@@ -359,6 +359,19 @@ def save_data(type, query_args) :
         )
         conn.commit()
         return
+      case "add_drawing_to_contest":
+        # save_data('add_drawing_to_contest',{"contest_id": int(data['userInputData']['contest']), "drawing_id": id}) 
+        contest_id = query_args['contest_id'] 
+        drawing_id = query_args['drawing_id'] 
+        cursor.execute(
+          """
+          INSERT INTO contests_drawings(contest_id, drawing_id)
+          VALUES (?, ?)
+          """,
+          (contest_id, drawing_id),
+        )
+        conn.commit()
+        return
 
   except Exception as e: 
     msg = f"Error executing insert statement: {e}" 
@@ -387,6 +400,10 @@ def store_data(cmd, timestamp, sender, data):
     logger.info(f"Create drawing") 
     id = save_data('create_drawing',{"data": data, "timestamp": timestamp})
     save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}) 
+    logger.info(f"CREATE DRAWING DATA {data}")
+    logger.info(f"CREATE DRAWING DATA ID {id}")
+    if int(data['userInputData']['contest']) > 0:
+      save_data('add_drawing_to_contest',{"contest_id": int(data['userInputData']['contest']), "drawing_id": id}) 
   elif cmd == 'ud' :
     logger.info(f"Update drawing") 
     uuid = data['uuid']

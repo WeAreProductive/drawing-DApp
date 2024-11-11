@@ -181,7 +181,7 @@ const ContestCreateInput = () => {
         <div className="my-2 flex flex-col">
           <Label
             htmlFor="description"
-            value="Drawing description(optional)"
+            value="Contest description(optional)"
             className="mb-4"
           />
           <Textarea
