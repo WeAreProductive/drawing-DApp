@@ -2,9 +2,13 @@ import { useEffect, useState } from "react";
 import { useContestsContext } from "../../context/ContestContext";
 import { useInspect } from "../../hooks/useInspect";
 import { sliceAccountStr, timestampToDate } from "../../utils";
+import { Link } from "react-router-dom";
+import { ContestType } from "../../shared/types";
 
 const ContestBlock = ({ contestId }: { contestId: string }) => {
-  const { contest, setContest } = useContestsContext();
+  // const { contest, setContest } = useContestsContext();
+  // Use local state for now
+  const [contest, setContest] = useState<null | ContestType>(null);
   const { inspectCall } = useInspect();
   const [loading, setLoading] = useState(false);
 
@@ -15,7 +19,7 @@ const ContestBlock = ({ contestId }: { contestId: string }) => {
     queryString = `contests/${contestId}`;
     const data = await inspectCall(queryString, "plain");
     const { contests } = JSON.parse(data);
-    if (contest.length) setContest(contests[0]); // single contest result
+    if (contests && contests.length) setContest(contests[0]); // single contest result
     setLoading(false);
   };
   useEffect(() => {
@@ -49,6 +53,10 @@ const ContestBlock = ({ contestId }: { contestId: string }) => {
               ? contest.drawings.length
               : 0}
           </span>
+          {/* we know the contest the drawing will be added to - it is in the state */}
+          <Link to="/drawing" state={{ contest: contest }}>
+            Add drawing to this contest
+          </Link>
         </>
       ) : (
         ""

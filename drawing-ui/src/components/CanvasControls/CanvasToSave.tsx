@@ -27,18 +27,12 @@ import { useConnectionContext } from "../../context/ConnectionContext";
 
 import { nowUnixTimestamp } from "../../utils";
 import { useInspect } from "../../hooks/useInspect";
+import { useLocation } from "react-router-dom";
 
 type CanvasToSaveProp = {
   enabled: boolean;
 };
-const initialInputValues = {
-  title: { value: "", isReadOnly: false },
-  description: { value: "", isReadOnly: false },
-  minting_price: { value: "", isReadOnly: false },
-  is_private: { value: false, isReadOnly: false },
-  open: { value: 0, isReadOnly: false },
-  contest: { value: 0, isReadOnly: false },
-};
+
 const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const {
     canvas,
@@ -48,7 +42,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     dappState,
     setDappState,
   } = useCanvasContext();
-  const { connectedChain, account, connectedWallet } = useConnectionContext();
+  const { connectedChain, account } = useConnectionContext();
   const { sendInput } = useRollups();
   const { getNoticeInput } = useDrawing();
   const { inspectCall } = useInspect();
@@ -56,6 +50,25 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const [isOpen, setIsOpenModal] = useState(false);
   const [contests, setContests] = useState<[] | ContestType[]>([]);
   const [page, setPage] = useState(1);
+  const location = useLocation();
+  const data = location.state;
+  const initialInputValues = {
+    title: { value: "", isReadOnly: false },
+    description: { value: "", isReadOnly: false },
+    minting_price: {
+      value: data && data.contest ? data.contest.minting_price : "",
+      isReadOnly: data && data.contest ? true : false,
+    },
+    is_private: { value: false, isReadOnly: false },
+    open: {
+      value: data && data.contest ? data.contest.minting_active : "",
+      isReadOnly: data && data.contest ? true : false,
+    },
+    contest: {
+      value: data && data.contest ? data.contest.id : 0,
+      isReadOnly: false,
+    },
+  };
   const [inputValues, setInputValues] =
     useState<DrawingUserInput>(initialInputValues);
   const saveDrawing = async () => {
