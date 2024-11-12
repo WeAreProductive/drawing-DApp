@@ -8,11 +8,11 @@ const Header = () => {
   const { connectedWallet } = useConnectionContext();
 
   return (
-    <div className="flex items-center flex-shrink-0 px-6 h-header">
+    <div className="flex h-header flex-shrink-0 items-center px-6">
       {connectedWallet ? (
         <>
           <Vouchers />
-          <div className="flex items-center gap-2 mx-3 text-sm font-semibold">
+          <div className="mx-3 flex items-center gap-2 text-sm font-semibold">
             <Link to="/browse">Browse Drawings</Link>
             <Link to="/drawing">Draw</Link>
             <Link to="/contests">Contests</Link>
