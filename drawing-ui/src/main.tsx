@@ -8,6 +8,7 @@ import { Toaster } from "./components/ui/sonner";
 import { ConnectionContextProvider } from "./context/ConnectionContext";
 import { CanvasContextProvider } from "./context/CanvasContext";
 import CreateContest from "./views/CreateContest";
+import Contest from "./views/Contest";
 
 const router = createBrowserRouter([
   {
@@ -35,10 +36,22 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "contest/create",
-    element: <CreateContest />,
+    path: "contest",
     errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "create",
+        element: <CreateContest />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: ":contestId",
+        element: <Contest />,
+        errorElement: <ErrorPage />,
+      },
+    ],
   },
+
   {
     path: "/browse",
     element: <Browse />,

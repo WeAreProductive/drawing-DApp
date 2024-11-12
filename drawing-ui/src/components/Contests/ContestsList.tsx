@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useInspect } from "../../hooks/useInspect";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { nowUnixTimestamp } from "../../utils";
-import Contest from "./Contest";
+import ContestBlockLight from "./ContestBlockLight";
 import { ContestType } from "../../shared/types";
 
 // @TODO after save info messages
@@ -95,11 +95,11 @@ const ContestsList = ({ contestType }: { contestType: string }) => {
                 className="last-element w-1/2 p-2"
                 ref={setLastElement}
               >
-                <Contest data={contest} />
+                <ContestBlockLight data={contest} />
               </div>
             ) : (
               <div key={contest.id} className="w-1/2 p-2">
-                <Contest data={contest} />
+                <ContestBlockLight data={contest} />
               </div>
             );
           } catch (e) {
