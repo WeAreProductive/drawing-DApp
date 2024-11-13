@@ -25,6 +25,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     const label = showSteps ? true : false;
     setShowLabel(label);
   };
+
   const parsedDimensions = JSON.parse(dimensions);
   return (
     <div className="rounded-lg border bg-background p-2">
@@ -42,6 +43,11 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       <span className="block text-xs">
         <b>{src.is_private ? "is_private" : "public"}</b>
       </span>
+      {src.contest ? (
+        <span className="block text-xs">contest: {src.contest.title}</span>
+      ) : (
+        ""
+      )}
       <span className="block text-xs">
         {drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"}
       </span>

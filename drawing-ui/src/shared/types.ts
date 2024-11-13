@@ -97,6 +97,7 @@ export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   dimensions: string;
   minting_price: any;
   is_private: 0 | 1;
+  contest?: ContestType;
 }
 export type DrawingUserInput = {
   title: { value: string; isReadOnly: boolean };
