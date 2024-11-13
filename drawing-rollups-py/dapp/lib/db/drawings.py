@@ -55,9 +55,13 @@ def get_raw_data(query_args, type, page = 1):
         offset = get_query_offset(page) 
         # get all drawings where I am the owner(the first painter) or where(I am a contributor and not the owner) 
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
+        statement = statement + "c.title as contest_title, "
         statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE (d.owner LIKE ?) "
         statement = statement + "OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
-        statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )"
+        statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id "
+        statement = statement + "LEFT JOIN contests c "
+        statement = statement + "ON d.contest_id = c.id "
+        statement = statement + "WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )"
         statement = statement + "AND d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?) GROUP BY d.uuid ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
         
         cursor.execute(statement, [owner, owner, owner, owner, owner, owner, limit, offset]) 
