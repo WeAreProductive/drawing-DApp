@@ -114,6 +114,7 @@ export type DrawingInitialData = {
   dimensions: string;
   update_log: UpdateLog;
   userInputData: DrawingUserInput;
+  contest?: ContestType;
 };
 
 export type DrawingObject = { [key: string]: any };

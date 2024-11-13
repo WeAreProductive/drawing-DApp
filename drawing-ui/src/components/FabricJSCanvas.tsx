@@ -30,6 +30,7 @@ const FabricJSCanvas = () => {
   const {
     canvas,
     setDappState,
+    currentDrawingData,
     setCurrentDrawingData,
     setRedoObjectsArr,
     setCurrentDrawingLayer,
@@ -142,10 +143,14 @@ const FabricJSCanvas = () => {
       window.removeEventListener("resize", resizeCanvas);
     };
   }, [canvasWrapperEl.current, canvas]);
-
   return (
-    <div ref={canvasWrapperEl} className="flex justify-center">
-      <div className="shadow-sm bg-card">
+    <div ref={canvasWrapperEl} className="flex flex-col justify-center">
+      {currentDrawingData?.contest ? (
+        <div>Contest: {currentDrawingData.contest.title}</div>
+      ) : (
+        ""
+      )}
+      <div className="bg-card shadow-sm">
         <canvas
           ref={canvasEl}
           width={canvasOptions.canvasWidth}

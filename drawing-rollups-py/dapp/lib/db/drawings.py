@@ -71,8 +71,12 @@ def get_raw_data(query_args, type, page = 1):
       
       case "get_drawing_by_uuid":
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
-        statement = "SELECT id, uuid, owner, dimensions, is_private, title, description, minting_price, closed_at, contest_id"
-        statement = statement + "FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, "
+        statement = statement + "c.title as contest_title "
+        statement = statement + "FROM drawings d "  
+        statement = statement + "LEFT JOIN contests c "  
+        statement = statement + "ON d.contest_id = c.id "  
+        statement = statement + "WHERE d.uuid LIKE ? ORDER BY d.id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall() 
         return rows
@@ -85,7 +89,7 @@ def get_raw_data(query_args, type, page = 1):
         row = cursor.fetchone() 
         return row
       
-      case "get_drawings_by_uuid":
+      case "get_drawings_by_uuid": # voucher images
         uuids = json.loads(query_args[2])
         statement = "SELECT id, uuid, owner, dimensions, is_private, title, description, minting_price, closed_at, last_updated "
         statement = statement + "FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ")"   
