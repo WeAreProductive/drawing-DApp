@@ -17,6 +17,7 @@ import {
   validateInputSize,
   prepareDrawingObjectsArrays,
   hoursToTimestamp,
+  getHoursLeft,
 } from "../../utils";
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
@@ -56,12 +57,12 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     title: { value: "", isReadOnly: false },
     description: { value: "", isReadOnly: false },
     minting_price: {
-      value: data && data.contest ? data.contest.minting_price : "",
+      value: data && data.contest ? data.contest.minting_price : 0,
       isReadOnly: data && data.contest ? true : false,
     },
     is_private: { value: false, isReadOnly: false },
     open: {
-      value: data && data.contest ? data.contest.minting_active : "",
+      value: data && data.contest ? getHoursLeft(data.contest.active_to) : "", // calculate contest active to timestamp - now timestamp and convert the difference in hours
       isReadOnly: data && data.contest ? true : false,
     },
     contest: {

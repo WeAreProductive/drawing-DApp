@@ -154,7 +154,6 @@ const InputDialog = ({
     }
   };
   const handleSwitch = () => {
-    console.log(inputValues.contest.value);
     if (inputValues.contest.value != 0) return;
     // handle switch display
     setSwitch1(!switch1);

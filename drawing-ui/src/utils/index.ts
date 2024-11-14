@@ -319,3 +319,16 @@ export const timestampToDate = (value: number) => {
   const dateTimeComponent = date.utc().format("YYYY-MM-DD HH:mm");
   return `${dateTimeComponent} UTC`;
 };
+
+/**
+ * Time left from now
+ * @param end seconds number
+ * @returns hours number
+ */
+export const getHoursLeft = (end: number) => {
+  const now = nowUnixTimestamp();
+  if (now > end) 0;
+  const secondsLeft = end - now;
+  const hoursLeft = secondsLeft / (60 * 60);
+  return Math.floor(hoursLeft);
+};
