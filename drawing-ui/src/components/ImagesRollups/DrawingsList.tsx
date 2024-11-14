@@ -64,7 +64,6 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
     }
     const data = await inspectCall(queryString);
     const { next_page, drawings } = data;
-    console.log({ drawings });
     setDrawings(drawings);
     setPage(next_page);
     setIsLoading(false);

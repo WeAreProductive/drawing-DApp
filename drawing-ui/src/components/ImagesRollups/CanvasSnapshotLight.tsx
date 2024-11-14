@@ -9,7 +9,6 @@ type CanvasSnapshotLightProp = {
 const CanvasSnapshotLight = ({ data }: CanvasSnapshotLightProp) => {
   if (!data) return;
   const { update_log, dimensions, contest } = data;
-  console.log({ contest });
   const snapShotJson = useMemo(
     () => snapShotJsonfromLog(update_log),
     [update_log],

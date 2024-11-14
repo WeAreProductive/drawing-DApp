@@ -48,10 +48,7 @@ const ContestBlock = ({ contestId }: { contestId: string }) => {
             minting price: {contest.minting_price}{" "}
           </span>
           <span className="block text-xs">
-            Number of drawings:{" "}
-            {contest.drawings && contest.drawings.length > 0
-              ? contest.drawings.length
-              : 0}
+            Number of drawings: {contest.drawings_count}
           </span>
           {/* we know the contest the drawing will be added to - it is in the state */}
           <Link to="/drawing" state={{ contest: contest }}>

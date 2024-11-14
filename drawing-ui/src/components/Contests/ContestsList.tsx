@@ -18,7 +18,6 @@ const ContestsList = ({ contestType }: { contestType: string }) => {
   const [page, setPage] = useState(1);
   const [lastElement, setLastElement] = useState(null);
   const [fetch, setFetch] = useState(false);
-
   const observer = useRef(
     new IntersectionObserver((entries) => {
       const first = entries[0];
