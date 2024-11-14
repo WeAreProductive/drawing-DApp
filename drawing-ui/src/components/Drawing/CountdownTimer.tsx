@@ -34,7 +34,7 @@ const CountdownTimer = () => {
         if (remainingTime <= 0) {
           remainingTime = 0;
           clearInterval(countdownInterval);
-          alert("Countdown complete!");
+          // alert("Countdown complete!");
         }
         const label = formatTime(remainingTime);
         setTimeRemainingLabel(label);

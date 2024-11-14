@@ -12,10 +12,11 @@ type CanvasSnapshotProp = {
 };
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
-  const { owner, uuid, update_log, dimensions } = src;
-  const { drawingIsClosed } = useCanvasControls();
+  const { owner, uuid, update_log, dimensions, closed_at } = src;
+  const { getIsClosedDrawing } = useCanvasControls();
   const [showSteps, setShowSteps] = useState(false);
   const [showLabel, setShowLabel] = useState(true);
+  const drawingIsClosed = getIsClosedDrawing(closed_at);
   const snapShotJson = useMemo(
     () => snapShotJsonfromLog(update_log),
     [update_log],
@@ -25,7 +26,6 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
     const label = showSteps ? true : false;
     setShowLabel(label);
   };
-
   const parsedDimensions = JSON.parse(dimensions);
   return (
     <div className="rounded-lg border bg-background p-2">
@@ -49,7 +49,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         ""
       )}
       <span className="block text-xs">
-        {drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"}
+        {drawingIsClosed ? "Drawing is CLOSED" : "Open for drawing"}
       </span>
       <span
         onClick={handleShowSteps}

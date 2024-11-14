@@ -91,8 +91,12 @@ def get_raw_data(query_args, type, page = 1):
       
       case "get_drawings_by_uuid": # voucher images
         uuids = json.loads(query_args[2])
-        statement = "SELECT id, uuid, owner, dimensions, is_private, title, description, minting_price, closed_at, last_updated "
-        statement = statement + "FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ")"   
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
+        statement = statement + "c.title as contest_title "   
+        statement = statement + "FROM drawings d "   
+        statement = statement + "LEFT JOIN contests c "   
+        statement = statement + "ON d.contest_id = c.id "   
+        statement = statement + "WHERE d.uuid IN (" + ",".join(["?"] * len(uuids)) + ") "   
         cursor.execute(statement, uuids)
         rows = cursor.fetchall() 
         logger.info(f"ROWS BY UUID {rows}")
