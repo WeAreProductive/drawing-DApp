@@ -41,7 +41,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       <span className="block text-xs">Owner: {sliceAccountStr(owner)}</span>
       <span className="block text-xs">ID: {uuid}</span>
       <span className="block text-xs">
-        <b>{src.is_private ? "is_private" : "public"}</b>
+        <b>{src.is_private ? "private" : "public"}</b>
       </span>
       {src.contest ? (
         <span className="block text-xs">contest: {src.contest.title}</span>

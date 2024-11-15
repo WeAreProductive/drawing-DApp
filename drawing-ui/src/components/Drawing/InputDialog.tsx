@@ -117,10 +117,6 @@ const InputDialog = ({
             value: selectedContest[0] ? selectedContest[0].minting_active : 0,
             isReadOnly: selectedContest[0] ? true : false,
           },
-          ["is_private"]: {
-            value: false,
-            isReadOnly: false,
-          },
         });
         setSwitch1(false);
         break;
@@ -154,13 +150,12 @@ const InputDialog = ({
     }
   };
   const handleSwitch = () => {
-    if (inputValues.contest.value != 0) return;
     // handle switch display
     setSwitch1(!switch1);
     // handle isPrivate value
     setInputValues({
       ...inputValues,
-      ["is_private"]: { value: !switch1, isReadOnly: false }, // @TODO
+      ["is_private"]: { value: !switch1, isReadOnly: false },
     });
   };
   const handleInputSend = () => {
