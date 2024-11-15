@@ -6,6 +6,7 @@ import DrawingPreview from "./DrawingPreview";
 import DrawingStepsPreview from "./DrawingStepsPreview";
 import { Layers, MinusCircle } from "lucide-react";
 import { useCanvasControls } from "../../hooks/useCanvasControl";
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
@@ -13,6 +14,7 @@ type CanvasSnapshotProp = {
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { owner, uuid, update_log, dimensions, closed_at } = src;
+  const { account } = useConnectionContext();
   const { getIsClosedDrawing } = useCanvasControls();
   const [showSteps, setShowSteps] = useState(false);
   const [showLabel, setShowLabel] = useState(true);
@@ -49,7 +51,12 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         ""
       )}
       <span className="block text-xs">
-        {drawingIsClosed ? "Drawing is CLOSED" : "Open for drawing"}
+        {!drawingIsClosed &&
+        (!src.is_private ||
+          (src.is_private &&
+            owner.toLowerCase() == account?.toLocaleLowerCase()))
+          ? "Open for drawing"
+          : "Drawing is CLOSED"}
       </span>
       <span
         onClick={handleShowSteps}
