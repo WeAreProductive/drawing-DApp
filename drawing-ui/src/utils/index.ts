@@ -290,9 +290,9 @@ export const dateToTimestamp = (
   let toMoment;
   if (date) {
     if (type == "startOf") {
-      toMoment = moment.utc(date).startOf("day").toString();
+      toMoment = moment(date).startOf("day").toString();
     } else if (type == "endOf") {
-      toMoment = moment.utc(date).endOf("day").toString();
+      toMoment = moment(date).endOf("day").toString();
     } else {
       toMoment = moment(date).format();
     }
@@ -316,7 +316,7 @@ export const nowUnixTimestamp = () => {
  */
 export const timestampToDate = (value: number) => {
   const date = moment(moment.unix(value).toISOString());
-  const dateTimeComponent = date.utc().format("YYYY-MM-DD HH:mm");
+  const dateTimeComponent = date.format("YYYY-MM-DD HH:mm");
   return `${dateTimeComponent} UTC`;
 };
 

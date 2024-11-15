@@ -53,6 +53,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const [page, setPage] = useState(1);
   const location = useLocation();
   const data = location.state;
+  console.log(data?.contest);
   const initialInputValues = {
     title: { value: "", isReadOnly: false },
     description: { value: "", isReadOnly: false },

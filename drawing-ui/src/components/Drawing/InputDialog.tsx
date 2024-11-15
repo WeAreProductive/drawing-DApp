@@ -7,6 +7,7 @@ import { ContestType, DrawingUserInput } from "../../shared/types";
 import { useCanvasContext } from "../../context/CanvasContext";
 import DialogTextinput from "../ui/formDialog/textInput";
 import { SelectInput } from "../ui/formDialog/selectInput";
+import { getHoursLeft } from "../../utils";
 
 const customTheme: CustomFlowbiteTheme["modal"] = {
   root: {
@@ -114,7 +115,9 @@ const InputDialog = ({
             isReadOnly: selectedContest[0] ? true : false,
           },
           ["open"]: {
-            value: selectedContest[0] ? selectedContest[0].minting_active : 0,
+            value: selectedContest[0]
+              ? getHoursLeft(selectedContest[0].active_to)
+              : 0,
             isReadOnly: selectedContest[0] ? true : false,
           },
         });
