@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useContestsContext } from "../../context/ContestContext";
 import { useInspect } from "../../hooks/useInspect";
 import { sliceAccountStr, timestampToDate } from "../../utils";
 import { Link } from "react-router-dom";
@@ -22,6 +21,7 @@ const ContestBlock = ({ contestId }: { contestId: string }) => {
     if (contests && contests.length) setContest(contests[0]); // single contest result
     setLoading(false);
   };
+  console.log({ contest });
   useEffect(() => {
     if (!contestId) return;
     fetchContest();
@@ -54,6 +54,34 @@ const ContestBlock = ({ contestId }: { contestId: string }) => {
           <Link to="/drawing" state={{ contest: contest }}>
             Add drawing to this contest
           </Link>
+          <hr />
+          {contest.mints_statistics
+            ? contest.mints_statistics.map(
+                (
+                  {
+                    uuid,
+                    drawing_title,
+                    mints_count,
+                  }: {
+                    uuid: string;
+                    drawing_title: string;
+                    mints_count: number;
+                  },
+                  idx: number,
+                ) => {
+                  return (
+                    <div key={uuid}>
+                      <span>#{idx + 1} </span>
+                      <span>{drawing_title} </span>
+                      <span>uuid: </span>
+                      <span>{uuid} </span>
+                      <span>mints: </span>
+                      <span> {mints_count ? mints_count : 0}</span>
+                    </div>
+                  );
+                },
+              )
+            : ""}
         </>
       ) : (
         ""

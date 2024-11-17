@@ -87,10 +87,10 @@ def get_raw_data(query_args, query_type, page, timestamp):
         return rows 
       case 'get_contest_by_id':
         print('get_contest_by_id')
-        # 'id': 16, 'created_by': '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 'title': 'test time', 'description': '', 'active_from': '1731621600', 'active_to': '1731794399', 'minting_active': '1', 'minting_price': 1.0,
-        statement = "SELECT c.id, c.created_by, c.title, c.description, c.active_from, c.active_to, c.minting_active, c.minting_price, c.created_at, d.uuid, d.last_updated, "
+        statement = "SELECT c.id, c.created_by, c.title, c.description, c.active_from, c.active_to, c.minting_active, c.minting_price, c.created_at, "
         # statement = "COUNT(d.uuid) as drawings_count, "
-        statement = statement + "d.uuid, m.minter, m.drawing_id, "
+        statement = statement + "d.uuid, d.last_updated, d.title as drawing_title, "
+        statement = statement + "m.minter, m.drawing_id, "
         statement = statement + "COUNT(m.drawing_id) as mints_count, "
         # statement = statement + "COUNT(DISTINCT d.uuid) as drawings_count, "
         statement = statement + "GROUP_CONCAT(m.drawing_id, ',') AS drawings_uuids "
@@ -151,17 +151,18 @@ def get_contests(query_args, query_type, page, timestamp):
         if row_dict['uuid']:
           current_contest['drawings_count'] = len(data_rows)
       for row in data_rows:
-        current = dict(row)
+        current_row = dict(row)
         current_statistics = {}
-        if current.get('mints_count') :
-          current_statistics['mints_count'] = current['mints_count']
-        if current.get('drawing_id') :
-          current_statistics['drawing_id'] = current['drawing_id']
+        if current_row.get('mints_count') :
+          current_statistics['mints_count'] = current_row['mints_count']
+        if current_row.get('uuid') :
+          current_statistics['uuid'] = current_row['uuid']
+        if current_row.get('drawing_title'):
+          current_statistics['drawing_title'] = current_row['drawing_title']
         # ordered by number of mints, then by drawing id
         current_contest['mints_statistics'].append(current_statistics)
       contests.append(current_contest)
     else :
-    
       for row in data_rows:   
         row_dict = dict(row)
         print(f"ROW DICT {row_dict}")
