@@ -29,6 +29,8 @@ def init_sqlite_database():
                 active_to VARCHAR NOT NULL,
                 minting_active VARCHAR NOT NULL,
                 minting_price FLOAT NOT NULL,
+                is_final INTEGER DEFAULT 0,
+                winner VARCHAR,
                 created_at VARCHAR NOT NULL
             )
             """

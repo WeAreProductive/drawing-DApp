@@ -69,6 +69,8 @@ type and timestamp are optional (case get all contests - active, inactice, and f
 
 # /contests/create/{contest_data} query_args: [contests, create, contest_data] `create new contest, contest_data is a json stringified dictionary`
 
+# /manage/contests
+
 # Database
 
 @TODO - describe old tables

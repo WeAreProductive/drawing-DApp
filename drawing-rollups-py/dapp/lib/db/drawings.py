@@ -233,6 +233,7 @@ def get_data(query_args):
     list : drawings data
   """
   page = 1 # default value
+  query_type = ''
   # decide which get-data handler to use 
   if query_args[0] == 'drawings':
     if 'owner' in query_args:
