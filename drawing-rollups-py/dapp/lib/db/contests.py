@@ -31,8 +31,25 @@ def get_raw_data(query_args, query_type, page, timestamp):
     cursor = conn.cursor() 
     # active_from active_to, @TODO count number of contest and pagination has next
     match query_type:
-      case "get_active_contests": 
+      case "get_active_drawing_contests": 
         print("get_active_contests") 
+        # # id, created_by, title, description, active_from, active_to, minting_active, minting_price, created_at from contests
+        # # uuid from drawings  
+        offset = get_query_offset(page)  
+        statement = "SELECT COUNT(d.uuid) as drawings_count, * " 
+        statement = statement + "FROM contests c "
+        statement = statement + "LEFT JOIN drawings d "
+        statement = statement + "ON c.id = d.contest_id "
+        statement = statement + "WHERE c.active_from < ? AND "
+        statement = statement + "c.active_to > ? "
+        statement = statement + "GROUP BY c.id "
+        statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?" 
+        cursor.execute(statement, [timestamp, timestamp, limit, offset]) 
+        rows = cursor.fetchall() 
+        return rows  
+      case "get_active_minting_contests": 
+        # @TODO minting starts after active_to and is = open for minting 
+        print("get_active_minting_contests") 
         # # id, created_by, title, description, active_from, active_to, minting_active, minting_price, created_at from contests
         # # uuid from drawings  
         offset = get_query_offset(page)  
@@ -62,6 +79,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
         rows = cursor.fetchall() 
         return rows  
       case "get_completed_contests":  
+        # @TODO completed are the contests after active_to + minting_open(in seconds)
         print("get_completed_contests") 
         #
         offset = get_query_offset(page)  
@@ -207,8 +225,10 @@ def get_contests(query_args, query_type, page, timestamp):
 # router
 def get_query_type(contest_type):
   match contest_type:
-    case "active": 
-      return "get_active_contests" 
+    case "active-drawing": 
+      return "get_active_drawing_contests" 
+    case "active-minting": 
+      return "get_active_minting_contests" 
     case "future": 
       return "get_future_contests"
     case "completed": 
