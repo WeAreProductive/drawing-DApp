@@ -135,14 +135,14 @@ def handle_advance(data):
                 logger.info(f"DEPOSIT PAYLOAD {str_data}") # @TODO get cmd from here
                 json_data = json.loads(str_data) 
                 
-                is_contest_deposit = is_contest_drawing(json_data['uuid'])
+                is_contest_drawing = is_contest_drawing(json_data['uuid'])
                 # if marked as a contest deposit
                 ## check "uuid":"f7b4e6ff-1c51-4160-a0e6-f0948137325e" belongs to a contest
                 ## modify the payload - add as deposit recipient current dapp address
                 result = hex_to_str(payload[:2])
                 logger.info(f"DECODED payload {result}")
-                deposit_tokens(payload, dapp_wallet_address, is_contest_deposit) 
-                mint_erc721_with_string( msg_sender, json_data, timestamp )
+                deposit_tokens(payload, dapp_wallet_address, is_contest_drawing) 
+                mint_erc721_with_string( msg_sender, json_data, timestamp, is_contest_drawing ) # @TODO handle assets now only if not a contest deposit
         else :
             payload = data["payload"]
             decompressed_payload = decompress(payload)
