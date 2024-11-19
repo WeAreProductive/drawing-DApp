@@ -39,7 +39,7 @@ def get_raw_data(query_args, type, page = 1):
         print("get_all_drawings") 
         offset = get_query_offset(page)  
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
-        statement = statement + "c.title as contest_title, " 
+        statement = statement + "c.id as contest_id, c.title as contest_title, " 
         statement = statement + "count(*) OVER() AS total_rows " 
         statement = statement + "FROM drawings d "
         statement = statement + "LEFT JOIN contests c "
@@ -55,7 +55,7 @@ def get_raw_data(query_args, type, page = 1):
         offset = get_query_offset(page) 
         # get all drawings where I am the owner(the first painter) or where(I am a contributor and not the owner) 
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
-        statement = statement + "c.title as contest_title, "
+        statement = statement + "c.id as contest_id, c.title as contest_title, "
         statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE (d.owner LIKE ?) "
         statement = statement + "OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
         statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id "
@@ -92,7 +92,7 @@ def get_raw_data(query_args, type, page = 1):
       case "get_drawings_by_uuid": # voucher images
         uuids = json.loads(query_args[2])
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
-        statement = statement + "c.title as contest_title "   
+        statement = statement + "c.id as contest_id, c.title as contest_title "   
         statement = statement + "FROM drawings d "   
         statement = statement + "LEFT JOIN contests c "   
         statement = statement + "ON d.contest_id = c.id "   
@@ -195,7 +195,8 @@ def get_drawings(query_args, type, page):
         drawing_contest = {}
         drawing_contest['id'] = row_dict['contest_id']
         drawing_contest['title'] = row_dict['contest_title']
-        drawing_contest['minting_closed_at'] = row_dict['minting_closed_at']
+        if row_dict.get('minting_closed_at'):
+          drawing_contest['minting_closed_at'] = row_dict['minting_closed_at']
         ### add more data if the FE needs it
         current_drawing['contest'] = drawing_contest
 

@@ -13,7 +13,7 @@ type CanvasSnapshotProp = {
 };
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
-  const { owner, uuid, update_log, dimensions, closed_at } = src;
+  const { owner, uuid, update_log, dimensions, closed_at, contest } = src;
   const { account } = useConnectionContext();
   const { getIsClosedDrawing } = useCanvasControls();
   const [showSteps, setShowSteps] = useState(false);
@@ -45,8 +45,8 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       <span className="block text-xs">
         <b>{src.is_private ? "private" : "public"}</b>
       </span>
-      {src.contest ? (
-        <span className="block text-xs">contest: {src.contest.title}</span>
+      {contest ? (
+        <span className="block text-xs">contest: {contest?.title}</span>
       ) : (
         ""
       )}
