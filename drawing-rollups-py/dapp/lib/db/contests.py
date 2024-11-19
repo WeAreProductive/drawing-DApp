@@ -32,9 +32,8 @@ def get_raw_data(query_args, query_type, page, timestamp):
     # active_from active_to, @TODO count number of contest and pagination has next
     match query_type:
       case "get_active_drawing_contests": 
-        print("get_active__drawing_contests") 
-        # # id, created_by, title, description, active_from, active_to, minting_active, minting_price, created_at from contests
-        # # uuid from drawings  
+        print("get_active_drawing_contests") 
+        # contests open for drawing
         offset = get_query_offset(page)  
         statement = "SELECT COUNT(d.uuid) as drawings_count, * " 
         statement = statement + "FROM contests c "
@@ -60,10 +59,8 @@ def get_raw_data(query_args, query_type, page, timestamp):
         statement = statement + "(c.active_to + c.minting_active * 3600) > ? "
         statement = statement + "GROUP BY c.id "
         statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?" 
-        cursor.execute(statement, [int(timestamp), int(timestamp), limit, offset]) 
-        print(statement)
-        rows = cursor.fetchall() 
-        print(rows)
+        cursor.execute(statement, [int(timestamp), int(timestamp), limit, offset])  
+        rows = cursor.fetchall()  
         return rows  
       case "get_future_contests":  
         print("get_future_contests") 
@@ -80,21 +77,20 @@ def get_raw_data(query_args, query_type, page, timestamp):
         rows = cursor.fetchall() 
         return rows  
       case "get_completed_contests":  
-        # @TODO completed are the contests after active_to + minting_open(in seconds)
         print("get_completed_contests") 
-        #
+        # completed are the contests after active_to + minting_open(in seconds)
         offset = get_query_offset(page)  
         statement = "SELECT COUNT(d.uuid) as drawings_count, * "
         statement = statement + "FROM contests c "
         statement = statement + "LEFT JOIN drawings d "
         statement = statement + "ON c.id = d.contest_id "
-        statement = statement + "WHERE c.active_to < ? " 
+        statement = statement + "WHERE c.active_to + c.minting_active * 3600 < ? " 
         statement = statement + "GROUP BY c.id "
         statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?"
-        cursor.execute(statement, [timestamp, limit, offset]) 
+        cursor.execute(statement, [int(timestamp), limit, offset]) 
         rows = cursor.fetchall() 
         return rows 
-      case "get_incompleted_contests": # for drawing save form
+      case "get_incompleted_contests": # for the drawing save form
         print("get_incompleted_contests") 
         #
         offset = get_query_offset(page)  
@@ -107,6 +103,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
         return rows 
       case "get_not_final_contests":
         print('get_not_final_contest')
+        # completed contests byt not yet finalised by the contest manager
         print(timestamp)
         ## get drawings, owners, participants, mints for each contest 
         # improve the query 
@@ -114,11 +111,11 @@ def get_raw_data(query_args, query_type, page, timestamp):
         statement = statement + "FROM contests c "
         statement = statement + "LEFT JOIN drawings d "
         statement = statement + "ON c.id = d.contest_id "
-        statement = statement + "WHERE c.active_to < ? " 
+        statement = statement + "WHERE c.active_to + c.minting_active * 3600 < ? " 
         statement = statement + "AND c.is_final IS 0 " 
         statement = statement + "GROUP BY c.id "
         
-        cursor.execute(statement, [timestamp]) 
+        cursor.execute(statement, [int(timestamp)]) 
         rows = cursor.fetchall() 
         print(statement)
         print(rows)
