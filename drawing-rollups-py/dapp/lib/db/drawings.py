@@ -72,7 +72,7 @@ def get_raw_data(query_args, type, page = 1):
       case "get_drawing_by_uuid":
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, "
-        statement = statement + "c.title as contest_title "
+        statement = statement + "c.id as contest_id, (c.active_to + c.minting_active * 3600) as minting_closed_at, c.title as contest_title "
         statement = statement + "FROM drawings d "  
         statement = statement + "LEFT JOIN contests c "  
         statement = statement + "ON d.contest_id = c.id "  
@@ -190,10 +190,12 @@ def get_drawings(query_args, type, page):
       current_drawing['description'] = row_dict['description']
       current_drawing['minting_price'] = row_dict['minting_price']
       current_drawing['closed_at'] = row_dict['closed_at']
-      if row_dict.get('contest_title'):
+      if row_dict.get('contest_id'):
         #
         drawing_contest = {}
+        drawing_contest['id'] = row_dict['contest_id']
         drawing_contest['title'] = row_dict['contest_title']
+        drawing_contest['minting_closed_at'] = row_dict['minting_closed_at']
         ### add more data if the FE needs it
         current_drawing['contest'] = drawing_contest
 
@@ -322,6 +324,8 @@ def save_data(type, query_args) :
         minting_price = data['userInputData']['minting_price'] 
         open = data['userInputData']['open'] # in hours
         logger.info(f"OPEN {open}")
+        # @TODO if there's a contest id - get this contest active_to and add it 
+        # as drawing closed_at to avoid differences due to Math.floor in the FE
         contest_id = data['userInputData']['contest'] # 0 or number > 0
         #
         timestamp = query_args['timestamp']

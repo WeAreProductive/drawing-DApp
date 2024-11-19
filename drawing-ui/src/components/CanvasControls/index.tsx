@@ -18,7 +18,8 @@ const CanvasControls = ({
   canRedo,
   canDownload,
 }: CanvasControlsProp) => {
-  const { isActiveControl, drawingIsClosed } = useCanvasControls();
+  const { isActiveControl, drawingIsClosed, mintingIsClosed } =
+    useCanvasControls();
   return (
     <div className="flex gap-2">
       {isActiveControl && !drawingIsClosed && (
@@ -28,7 +29,7 @@ const CanvasControls = ({
           <CanvasToSave enabled={enabled} />
         </>
       )}
-      {drawingIsClosed && <CanvasToMint />}
+      {drawingIsClosed && !mintingIsClosed && <CanvasToMint />}
       <CanvasReset />
       <CanvasDownload canDownload={canDownload} />
     </div>
