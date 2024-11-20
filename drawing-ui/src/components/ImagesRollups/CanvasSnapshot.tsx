@@ -16,9 +16,12 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { owner, uuid, update_log, dimensions, closed_at, contest } = src;
   const { account } = useConnectionContext();
   const { getIsClosedDrawing } = useCanvasControls();
+  const { getIsWinner } = useCanvasControls();
   const [showSteps, setShowSteps] = useState(false);
   const [showLabel, setShowLabel] = useState(true);
+  // @TODO optimise using memo or ...
   const drawingIsClosed = getIsClosedDrawing(closed_at);
+  const isWinner = getIsWinner(uuid);
   const snapShotJson = useMemo(
     () => snapShotJsonfromLog(update_log),
     [update_log],
@@ -30,7 +33,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   };
   const parsedDimensions = JSON.parse(dimensions);
   return (
-    <div className="rounded-lg border bg-background p-2">
+    <div className="p-2 border rounded-lg bg-background">
       <Link to={`/drawing/${uuid}`} reloadDocument>
         <div>
           <DrawingPreview
@@ -50,6 +53,13 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
       ) : (
         ""
       )}
+      {isWinner ? (
+        <span className="block text-xs">
+          <b>WINNER</b> in the contest
+        </span>
+      ) : (
+        ""
+      )}
       <span className="block text-xs">
         {!drawingIsClosed &&
         (!src.is_private ||
@@ -58,6 +68,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
           ? "Open for drawing"
           : "Drawing is CLOSED"}
       </span>
+
       <span
         onClick={handleShowSteps}
         className="flex p-1"
