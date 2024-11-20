@@ -7,7 +7,7 @@ import traceback
 import json 
 from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
-from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors, is_contest_drawing
+from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors, check_is_contest_drawing
 from lib.db.contests import create_contest, get_contests_data
 from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdraw_tokens
 from lib.manager.contests import manage_contests
@@ -32,7 +32,7 @@ wallet = Wallet
 ##
 # Core functions 
 
-def mint_erc721_with_string( msg_sender, data, timestamp ):
+def mint_erc721_with_string( msg_sender, data, timestamp, is_contest_drawing ):
     """ Entry function for -
             - preparing data for and requests a MINT NFT voucher.
             - updating drawing contributors balances
@@ -43,6 +43,7 @@ def mint_erc721_with_string( msg_sender, data, timestamp ):
     msg_sender : str
     data : drawing related data
     timestamp : outside cartesi macine's request timestamp
+    is_contest_drawing : boolean 
     
     Raises
     ------
@@ -51,15 +52,12 @@ def mint_erc721_with_string( msg_sender, data, timestamp ):
     -------
         void
     """
-    logger.info(f"Preparing a VOUCHER for MINTING AN NFT {data}")
     # check sender wallet virtual/portal deposited balance ... 
     minter_eth_balance = get_balance(msg_sender)
-    logger.info(f"Minter balance {minter_eth_balance}")
 
     minting_price = to_wei(get_drawing_minting_price(data['uuid']), 'ether') 
-    logger.info(f"Minting price {minting_price}")
 
-    if minting_price <= minter_eth_balance : 
+    if minting_price <= minter_eth_balance or is_contest_drawing: 
         # @TODO - on each step - check success response and proceed
         # 1 - voucher
         mint_header = clean_header( '0xd0def521' )
@@ -70,7 +68,6 @@ def mint_erc721_with_string( msg_sender, data, timestamp ):
             "destination": nft_erc1155_address, 
             "payload": payload
         }
-        logger.info(f"Voucher {voucher}")
         send_voucher(voucher)
         # 2 - notice
         compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
@@ -79,8 +76,9 @@ def mint_erc721_with_string( msg_sender, data, timestamp ):
         send_notice( notice ) 
         # 3 - store minting-voucher data
         store_data(data['cmd'], timestamp, msg_sender, data['uuid'])
-        # 4 - update contributor balances
-        update_creators_balance( data['uuid'], msg_sender, wallet, minting_price )
+        # 4 - update contributor balances unless is a contest drawing
+        if not is_contest_drawing:
+            update_creators_balance( data['uuid'], msg_sender, wallet, minting_price )
     else :
         raise Exception('Not enough balance to execute the operation')
     
@@ -89,10 +87,8 @@ def update_creators_balance( uuid, from_address, wallet, minting_price ):
     participants = get_drawing_contributors( uuid )  
     # 2 calc 10% of the minting price goes for the dApp
     amount_per_dapp = minting_price * 0.1
-    logger.info(f"Amount per the dApp {amount_per_dapp}")
     # 3 calc tokens for each contributor
     amount_per_participant = ( minting_price - amount_per_dapp ) / len(participants) 
-    logger.info(f"Amount per participant {amount_per_participant}")
     # 4 transfer tokens to dApp address
     transfer_tokens(from_address, dapp_wallet_address, amount_per_dapp)
     # 5 transfer tokens to contrinutors
@@ -120,27 +116,21 @@ def handle_advance(data):
     status = "accept"
     payload = None
     sender = data["metadata"]["msg_sender"].lower() 
-    timestamp = data["metadata"]['timestamp'] # outside of the cartesi machine timestamp
-    logger.info(f"METADATA {data['metadata']}") # check, @TODO remove
-    logger.info(f"METADATA {data}") 
+    timestamp = data["metadata"]['timestamp'] # outside of the cartesi machine timestamp 
     try:
         if sender == ether_portal_address.lower() : 
             payload = data["payload"] # payload consists of (1) - message sender, (2) amount to deposit ?, (3) - minting data
             msg_sender = payload[:42] 
-            logger.info(f"Address {msg_sender}")
-            is_contest_deposit = False
+            is_contest_drawing = False
             if len(payload) > 104 : 
                 input_data_2 = payload[104:]
                 str_data = hex_to_str(input_data_2) 
-                logger.info(f"DEPOSIT PAYLOAD {str_data}") # @TODO get cmd from here
                 json_data = json.loads(str_data) 
                 
-                is_contest_drawing = is_contest_drawing(json_data['uuid'])
+                is_contest_drawing = check_is_contest_drawing(json_data['uuid'])
                 # if marked as a contest deposit
                 ## check "uuid":"f7b4e6ff-1c51-4160-a0e6-f0948137325e" belongs to a contest
                 ## modify the payload - add as deposit recipient current dapp address
-                result = hex_to_str(payload[:2])
-                logger.info(f"DECODED payload {result}")
                 deposit_tokens(payload, dapp_wallet_address, is_contest_drawing) 
                 mint_erc721_with_string( msg_sender, json_data, timestamp, is_contest_drawing ) # @TODO handle assets now only if not a contest deposit
         else :
@@ -193,7 +183,9 @@ def handle_inspect(request):
     if query_args[0] == 'balance':
         user_address = query_args[1]
         eth_balance = get_balance(user_address, True)
-        logger.info(f"ETH BALANCE {eth_balance}")
+        eth_balance_dapp = get_balance(dapp_wallet_address, True)
+        logger.info(f"ETH BALANCE CURRENT USER {eth_balance}")
+        logger.info(f"ETH BALANCE DAPP WALLET {eth_balance_dapp}")
         payload = str2hex(str(eth_balance))
         send_report({"payload": payload}) 
     elif query_args[0] == 'contests':
