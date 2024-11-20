@@ -288,9 +288,17 @@ def get_drawing_contributors( uuid ):
   """
   contributors = get_raw_data(uuid, 'get_drawing_contributors')
   return contributors
-def is_contest_drawing(uuid):
-  """
-    Get single drawing by uuid
+def check_is_contest_drawing(uuid):
+  """ Check if the drawing belongs to a contest
+   Parameters
+  ----------
+  uuid : string
+    Drawing uuid
+  Raises
+  ------
+  Returns
+  -------
+    boolean
   """
   drawings = get_raw_data(['', '', uuid], 'get_drawing_by_uuid')
   if drawings:
