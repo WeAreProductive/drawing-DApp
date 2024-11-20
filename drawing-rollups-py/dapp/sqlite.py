@@ -72,7 +72,7 @@ def init_sqlite_database():
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     minter VARCHAR NOT NULL,
                     created_at VARCHAR NOT NULL,
-                    drawing_id INTEGER NOT NULL,
+                    drawing_id VARCHAR NOT NULL,
                     FOREIGN KEY (drawing_id) REFERENCES drawings(id)
                 )
                """
