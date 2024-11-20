@@ -11,6 +11,7 @@ from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get
 from lib.db.contests import create_contest, get_contests_data
 from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdraw_tokens
 from lib.manager.contests import manage_contests
+from config import *
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str 
 from eth_utils import to_wei 
@@ -20,12 +21,6 @@ logger = logging.getLogger(__name__)
 
 rollup_server = environ["ROLLUP_HTTP_SERVER_URL"]
 logger.info(f"HTTP rollup_server url is {rollup_server}")
-
-nft_erc1155_address = '0xb73bDcde8C529A289956B5C9726ecDC4b29309CA' # Simple erc contract address on localhost
-ether_portal_address = "0xFfdbe43d4c855BF7e0f105c400A50857f53AB044" #open(f'./deployments/{network}/EtherPortal.json')
-
-dapp_address_relay_contract = "0xab7528bb862fB57E8A2BCd567a2e929a0Be56a5e" # localhost
-dapp_wallet_address = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8' # 3rd address from the localhost test address list
 
 # wallet py refference https://github.com/jplgarcia/python-wallet/blob/main/dapp.py
 wallet = Wallet

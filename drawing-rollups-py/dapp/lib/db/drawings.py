@@ -1,15 +1,12 @@
 import sqlite3 
 import logging
 import json    
+from config import *
 
 from lib.db.utils import get_closed_at, get_query_offset
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__) 
-
-db_filename = 'drawing.db'  
-
-limit = 8 
     
 def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.

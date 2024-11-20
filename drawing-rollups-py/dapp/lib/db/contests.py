@@ -2,14 +2,10 @@ import sqlite3
 import logging
 import json   
 from lib.db.utils import get_query_offset
+from config import *
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
-
-db_filename = 'drawing.db'  
-
-limit = 8
-contest_minting_price = 1
 
 def get_raw_data(query_args, query_type, page, timestamp):
   """ Executes database query statement.
