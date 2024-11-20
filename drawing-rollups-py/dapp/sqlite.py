@@ -66,6 +66,7 @@ def init_sqlite_database():
                 )
                """
             )
+        # @TODO drawing_id is drawing id not uuid - replace with uuid or fix wherever tis table is used
         cursor.execute(
                 """
                 CREATE TABLE IF NOT EXISTS mints (

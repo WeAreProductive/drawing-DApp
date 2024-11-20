@@ -105,17 +105,17 @@ def get_raw_data(query_args, type, page = 1):
         statement = "SELECT "   
         statement = statement + "d.id as drawing_id, d.uuid, " # concat
         statement = statement + "COUNT(m.drawing_id) as mints_count, "
-        statement = statement + "GROUP_CONCAT(m.minter, ',') AS drawing_minters "
+        statement = statement + "GROUP_CONCAT(m.minter, ',') AS drawing_minters, "
+        statement = statement + "GROUP_CONCAT(l.painter, ',') AS drawing_contributors "
         # statement = statement + "m.minter " # count
         statement = statement + "FROM mints m " 
-        statement = statement + "LEFT JOIN drawings d " 
+        statement = statement + "JOIN drawings d " 
         statement = statement + "ON m.drawing_id = d.uuid " 
-        # statement = statement + "LEFT JOIN mints m " 
-        # statement = statement + "ON l.drawing_id = m.drawing_id " 
+        statement = statement + "JOIN layers l " 
+        statement = statement + "ON l.drawing_id = d.id " 
         statement = statement + "WHERE d.id IN (" + query_args + ") " 
         statement = statement + "GROUP BY d.id "
-        statement = statement + "ORDER BY mints_count DESC" 
-        print(statement)
+        statement = statement + "ORDER BY mints_count DESC"  
         cursor.execute(statement)
         # cursor.execute(statement, [query_args])
         rows = cursor.fetchall() 
@@ -326,14 +326,10 @@ def get_drawings_by_ids(drawings_ids):
   """ Gets drawings by ids to serve the contest manager
   
   """   
-  print(drawings_ids)
   args = drawings_ids.split(',')
   numbers = []
-  print(args)
   for arg in args:
     numbers.append(int(arg))
-  print(numbers)
-
   data = get_raw_data(drawings_ids, 'get_drawings_by_ids')
   return data
 def save_data(type, query_args) :
