@@ -104,10 +104,10 @@ def get_raw_data(query_args, query_type, page, timestamp):
       case "get_not_final_contests":
         print('get_not_final_contest')
         # completed contests byt not yet finalised by the contest manager
-        print(timestamp)
         ## get drawings, owners, participants, mints for each contest 
         # improve the query 
-        statement = "SELECT c.id, c.minting_price, d.id, d.owner "
+        statement = "SELECT c.id, c.minting_price, "
+        statement = statement + "GROUP_CONCAT(d.id, ',') AS drawings_ids "
         statement = statement + "FROM contests c "
         statement = statement + "LEFT JOIN drawings d "
         statement = statement + "ON c.id = d.contest_id "
@@ -247,8 +247,7 @@ def get_contests_data(query_args):
     list : contest data
   """
   page = 1 # default value
-  timestamp = 0 # default value
-  logger.info(f"CONTESTS {query_args}")
+  timestamp = 0 # default value 
   # decide which get-data handler to use 
   if query_args[0] == 'contests':
       # paginated, expects 3 elements in query_args
@@ -276,8 +275,7 @@ def get_contests_data(query_args):
         query_type = 'get_contest_by_id'
 
             
-  contests = get_contests(query_args, query_type, page, timestamp) 
-  logger.info(f"CONTESTS {contests}")
+  contests = get_contests(query_args, query_type, page, timestamp)  
   return json.dumps(contests)
 
 # store data
@@ -290,14 +288,12 @@ def create_contest(data):
     created_by = contest['created_by']
     created_at = contest['created_at']
     #
-    contest_data = contest['data']
-    logger.info(f"Contest data {contest_data}")
+    contest_data = contest['data'] 
     title = contest_data['title']
     description = contest_data['description']
     active_from = contest_data['active_from']
     active_to = contest_data['active_to']
-    minting_active = contest_data['minting_active'] 
-    logger.info(f"DATA {contest}")
+    minting_active = contest_data['minting_active']   
     cursor.execute(
         """
         INSERT INTO contests(created_by, title, description, minting_price, active_from, active_to, minting_active, created_at)
