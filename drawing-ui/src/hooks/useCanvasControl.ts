@@ -17,8 +17,8 @@ export const useCanvasControls = () => {
     const unixTimestampNow = nowUnixTimestamp();
     return Number(closedAtTimestamp) <= unixTimestampNow;
   };
-  const getIsWinner = (uuid: string) => {
-    if (!currentDrawingData?.contest) return;
+  const getIsWinner = (uuid: string | undefined) => {
+    if (!currentDrawingData?.contest || !uuid) return;
     return currentDrawingData?.contest.winner == uuid;
   };
   useEffect(() => {

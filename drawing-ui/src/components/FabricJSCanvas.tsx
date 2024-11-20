@@ -7,6 +7,7 @@ import { useInspect } from "../hooks/useInspect";
 import { useParams } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useCanvasControls } from "../hooks/useCanvasControl";
 
 const FabricJSCanvas = () => {
   const canvasWrapperEl = useRef<HTMLDivElement>(null);
@@ -27,6 +28,8 @@ const FabricJSCanvas = () => {
   };
   const { inspectCall } = useInspect();
   const { uuid } = useParams();
+  const { getIsWinner } = useCanvasControls();
+  const isWinner = getIsWinner(uuid); // @TODO optimise with memo or ....
   const {
     canvas,
     setDappState,
@@ -145,12 +148,22 @@ const FabricJSCanvas = () => {
   }, [canvasWrapperEl.current, canvas]);
   return (
     <div ref={canvasWrapperEl} className="flex flex-col justify-center">
-      {currentDrawingData?.contest ? (
-        <div>Contest: {currentDrawingData.contest.title}</div>
-      ) : (
-        ""
-      )}
-      <div className="bg-card shadow-sm">
+      <div className="flex justify-between">
+        {currentDrawingData?.contest ? (
+          <div>Contest: {currentDrawingData.contest.title}</div>
+        ) : (
+          ""
+        )}
+        {isWinner ? (
+          <div>
+            <b>WINNER</b> in the contest
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+
+      <div className="shadow-sm bg-card">
         <canvas
           ref={canvasEl}
           width={canvasOptions.canvasWidth}
