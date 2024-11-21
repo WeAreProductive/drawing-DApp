@@ -130,7 +130,6 @@ const ContestCreateInput = () => {
   const createContest = async () => {
     console.warn("CONTEST :: Creating new contest ...");
     const unixTimestamp = nowUnixTimestamp();
-    console.log(inputValues.active_from);
     const contest_data = {
       data: {
         ...inputValues,
@@ -160,11 +159,11 @@ const ContestCreateInput = () => {
   };
   return (
     <div>
-      <div className="space-y-6 bg-card p-10">
+      <div className="p-10 space-y-6 bg-card">
         <h3 className="text-xl font-medium text-gray-900 dark:text-white">
           Create contest
         </h3>
-        <div className="my-2 flex flex-col">
+        <div className="flex flex-col my-2">
           <Label
             htmlFor="title"
             value="Contest title"
@@ -181,7 +180,7 @@ const ContestCreateInput = () => {
             validation={fieldValidation.title}
           />
         </div>
-        <div className="my-2 flex flex-col">
+        <div className="flex flex-col my-2">
           <Label
             htmlFor="description"
             value="Contest description(optional)"
@@ -203,7 +202,7 @@ const ContestCreateInput = () => {
             value="Contest is active"
             color={fieldValidation.active_from.valid ? "" : "failure"}
           />
-          <div className="m-2 flex gap-2">
+          <div className="flex gap-2 m-2">
             <div>
               <Label
                 value="from"
@@ -231,7 +230,7 @@ const ContestCreateInput = () => {
             </div>
           </div>
         </div>
-        <div className="m-2 flex flex-col">
+        <div className="flex flex-col m-2">
           <Label
             htmlFor="minting_active"
             value="Minting is active for"
@@ -249,7 +248,7 @@ const ContestCreateInput = () => {
             isReadonly={false}
           />
         </div>
-        <div className="m-2 flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 m-2">
           <Button color="blue" onClick={handleReset}>
             Reset
           </Button>

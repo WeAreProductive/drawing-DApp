@@ -21,13 +21,12 @@ const ContestBlock = ({ contestId }: { contestId: string }) => {
     if (contests && contests.length) setContest(contests[0]); // single contest result
     setLoading(false);
   };
-  console.log({ contest });
   useEffect(() => {
     if (!contestId) return;
     fetchContest();
   }, [contestId]);
   return (
-    <div className="rounded-lg border bg-background p-2">
+    <div className="p-2 border rounded-lg bg-background">
       {contest ? (
         <>
           <span className="block text-xs">{contest.title}</span>

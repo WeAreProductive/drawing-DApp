@@ -33,7 +33,7 @@ def get_raw_data(query_args, type, page = 1):
     cursor = conn.cursor() 
     match type:
       case "get_all_drawings": 
-        print("get_all_drawings") 
+        logger.info("get_all_drawings") 
         offset = get_query_offset(page)  
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
         statement = statement + "c.id as contest_id, c.title as contest_title, " 
@@ -63,7 +63,6 @@ def get_raw_data(query_args, type, page = 1):
         
         cursor.execute(statement, [owner, owner, owner, owner, owner, owner, limit, offset]) 
         rows = cursor.fetchall()
-        logger.info(f"get MINE drawings ROWS {rows}")
         return rows
       
       case "get_drawing_by_uuid":
@@ -73,7 +72,9 @@ def get_raw_data(query_args, type, page = 1):
         statement = statement + "FROM drawings d "  
         statement = statement + "LEFT JOIN contests c "  
         statement = statement + "ON d.contest_id = c.id "  
-        statement = statement + "WHERE d.uuid LIKE ? ORDER BY d.id DESC LIMIT 1"  
+        statement = statement + "WHERE d.uuid LIKE ? "  
+        statement = statement + "GROUP BY d.id "  
+        statement = statement + "ORDER BY d.id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall() 
         return rows
@@ -127,19 +128,23 @@ def get_raw_data(query_args, type, page = 1):
         statement = "SELECT painter, drawing_objects, dimensions FROM layers WHERE drawing_id = ?"   
         cursor.execute(statement, [query_args])
         rows = cursor.fetchall() 
-        logger.info(f"get MINE drawings ROWS {rows}")
         return rows
       
       case 'get_drawing_contributors':
         logger.info(f"get drawing contributors {query_args}")  
         
         statement = "SELECT DISTINCT(l.painter) FROM layers l LEFT JOIN drawings d "
-        statement = statement + " on l.drawing_id = d.id WHERE d.uuid = ?"   
-        
+        statement = statement + " on l.drawing_id = d.id WHERE d.uuid = ?"     
         cursor.execute(statement, [query_args])
         rows = cursor.fetchall()   
         return rows
-
+      case 'get_drawing_minters':
+        logger.info(f"Get drawing minters :: drawing uuid {query_args}")
+        statement = "SELECT minter FROM mints m "
+        statement = statement + " WHERE m.drawing_id = ?"     
+        cursor.execute(statement, [query_args])
+        rows = cursor.fetchall()   
+        return rows
 
   except Exception as e: 
     msg = f"Error executing statement: {e}" 
@@ -166,6 +171,7 @@ def get_drawing_layers(id) :
 
 def get_drawings(query_args, type, page):
   """ Retrieves requested drawings data.
+      Serves data to inspect requests.
   Parameters
   ----------
   query_args : list
@@ -200,6 +206,7 @@ def get_drawings(query_args, type, page):
       current_drawing['description'] = row_dict['description']
       current_drawing['minting_price'] = row_dict['minting_price']
       current_drawing['closed_at'] = row_dict['closed_at']
+      # shape drawing contest data if any
       if row_dict.get('contest_id'):
         #
         drawing_contest = {}
@@ -209,6 +216,8 @@ def get_drawings(query_args, type, page):
           drawing_contest['minting_closed_at'] = row_dict['minting_closed_at']
         if row_dict.get('winner'):
           drawing_contest['winner'] = row_dict['winner']
+        minters = get_drawing_minters(row_dict['uuid'])
+        drawing_contest['minters'] = minters
         ### add more data if the FE needs it
         current_drawing['contest'] = drawing_contest
 
@@ -332,6 +341,25 @@ def get_drawings_by_ids(drawings_ids):
     numbers.append(int(arg))
   data = get_raw_data(drawings_ids, 'get_drawings_by_ids')
   return data
+# @TODO replace uuid with id! 
+# its wrong in the mints table must be ids saved not uuids!!
+def get_drawing_minters(uuid):
+  """ Retrieves minters for the given drawing
+  Parameters
+  ----------
+  Raises
+  ----------
+  Returns
+  ----------
+  list: of minters addresses
+  """
+  minters = []
+  minters_data = get_raw_data(uuid, 'get_drawing_minters')
+  for data in minters_data:
+    minter = dict(data)
+    minters.append(minter['minter'])
+  return minters
+
 def save_data(type, query_args) :
   """ Executes database insert and update query statement.
   Parameters
@@ -441,8 +469,6 @@ def save_data(type, query_args) :
   finally:
     if conn:
       conn.close()
-
-
 
 def store_data(cmd, timestamp, sender, data): 
   """ Routes dra.
