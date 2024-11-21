@@ -327,7 +327,7 @@ def check_is_contest_drawing(uuid):
     logger.info(f"DRAWING {drawing}")
     if drawing.get('contest_id'):
       logger.info(f"CONTEST DRAWING")
-      return True # is acontest drawing
+      return True # is a contest drawing
     else :
       logger.info(f"NOT CONTEST DRAWING")
       return False
@@ -359,6 +359,20 @@ def get_drawing_minters(uuid):
     minter = dict(data)
     minters.append(minter['minter'])
   return minters
+# @TODO replace uuid with id! 
+# its wrong in the mints table must be ids saved not uuids!!
+def is_in_drawing_minters_list(uuid, address):
+  """Checks if the given address was minted the drawing before
+  Parameters
+  ----------
+  Raises
+  ----------
+  Returns
+  ----------
+  boolean
+  """
+  minters = get_drawing_minters(uuid)
+  return address.lower() in minters
 
 def save_data(type, query_args) :
   """ Executes database insert and update query statement.

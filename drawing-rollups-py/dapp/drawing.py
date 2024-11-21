@@ -7,7 +7,7 @@ import traceback
 import json 
 from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
-from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors, check_is_contest_drawing
+from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors, check_is_contest_drawing, is_in_drawing_minters_list
 from lib.db.contests import create_contest, get_contests_data
 from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdraw_tokens
 from lib.manager.contests import manage_contests
@@ -121,13 +121,23 @@ def handle_advance(data):
                 input_data_2 = payload[104:]
                 str_data = hex_to_str(input_data_2) 
                 json_data = json.loads(str_data) 
-                
+                can_mint_and_deposit = False
+                # check 1
                 is_contest_drawing = check_is_contest_drawing(json_data['uuid'])
-                # if marked as a contest deposit
-                ## check "uuid":"f7b4e6ff-1c51-4160-a0e6-f0948137325e" belongs to a contest
-                ## modify the payload - add as deposit recipient current dapp address
-                deposit_tokens(payload, dapp_wallet_address, is_contest_drawing) 
-                mint_erc721_with_string( msg_sender, json_data, timestamp, is_contest_drawing ) # @TODO handle assets now only if not a contest deposit
+                if is_contest_drawing:
+                    # check 2 - msg_sender is not in the drawing minters list
+                    in_minters_list =  is_in_drawing_minters_list(json_data['uuid'], msg_sender)
+                    if not in_minters_list:
+                        # address can mint only once per a contest drawing
+                        can_mint_and_deposit = True 
+                else:
+                    # no restrictions when it is not a contest drawing drawing
+                    can_mint_and_deposit = True
+                if can_mint_and_deposit:
+                    deposit_tokens(payload, dapp_wallet_address, is_contest_drawing) 
+                    mint_erc721_with_string( msg_sender, json_data, timestamp, is_contest_drawing ) 
+                else: 
+                    raise Exception('Not allowed to mint and deposit tokens')
         else :
             payload = data["payload"]
             decompressed_payload = decompress(payload)
@@ -174,11 +184,10 @@ def handle_inspect(request):
     query_str = hex2str(request['payload'])
     logger.info(f"Received inspect request data {query_str}")
     query_args = query_str.split('/')
-    logger.info(f"REQUEST {request}")
     if query_args[0] == 'balance':
         user_address = query_args[1]
-        eth_balance = get_balance(user_address, True)
-        eth_balance_dapp = get_balance(dapp_wallet_address, True)
+        eth_balance = get_balance(user_address.lower(), True)
+        eth_balance_dapp = get_balance(dapp_wallet_address.lower(), True)
         logger.info(f"ETH BALANCE CURRENT USER {eth_balance}")
         logger.info(f"ETH BALANCE DAPP WALLET {eth_balance_dapp}")
         payload = str2hex(str(eth_balance))
@@ -197,7 +206,6 @@ def handle_inspect(request):
             send_report({"payload": payload})  
     else :
         data = get_data(query_args)
-        logger.info(f"DATA before report {data}")
         compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
         # uint8array to hex
         payload = binary2hex(compressed)  
