@@ -8,8 +8,8 @@ from lib.db.test_data import *
 from lib.db.utils import get_closed_at, get_query_offset
 
 logging.basicConfig(level="INFO")
-logger = logging.getLogger(__name__) 
-    
+logger = logging.getLogger(__name__)  
+
 def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.
   Parameters
@@ -377,7 +377,7 @@ def is_in_drawing_minters_list(uuid, address):
   minters = get_drawing_minters(uuid)
   return address.lower() in minters
 
-def save_data(type, query_args) :
+def save_data(type, query_args, counter=1) :
   """ Executes database insert and update query statement.
   Parameters
   ----------
@@ -404,7 +404,7 @@ def save_data(type, query_args) :
         # "data": data, "timestamp": timestamp}
         # data = query_args['data']
         # uuid = data['uuid']
-        uuid = UUID
+        uuid = UUID + '-' + str(counter)
         # owner = data['owner']
         owner = OWNER
         # dimensions = json.dumps(data['dimensions']) 
@@ -506,7 +506,7 @@ def save_data(type, query_args) :
     if conn:
       conn.close()
 
-def store_data(cmd, timestamp, sender, data): 
+def store_data(cmd, timestamp, sender, data, counter): 
   """ Routes dra.
   Parameters
   ----------
@@ -522,7 +522,7 @@ def store_data(cmd, timestamp, sender, data):
   # prepare data
   if cmd == 'cd' : 
     logger.info(f"Create drawing") 
-    id = save_data('create_drawing',{"data": data, "timestamp": timestamp})
+    id = save_data('create_drawing',{"data": data, "timestamp": timestamp}, counter)
     save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp})  
     logger.info(f"CREATE DRAWING DATA ID {id}")
   elif cmd == 'ud' :

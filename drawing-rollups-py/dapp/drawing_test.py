@@ -218,15 +218,18 @@ handlers = {
 
 finish = {"status": "accept"}
 rollup_address = None
+counter = 0
 
 while True:
     logger.info("Sending finish")
-    response = requests.post(rollup_server + "/finish", json=finish)
-    logger.info(f"Received finish status {response.status_code}") 
-    # store_data('cd', 'timestamp','sender', 'data')
-    if response.status_code == 202:
-        logger.info("No pending rollup request, trying again")
-    else:
-        rollup_request = response.json() 
-        handler = handlers[rollup_request["request_type"]]
-        finish["status"] = handler(rollup_request["data"])
+    # response = requests.post(rollup_server + "/finish", json=finish)
+    # logger.info(f"Received finish status {response.status_code}") 
+    counter = counter+1
+    if counter < 300001:
+        store_data('cd', 'timestamp','sender', 'data', counter)
+    # if response.status_code == 202:
+    #     logger.info("No pending rollup request, trying again")
+    # else:
+    #     rollup_request = response.json() 
+    #     handler = handlers[rollup_request["request_type"]]
+    #     finish["status"] = handler(rollup_request["data"])

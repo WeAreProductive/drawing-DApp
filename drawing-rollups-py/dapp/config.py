@@ -7,4 +7,4 @@ dapp_wallet_address = '0x70997970C51812dc3A010C7d01b50e0d17dc79C8' # 3rd address
 db_filename = 'drawing.db'  
 # results pagination
 limit = 8
-contest_minting_price = 1
+contest_minting_price = 1 
