@@ -404,7 +404,7 @@ def save_data(type, query_args, counter=1) :
         # "data": data, "timestamp": timestamp}
         # data = query_args['data']
         # uuid = data['uuid']
-        uuid = UUID + '-' + str(counter)
+        uuid = str(counter)
         # owner = data['owner']
         owner = OWNER
         # dimensions = json.dumps(data['dimensions']) 
@@ -428,12 +428,13 @@ def save_data(type, query_args, counter=1) :
         # contest_id = data['userInputData']['contest'] # 0 or number > 0
         #
         # timestamp = query_args['timestamp']
+        timestamp = int(CREATED_AT)+counter
         # created_at = timestamp
-        created_at = CREATED_AT
+        created_at = timestamp
         # closed_at = get_closed_at(timestamp, open) 
-        closed_at = CREATED_AT
+        closed_at = timestamp
         # last_updated = timestamp
-        last_updated = CREATED_AT
+        last_updated = timestamp
         cursor.execute(
             """
             INSERT INTO drawings(uuid, owner, dimensions, is_private, title, description, minting_price, created_at, closed_at, last_updated, contest_id)
@@ -457,7 +458,8 @@ def save_data(type, query_args, counter=1) :
         dimensions = DIMENSIONS 
         
         # now = query_args['timestamp']
-        now = CREATED_AT
+        now = int(CREATED_AT)+counter
+        print(f"NOW {now}")
         
         sender = OWNER
         # sender = query_args['sender']
@@ -523,7 +525,7 @@ def store_data(cmd, timestamp, sender, data, counter):
   if cmd == 'cd' : 
     logger.info(f"Create drawing") 
     id = save_data('create_drawing',{"data": data, "timestamp": timestamp}, counter)
-    save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp})  
+    save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}, counter)  
     logger.info(f"CREATE DRAWING DATA ID {id}")
   elif cmd == 'ud' :
     logger.info(f"Update drawing") 
