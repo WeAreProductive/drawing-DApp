@@ -78,6 +78,15 @@ def init_sqlite_database():
                 )
                """
             )
+        
+        # SQL to create an index on the "name" column and execute the query
+        cursor.execute("CREATE INDEX idx_drawings_uuid ON drawings(uuid);")
+        cursor.execute("CREATE INDEX idx_drawings_last_updated ON drawings(last_updated);")
+        cursor.execute("CREATE INDEX idx_drawings_owner ON drawings(owner);")
+        cursor.execute("CREATE INDEX idx_layers_drawing_id ON layers(drawing_id);")
+        cursor.execute("CREATE INDEX idx_layers_painter ON layers(painter);")
+        cursor.execute("CREATE INDEX idx_drawings_contest_id ON drawings(contest_id);")
+
         conn.commit()
         print('Database created successfully!')
     except sqlite3.Error as e:

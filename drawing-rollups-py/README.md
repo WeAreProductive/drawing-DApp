@@ -108,3 +108,7 @@ active_to `same as active_from(timestamp)` `can create and contribute to existin
 minting_active `period for minting after active_to ends, set in Hours in FE and converted to seconds(timestamp)`
 (contest) minting_price ? hardcoded, visible st FE?
 created_at `timestamp when the record is created`
+
+<!--
+@TODO
+CREATE INDEX idx_layers_drawing_id ON layers(drawing_id); -->

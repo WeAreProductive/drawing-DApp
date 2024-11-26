@@ -3,13 +3,12 @@ import logging
 import json
 import zlib    
 from config import *
-from lib.db.test_data import *
 
 from lib.db.utils import get_closed_at, get_query_offset
 
 logging.basicConfig(level="INFO")
-logger = logging.getLogger(__name__)  
-
+logger = logging.getLogger(__name__) 
+    
 def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.
   Parameters
@@ -32,7 +31,17 @@ def get_raw_data(query_args, type, page = 1):
   try :
     conn = sqlite3.connect(db_filename) 
     conn.row_factory = sqlite3.Row # receive named results
-    cursor = conn.cursor() 
+    cursor = conn.cursor()  
+    # Get current journal mode
+   
+    cursor.execute("PRAGMA cache_size = 10000;")
+    cursor.execute("PRAGMA optimize;")
+    # checks
+    cursor.execute("PRAGMA journal_size_limit;")
+    print(f"journal_size_limit: {cursor.fetchone()[0]}")
+    cursor.execute("PRAGMA synchronous;")
+    print(f"synchronous: {cursor.fetchone()[0]}")
+
     match type:
       case "get_all_drawings": 
         logger.info("get_all_drawings") 
@@ -44,14 +53,17 @@ def get_raw_data(query_args, type, page = 1):
         statement = statement + "LEFT JOIN contests c "
         statement = statement + "ON d.contest_id = c.id  "
         statement = statement + "ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
+        print(f"Staement {statement}")
         cursor.execute(statement, [limit, offset]) 
         rows = cursor.fetchall() 
+        print(f"ROWS All {rows}")
         return rows
 
       case "get_drawings_by_owner":
         logger.info(f"get_drawings_by_owner {query_args[2]}")
         owner = query_args[2] 
         offset = get_query_offset(page) 
+        # SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, c.id as contest_id, c.title as contest_title, (select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE (d.owner LIKE '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266') OR (l.painter LIKE '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' AND d.owner NOT LIKE '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266')) as total_rows FROM layers l INNER JOIN drawings d on l.drawing_id = d.id LEFT JOIN contests c ON d.contest_id = c.id WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )AND d.owner LIKE '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' OR (l.painter LIKE '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266' AND d.owner NOT LIKE '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266') GROUP BY d.uuid ORDER BY d.last_updated DESC LIMIT 8 OFFSET 0
         # get all drawings where I am the owner(the first painter) or where(I am a contributor and not the owner) 
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
         statement = statement + "c.id as contest_id, c.title as contest_title, "
@@ -62,9 +74,10 @@ def get_raw_data(query_args, type, page = 1):
         statement = statement + "ON d.contest_id = c.id "
         statement = statement + "WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )"
         statement = statement + "AND d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?) GROUP BY d.uuid ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
-        
+        print(f"STatement MINE DRAWINGS {statement}")
         cursor.execute(statement, [owner, owner, owner, owner, owner, owner, limit, offset]) 
         rows = cursor.fetchall()
+        print(f"ROWS mine {rows}")
         return rows
       
       case "get_drawing_by_uuid":
@@ -98,7 +111,8 @@ def get_raw_data(query_args, type, page = 1):
         statement = statement + "ON d.contest_id = c.id "   
         statement = statement + "WHERE d.uuid IN (" + ",".join(["?"] * len(uuids)) + ") "   
         cursor.execute(statement, uuids)
-        rows = cursor.fetchall()  
+        rows = cursor.fetchall() 
+        logger.info(f"ROWS BY UUID {rows}")
         return rows
 
       case "get_drawings_by_ids": 
@@ -169,7 +183,7 @@ def get_drawing_layers(id) :
       current_log['drawing_objects'] = decompressed_drawing_objects.decode("utf-8")
       current_log['dimensions'] = row['dimensions']
 
-      update_log.append(current_log)
+      update_log.append(current_log) 
   return update_log
 
 def get_drawings(query_args, type, page):
@@ -377,7 +391,7 @@ def is_in_drawing_minters_list(uuid, address):
   minters = get_drawing_minters(uuid)
   return address.lower() in minters
 
-def save_data(type, query_args, counter=1) :
+def save_data(type, query_args) :
   """ Executes database insert and update query statement.
   Parameters
   ----------
@@ -402,38 +416,26 @@ def save_data(type, query_args, counter=1) :
     match type:
       case "create_drawing": 
         # "data": data, "timestamp": timestamp}
-        # data = query_args['data']
-        # uuid = data['uuid']
-        uuid = str(counter)
-        # owner = data['owner']
-        owner = OWNER
-        # dimensions = json.dumps(data['dimensions']) 
-        dimensions = DIMENSIONS 
+        data = query_args['data']
+        uuid = data['uuid']
+        owner = data['owner']
+        dimensions = json.dumps(data['dimensions']) 
         # user input data
         is_private = 0
-        # if data['userInputData']['is_private'] == True:
-        #   is_private= 1
-        # title = data['userInputData']['title']
-        title = 'Title'
-        # description = data['userInputData']['description']
-        description = 'Description'
-        # minting_price = data['userInputData']['minting_price'] 
-        minting_price = 1 
-        # open = data['userInputData']['open'] # in hours
-        open = 12
+        if data['userInputData']['is_private'] == True:
+          is_private= 1
+        title = data['userInputData']['title']
+        description = data['userInputData']['description']
+        minting_price = data['userInputData']['minting_price'] 
+        open = data['userInputData']['open'] # in hours
         logger.info(f"OPEN {open}")
         # @TODO if there's a contest id - get this contest active_to and add it 
         # as drawing closed_at to avoid differences due to Math.floor in the FE
-        contest_id = 0
-        # contest_id = data['userInputData']['contest'] # 0 or number > 0
+        contest_id = data['userInputData']['contest'] # 0 or number > 0
         #
-        # timestamp = query_args['timestamp']
-        timestamp = int(CREATED_AT)+counter
-        # created_at = timestamp
+        timestamp = query_args['timestamp']
         created_at = timestamp
-        # closed_at = get_closed_at(timestamp, open) 
-        closed_at = timestamp
-        # last_updated = timestamp
+        closed_at = get_closed_at(timestamp, open) 
         last_updated = timestamp
         cursor.execute(
             """
@@ -448,21 +450,13 @@ def save_data(type, query_args, counter=1) :
         return id
       case "store_drawing_layer":
         # {"id": id, "sender": sender, "data": data, "timestamp": timestamp}
-        # data = query_args['data']
-        # parsed_drawing = json.loads(data['drawing'])
-        # content_1 = json.dumps(parsed_drawing['content'])
-        content_1 = CONTENT_1
-        content = zlib.compress(bytes(content_1, "utf-8")
-                                ) 
-        # dimensions = json.dumps(data['dimensions']) 
-        dimensions = DIMENSIONS 
-        
-        # now = query_args['timestamp']
-        now = int(CREATED_AT)+counter
-        print(f"NOW {now}")
-        
-        sender = OWNER
-        # sender = query_args['sender']
+        data = query_args['data']
+        parsed_drawing = json.loads(data['drawing'])
+        content_1 = json.dumps(parsed_drawing['content'])
+        content = zlib.compress(bytes(content_1, "utf-8")) 
+        dimensions = json.dumps(data['dimensions']) 
+        now = query_args['timestamp']
+        sender = query_args['sender']
         id = query_args['id']
 
         cursor.execute(
@@ -508,7 +502,7 @@ def save_data(type, query_args, counter=1) :
     if conn:
       conn.close()
 
-def store_data(cmd, timestamp, sender, data, counter): 
+def store_data(cmd, timestamp, sender, data): 
   """ Routes dra.
   Parameters
   ----------
@@ -524,8 +518,9 @@ def store_data(cmd, timestamp, sender, data, counter):
   # prepare data
   if cmd == 'cd' : 
     logger.info(f"Create drawing") 
-    id = save_data('create_drawing',{"data": data, "timestamp": timestamp}, counter)
-    save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}, counter)  
+    id = save_data('create_drawing',{"data": data, "timestamp": timestamp})
+    save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}) 
+    logger.info(f"CREATE DRAWING DATA {data}")
     logger.info(f"CREATE DRAWING DATA ID {id}")
   elif cmd == 'ud' :
     logger.info(f"Update drawing") 

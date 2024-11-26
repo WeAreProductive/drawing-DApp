@@ -3,12 +3,13 @@ import logging
 import json
 import zlib    
 from config import *
+from lib.db.test_data import *
 
 from lib.db.utils import get_closed_at, get_query_offset
 
 logging.basicConfig(level="INFO")
-logger = logging.getLogger(__name__) 
-    
+logger = logging.getLogger(__name__)  
+
 def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.
   Parameters
@@ -97,8 +98,7 @@ def get_raw_data(query_args, type, page = 1):
         statement = statement + "ON d.contest_id = c.id "   
         statement = statement + "WHERE d.uuid IN (" + ",".join(["?"] * len(uuids)) + ") "   
         cursor.execute(statement, uuids)
-        rows = cursor.fetchall() 
-        logger.info(f"ROWS BY UUID {rows}")
+        rows = cursor.fetchall()  
         return rows
 
       case "get_drawings_by_ids": 
@@ -169,7 +169,7 @@ def get_drawing_layers(id) :
       current_log['drawing_objects'] = decompressed_drawing_objects.decode("utf-8")
       current_log['dimensions'] = row['dimensions']
 
-      update_log.append(current_log) 
+      update_log.append(current_log)
   return update_log
 
 def get_drawings(query_args, type, page):
@@ -377,7 +377,7 @@ def is_in_drawing_minters_list(uuid, address):
   minters = get_drawing_minters(uuid)
   return address.lower() in minters
 
-def save_data(type, query_args) :
+def save_data(type, query_args, counter=1) :
   """ Executes database insert and update query statement.
   Parameters
   ----------
@@ -402,26 +402,38 @@ def save_data(type, query_args) :
     match type:
       case "create_drawing": 
         # "data": data, "timestamp": timestamp}
-        data = query_args['data']
-        uuid = data['uuid']
-        owner = data['owner']
-        dimensions = json.dumps(data['dimensions']) 
+        # data = query_args['data']
+        # uuid = data['uuid']
+        uuid = str(counter)
+        # owner = data['owner']
+        owner = OWNER
+        # dimensions = json.dumps(data['dimensions']) 
+        dimensions = DIMENSIONS 
         # user input data
         is_private = 0
-        if data['userInputData']['is_private'] == True:
-          is_private= 1
-        title = data['userInputData']['title']
-        description = data['userInputData']['description']
-        minting_price = data['userInputData']['minting_price'] 
-        open = data['userInputData']['open'] # in hours
+        # if data['userInputData']['is_private'] == True:
+        #   is_private= 1
+        # title = data['userInputData']['title']
+        title = 'Title'
+        # description = data['userInputData']['description']
+        description = 'Description'
+        # minting_price = data['userInputData']['minting_price'] 
+        minting_price = 1 
+        # open = data['userInputData']['open'] # in hours
+        open = 12
         logger.info(f"OPEN {open}")
         # @TODO if there's a contest id - get this contest active_to and add it 
         # as drawing closed_at to avoid differences due to Math.floor in the FE
-        contest_id = data['userInputData']['contest'] # 0 or number > 0
+        contest_id = 0
+        # contest_id = data['userInputData']['contest'] # 0 or number > 0
         #
-        timestamp = query_args['timestamp']
+        # timestamp = query_args['timestamp']
+        timestamp = int(CREATED_AT)+counter
+        # created_at = timestamp
         created_at = timestamp
-        closed_at = get_closed_at(timestamp, open) 
+        # closed_at = get_closed_at(timestamp, open) 
+        closed_at = timestamp
+        # last_updated = timestamp
         last_updated = timestamp
         cursor.execute(
             """
@@ -436,13 +448,21 @@ def save_data(type, query_args) :
         return id
       case "store_drawing_layer":
         # {"id": id, "sender": sender, "data": data, "timestamp": timestamp}
-        data = query_args['data']
-        parsed_drawing = json.loads(data['drawing'])
-        content_1 = json.dumps(parsed_drawing['content'])
-        content = zlib.compress(bytes(content_1, "utf-8")) 
-        dimensions = json.dumps(data['dimensions']) 
-        now = query_args['timestamp']
-        sender = query_args['sender']
+        # data = query_args['data']
+        # parsed_drawing = json.loads(data['drawing'])
+        # content_1 = json.dumps(parsed_drawing['content'])
+        content_1 = CONTENT_1
+        content = zlib.compress(bytes(content_1, "utf-8")
+                                ) 
+        # dimensions = json.dumps(data['dimensions']) 
+        dimensions = DIMENSIONS 
+        
+        # now = query_args['timestamp']
+        now = int(CREATED_AT)+counter
+        print(f"NOW {now}")
+        
+        sender = OWNER
+        # sender = query_args['sender']
         id = query_args['id']
 
         cursor.execute(
@@ -488,7 +508,7 @@ def save_data(type, query_args) :
     if conn:
       conn.close()
 
-def store_data(cmd, timestamp, sender, data): 
+def store_data(cmd, timestamp, sender, data, counter): 
   """ Routes dra.
   Parameters
   ----------
@@ -504,9 +524,8 @@ def store_data(cmd, timestamp, sender, data):
   # prepare data
   if cmd == 'cd' : 
     logger.info(f"Create drawing") 
-    id = save_data('create_drawing',{"data": data, "timestamp": timestamp})
-    save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}) 
-    logger.info(f"CREATE DRAWING DATA {data}")
+    id = save_data('create_drawing',{"data": data, "timestamp": timestamp}, counter)
+    save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}, counter)  
     logger.info(f"CREATE DRAWING DATA ID {id}")
   elif cmd == 'ud' :
     logger.info(f"Update drawing") 
