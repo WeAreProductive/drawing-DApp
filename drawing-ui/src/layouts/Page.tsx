@@ -3,6 +3,7 @@ import { init, useConnectWallet, useSetChain } from "@web3-onboard/react";
 import injectedModule from "@web3-onboard/injected-wallets";
 import wagmi from "@web3-onboard/wagmi";
 import NetworkConnect from "../components/NetworkConnect";
+import Updating from "../components/Updating";
 import blocknativeIcon from "../icons/blocknative-icon";
 
 import "../App.css";
@@ -101,9 +102,11 @@ export default function Page({ children }: Props) {
 
   return (
     <div className="flex h-svh flex-col overflow-auto bg-muted">
-      {wallet && isSupportedNetwork && <Header />}
+      {
+        //wallet && isSupportedNetwork && <Header />
+      }
       <div className="container max-w-none">
-        {wallet ? (
+        {/*wallet ? (
           isSupportedNetwork ? (
             children
           ) : (
@@ -111,7 +114,8 @@ export default function Page({ children }: Props) {
           )
         ) : (
           <NetworkConnect />
-        )}
+        )*/}
+        <Updating />
       </div>
     </div>
   );
