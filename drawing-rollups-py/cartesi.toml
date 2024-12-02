@@ -1,0 +1,5 @@
+[machine]
+ram-length = "1024Mi"
+
+[drives.root]
+extraSize = "4000Mb"

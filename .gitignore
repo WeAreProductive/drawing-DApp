@@ -6,8 +6,10 @@ drawing-api/public/
 todo.txt
  
 drawing-rollups-py/.chain.env*
+drawing-rollups-py/.env*
 drawing-rollups-py/dapp/.venv
 drawing-rollups-py/.cartesi 
+drawing-rollups-py/.fly
 drawing-rollups-py/dapp/drawing.db
 drawing-rollups-py/dapp/lib/__pycache__/ 
 drawing-rollups-py/dapp/drawing.db

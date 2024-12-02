@@ -20,7 +20,8 @@ const createError = (message: string) => Promise.reject(new Error(message));
 const fetchBalance = async (inspectUrl: string, account?: Address) => {
   if (account === undefined || account === null || !inspectUrl) return 0;
 
-  const url = `${inspectUrl}balance/${account}`;
+  const url =
+    inspectUrl + encodeURIComponent(encodeURIComponent(`balance/${account}`));
 
   const response = await fetch(url);
 

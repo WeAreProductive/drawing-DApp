@@ -38,7 +38,9 @@ export const useInspect = () => {
    */
   const inspectCall = async (queryStr: string, type: string = "compressed") => {
     if (!inspectUrl) return;
-    const response = await fetch(`${inspectUrl}${queryStr}`);
+    const response = await fetch(
+      `${inspectUrl}${encodeURIComponent(encodeURIComponent(queryStr))}`,
+    );
     if (response.status == 200) {
       const result = await response.json();
       for (const i in result.reports) {

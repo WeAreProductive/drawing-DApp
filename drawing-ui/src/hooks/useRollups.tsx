@@ -131,6 +131,9 @@ export const useRollups = (): RollupsInteractions => {
       return null;
     }
 
+    console.log("User:", user);
+    console.log("DappAddress:", dappAddress);
+
     const response = await fetch(config[connectedChain.id].nonceAPIURL, {
       method: "POST",
       headers: {
@@ -143,6 +146,7 @@ export const useRollups = (): RollupsInteractions => {
     });
 
     const responseData = await response.json();
+    console.log("Response:", responseData);
     return responseData.nonce;
   };
 
