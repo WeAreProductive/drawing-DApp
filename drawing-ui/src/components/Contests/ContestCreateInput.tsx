@@ -6,7 +6,7 @@ import ButtonSpinner from "../ui/formDialog/buttonSpinner";
 import { useInspect } from "../../hooks/useInspect";
 import moment from "moment";
 import { useConnectionContext } from "../../context/ConnectionContext";
-import { dateToTimestamp } from "../../utils";
+import { dateToTimestamp, nowUnixTimestamp } from "../../utils";
 
 const now = moment().utc();
 
@@ -86,8 +86,7 @@ const ContestCreateInput = () => {
   const createContest = async () => {
     console.warn("CONTEST :: Creating new contest ...");
     // @TODO - update dapp states console.warn(dappState);
-    const toMoment = moment().format();
-    const unixTimestamp = moment(toMoment).unix();
+    const unixTimestamp = nowUnixTimestamp();
     const contest_data = {
       data: {
         ...inputValues,

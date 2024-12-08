@@ -1,8 +1,8 @@
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "./views/Draw";
-import Contests from "./views/Contests";
-import Browse from "./views/Browse";
+import Contests from "./views/BrowseContests";
+import Browse from "./views/BrowseDrawings";
 import ErrorPage from "./views/Error";
 import { Toaster } from "./components/ui/sonner";
 import { ConnectionContextProvider } from "./context/ConnectionContext";

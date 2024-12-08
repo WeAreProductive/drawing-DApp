@@ -189,9 +189,9 @@ def handle_inspect(request):
     elif query_args[0] == 'contests':
         if query_args[1] == 'create' :
             create_contest(query_args) 
-        elif query_args[1] == 'contests':
+        else:
             data = get_contest_data(query_args)
-            payload = str2hex(str(query_args))
+            payload = str2hex(str(data))
             send_report({"payload": payload}) 
     else :
         data = get_data(query_args)
