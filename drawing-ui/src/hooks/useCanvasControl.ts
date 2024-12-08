@@ -1,19 +1,19 @@
-import { useWallets } from "@web3-onboard/react";
-
-import { useCanvasContext } from "../context/CanvasContext";
 import { useEffect, useState } from "react";
+import { useWallets } from "@web3-onboard/react";
+import { useCanvasContext } from "../context/CanvasContext";
+import { nowUnixTimestamp } from "../utils";
 
 export const useCanvasControls = () => {
   const { currentDrawingData } = useCanvasContext();
-
+  console.log(currentDrawingData);
   const [isActiveControl, setIsActiveControl] = useState(true);
   const [drawingIsClosed, setDrawingIsClosed] = useState(false);
+  const [mintingIsClosed, setMintingIsClosed] = useState(false);
   const [connectedWallet] = useWallets();
-
   const account = connectedWallet.accounts[0].address;
   const getIsClosedDrawing = (closedAtTimestamp: string | undefined) => {
     if (!closedAtTimestamp) return;
-    const unixTimestampNow = Math.floor(Date.now() / 1000);
+    const unixTimestampNow = nowUnixTimestamp();
     return Number(closedAtTimestamp) <= unixTimestampNow;
   };
   useEffect(() => {
@@ -28,15 +28,32 @@ export const useCanvasControls = () => {
         : setIsActiveControl(false);
     }
   }, [currentDrawingData?.owner]);
-  useEffect(() => {
-    const unixTimestamp = Math.floor(Date.now() / 1000);
-    let shouldCloseDrawing = false;
 
-    if (currentDrawingData?.closed_at <= unixTimestamp) {
+  useEffect(() => {
+    const now = nowUnixTimestamp();
+    let shouldCloseDrawing = false;
+    if (currentDrawingData?.closed_at <= now) {
       shouldCloseDrawing = true;
     }
-
     setDrawingIsClosed(shouldCloseDrawing);
   }, [currentDrawingData?.closed_at]);
-  return { isActiveControl, drawingIsClosed, getIsClosedDrawing };
+  useEffect(() => {
+    const now = nowUnixTimestamp();
+    let shouldCloseMinting = false;
+    if (currentDrawingData?.contest) {
+      const { contest } = currentDrawingData;
+      if (contest.minting_closed_at <= now) shouldCloseMinting = true;
+    }
+    setMintingIsClosed(shouldCloseMinting);
+  }, [
+    currentDrawingData?.contest,
+    currentDrawingData?.contest?.minting_closed_at,
+  ]);
+
+  return {
+    isActiveControl,
+    drawingIsClosed,
+    mintingIsClosed,
+    getIsClosedDrawing,
+  };
 };

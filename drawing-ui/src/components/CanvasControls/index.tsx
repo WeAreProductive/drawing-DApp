@@ -8,7 +8,8 @@ type CanvasControlsProp = {
   canDownload: boolean;
 };
 const CanvasControls = ({ enabled, canDownload }: CanvasControlsProp) => {
-  const { isActiveControl, drawingIsClosed } = useCanvasControls();
+  const { isActiveControl, drawingIsClosed, mintingIsClosed } =
+    useCanvasControls();
   return (
     <div className="flex gap-1">
       {isActiveControl && !drawingIsClosed && (
@@ -16,7 +17,7 @@ const CanvasControls = ({ enabled, canDownload }: CanvasControlsProp) => {
           <CanvasToSave enabled={enabled} />
         </>
       )}
-      {drawingIsClosed && <CanvasToMint />}
+      {drawingIsClosed && !mintingIsClosed && <CanvasToMint />}
       <CanvasDownload canDownload={canDownload} />
     </div>
   );

@@ -11,7 +11,7 @@ type CanvasSnapshotProp = {
 };
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
-  const { owner, uuid, update_log, dimensions, closed_at } = src;
+  const { owner, uuid, update_log, dimensions, closed_at, contest } = src;
   const { account } = useConnectionContext();
   const { getIsClosedDrawing } = useCanvasControls();
   const drawingIsClosed = getIsClosedDrawing(closed_at);
@@ -35,8 +35,8 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         <span className="rounded-lg bg-slate-200 px-2 py-1 text-xs font-normal">
           {src.is_private ? "private" : "public"}
         </span>{" "}
-        {src.contest ? (
-          <span className="block text-xs">contest: {src.contest.title}</span>
+        {contest ? (
+          <span className="block text-xs">contest: {contest?.title}</span>
         ) : (
           ""
         )}
