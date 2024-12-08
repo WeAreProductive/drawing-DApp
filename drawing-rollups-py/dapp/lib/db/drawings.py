@@ -1,40 +1,16 @@
+
 import sqlite3 
 import logging
-import json   
-from datetime import datetime
+import json    
+
+from lib.db.utils import get_closed_at, get_query_offset
 
 logging.basicConfig(level="INFO")
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(__name__) 
 
-# @TODO - separate drawings and contests
 db_filename = 'drawing.db'  
-limit = 8
-contest_minting_price = 1
-# helpers - move to utils.py
-def get_query_offset(page):
-  """ Calculates the OFFSET parameter in query statements.
-  Parameters
-  ----------
-  page : string 
-    
-  Raises
-  ------
-  Returns
-  -------
-    offset: number
-  """
-  offset = 0
-  if page:
-    if page > 0:
-      offset = (page -1) * limit 
-  return offset
 
-def get_closed_at(now, end):
-  # hours * min * s
-  seconds_period = int(end)*60*60
-  closed_at = seconds_period + now
-  logger.info(f"Expires at {datetime.fromtimestamp(closed_at)}")
-  return closed_at
+limit = 8 
     
 def get_raw_data(query_args, type, page = 1):
   """ Executes database query statement.
@@ -45,7 +21,7 @@ def get_raw_data(query_args, type, page = 1):
   type : str
     The query type to execute
   page : integer
-    Result offset    
+    Result offset
   Raises
   ------
     Exception 
@@ -140,6 +116,7 @@ def get_raw_data(query_args, type, page = 1):
         rows = cursor.fetchall()   
         return rows
 
+
   except Exception as e: 
     msg = f"Error executing statement: {e}" 
     logger.info(f"{msg}")
@@ -147,6 +124,7 @@ def get_raw_data(query_args, type, page = 1):
   finally:
     if conn:
       conn.close()
+
 
 def get_drawing_layers(id) :
   """ Retrieves the drawing layers """
@@ -191,7 +169,7 @@ def get_drawings(query_args, type, page):
       current_drawing = {}
       current_drawing['uuid'] = row['uuid']
       current_drawing['owner'] = row['owner']
-      current_drawing['dimensions'] = row['dimensions']
+      current_drawing['dimensions'] = row['dimensions'] 
       current_drawing['private'] = row['private']
       current_drawing['title'] = row['title']
       current_drawing['description'] = row['description']
@@ -284,7 +262,6 @@ def get_drawing_contributors( uuid ):
   """
   contributors = get_raw_data(uuid, 'get_drawing_contributors')
   return contributors
-
 def save_data(type, query_args) :
   """ Executes database insert and update query statement.
   Parameters
@@ -305,7 +282,7 @@ def save_data(type, query_args) :
   """ 
   try: 
     conn = sqlite3.connect(db_filename)
-    cursor = conn.cursor()
+    cursor = conn.cursor() 
 
     match type:
       case "create_drawing": 
@@ -334,6 +311,7 @@ def save_data(type, query_args) :
             """,
             (uuid, owner, dimensions, private, title, description, minting_price, created_at, closed_at, last_updated),
         )
+
         conn.commit()
         id = cursor.lastrowid
         return id
@@ -346,6 +324,7 @@ def save_data(type, query_args) :
         now = query_args['timestamp']
         sender = query_args['sender']
         id = query_args['id']
+
         cursor.execute(
           """
           INSERT INTO layers(painter, drawing_objects, dimensions, drawing_id)
@@ -359,9 +338,11 @@ def save_data(type, query_args) :
             SET last_updated = ?
             WHERE
             id = ?
+            LIMIT 1;
             """,
             (now, id),
         )
+
         conn.commit()
         id = cursor.lastrowid
         return id
@@ -386,6 +367,8 @@ def save_data(type, query_args) :
   finally:
     if conn:
       conn.close()
+
+
 
 def store_data(cmd, timestamp, sender, data): 
   """ Routes dra.
@@ -413,36 +396,5 @@ def store_data(cmd, timestamp, sender, data):
     id = row['id']
     save_data("store_drawing_layer", {"id": id, "sender": sender, "data": data, "timestamp": timestamp}) 
   elif cmd == 'v-d-nft':
-    logger.info(f"Store minting-voucher data")
-    save_data("store_minting_voucher_data", {"id":data, "sender": sender, "timestamp": timestamp})
-  
-def create_contest(data):
-  try: 
-    conn = sqlite3.connect(db_filename)
-    cursor = conn.cursor()  
-    #  [contests, create, contest_data] 
-    data = json.dumps(data)
-    logger.info(f"CONTEST data {data}")
-    #
-    # timestamp = query_args['timestamp']
-    # created_at = timestamp
-    # @TODO minting price
-    
-      
-    # cursor.execute(
-    #     """
-    #     INSERT INTO contests(created_by, title, description, minting_price, active_from, active_to, minting_active, created_at)
-    #     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-    #     """,
-    #     (creator, title, description, minting_price, active_from, active_to, minting_active, created_at),
-    # )
-    # conn.commit()
-    # id = cursor.lastrowid
-    # return id 
-  except Exception as e: 
-    msg = f"Error executing insert statement: {e}" 
-    logger.info(f"{msg}")
-  finally:
-    if conn:
-      conn.close()
-  return False
+    logger.info(f"Store minting-voucher data") 
+    save_data("store_minting_voucher_data", {"id":data, "sender": sender, "timestamp": timestamp}) 
