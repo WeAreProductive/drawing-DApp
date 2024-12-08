@@ -39,13 +39,14 @@ def deposit_tokens(payload, dapp_wallet_address, is_contest_deposit=False) :
   try :
     binary_payload = bytes.fromhex(payload[2:])
     account, amount = wallet._ether_deposit_parse(binary_payload)
-    logger.info(f"'{amount} ' ether DEPOSITED "
-                f"in account '{account}'")
+   
     if is_contest_deposit:
       account_to_deposit = dapp_wallet_address
     else: 
       account_to_deposit = account
       # wallet.ether_deposit_process(payload)
+    logger.info(f"'{amount} ' ether DEPOSITED "
+                f"in account '{account_to_deposit}'")
     wallet._ether_deposit(account_to_deposit, amount)
   except Exception as e: 
       msg = f"Error: {e}"

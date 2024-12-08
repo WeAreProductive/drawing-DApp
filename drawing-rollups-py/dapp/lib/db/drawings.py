@@ -102,12 +102,25 @@ def get_raw_data(query_args, type, page = 1):
         logger.info(f"ROWS BY UUID {rows}")
         return rows
 
-      case "get_drawing_by_ids": 
+      case "get_drawings_by_ids": 
         logger.info(f"get drawing data where id in array: {query_args}") 
-        log = json.loads(query_args) 
-        
-        statement = "SELECT drawing_objects, painter FROM drawings WHERE id IN(" + ",".join(["?"] * len(log)) + ")"   
-        cursor.execute(statement, log)
+        # @TODO bind the statement
+        statement = "SELECT "   
+        statement = statement + "d.id as drawing_id, d.uuid, " # concat
+        statement = statement + "COUNT(m.drawing_id) as mints_count, "
+        statement = statement + "GROUP_CONCAT(m.minter, ',') AS drawing_minters "
+        # statement = statement + "m.minter " # count
+        statement = statement + "FROM mints m " 
+        statement = statement + "LEFT JOIN drawings d " 
+        statement = statement + "ON m.drawing_id = d.uuid " 
+        # statement = statement + "LEFT JOIN mints m " 
+        # statement = statement + "ON l.drawing_id = m.drawing_id " 
+        statement = statement + "WHERE d.id IN (" + query_args + ") " 
+        statement = statement + "GROUP BY d.id "
+        statement = statement + "ORDER BY mints_count DESC" 
+        print(statement)
+        cursor.execute(statement)
+        # cursor.execute(statement, [query_args])
         rows = cursor.fetchall() 
         return rows
       
@@ -288,9 +301,17 @@ def get_drawing_contributors( uuid ):
   """
   contributors = get_raw_data(uuid, 'get_drawing_contributors')
   return contributors
-def is_contest_drawing(uuid):
-  """
-    Get single drawing by uuid
+def check_is_contest_drawing(uuid):
+  """ Check if the drawing belongs to a contest
+   Parameters
+  ----------
+  uuid : string
+    Drawing uuid
+  Raises
+  ------
+  Returns
+  -------
+    boolean
   """
   drawings = get_raw_data(['', '', uuid], 'get_drawing_by_uuid')
   if drawings:
@@ -302,7 +323,20 @@ def is_contest_drawing(uuid):
     else :
       logger.info(f"NOT CONTEST DRAWING")
       return False
-    
+def get_drawings_by_ids(drawings_ids):
+  """ Gets drawings by ids to serve the contest manager
+  
+  """   
+  print(drawings_ids)
+  args = drawings_ids.split(',')
+  numbers = []
+  print(args)
+  for arg in args:
+    numbers.append(int(arg))
+  print(numbers)
+
+  data = get_raw_data(drawings_ids, 'get_drawings_by_ids')
+  return data
 def save_data(type, query_args) :
   """ Executes database insert and update query statement.
   Parameters
