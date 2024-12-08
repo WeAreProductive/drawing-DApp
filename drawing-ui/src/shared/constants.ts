@@ -35,7 +35,6 @@ export const DAPP_STATE = {
   refetchDrawings: "send inspect request to refetch drawings",
   txFail: "transaction failed",
 };
-// @TODO update the commands
 export const COMMANDS = {
   createAndStore: {
     cmd: "cd",
@@ -45,16 +44,6 @@ export const COMMANDS = {
   updateAndStore: {
     cmd: "ud",
     description: "BE will emit a notice with the data of the updated drawing",
-  },
-  createAndMint: {
-    cmd: "cv",
-    description:
-      "BE will emit a notice (with the data of the newly created drawing) and a voucher to mint a NFT",
-  },
-  updateAndMint: {
-    cmd: "uv",
-    description:
-      "BE will emit a notice (with the data of the updated drawing) and a voucher to mint a NFT",
   },
   mintDrawingAsNFT: {
     cmd: "v-d-nft",

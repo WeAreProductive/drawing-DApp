@@ -5,9 +5,6 @@ import { nowUnixTimestamp } from "../../utils";
 import Contest from "./Contest";
 import { ContestType } from "../../shared/types";
 
-// @TODO check timestamp saved because of inactive/active/future contests
-// @TODO define/update dappStates
-// @TODO contests create validation
 // @TODO after save info messages
 const ContestsList = ({ contestType }: { contestType: string }) => {
   const { dappState } = useCanvasContext();
