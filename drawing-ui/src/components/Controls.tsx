@@ -87,10 +87,15 @@ const Controls = () => {
         <div className="mb-2 xl:mb-4">
           <h1 className="mb-2 inline-block text-xl font-semibold">
             <span className="mr-2 rounded-lg bg-slate-200 px-2 py-1 text-xs font-normal xl:mr-3">
-              {currentDrawingData.private ? "private" : "public"}
+              {currentDrawingData.is_private ? "private" : "public"}
             </span>
             {currentDrawingData.title}
           </h1>
+          {currentDrawingData?.contest ? (
+            <div>Contest: {currentDrawingData.contest.title}</div>
+          ) : (
+            ""
+          )}
           {currentDrawingData.description && (
             <p className="ml-4 inline-block text-sm text-gray-500">
               {currentDrawingData.description}

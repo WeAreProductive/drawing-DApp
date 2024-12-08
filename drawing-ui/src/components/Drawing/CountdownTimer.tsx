@@ -6,6 +6,7 @@ const CountdownTimer = () => {
   const { currentDrawingData } = useCanvasContext();
   const [eventTime, setEventTime] = useState("");
   const [timeRemainingLabel, setTimeRemainingLabel] = useState("");
+  const [remainingTime, setRemainingTime] = useState(0);
 
   const formatTime = (time: number) => {
     const seconds = Math.floor(time % 60);
@@ -36,6 +37,7 @@ const CountdownTimer = () => {
         }
         const label = formatTime(remainingTime);
         setTimeRemainingLabel(label);
+        setRemainingTime(remainingTime);
       }, 1000);
 
       return () => clearInterval(countdownInterval);
@@ -43,7 +45,7 @@ const CountdownTimer = () => {
   }, [eventTime, timeRemainingLabel, currentDrawingData]);
   return (
     <span className="text-sm font-semibold sm:ml-4">
-      {timeRemainingLabel ? `${timeRemainingLabel} until ready to MINT` : ""}
+      {remainingTime ? `${timeRemainingLabel} until ready to MINT` : ""}
     </span>
   );
 };

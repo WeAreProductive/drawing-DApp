@@ -32,6 +32,11 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         <span className="rounded-lg bg-slate-200 px-2 py-1 text-xs font-normal">
           {src.is_private ? "private" : "public"}
         </span>{" "}
+        {src.contest ? (
+          <span className="block text-xs">contest: {src.contest.title}</span>
+        ) : (
+          ""
+        )}
         {title}
       </div>
       <div className="text-xs">

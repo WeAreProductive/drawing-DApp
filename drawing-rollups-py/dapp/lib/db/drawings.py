@@ -39,8 +39,11 @@ def get_raw_data(query_args, type, page = 1):
         print("get_all_drawings") 
         offset = get_query_offset(page)  
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
+        statement = statement + "c.title as contest_title, " 
         statement = statement + "count(*) OVER() AS total_rows " 
         statement = statement + "FROM drawings d "
+        statement = statement + "LEFT JOIN contests c "
+        statement = statement + "ON d.contest_id = c.id  "
         statement = statement + "ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
         cursor.execute(statement, [limit, offset]) 
         rows = cursor.fetchall() 
@@ -52,9 +55,13 @@ def get_raw_data(query_args, type, page = 1):
         offset = get_query_offset(page) 
         # get all drawings where I am the owner(the first painter) or where(I am a contributor and not the owner) 
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, d.last_updated, "
+        statement = statement + "c.title as contest_title, "
         statement = statement + "(select COUNT(DISTINCT d.uuid) from layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE (d.owner LIKE ?) "
         statement = statement + "OR (l.painter LIKE ? AND d.owner NOT LIKE ?)) as total_rows " 
-        statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )"
+        statement = statement + "FROM layers l INNER JOIN drawings d on l.drawing_id = d.id "
+        statement = statement + "LEFT JOIN contests c "
+        statement = statement + "ON d.contest_id = c.id "
+        statement = statement + "WHERE d.last_updated in (SELECT max(last_updated) FROM drawings GROUP BY uuid )"
         statement = statement + "AND d.owner LIKE ? OR (l.painter LIKE ? AND d.owner NOT LIKE ?) GROUP BY d.uuid ORDER BY d.last_updated DESC LIMIT ? OFFSET ?"
         
         cursor.execute(statement, [owner, owner, owner, owner, owner, owner, limit, offset]) 
@@ -64,8 +71,12 @@ def get_raw_data(query_args, type, page = 1):
       
       case "get_drawing_by_uuid":
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
-        statement = "SELECT id, uuid, owner, dimensions, is_private, title, description, minting_price, closed_at "
-        statement = statement + "FROM drawings WHERE uuid LIKE ? ORDER BY id DESC LIMIT 1"  
+        statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, "
+        statement = statement + "c.title as contest_title "
+        statement = statement + "FROM drawings d "  
+        statement = statement + "LEFT JOIN contests c "  
+        statement = statement + "ON d.contest_id = c.id "  
+        statement = statement + "WHERE d.uuid LIKE ? ORDER BY d.id DESC LIMIT 1"  
         cursor.execute(statement, [query_args[2]]) 
         rows = cursor.fetchall() 
         return rows
@@ -78,7 +89,7 @@ def get_raw_data(query_args, type, page = 1):
         row = cursor.fetchone() 
         return row
       
-      case "get_drawings_by_uuid":
+      case "get_drawings_by_uuid": # voucher images
         uuids = json.loads(query_args[2])
         statement = "SELECT id, uuid, owner, dimensions, is_private, title, description, minting_price, closed_at, last_updated "
         statement = statement + "FROM drawings WHERE uuid IN (" + ",".join(["?"] * len(uuids)) + ")"   
@@ -165,17 +176,24 @@ def get_drawings(query_args, type, page):
   if data_rows: 
     for row in data_rows:   
       # d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at
+      row_dict = dict(row)
       current_drawing = {}
-      current_drawing['uuid'] = row['uuid']
-      current_drawing['owner'] = row['owner']
-      current_drawing['dimensions'] = row['dimensions'] 
-      current_drawing['is_private'] = row['is_private']
-      current_drawing['title'] = row['title']
-      current_drawing['description'] = row['description']
-      current_drawing['minting_price'] = row['minting_price']
-      current_drawing['closed_at'] = row['closed_at']
+      current_drawing['uuid'] = row_dict['uuid']
+      current_drawing['owner'] = row_dict['owner']
+      current_drawing['dimensions'] = row_dict['dimensions'] 
+      current_drawing['is_private'] = row_dict['is_private']
+      current_drawing['title'] = row_dict['title']
+      current_drawing['description'] = row_dict['description']
+      current_drawing['minting_price'] = row_dict['minting_price']
+      current_drawing['closed_at'] = row_dict['closed_at']
+      if row_dict.get('contest_title'):
+        #
+        drawing_contest = {}
+        drawing_contest['title'] = row_dict['contest_title']
+        ### add more data if the FE needs it
+        current_drawing['contest'] = drawing_contest
 
-      current_drawing['update_log'] = get_drawing_layers(row['id']) 
+      current_drawing['update_log'] = get_drawing_layers(row_dict['id']) 
       drawings.append(current_drawing)  
   
   if type == 'get_drawings_by_owner' or type == "get_all_drawings" :
