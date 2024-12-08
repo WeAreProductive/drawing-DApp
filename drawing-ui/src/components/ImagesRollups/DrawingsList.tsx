@@ -120,7 +120,7 @@ const DrawingsList = ({ drawingsType }: DrawingsListProp) => {
           }
         })
       ) : (
-        <div className="p-2">Canvas shanpshots will appear here...</div>
+        <div className="p-2">Canvas snapshots will appear here...</div>
       )}
       {error?.error && <p>Error: {error.message}</p>}
     </div>

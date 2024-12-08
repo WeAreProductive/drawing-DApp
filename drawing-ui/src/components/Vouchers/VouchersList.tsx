@@ -209,7 +209,7 @@ const VouchersList = () => {
           );
         })
       ) : (
-        <div className="py-2">Your quequed NFTs will appear here...</div>
+        <div className="py-2">Your queued NFTs will appear here...</div>
       )}
     </div>
   );
