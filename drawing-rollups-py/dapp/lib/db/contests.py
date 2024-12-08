@@ -24,6 +24,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
     
   """
   conn = None 
+   # @TODO completed are the contests where active_to + minting open is finishhed
   try :
     conn = sqlite3.connect(db_filename) 
     conn.row_factory = sqlite3.Row # receive named results
@@ -74,7 +75,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
         cursor.execute(statement, [timestamp, limit, offset]) 
         rows = cursor.fetchall() 
         return rows 
-      case "get_incompleted_contests":  
+      case "get_incompleted_contests": # for drawing save form
         print("get_incompleted_contests") 
         #
         offset = get_query_offset(page)  
@@ -84,6 +85,24 @@ def get_raw_data(query_args, query_type, page, timestamp):
         statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?"
         cursor.execute(statement, [timestamp, limit, offset]) 
         rows = cursor.fetchall() 
+        return rows 
+      case "get_not_final_contests":
+        print('get_not_final_contest')
+        print(timestamp)
+        ## get drawings, owners, participants, mints for each contest 
+        # improve the query 
+        statement = "SELECT c.id, c.minting_price, d.id, d.owner "
+        statement = statement + "FROM contests c "
+        statement = statement + "LEFT JOIN drawings d "
+        statement = statement + "ON c.id = d.contest_id "
+        statement = statement + "WHERE c.active_to < ? " 
+        statement = statement + "AND c.is_final IS 0 " 
+        statement = statement + "GROUP BY c.id "
+        
+        cursor.execute(statement, [timestamp]) 
+        rows = cursor.fetchall() 
+        print(statement)
+        print(rows)
         return rows 
       case 'get_contest_by_id':
         print('get_contest_by_id')
@@ -216,11 +235,21 @@ def get_contests_data(query_args):
   if query_args[0] == 'contests':
       # paginated, expects 3 elements in query_args
       # ['contests', 'page', '1', type, timestamp] 
+      ## or
+      # ['contests', 'page', 'all', type, timestamp] 
       if len(query_args) > 2 :
-        page = int(query_args[2])
-        if len(query_args) > 4: 
-          timestamp = query_args[4]
-          query_type=get_query_type(query_args[3])
+        # all contests 
+        if query_args[1] == 'page': 
+          if query_args[2] == 'all':
+            if len(query_args) > 4: 
+              timestamp = query_args[4]
+            query_type = "get_not_final_contests" # a contests whose label is_final == True
+          else:
+            # paginated contests
+            page = int(query_args[2])
+            if len(query_args) > 4: 
+              timestamp = query_args[4]
+              query_type=get_query_type(query_args[3])
       else:
         # single contest query request
         # ['contests', {contest_id}] 

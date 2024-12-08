@@ -10,6 +10,7 @@ from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
 from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors
 from lib.db.contests import create_contest, get_contests_data
 from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdraw_tokens
+from lib.manager.contests import manage_contests
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str
 from eth_utils import to_wei
@@ -191,6 +192,11 @@ def handle_inspect(request):
             create_contest(query_args) 
         else:
             data = get_contests_data(query_args)
+            payload = str2hex(str(data))
+            send_report({"payload": payload}) 
+    elif query_args[0] == 'manage':
+        if query_args[1] == 'contests':
+            data = manage_contests(query_args)
             payload = str2hex(str(data))
             send_report({"payload": payload}) 
     else :
