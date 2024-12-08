@@ -30,7 +30,7 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
 
       <div className="text-lg font-semibold">
         <span className="rounded-lg bg-slate-200 px-2 py-1 text-xs font-normal">
-          {src.private ? "private" : "public"}
+          {src.is_private ? "private" : "public"}
         </span>{" "}
         {title}
       </div>

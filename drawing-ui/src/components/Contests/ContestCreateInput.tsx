@@ -243,6 +243,7 @@ const ContestCreateInput = () => {
             onChange={(e) => handleInputChange(e, "minting_active")}
             color={fieldValidation.minting_active.valid ? "" : "failure"}
             validation={fieldValidation.minting_active}
+            isReadonly={false}
           />
         </div>
         <div className="m-2 flex flex-wrap gap-4">

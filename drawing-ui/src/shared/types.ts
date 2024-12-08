@@ -96,22 +96,22 @@ export interface DrawingInputExtended extends Omit<DrawingInput, "dimensions"> {
   closed_at?: string;
   dimensions: string;
   minting_price: any;
-  private: 0 | 1;
+  is_private: 0 | 1;
 }
 export type DrawingUserInput = {
-  title: string;
-  description: string;
-  minting_price: string;
-  private: boolean;
-  open: number;
-  [key: string]: string | boolean | number;
+  title: { value: string; isReadOnly: boolean };
+  description: { value: string; isReadOnly: boolean };
+  minting_price: { value: string; isReadOnly: boolean };
+  is_private: { value: boolean; isReadOnly: boolean };
+  open: { value: number; isReadOnly: boolean };
+  [key: string]: { value: string | boolean | number; isReadOnly: boolean };
 };
 // @TODO combine DrawingInitial & DrawingInputExtended & DrawingInput
 export type DrawingInitialData = {
   uuid: string;
   owner: string;
   title?: string;
-  private?: 0 | 1;
+  is_private?: 0 | 1;
   description?: string;
   dimensions: string;
   minting_price: any;
