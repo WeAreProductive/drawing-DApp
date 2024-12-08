@@ -18,7 +18,20 @@ def init_sqlite_database():
     try:
         conn = sqlite3.connect(db_filename)
         cursor = conn.cursor()
-
+        cursor.execute(
+            """
+            CREATE TABLE IF NOT EXISTS contests (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                owner VARCHAR NOT NULL, 
+                title VARCHR NOT NULL,
+                description TEXT,
+                active_from VARCHAR NOT NULL,
+                active_to VARCHAR NOT NULL,
+                minting_active VARCHAR NOT NULL,
+                created_at VARCHAR NOT NULL
+            )
+            """
+        )
         cursor.execute(
             """
             CREATE TABLE IF NOT EXISTS drawings (
@@ -32,7 +45,9 @@ def init_sqlite_database():
                 minting_price FLOAT NOT NULL,
                 created_at VARCHAR NOT NULL,
                 closed_at VARCHR NOT NULL,
-                last_updated VARCHAR NOT NULL
+                last_updated VARCHAR NOT NULL,
+                contest_id INTEGER NOT NULL,
+                FOREIGN KEY (contest_id) REFERENCES contests(id)
             )
             """
         )
