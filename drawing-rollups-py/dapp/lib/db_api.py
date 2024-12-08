@@ -6,8 +6,10 @@ from datetime import datetime
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
 
+# @TODO - separate drawings and contests
 db_filename = 'drawing.db'  
 limit = 8
+contest_minting_price = 1
 # helpers - move to utils.py
 def get_query_offset(page):
   """ Calculates the OFFSET parameter in query statements.
@@ -413,3 +415,34 @@ def store_data(cmd, timestamp, sender, data):
   elif cmd == 'v-d-nft':
     logger.info(f"Store minting-voucher data")
     save_data("store_minting_voucher_data", {"id":data, "sender": sender, "timestamp": timestamp})
+  
+def create_contest(data):
+  try: 
+    conn = sqlite3.connect(db_filename)
+    cursor = conn.cursor()  
+    #  [contests, create, contest_data] 
+    data = json.dumps(data)
+    logger.info(f"CONTEST data {data}")
+    #
+    # timestamp = query_args['timestamp']
+    # created_at = timestamp
+    # @TODO minting price
+    
+      
+    # cursor.execute(
+    #     """
+    #     INSERT INTO contests(created_by, title, description, minting_price, active_from, active_to, minting_active, created_at)
+    #     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    #     """,
+    #     (creator, title, description, minting_price, active_from, active_to, minting_active, created_at),
+    # )
+    # conn.commit()
+    # id = cursor.lastrowid
+    # return id 
+  except Exception as e: 
+    msg = f"Error executing insert statement: {e}" 
+    logger.info(f"{msg}")
+  finally:
+    if conn:
+      conn.close()
+  return False

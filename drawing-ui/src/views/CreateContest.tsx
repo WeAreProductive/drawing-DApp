@@ -1,4 +1,4 @@
-import ContestInput from "../components/Contests/ContestInput";
+import ContestCreateInput from "../components/Contests/ContestCreateInput";
 import CreateDrawingToContest from "../components/Contests/CreateDrawingToContest";
 import Page from "../layouts/Page";
 
@@ -8,7 +8,7 @@ const CreateContest = () => {
       <div className="grid gap-4">
         <h1>Create New Contest</h1>
         <div className="flex rounded-xl p-6">
-          <ContestInput />
+          <ContestCreateInput />
           <CreateDrawingToContest />
         </div>
       </div>

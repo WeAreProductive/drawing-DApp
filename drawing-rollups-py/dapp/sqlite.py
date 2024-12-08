@@ -22,7 +22,7 @@ def init_sqlite_database():
             """
             CREATE TABLE IF NOT EXISTS contests (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                owner VARCHAR NOT NULL, 
+                created_by VARCHAR NOT NULL,
                 title VARCHR NOT NULL,
                 description TEXT,
                 active_from VARCHAR NOT NULL,
