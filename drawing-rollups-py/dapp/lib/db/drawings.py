@@ -1,6 +1,7 @@
 import sqlite3 
 import logging
-import json    
+import json
+import zlib    
 from config import *
 
 from lib.db.utils import get_closed_at, get_query_offset
@@ -163,7 +164,9 @@ def get_drawing_layers(id) :
     for row in data_rows:  
       current_log = {}
       current_log['painter'] = row['painter']
-      current_log['drawing_objects'] = row['drawing_objects']
+      # decompress before sending response data
+      decompressed_drawing_objects = zlib.decompress(row['drawing_objects'])
+      current_log['drawing_objects'] = decompressed_drawing_objects
       current_log['dimensions'] = row['dimensions']
 
       update_log.append(current_log)
@@ -435,7 +438,8 @@ def save_data(type, query_args) :
         # {"id": id, "sender": sender, "data": data, "timestamp": timestamp}
         data = query_args['data']
         parsed_drawing = json.loads(data['drawing'])
-        content = json.dumps(parsed_drawing['content'])
+        content_1 = json.dumps(parsed_drawing['content'])
+        content = zlib.compress(bytes(content_1, "utf-8")) 
         dimensions = json.dumps(data['dimensions']) 
         now = query_args['timestamp']
         sender = query_args['sender']
