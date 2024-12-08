@@ -184,13 +184,13 @@ export type Address = `0x${string}`;
 export interface ContestInitType {
   title: string;
   description: string;
-  activeFrom: Moment | string | null;
-  activeTo: Moment | string | null;
-  mintingOpen: number;
+  active_from: Moment | string | null;
+  active_to: Moment | string | null;
+  minting_active: number;
 }
 export interface ContestType extends ContestInitType {
   id: string;
-  mintingPrice: number;
+  minting_price: number;
   created_by: Address;
   drawings?: null | DrawingInputExtended[];
 }

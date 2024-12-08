@@ -264,7 +264,6 @@ export const handlePlainResponse = (output: `0x${string}`) => {
   if (output) {
     try {
       data = ethers.utils.toUtf8String(output);
-      console.log({ data });
       return data;
     } catch (e) {
       console.error(e);
@@ -284,8 +283,22 @@ export const hoursToTimestamp = (hours: number) => {
  * Converts given date
  * to timestamp
  */
-export const dateToTimestamp = (date: null | string | Moment) => {
-  const toMoment = date ? moment(date).format() : moment().format();
+export const dateToTimestamp = (
+  date: null | string | Moment,
+  type: string | null,
+) => {
+  let toMoment;
+  if (date) {
+    if (type == "startOf") {
+      toMoment = moment.utc(date).startOf("day").toString();
+    } else if (type == "endOf") {
+      toMoment = moment.utc(date).endOf("day").toString();
+    } else {
+      toMoment = moment(date).format();
+    }
+  } else {
+    toMoment = moment().format();
+  }
   return moment(toMoment).unix();
 };
 /**
@@ -302,6 +315,7 @@ export const nowUnixTimestamp = () => {
  * to date
  */
 export const timestampToDate = (value: number) => {
-  console.log({ value });
-  return moment.unix(value).format("MM/DD/YYYY");
+  const date = moment(moment.unix(value).toISOString());
+  const dateTimeComponent = date.utc().format("YYYY-MM-DD HH:mm");
+  return `${dateTimeComponent} UTC`;
 };

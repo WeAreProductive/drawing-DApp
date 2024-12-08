@@ -68,7 +68,7 @@ const customTheme: CustomFlowbiteTheme["modal"] = {
 };
 const validationRules = {
   title: ["required"],
-  mintingPrice: ["required", "gt0"],
+  minting_price: ["required", "gt0"],
   open: ["required", "gt0"],
 };
 const validationErrMsg = {
@@ -77,7 +77,7 @@ const validationErrMsg = {
 };
 const validationInit = {
   title: { valid: true, msg: "" },
-  mintingPrice: { valid: true, msg: "" },
+  minting_price: { valid: true, msg: "" },
   open: { valid: true, msg: "" },
 };
 type InputDialogType = {
@@ -220,19 +220,19 @@ const InputDialog = ({
             <div className="flex">
               <div className="my-2 flex flex-col">
                 <Label
-                  htmlFor="mintingPrice"
+                  htmlFor="minting_price"
                   value="Minting Price"
                   className="mb-4"
-                  color={fieldValidation.mintingPrice.valid ? "" : "failure"}
+                  color={fieldValidation.minting_price.valid ? "" : "failure"}
                 />
                 <TextInput
-                  id="mintingPrice"
+                  id="minting_price"
                   placeholder="0"
                   required
                   addon="ETH"
-                  onChange={(e) => handleInputChange(e, "mintingPrice")}
-                  color={fieldValidation.mintingPrice.valid ? "" : "failure"}
-                  helperText={fieldValidation.mintingPrice.msg}
+                  onChange={(e) => handleInputChange(e, "minting_price")}
+                  color={fieldValidation.minting_price.valid ? "" : "failure"}
+                  helperText={fieldValidation.minting_price.msg}
                 />
               </div>
               <div className="m-2 flex flex-col">
