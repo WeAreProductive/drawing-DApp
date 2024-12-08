@@ -21,7 +21,6 @@ const ContestBlock = ({ contestId }: { contestId: string }) => {
     if (contests && contests.length) setContest(contests[0]); // single contest result
     setLoading(false);
   };
-  console.log({ contest });
   useEffect(() => {
     if (!contestId) return;
     fetchContest();

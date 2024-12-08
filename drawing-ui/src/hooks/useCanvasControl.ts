@@ -5,12 +5,11 @@ import { nowUnixTimestamp } from "../utils";
 
 export const useCanvasControls = () => {
   const { currentDrawingData } = useCanvasContext();
-  console.log(currentDrawingData);
   const [isActiveControl, setIsActiveControl] = useState(true);
   const [drawingIsClosed, setDrawingIsClosed] = useState(false);
   const [mintingIsClosed, setMintingIsClosed] = useState(false);
   const [connectedWallet] = useWallets();
-  const account = connectedWallet.accounts[0].address;
+  const account = connectedWallet.accounts[0].address.toLowerCase();
   const getIsClosedDrawing = (closedAtTimestamp: string | undefined) => {
     if (!closedAtTimestamp) return;
     const unixTimestampNow = nowUnixTimestamp();
@@ -27,7 +26,7 @@ export const useCanvasControls = () => {
       setIsActiveControl(true);
     } else {
       // only the owner can update the drawing
-      currentDrawingData.owner === account
+      currentDrawingData.owner.toLowerCase() === account
         ? setIsActiveControl(true)
         : setIsActiveControl(false);
     }
@@ -46,12 +45,17 @@ export const useCanvasControls = () => {
     let shouldCloseMinting = false;
     if (currentDrawingData?.contest) {
       const { contest } = currentDrawingData;
+      const { minters } = contest;
       if (contest.minting_closed_at <= now) shouldCloseMinting = true;
+      if (minters && minters.length > 0) {
+        shouldCloseMinting = minters.includes(account);
+      }
     }
     setMintingIsClosed(shouldCloseMinting);
   }, [
     currentDrawingData?.contest,
     currentDrawingData?.contest?.minting_closed_at,
+    currentDrawingData?.contest?.minters,
   ]);
 
   return {

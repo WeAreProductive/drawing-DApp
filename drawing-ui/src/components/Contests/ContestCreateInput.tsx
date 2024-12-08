@@ -130,7 +130,6 @@ const ContestCreateInput = () => {
   const createContest = async () => {
     console.warn("CONTEST :: Creating new contest ...");
     const unixTimestamp = nowUnixTimestamp();
-    console.log(inputValues.active_from);
     const contest_data = {
       data: {
         ...inputValues,

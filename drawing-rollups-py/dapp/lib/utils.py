@@ -32,7 +32,6 @@ def hex2str(hexstr):
     """
     Decodes a hex string into a regular string
     """
-    print(hexstr)
     return hex2binary(hexstr).decode("utf-8", errors='ignore')
     # return hex2binary(hexstr).decode("utf-8")
 
