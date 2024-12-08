@@ -13,8 +13,9 @@ type CanvasSnapshotProp = {
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { owner, uuid, update_log, dimensions, closed_at, contest } = src;
   const { account } = useConnectionContext();
-  const { getIsClosedDrawing } = useCanvasControls();
+  const { getIsClosedDrawing, getIsWinner } = useCanvasControls();
   const drawingIsClosed = getIsClosedDrawing(closed_at);
+  const isWinner = getIsWinner(uuid);
   const snapShotJson = useMemo(
     () => snapShotJsonfromLog(update_log),
     [update_log],
@@ -37,6 +38,13 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         </span>{" "}
         {contest ? (
           <span className="block text-xs">contest: {contest?.title}</span>
+        ) : (
+          ""
+        )}
+        {isWinner ? (
+          <span className="block text-xs">
+            <b>WINNER</b> in the contest
+          </span>
         ) : (
           ""
         )}

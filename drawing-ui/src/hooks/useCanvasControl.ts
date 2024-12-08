@@ -16,6 +16,10 @@ export const useCanvasControls = () => {
     const unixTimestampNow = nowUnixTimestamp();
     return Number(closedAtTimestamp) <= unixTimestampNow;
   };
+  const getIsWinner = (uuid: string | undefined) => {
+    if (!currentDrawingData?.contest || !uuid) return;
+    return currentDrawingData?.contest.winner == uuid;
+  };
   useEffect(() => {
     if (!currentDrawingData) return;
     if (currentDrawingData.is_private == 0) {
@@ -55,5 +59,6 @@ export const useCanvasControls = () => {
     drawingIsClosed,
     mintingIsClosed,
     getIsClosedDrawing,
+    getIsWinner,
   };
 };

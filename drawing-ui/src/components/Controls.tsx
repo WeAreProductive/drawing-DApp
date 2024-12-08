@@ -36,6 +36,10 @@ const Controls = () => {
       type: "",
     },
   });
+  const { getIsWinner } = useCanvasControls();
+  const isWinner = currentDrawingData
+    ? getIsWinner(currentDrawingData?.uuid)
+    : null; // @TODO optimise with memo or ....
 
   const validateCanvasInputSize = (
     currentDrawingData: DrawingInputExtended | DrawingInitialData | null,
@@ -93,6 +97,13 @@ const Controls = () => {
           </h1>
           {currentDrawingData?.contest ? (
             <div>Contest: {currentDrawingData.contest.title}</div>
+          ) : (
+            ""
+          )}
+          {isWinner ? (
+            <div>
+              <b>WINNER</b> in the contest
+            </div>
           ) : (
             ""
           )}

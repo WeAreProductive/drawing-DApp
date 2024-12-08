@@ -72,7 +72,7 @@ def get_raw_data(query_args, type, page = 1):
       case "get_drawing_by_uuid":
         logger.info(f"get_drawing_by_uuid {query_args[2]}")
         statement = "SELECT d.id, d.uuid, d.owner, d.dimensions, d.is_private, d.title, d.description, d.minting_price, d.closed_at, "
-        statement = statement + "c.id as contest_id, (c.active_to + c.minting_active * 3600) as minting_closed_at, c.title as contest_title "
+        statement = statement + "c.id as contest_id, (c.active_to + c.minting_active * 3600) as minting_closed_at, c.title as contest_title, c.winner "
         statement = statement + "FROM drawings d "  
         statement = statement + "LEFT JOIN contests c "  
         statement = statement + "ON d.contest_id = c.id "  
@@ -210,6 +210,8 @@ def get_drawings(query_args, type, page):
         drawing_contest['title'] = row_dict['contest_title']
         if row_dict.get('minting_closed_at'):
           drawing_contest['minting_closed_at'] = row_dict['minting_closed_at']
+        if row_dict.get('winner'):
+          drawing_contest['winner'] = row_dict['winner']
         ### add more data if the FE needs it
         current_drawing['contest'] = drawing_contest
 

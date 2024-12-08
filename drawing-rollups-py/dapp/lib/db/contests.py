@@ -312,3 +312,32 @@ def create_contest(data):
     if conn:
       conn.close()
   return False
+
+# modify data
+def update_contest(contest_id, query_type, data = {}):
+  try: 
+    conn = sqlite3.connect(db_filename)
+    cursor = conn.cursor()  
+    match query_type:
+      case "finalise_contest": 
+        logger.info(f"finalise_contest with id {contest_id}")
+        cursor.execute(
+          """
+            UPDATE contests
+            SET winner = ?, is_final = 1
+            WHERE
+            id = ?
+            LIMIT 1;
+            """,
+            (data['uuid'], contest_id),
+        )
+
+        conn.commit()
+        return True
+  except Exception as e: 
+    msg = f"Error executing insert statement: {e}" 
+    logger.info(f"{msg}")
+  finally:
+    if conn:
+      conn.close()
+  return False
