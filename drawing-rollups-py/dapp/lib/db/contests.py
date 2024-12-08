@@ -75,6 +75,14 @@ def get_raw_data(query_args, query_type, page, timestamp):
         cursor.execute(statement, [timestamp, limit, offset]) 
         rows = cursor.fetchall() 
         return rows 
+      case 'get_contest_by_id':
+        print('get_contest_by_id')
+        statement = "SELECT * "
+        statement = statement + "FROM contests c "
+        statement = statement + "WHERE c.id = ? LIMIT 1"  
+        cursor.execute(statement, [query_args[1]]) 
+        rows = cursor.fetchall() 
+        return rows 
 
   except Exception as e: 
     msg = f"Error executing statement: {e}" 
@@ -130,7 +138,7 @@ def get_query_type(contest_type):
     case "incompleted":
       return 'get_incompleted_contests' # active and future
     
-def get_contest_data(query_args):
+def get_contests_data(query_args):
   """ Entry function for retrieving contest adata.
   Parameters
   ----------
@@ -143,6 +151,7 @@ def get_contest_data(query_args):
     list : contest data
   """
   page = 1 # default value
+  timestamp = 0 # default value
   logger.info(f"CONTESTS {query_args}")
   # decide which get-data handler to use 
   if query_args[0] == 'contests':
@@ -153,6 +162,11 @@ def get_contest_data(query_args):
         if len(query_args) > 4: 
           timestamp = query_args[4]
           query_type=get_query_type(query_args[3])
+      else:
+        # single contest query request
+        # ['contests', {contest_id}] 
+        query_type = 'get_contest_by_id'
+
             
   contests = get_contests(query_args, query_type, page, timestamp) 
   logger.info(f"CONTESTS {contests}")

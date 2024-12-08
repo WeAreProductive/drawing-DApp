@@ -8,6 +8,8 @@ import { Toaster } from "./components/ui/sonner";
 import { ConnectionContextProvider } from "./context/ConnectionContext";
 import { CanvasContextProvider } from "./context/CanvasContext";
 import CreateContest from "./views/CreateContest";
+import Contest from "./views/Contest";
+import { ContestContextProvider } from "./context/ContestContext";
 
 const router = createBrowserRouter([
   {
@@ -35,10 +37,22 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
   },
   {
-    path: "contest/create",
-    element: <CreateContest />,
+    path: "contest",
     errorElement: <ErrorPage />,
+    children: [
+      {
+        path: "create",
+        element: <CreateContest />,
+        errorElement: <ErrorPage />,
+      },
+      {
+        path: ":contestId",
+        element: <Contest />,
+        errorElement: <ErrorPage />,
+      },
+    ],
   },
+
   {
     path: "/browse",
     element: <Browse />,
@@ -48,10 +62,12 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <>
     <ConnectionContextProvider>
-      <CanvasContextProvider>
-        <RouterProvider router={router} />
-        <Toaster position="top-center" />
-      </CanvasContextProvider>
+      <ContestContextProvider>
+        <CanvasContextProvider>
+          <RouterProvider router={router} />
+          <Toaster position="top-center" />
+        </CanvasContextProvider>
+      </ContestContextProvider>
     </ConnectionContextProvider>
   </>,
 );

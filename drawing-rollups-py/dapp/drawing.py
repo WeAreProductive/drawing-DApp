@@ -8,7 +8,7 @@ import json
 from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
 from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors
-from lib.db.contests import create_contest, get_contest_data
+from lib.db.contests import create_contest, get_contests_data
 from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdraw_tokens
 import cartesi_wallet.wallet as Wallet
 from cartesi_wallet.util import hex_to_str
@@ -190,7 +190,7 @@ def handle_inspect(request):
         if query_args[1] == 'create' :
             create_contest(query_args) 
         else:
-            data = get_contest_data(query_args)
+            data = get_contests_data(query_args)
             payload = str2hex(str(data))
             send_report({"payload": payload}) 
     else :
