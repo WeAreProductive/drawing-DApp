@@ -224,7 +224,8 @@ def get_drawings(query_args, type, page):
   return result
 
 def get_data(query_args):
-  """ Entry function for retrieving drawing adata.
+  """ Entry function for retrieving drawing data 
+      that will be served in the FE
   Parameters
   ----------
   query_args : list
@@ -287,6 +288,21 @@ def get_drawing_contributors( uuid ):
   """
   contributors = get_raw_data(uuid, 'get_drawing_contributors')
   return contributors
+def is_contest_drawing(uuid):
+  """
+    Get single drawing by uuid
+  """
+  drawings = get_raw_data(['', '', uuid], 'get_drawing_by_uuid')
+  if drawings:
+    drawing = dict(drawings[0])
+    logger.info(f"DRAWING {drawing}")
+    if drawing.get('contest_id'):
+      logger.info(f"CONTEST DRAWING")
+      return True # is acontest drawing
+    else :
+      logger.info(f"NOT CONTEST DRAWING")
+      return False
+    
 def save_data(type, query_args) :
   """ Executes database insert and update query statement.
   Parameters

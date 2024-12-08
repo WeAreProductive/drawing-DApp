@@ -7,7 +7,7 @@ import traceback
 import json 
 from lib.rollups_api import send_notice, send_voucher, send_report
 from lib.utils import clean_header, binary2hex, decompress, str2hex, hex2str
-from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors
+from lib.db.drawings import store_data, get_data, get_drawing_minting_price, get_drawing_contributors, is_contest_drawing
 from lib.db.contests import create_contest, get_contests_data
 from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdraw_tokens
 from lib.manager.contests import manage_contests
@@ -128,12 +128,21 @@ def handle_advance(data):
             payload = data["payload"] # payload consists of (1) - message sender, (2) amount to deposit ?, (3) - minting data
             msg_sender = payload[:42] 
             logger.info(f"Address {msg_sender}")
-            deposit_tokens(payload)
+            is_contest_deposit = False
             if len(payload) > 104 :
                 input_data_2 = payload[104:]
                 str_data = hex_to_str(input_data_2) 
+                logger.info(f"DEPOSIT PAYLOAD {str_data}") # @TODO get cmd from here
                 json_data = json.loads(str_data) 
-                mint_erc721_with_string( msg_sender, json_data, timestamp )
+
+                is_contest_drawing = is_contest_drawing(json_data['uuid'])
+                # if marked as a contest deposit
+                ## check "uuid":"f7b4e6ff-1c51-4160-a0e6-f0948137325e" belongs to a contest
+                ## modify the payload - add as deposit recipient current dapp address
+                result = hex_to_str(payload[:2])
+                logger.info(f"DECODED payload {result}")
+                deposit_tokens(payload, dapp_wallet_address, is_contest_drawing) 
+                mint_erc721_with_string( msg_sender, json_data, timestamp, is_contest_drawing ) # @TODO handle assets now only if not a contest deposit
         else :
             payload = data["payload"]
             decompressed_payload = decompress(payload)
