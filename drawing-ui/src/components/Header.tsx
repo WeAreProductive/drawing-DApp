@@ -27,6 +27,11 @@ const Header = () => {
             >
               New Drawing
             </a>
+            <a href="/contests">Contests</a>
+            <a href="/contest/create">Create Contest</a>
+            <QueryClientProvider client={queryClient}>
+              <Balance />
+            </QueryClientProvider>
           </div>
         </>
       )}
