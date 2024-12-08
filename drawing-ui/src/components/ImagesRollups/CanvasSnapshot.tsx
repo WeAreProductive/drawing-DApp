@@ -10,8 +10,9 @@ type CanvasSnapshotProp = {
 };
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
-  const { owner, uuid, update_log, dimensions, title } = src;
-  const { drawingIsClosed } = useCanvasControls();
+  const { owner, uuid, update_log, dimensions, closed_at } = src;
+  const { getIsClosedDrawing } = useCanvasControls();
+  const drawingIsClosed = getIsClosedDrawing(closed_at);
   const snapShotJson = useMemo(
     () => snapShotJsonfromLog(update_log),
     [update_log],
@@ -37,10 +38,10 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         ) : (
           ""
         )}
-        {title}
+        {src.title}
       </div>
       <div className="text-xs">
-        {/*drawingIsClosed ? "Drawinsg id CLOSED" : "Open for drawing"*/}
+        {/*drawingIsClosed ? "Drawinsg is CLOSED" : "Open for drawing"*/}
       </div>
       <div className="text-xs">Owner: {sliceAccountStr(owner)}</div>
       <div></div>

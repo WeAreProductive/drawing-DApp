@@ -11,6 +11,11 @@ export const useCanvasControls = () => {
   const [connectedWallet] = useWallets();
 
   const account = connectedWallet.accounts[0].address;
+  const getIsClosedDrawing = (closedAtTimestamp: string | undefined) => {
+    if (!closedAtTimestamp) return;
+    const unixTimestampNow = Math.floor(Date.now() / 1000);
+    return Number(closedAtTimestamp) <= unixTimestampNow;
+  };
   useEffect(() => {
     if (!currentDrawingData) return;
     if (currentDrawingData.is_private == 0) {
@@ -33,5 +38,5 @@ export const useCanvasControls = () => {
 
     setDrawingIsClosed(shouldCloseDrawing);
   }, [currentDrawingData?.closed_at]);
-  return { isActiveControl, drawingIsClosed };
+  return { isActiveControl, drawingIsClosed, getIsClosedDrawing };
 };

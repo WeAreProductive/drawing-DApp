@@ -28,17 +28,21 @@ def get_raw_data(query_args, query_type, page, timestamp):
     conn = sqlite3.connect(db_filename) 
     conn.row_factory = sqlite3.Row # receive named results
     cursor = conn.cursor() 
-    # active_from active_to
+    # active_from active_to, @TODO count number of contest and pagination has next
     match query_type:
       case "get_active_contests": 
         print("get_active_contests") 
-        #
+        # # id, created_by, title, description, active_from, active_to, minting_active, minting_price, created_at from contests
+        # # uuid from drawings  
         offset = get_query_offset(page)  
-        statement = "SELECT * "
+        statement = "SELECT COUNT(d.uuid) as drawings_count, * " 
         statement = statement + "FROM contests c "
+        statement = statement + "LEFT JOIN drawings d "
+        statement = statement + "ON c.id = d.contest_id "
         statement = statement + "WHERE c.active_from < ? AND "
         statement = statement + "c.active_to > ? "
-        statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?"
+        statement = statement + "GROUP BY c.id "
+        statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?" 
         cursor.execute(statement, [timestamp, timestamp, limit, offset]) 
         rows = cursor.fetchall() 
         return rows  
@@ -46,9 +50,12 @@ def get_raw_data(query_args, query_type, page, timestamp):
         print("get_future_contests") 
         #
         offset = get_query_offset(page)  
-        statement = "SELECT * "
+        statement = "SELECT COUNT(d.uuid) as drawings_count, * "
         statement = statement + "FROM contests c "
+        statement = statement + "LEFT JOIN drawings d "
+        statement = statement + "ON c.id = d.contest_id "
         statement = statement + "WHERE c.active_from > ? " 
+        statement = statement + "GROUP BY c.id "
         statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?"
         cursor.execute(statement, [timestamp, limit, offset]) 
         rows = cursor.fetchall() 
@@ -57,9 +64,12 @@ def get_raw_data(query_args, query_type, page, timestamp):
         print("get_completed_contests") 
         #
         offset = get_query_offset(page)  
-        statement = "SELECT * "
+        statement = "SELECT COUNT(d.uuid) as drawings_count, * "
         statement = statement + "FROM contests c "
+        statement = statement + "LEFT JOIN drawings d "
+        statement = statement + "ON c.id = d.contest_id "
         statement = statement + "WHERE c.active_to < ? " 
+        statement = statement + "GROUP BY c.id "
         statement = statement + "ORDER BY c.created_at DESC LIMIT ? OFFSET ?"
         cursor.execute(statement, [timestamp, limit, offset]) 
         rows = cursor.fetchall() 
@@ -77,9 +87,13 @@ def get_raw_data(query_args, query_type, page, timestamp):
         return rows 
       case 'get_contest_by_id':
         print('get_contest_by_id')
-        statement = "SELECT * "
+        statement = "SELECT COUNT(d.uuid) as drawings_count, * "
         statement = statement + "FROM contests c "
-        statement = statement + "WHERE c.id = ? LIMIT 1"  
+        statement = statement + "LEFT JOIN drawings d "
+        statement = statement + "ON c.id = d.contest_id "
+        statement = statement + "WHERE c.id = ?" 
+        statement = statement + "GROUP BY c.id " 
+        statement = statement + " LIMIT 1" 
         cursor.execute(statement, [query_args[1]]) 
         rows = cursor.fetchall() 
         return rows 
@@ -109,17 +123,21 @@ def get_contests(query_args, query_type, page, timestamp):
   
   if data_rows: 
     for row in data_rows:   
+      row_dict = dict(row)
       # id, created_by, title, description, active_from, active_to, minting_active, minting_price, created_at 
       current_contest = {}
-      current_contest['id'] = row['id']
-      current_contest['created_by'] = row['created_by']
-      current_contest['title'] = row['title']
-      current_contest['description'] = row['description']
-      current_contest['active_from'] = row['active_from']
-      current_contest['active_to'] = row['active_to']
-      current_contest['minting_active'] = row['minting_active']
-      current_contest['minting_price'] = row['minting_price']
-      current_contest['created_at'] = row['created_at']
+      current_contest['id'] = row_dict['id']
+      current_contest['created_by'] = row_dict['created_by']
+      current_contest['title'] = row_dict['title']
+      current_contest['description'] = row_dict['description']
+      current_contest['active_from'] = row_dict['active_from']
+      current_contest['active_to'] = row_dict['active_to']
+      current_contest['minting_active'] = row_dict['minting_active']
+      current_contest['minting_price'] = row_dict['minting_price']
+      current_contest['created_at'] = row_dict['created_at']
+      current_contest['drawings_count'] = 0
+      if row_dict.get('drawings_count') :
+        current_contest['drawings_count'] = row_dict['drawings_count']
 
       contests.append(current_contest)  
   # @TODO has_next page

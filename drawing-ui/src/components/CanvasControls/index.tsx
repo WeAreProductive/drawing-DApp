@@ -16,7 +16,7 @@ const CanvasControls = ({ enabled, canDownload }: CanvasControlsProp) => {
           <CanvasToSave enabled={enabled} />
         </>
       )}
-      {drawingIsClosed && <CanvasToMint enabled={enabled} />}
+      {drawingIsClosed && <CanvasToMint />}
       <CanvasDownload canDownload={canDownload} />
     </div>
   );

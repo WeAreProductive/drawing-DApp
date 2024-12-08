@@ -12,7 +12,7 @@ const ContestBlockLight = ({ data }: { data: ContestType }) => {
     active_to,
     minting_active,
     minting_price,
-    drawings,
+    drawings_count,
   } = data;
   return (
     <div className="rounded-lg border bg-background p-2">
@@ -33,8 +33,7 @@ const ContestBlockLight = ({ data }: { data: ContestType }) => {
         </span>
         <span className="block text-xs">minting price: {minting_price} </span>
         <span className="block text-xs">
-          Number of drawings:{" "}
-          {drawings && drawings.length > 0 ? drawings.length : 0}{" "}
+          Number of drawings: {drawings_count}
         </span>
       </Link>
     </div>

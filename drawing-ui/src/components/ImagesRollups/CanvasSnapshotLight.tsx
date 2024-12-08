@@ -8,7 +8,7 @@ type CanvasSnapshotLightProp = {
 };
 const CanvasSnapshotLight = ({ data }: CanvasSnapshotLightProp) => {
   if (!data) return;
-  const { update_log, dimensions } = data;
+  const { update_log, dimensions, contest } = data;
   const snapShotJson = useMemo(
     () => snapShotJsonfromLog(update_log),
     [update_log],
@@ -17,7 +17,13 @@ const CanvasSnapshotLight = ({ data }: CanvasSnapshotLightProp) => {
     return JSON.parse(dimensions);
   }, [dimensions]);
   return (
-    <DrawingPreview dimensions={parsedDimensions} snapShotJson={snapShotJson} />
+    <>
+      <DrawingPreview
+        dimensions={parsedDimensions}
+        snapShotJson={snapShotJson}
+      />
+      {contest ? <i>from contest: {contest.title}</i> : ""}
+    </>
   );
 };
 
