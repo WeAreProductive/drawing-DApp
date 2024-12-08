@@ -3,8 +3,8 @@ import { useInspect } from "../../hooks/useInspect";
 import { useCanvasContext } from "../../context/CanvasContext";
 import { nowUnixTimestamp } from "../../utils";
 import Contest from "./Contest";
+import { ContestType } from "../../shared/types";
 
-// @TODO define contest type
 // @TODO display single contest
 // @TODO check timestamp saved because of inactive/active/future contests
 // @TODO define/update dappStates
@@ -13,7 +13,7 @@ import Contest from "./Contest";
 const ContestsList = ({ contestType }: { contestType: string }) => {
   const { dappState } = useCanvasContext();
   const { inspectCall } = useInspect();
-  const [contests, setContests] = useState<any[]>([]);
+  const [contests, setContests] = useState<ContestType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState({
     error: false,

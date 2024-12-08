@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Button, Datepicker, Label, Textarea, TextInput } from "flowbite-react";
+import { Button, Label, Textarea, TextInput } from "flowbite-react";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import InputDatepicker from "../ui/formDialog/inputDatepicker";
 import ButtonSpinner from "../ui/formDialog/buttonSpinner";
@@ -7,6 +7,7 @@ import { useInspect } from "../../hooks/useInspect";
 import moment from "moment";
 import { useConnectionContext } from "../../context/ConnectionContext";
 import { dateToTimestamp, nowUnixTimestamp } from "../../utils";
+import { ContestInitType } from "../../shared/types";
 
 const now = moment().utc();
 
@@ -41,7 +42,7 @@ const ContestCreateInput = () => {
   const { account } = useConnectionContext();
   const { inspectCall } = useInspect();
   const [fieldValidation, setFieldValidation] = useState(validationInit);
-  const [inputValues, setInputValues] = useState<any>(initialInput);
+  const [inputValues, setInputValues] = useState<ContestInitType>(initialInput);
   const [loading, setLoading] = useState(false);
 
   const handleInputChange = (

@@ -9,7 +9,7 @@ const Contests = () => {
         <TabsList>
           <TabsTrigger value="active">Active</TabsTrigger>
           <TabsTrigger value="future">Future</TabsTrigger>
-          <TabsTrigger value="inactive">Inactive</TabsTrigger>
+          <TabsTrigger value="completed">Completed</TabsTrigger>
         </TabsList>
         <TabsContent value="active" className="flex">
           <ScrollArea className="max-h-[calc(100svh-var(--header-height)-120px)]">
@@ -21,9 +21,9 @@ const Contests = () => {
             <ContestsList contestType="future" />
           </ScrollArea>
         </TabsContent>
-        <TabsContent value="inactive" className="flex">
+        <TabsContent value="completed" className="flex">
           <ScrollArea className="max-h-[calc(100svh-var(--header-height)-120px)]">
-            <ContestsList contestType="inactive" />
+            <ContestsList contestType="completed" />
           </ScrollArea>
         </TabsContent>
       </Tabs>
