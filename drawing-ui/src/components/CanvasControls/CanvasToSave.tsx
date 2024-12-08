@@ -4,9 +4,9 @@
  * to emit a NOTICE with
  * the current drawing data
  */
-
+import { useEffect, useState } from "react";
 import { useCanvasContext } from "../../context/CanvasContext";
-import { DrawingUserInput } from "../../shared/types";
+import { ContestType, DrawingUserInput } from "../../shared/types";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Save } from "lucide-react";
@@ -20,10 +20,12 @@ import {
 import { useDrawing } from "../../hooks/useDrawing";
 import { useRollups } from "../../hooks/useRollups";
 import { DAPP_STATE } from "../../shared/constants";
-import { useState } from "react";
 import InputDialog from "../Drawing/InputDialog";
 import { useConnectionContext } from "../../context/ConnectionContext";
 import moment from "moment";
+
+import { nowUnixTimestamp } from "../../utils";
+import { useInspect } from "../../hooks/useInspect";
 
 type CanvasToSaveProp = {
   enabled: boolean;
@@ -40,14 +42,18 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
   const { connectedChain, account, connectedWallet } = useConnectionContext();
   const { sendInput } = useRollups();
   const { getNoticeInput } = useDrawing();
+  const { inspectCall } = useInspect();
   const currentUuid = uuidv4();
   const [isOpen, setIsOpenModal] = useState(false);
+  const [contests, setContests] = useState<[] | ContestType[]>([]);
+  const [page, setPage] = useState(1);
   const [inputValues, setInputValues] = useState<DrawingUserInput>({
     title: "",
     description: "",
     minting_price: "",
     private: false,
     open: 0,
+    contest: 0,
   });
   const saveDrawing = async () => {
     setDappState(DAPP_STATE.canvasSave);
@@ -120,6 +126,21 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
     }
   };
 
+  const fetchContests = async () => {
+    if (!isOpen) return;
+    console.warn("Fetch contests data :: ...");
+    const now = nowUnixTimestamp();
+    let queryString = "";
+    queryString = `contests/page/${page}/incompleted/${now}`;
+    const data = await inspectCall(queryString, "plain");
+    const { next_page, contests } = JSON.parse(data);
+    if (contests) setContests((prevItems) => [...prevItems, ...contests]);
+  };
+  useEffect(() => {
+    fetchContests();
+  }, [isOpen]);
+  console.log({ inputValues });
+
   return (
     <>
       <Button
@@ -138,6 +159,7 @@ const CanvasToSave = ({ enabled }: CanvasToSaveProp) => {
         inputValues={inputValues}
         setInputValues={setInputValues}
         action={() => saveDrawing()}
+        contests={contests}
       />
     </>
   );
