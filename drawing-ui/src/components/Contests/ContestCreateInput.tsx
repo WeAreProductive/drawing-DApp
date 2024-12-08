@@ -10,7 +10,9 @@ import { dateToTimestamp, nowUnixTimestamp } from "../../utils";
 import { ContestInitType } from "../../shared/types";
 import DialogTextinput from "../ui/formDialog/textInput";
 
-const now = moment().utc();
+const now = moment();
+
+// const now = moment().utc();
 // @TODO fix typing
 const validationErrMsg = {
   required: "The field is required!",
@@ -128,6 +130,7 @@ const ContestCreateInput = () => {
   const createContest = async () => {
     console.warn("CONTEST :: Creating new contest ...");
     const unixTimestamp = nowUnixTimestamp();
+    console.log(inputValues.active_from);
     const contest_data = {
       data: {
         ...inputValues,

@@ -4,6 +4,7 @@ import { sliceAccountStr, snapShotJsonfromLog } from "../../utils";
 import { useMemo } from "react";
 import DrawingPreview from "./DrawingPreview";
 import { useCanvasControls } from "../../hooks/useCanvasControl";
+import { useConnectionContext } from "../../context/ConnectionContext";
 
 type CanvasSnapshotProp = {
   src: DrawingInputExtended;
@@ -11,6 +12,7 @@ type CanvasSnapshotProp = {
 
 const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
   const { owner, uuid, update_log, dimensions, closed_at } = src;
+  const { account } = useConnectionContext();
   const { getIsClosedDrawing } = useCanvasControls();
   const drawingIsClosed = getIsClosedDrawing(closed_at);
   const snapShotJson = useMemo(
@@ -41,7 +43,12 @@ const CanvasSnapshot = ({ src }: CanvasSnapshotProp) => {
         {src.title}
       </div>
       <div className="text-xs">
-        {/*drawingIsClosed ? "Drawinsg is CLOSED" : "Open for drawing"*/}
+        {!drawingIsClosed &&
+        (!src.is_private ||
+          (src.is_private &&
+            owner.toLowerCase() == account?.toLocaleLowerCase()))
+          ? "Open for drawing"
+          : "Drawing is closed"}
       </div>
       <div className="text-xs">Owner: {sliceAccountStr(owner)}</div>
       <div></div>

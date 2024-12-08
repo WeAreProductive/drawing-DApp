@@ -87,13 +87,22 @@ def get_raw_data(query_args, query_type, page, timestamp):
         return rows 
       case 'get_contest_by_id':
         print('get_contest_by_id')
-        statement = "SELECT COUNT(d.uuid) as drawings_count, * "
+        # 'id': 16, 'created_by': '0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266', 'title': 'test time', 'description': '', 'active_from': '1731621600', 'active_to': '1731794399', 'minting_active': '1', 'minting_price': 1.0,
+        statement = "SELECT c.id, c.created_by, c.title, c.description, c.active_from, c.active_to, c.minting_active, c.minting_price, c.created_at, d.uuid, "
+        # statement = "COUNT(d.uuid) as drawings_count, "
+        statement = statement + "d.uuid, m.minter, m.drawing_id, "
+        statement = statement + "COUNT(m.drawing_id) as mints_count, "
+        # statement = statement + "COUNT(DISTINCT d.uuid) as drawings_count, "
+        statement = statement + "GROUP_CONCAT(m.drawing_id, ',') AS drawings_uuids "
         statement = statement + "FROM contests c "
         statement = statement + "LEFT JOIN drawings d "
         statement = statement + "ON c.id = d.contest_id "
+        statement = statement + "LEFT JOIN mints m "
+        statement = statement + "ON d.uuid = m.drawing_id "
         statement = statement + "WHERE c.id = ?" 
-        statement = statement + "GROUP BY c.id " 
-        statement = statement + " LIMIT 1" 
+        # statement = statement + "GROUP BY c.id " 
+        statement = statement + "GROUP BY d.uuid " 
+        # statement = statement + " LIMIT 1" 
         cursor.execute(statement, [query_args[1]]) 
         rows = cursor.fetchall() 
         return rows 
@@ -122,8 +131,8 @@ def get_contests(query_args, query_type, page, timestamp):
   data_rows = get_raw_data(query_args, query_type, page, timestamp)   
   
   if data_rows: 
-    for row in data_rows:   
-      row_dict = dict(row)
+    if query_type == 'get_contest_by_id':     
+      row_dict = dict(data_rows[0])
       # id, created_by, title, description, active_from, active_to, minting_active, minting_price, created_at 
       current_contest = {}
       current_contest['id'] = row_dict['id']
@@ -135,11 +144,40 @@ def get_contests(query_args, query_type, page, timestamp):
       current_contest['minting_active'] = row_dict['minting_active']
       current_contest['minting_price'] = row_dict['minting_price']
       current_contest['created_at'] = row_dict['created_at']
+      current_contest['mints_statistics'] = []
       current_contest['drawings_count'] = 0
-      if row_dict.get('drawings_count') :
-        current_contest['drawings_count'] = row_dict['drawings_count']
-
-      contests.append(current_contest)  
+      if row_dict.get('uuid') :
+        if row_dict['uuid']:
+          current_contest['drawings_count'] = len(data_rows)
+      for row in data_rows:
+        current = dict(row)
+        current_statistics = {}
+        if current.get('mints_count') :
+          current_statistics['mints_count'] = current['mints_count']
+        if current.get('drawing_id') :
+          current_statistics['drawing_id'] = current['drawing_id']
+        current_contest['mints_statistics'].append(current_statistics)
+      contests.append(current_contest)
+    else :
+    
+      for row in data_rows:   
+        row_dict = dict(row)
+        print(f"ROW DICT {row_dict}")
+        # id, created_by, title, description, active_from, active_to, minting_active, minting_price, created_at 
+        current_contest = {}
+        current_contest['id'] = row_dict['id']
+        current_contest['created_by'] = row_dict['created_by']
+        current_contest['title'] = row_dict['title']
+        current_contest['description'] = row_dict['description']
+        current_contest['active_from'] = row_dict['active_from']
+        current_contest['active_to'] = row_dict['active_to']
+        current_contest['minting_active'] = row_dict['minting_active']
+        current_contest['minting_price'] = row_dict['minting_price']
+        current_contest['created_at'] = row_dict['created_at']
+        current_contest['drawings_count'] = 0
+        if row_dict.get('drawings_count') :
+          current_contest['drawings_count'] = row_dict['drawings_count']
+        contests.append(current_contest)  
   # @TODO has_next page
   result['contests'] = contests 
   return result

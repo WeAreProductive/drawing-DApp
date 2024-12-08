@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import moment from "moment";
 import Datepicker from "tailwind-datepicker-react";
 
-const now = moment().utc(); // @TODO check formatting
+const now = moment(); // @TODO check formatting
 // https://www.npmjs.com/package/tailwind-datepicker-react
 
 const InputDatepicker = ({
