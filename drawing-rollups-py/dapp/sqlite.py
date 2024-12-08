@@ -22,11 +22,12 @@ def init_sqlite_database():
             """
             CREATE TABLE IF NOT EXISTS contests (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                created_by VARCHAR NOT NULL,
+                created_by VARCHAR NOT NULL, 
                 title VARCHR NOT NULL,
                 description TEXT,
                 active_from VARCHAR NOT NULL,
                 active_to VARCHAR NOT NULL,
+                minting_active VARCHAR NOT NULL,
                 minting_price FLOAT NOT NULL,
                 is_final INTEGER DEFAULT 0,
                 winner VARCHAR,
@@ -65,13 +66,14 @@ def init_sqlite_database():
                 )
                """
             )
+        # @TODO drawing_id is drawing id not uuid - replace with uuid or fix wherever tis table is used
         cursor.execute(
                 """
                 CREATE TABLE IF NOT EXISTS mints (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     minter VARCHAR NOT NULL,
                     created_at VARCHAR NOT NULL,
-                    drawing_id INTEGER NOT NULL,
+                    drawing_id VARCHAR NOT NULL,
                     FOREIGN KEY (drawing_id) REFERENCES drawings(id)
                 )
                """

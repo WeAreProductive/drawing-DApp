@@ -2,14 +2,10 @@ import sqlite3
 import logging
 import json   
 from lib.db.utils import get_query_offset
+from config import *
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
-
-db_filename = 'drawing.db'  
-
-limit = 8
-contest_minting_price = 1
 
 def get_raw_data(query_args, query_type, page, timestamp):
   """ Executes database query statement.
@@ -24,7 +20,6 @@ def get_raw_data(query_args, query_type, page, timestamp):
     
   """
   conn = None 
-   # @TODO completed are the contests where active_to + minting open is finishhed
   try :
     conn = sqlite3.connect(db_filename) 
     conn.row_factory = sqlite3.Row # receive named results
@@ -32,7 +27,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
     # active_from active_to, @TODO count number of contest and pagination has next
     match query_type:
       case "get_active_drawing_contests": 
-        print("get_active_drawing_contests") 
+        logger.info("get_active_drawing_contests") 
         # contests open for drawing
         offset = get_query_offset(page)  
         statement = "SELECT COUNT(d.uuid) as drawings_count, * " 
@@ -48,8 +43,8 @@ def get_raw_data(query_args, query_type, page, timestamp):
         return rows  
       case "get_active_minting_contests": 
         # contests closed for drawing and open for minting 
-        print("get_active_minting_contests") 
-        print(f"CURRENT TIMESTAMP {timestamp}")
+        logger.info("get_active_minting_contests") 
+        logger.info(f"CURRENT TIMESTAMP {timestamp}")
         offset = get_query_offset(page)  
         statement = "SELECT COUNT(d.uuid) as drawings_count, * " 
         statement = statement + "FROM contests c "
@@ -63,7 +58,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
         rows = cursor.fetchall()  
         return rows  
       case "get_future_contests":  
-        print("get_future_contests") 
+        logger.info("get_future_contests") 
         #
         offset = get_query_offset(page)  
         statement = "SELECT COUNT(d.uuid) as drawings_count, * "
@@ -77,7 +72,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
         rows = cursor.fetchall() 
         return rows  
       case "get_completed_contests":  
-        print("get_completed_contests") 
+        logger.info("get_completed_contests") 
         # completed are the contests after active_to + minting_open(in seconds)
         offset = get_query_offset(page)  
         statement = "SELECT COUNT(d.uuid) as drawings_count, * "
@@ -91,7 +86,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
         rows = cursor.fetchall() 
         return rows 
       case "get_incompleted_contests": # for the drawing save form
-        print("get_incompleted_contests") 
+        logger.info("get_incompleted_contests") 
         #
         offset = get_query_offset(page)  
         statement = "SELECT * "
@@ -102,7 +97,7 @@ def get_raw_data(query_args, query_type, page, timestamp):
         rows = cursor.fetchall() 
         return rows 
       case "get_not_final_contests":
-        print('get_not_final_contest')
+        logger.info('get_not_final_contest')
         # completed contests byt not yet finalised by the contest manager
         ## get drawings, owners, participants, mints for each contest 
         # improve the query 
@@ -117,11 +112,9 @@ def get_raw_data(query_args, query_type, page, timestamp):
         
         cursor.execute(statement, [int(timestamp)]) 
         rows = cursor.fetchall() 
-        print(statement)
-        print(rows)
         return rows 
       case 'get_contest_by_id':
-        print('get_contest_by_id')
+        logger.info('get_contest_by_id')
         statement = "SELECT c.id, c.created_by, c.title, c.description, c.active_from, c.active_to, c.minting_active, c.minting_price, c.created_at, "
         # statement = "COUNT(d.uuid) as drawings_count, "
         statement = statement + "d.uuid, d.last_updated, d.title as drawing_title, "
@@ -142,6 +135,18 @@ def get_raw_data(query_args, query_type, page, timestamp):
         cursor.execute(statement, [query_args[1]]) 
         rows = cursor.fetchall() 
         return rows 
+      case 'get_contest_balance':
+        logger.info(f"get_contest_balance contest ID {query_args}")
+        statement = "SELECT SUM(minting_price) as contest_balance "
+        statement = statement + "FROM mints m "
+        statement = statement + "JOIN drawings d "
+        statement = statement + "on m.drawing_id=d.uuid "
+        statement = statement + "WHERE d.contest_id = ?"
+        statement = statement + "GROUP by d.contest_id"
+
+        cursor.execute(statement, [query_args]) 
+        rows = cursor.fetchall() 
+        return rows 
 
   except Exception as e: 
     msg = f"Error executing statement: {e}" 
@@ -150,7 +155,11 @@ def get_raw_data(query_args, query_type, page, timestamp):
   finally:
     if conn:
       conn.close()
-
+def get_contest_balance(contest_id):
+  logger.info(f"CONTEST ID {contest_id}")
+  balance = get_raw_data(contest_id, 'get_contest_balance', 0, 0)
+  logger.info(f"CONTEST_BALANCE {dict(balance[0])}")
+  return dict(balance[0])
 # retrieve data
 def get_contests(query_args, query_type, page, timestamp): 
   """ Retrieves requested contest data.
@@ -200,7 +209,6 @@ def get_contests(query_args, query_type, page, timestamp):
     else :
       for row in data_rows:   
         row_dict = dict(row)
-        print(f"ROW DICT {row_dict}")
         # id, created_by, title, description, active_from, active_to, minting_active, minting_price, created_at 
         current_contest = {}
         current_contest['id'] = row_dict['id']
@@ -220,7 +228,7 @@ def get_contests(query_args, query_type, page, timestamp):
   result['contests'] = contests 
   return result
 
-# router
+# helper
 def get_query_type(contest_type):
   match contest_type:
     case "active-drawing": 
@@ -233,9 +241,11 @@ def get_query_type(contest_type):
       return "get_completed_contests" 
     case "incompleted":
       return 'get_incompleted_contests' # active and future
-    
+# router
 def get_contests_data(query_args):
-  """ Entry function for retrieving contest adata.
+  """ Entry function for retrieving contest data.
+      Serves data for inspect requests
+      @TODO finish description
   Parameters
   ----------
   query_args : list
@@ -260,15 +270,13 @@ def get_contests_data(query_args):
           if query_args[2] == 'all':
             if len(query_args) > 4: 
               timestamp = query_args[4]
-              print(f"TIMESTAMP 1 {timestamp}") 
             query_type = "get_not_final_contests" # a contests whose label is_final == True
           else:
             # paginated contests
             page = int(query_args[2])
             if len(query_args) > 4:
               timestamp = query_args[4]
-              print(f"TIMESTAMP 2 {timestamp}") 
-              query_type=get_query_type(query_args[3])
+              query_type = get_query_type(query_args[3])
       else:
         # single contest query request
         # ['contests', {contest_id}] 

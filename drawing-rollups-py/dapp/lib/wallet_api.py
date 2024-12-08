@@ -24,6 +24,11 @@ def get_balance(address, in_ether = False):
 
 def transfer_tokens(from_address, to_address, amount ):
   try :
+    logger.info(f"Amount {amount}")
+
+    eth_balance = wallet.balance_get(from_address.lower()) 
+    dapp_balance = eth_balance.ether_get() 
+    logger.info(f"Balance from address {dapp_balance}")
     wallet.ether_transfer(from_address.lower(), to_address.lower(), amount)
     # check, @TODO remove
     eth_balance = wallet.balance_get(to_address.lower())  
@@ -41,9 +46,9 @@ def deposit_tokens(payload, dapp_wallet_address, is_contest_deposit=False) :
     account, amount = wallet._ether_deposit_parse(binary_payload)
    
     if is_contest_deposit:
-      account_to_deposit = dapp_wallet_address
+      account_to_deposit = dapp_wallet_address.lower()
     else: 
-      account_to_deposit = account
+      account_to_deposit = account.lower()
       # wallet.ether_deposit_process(payload)
     logger.info(f"'{amount} ' ether DEPOSITED "
                 f"in account '{account_to_deposit}'")
