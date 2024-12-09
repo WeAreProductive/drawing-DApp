@@ -1,4 +1,5 @@
 import { useRef, useState } from "react";
+import { useNavigate } from "react-router";
 import { Button, Label, Textarea } from "flowbite-react";
 import { customThemeTextarea } from "../ui/formDialog/textArea";
 import InputDatepicker from "../ui/formDialog/inputDatepicker";
@@ -48,6 +49,7 @@ const ContestCreateInput = () => {
   const [fieldValidation, setFieldValidation] = useState(validationInit);
   const [inputValues, setInputValues] = useState<ContestInitType>(initialInput);
   const [loading, setLoading] = useState(false);
+  let navigate = useNavigate();
 
   const handleInputChange = (
     e:
@@ -156,6 +158,7 @@ const ContestCreateInput = () => {
     const result = await createContest();
     // @TODO display success toast
     setInputValues(initialInput);
+    navigate("/contests");
   };
   return (
     <div>
