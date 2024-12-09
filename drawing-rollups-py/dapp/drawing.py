@@ -13,8 +13,8 @@ from lib.wallet_api import get_balance, transfer_tokens, deposit_tokens, withdra
 from lib.manager.contests import manage_contests
 from config import *
 import cartesi_wallet.wallet as Wallet
-from cartesi_wallet.util import hex_to_str
-from eth_utils import to_wei
+from cartesi_wallet.util import hex_to_str 
+from eth_utils import to_wei 
 
 logging.basicConfig(level="INFO")
 logger = logging.getLogger(__name__)
@@ -49,9 +49,10 @@ def mint_erc721_with_string( msg_sender, data, timestamp, is_contest_drawing ):
     """
     # check sender wallet virtual/portal deposited balance ... 
     minter_eth_balance = get_balance(msg_sender)
+
     minting_price = to_wei(get_drawing_minting_price(data['uuid']), 'ether') 
 
-    if minting_price <= minter_eth_balance or is_contest_drawing:
+    if minting_price <= minter_eth_balance or is_contest_drawing: 
         # @TODO - on each step - check success response and proceed
         # 1 - voucher
         mint_header = clean_header( '0xd0def521' )
@@ -67,8 +68,8 @@ def mint_erc721_with_string( msg_sender, data, timestamp, is_contest_drawing ):
         compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
         payload = binary2hex(compressed) 
         notice = {"payload": payload}
-        send_notice( notice )
-         # 3 - store minting-voucher data
+        send_notice( notice ) 
+        # 3 - store minting-voucher data
         store_data(data['cmd'], timestamp, msg_sender, data['uuid'])
         # 4 - update contributor balances unless is a contest drawing
         if not is_contest_drawing:
@@ -110,22 +111,19 @@ def handle_advance(data):
     status = "accept"
     payload = None
     sender = data["metadata"]["msg_sender"].lower() 
-    timestamp = data["metadata"]['block_timestamp'] # outside of the cartesi machine timestamp
+    timestamp = data["metadata"]['block_timestamp'] # outside of the cartesi machine timestamp 
     try:
         if sender == ether_portal_address.lower() : 
             payload = data["payload"] # payload consists of (1) - message sender, (2) amount to deposit ?, (3) - minting data
             msg_sender = payload[:42] 
-            is_contest_deposit = False
-            if len(payload) > 104 :
+            is_contest_drawing = False
+            if len(payload) > 104 : 
                 input_data_2 = payload[104:]
                 str_data = hex_to_str(input_data_2) 
                 json_data = json.loads(str_data) 
                 can_mint_and_deposit = False
                 # check 1
                 is_contest_drawing = check_is_contest_drawing(json_data['uuid'])
-                # if marked as a contest deposit
-                ## check "uuid":"f7b4e6ff-1c51-4160-a0e6-f0948137325e" belongs to a contest
-                ## modify the payload - add as deposit recipient current dapp address
                 if is_contest_drawing:
                     # check 2 - msg_sender is not in the drawing minters list
                     in_minters_list =  is_in_drawing_minters_list(json_data['uuid'], msg_sender)
@@ -200,12 +198,12 @@ def handle_inspect(request):
         else:
             data = get_contests_data(query_args)
             payload = str2hex(str(data))
-            send_report({"payload": payload}) 
+            send_report({"payload": payload})  
     elif query_args[0] == 'manage':
         if query_args[1] == 'contests':
             data = manage_contests(query_args)
             payload = str2hex(str(data))
-            send_report({"payload": payload}) 
+            send_report({"payload": payload})  
     else :
         data = get_data(query_args)
         compressed = zlib.compress(bytes(json.dumps(data), "utf-8")) 
