@@ -38,6 +38,7 @@ COPY dapp/lib lib
 # COPY dapp/entrypoint.sh .
 
 COPY dapp/sqlite.py .
+COPY dapp/config.py .
 
 RUN python3 ./sqlite.py 
 RUN chmod -R a+w .
