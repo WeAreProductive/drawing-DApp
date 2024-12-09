@@ -1,6 +1,5 @@
 import sqlite3 
-
-db_filename = 'drawing.db'
+from config import *
 
 def init_sqlite_database():
     """ create a database connection to an SQLite database """

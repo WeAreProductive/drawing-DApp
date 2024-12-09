@@ -335,7 +335,6 @@ def update_contest(contest_id, query_type, data = {}):
             SET winner = ?, is_final = 1
             WHERE
             id = ?
-            LIMIT 1;
             """,
             (data['uuid'], contest_id),
         )
