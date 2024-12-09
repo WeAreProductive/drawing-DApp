@@ -166,7 +166,7 @@ def get_drawing_layers(id) :
       current_log['painter'] = row['painter']
       # decompress before sending response data
       decompressed_drawing_objects = zlib.decompress(row['drawing_objects'])
-      current_log['drawing_objects'] = decompressed_drawing_objects
+      current_log['drawing_objects'] = decompressed_drawing_objects.decode("utf-8")
       current_log['dimensions'] = row['dimensions']
 
       update_log.append(current_log)
@@ -458,6 +458,7 @@ def save_data(type, query_args) :
             SET last_updated = ?
             WHERE
             id = ?
+            LIMIT 1;
             """,
             (now, id),
         )
