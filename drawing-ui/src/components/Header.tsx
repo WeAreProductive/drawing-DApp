@@ -29,9 +29,6 @@ const Header = () => {
             </a>
             <a href="/contests">Contests</a>
             <a href="/contest/create">Create Contest</a>
-            <QueryClientProvider client={queryClient}>
-              <Balance />
-            </QueryClientProvider>
           </div>
         </>
       )}
