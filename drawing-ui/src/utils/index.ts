@@ -290,9 +290,9 @@ export const dateToTimestamp = (
   let toMoment;
   if (date) {
     if (type == "startOf") {
-      toMoment = moment(date).startOf("day").toString();
+      toMoment = moment(date).utc().startOf("day").toString();
     } else if (type == "endOf") {
-      toMoment = moment(date).endOf("day").toString();
+      toMoment = moment(date).utc().endOf("day").toString();
     } else {
       toMoment = moment(date).format();
     }
